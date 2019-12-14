@@ -1,0 +1,8 @@
+type Truck {
+  plate: String!
+  brand: String!
+  model: String!
+  client: ID!
+  weight: Float!
+  drivers: [String!]!
+}

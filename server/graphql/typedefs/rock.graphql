@@ -1,0 +1,11 @@
+# Types
+type Rock {
+  name: String!
+  price: Float!
+}
+
+# Inputs
+input RockInput {
+  name: String!
+  price: Float!
+}

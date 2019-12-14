@@ -1,0 +1,46 @@
+# Types
+type Client {
+  firstName: String!
+  lastName: String!
+  role: Role!
+  trucks: [Truck!]!
+  businessName: String!
+  rfc: String!
+  CFDIuse: CFDIuse!
+  cellphone: [Int!]!
+  address: String!
+  prices: Prices!
+  credit: Float!
+  bill: Boolean!
+}
+
+type Prices {
+  A1: Float
+  A2: Float
+  A3: Float
+  A4: Float
+  A5: Float
+  A6: Float
+  A7: Float
+}
+
+# Inputs
+input ClientInput {
+  firstName: String!
+  lastName: String!
+  trucks: [Truck!]!
+  businessName: String!
+  rfc: String!
+  CFDIuse: CFDIuse!
+  cellphone: [Int!]!
+  address: String!
+  prices: Prices!
+  credit: Float!
+  bill: Boolean!
+}
+
+# Enums
+enum CFDIuse {
+  G01
+  G03
+}

@@ -1,0 +1,22 @@
+# import * from "user.graphql"
+# import * from "client.graphql"
+# import * from "ticket.graphql"
+# import * from "truck.graphql"
+# import * from "rock.graphql"
+
+# Scalars
+scalar Date
+scalar Upload
+
+type Query {
+  # User
+  user(id: ID!): User # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+}
+
+type Mutation {
+  # User
+  register(user: UserRegister!): String! # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+  login(user: UserLogin!): String! # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+  # Misc
+  fileUpload(file: Upload!, folderKey: String!, id: ID!): String!
+}
