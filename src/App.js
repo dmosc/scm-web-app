@@ -1,26 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
+import {Switch, Route, Redirect} from 'react-router-dom';
+import {withApollo} from 'react-apollo';
+import cookie from 'react-cookies';
 import './App.css';
+import {Admin, Auth} from 'views';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  render() {
+    const token = cookie.load('token');
+
+    return (
+      <Switch>
+        {token && <Route path="/admin" render={() => <Admin />} />}
+        {token && <Redirect from="/auth" to="/admin" />}
+        <Route path="/auth" render={() => <Auth />} />
+        <Redirect from="/" to="/auth" />
+      </Switch>
+    );
+  }
 }
 
-export default App;
+export default withApollo(App);
