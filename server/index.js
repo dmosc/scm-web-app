@@ -1,13 +1,15 @@
 import mongoose, {Schema} from 'mongoose';
 import server from './graphql';
-import {MONGO_DB_URI, MONGO_DB_LOCAL_URI} from './config';
+import {ENV, API_PORT, MONGO_DB_URI} from './config';
 
 (async () => {
   try {
-    server.listen().then(({url, subscriptionsUrl}) => {
-      console.log(`🚀  Server ready at ${url}`);
-      console.log(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
-    });
+    server
+      .listen(ENV.production ? API_PORT : 80)
+      .then(({url, subscriptionsUrl}) => {
+        console.log(`🚀  Server ready at ${url}`);
+        console.log(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
+      });
 
     await mongoose
       .connect(MONGO_DB_URI, {

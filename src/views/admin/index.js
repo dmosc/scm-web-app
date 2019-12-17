@@ -59,7 +59,7 @@ class Admin extends Component {
 
     try {
       const token = cookie.load('token');
-      const {userId: id} = jwt.verify(token, JWT_SECRET);
+      const {id} = jwt.verify(token, JWT_SECRET);
 
       const {
         data: {user},

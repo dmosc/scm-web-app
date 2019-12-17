@@ -8,17 +8,31 @@ import * as serviceWorker from './serviceWorker';
 
 import {ApolloProvider} from 'react-apollo';
 import {createUploadLink} from 'apollo-upload-client';
+import {WebSocketLink} from 'apollo-link-ws';
+import {getMainDefinition} from 'apollo-utilities';
+import {split} from 'apollo-link';
 import {setContext} from 'apollo-link-context';
 import ApolloClient from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
-import {LOCAL_SERVER_URI, SERVER_URI} from 'config';
+import {SERVER_URI, WS_URI} from 'config';
 
-const link = createUploadLink({
+const token = cookie.load('token');
+
+const httpLink = createUploadLink({
   uri: SERVER_URI,
 });
 
+const wsLink = new WebSocketLink({
+  uri: WS_URI,
+  options: {
+    reconnect: true,
+    connectionParams: {
+      authentication: token ? `Bearer ${token}` : '',
+    },
+  },
+});
+
 const authLink = setContext((_, {headers}) => {
-  const token = cookie.load('token');
   return {
     headers: {
       ...headers,
@@ -27,8 +41,20 @@ const authLink = setContext((_, {headers}) => {
   };
 });
 
+const link = split(
+  ({query}) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
+
 const client = new ApolloClient({
-  link: authLink.concat(link),
+  link,
   cache: new InMemoryCache(),
 });
 
