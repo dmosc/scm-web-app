@@ -15,7 +15,7 @@ const userMutations = {
 
       await user.save();
 
-      const token = jwt.sign({userId: user.id}, JWT_SECRET, {
+      const token = jwt.sign({id: user.id, role: user.role}, JWT_SECRET, {
         expiresIn: 86400,
       });
 
@@ -37,7 +37,9 @@ const userMutations = {
         throw new AuthenticationError('Incorrect user or password');
       }
 
-      const token = jwt.sign({userId: user.id}, JWT_SECRET, {expiresIn: 86400});
+      const token = jwt.sign({id: user.id, role: user.role}, JWT_SECRET, {
+        expiresIn: 86400,
+      });
 
       res.cookie('token', token, {
         maxAge: 86400 * 1000,

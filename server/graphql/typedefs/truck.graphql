@@ -1,8 +1,23 @@
+# Types
 type Truck {
-  plate: String!
+  id: ID!
+  plates: String!
+  brand: String!
+  model: String!
+  client: Client!
+  weight: Float!
+  drivers: [String!]!
+}
+# Inputs
+input TruckInput {
+  plates: String!
   brand: String!
   model: String!
   client: ID!
   weight: Float!
   drivers: [String!]!
+}
+
+input TruckFilters {
+  limit: Int
 }

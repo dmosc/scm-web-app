@@ -4,19 +4,48 @@
 # import * from "truck.graphql"
 # import * from "rock.graphql"
 
+# Enums
+
 # Scalars
 scalar Date
 scalar Upload
 
+# Directives
+directive @auth(roles: [Role]) on FIELD_DEFINITION
+
 type Query {
   # User
   user(id: ID!): User # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+  # Client
+  client(id: ID!): Client
+  clients(filters: ClientFilters!): [Client!]!
+  # Ticket
+  ticket(id: ID!): Ticket
+  tickets(filters: TicketFilters!): [Ticket!]!
+  # Truck
+  truck(id: ID!): Truck
+  trucks(filters: TruckFilters!): [Truck!]!
+  # Rock
+  rock(id: ID!): Rock
+  rocks(filters: TicketFilters!): [Rock!]!
 }
 
 type Mutation {
   # User
-  register(user: UserRegister!): String! # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
-  login(user: UserLogin!): String! # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+  register(user: UserRegister!): String! @auth(roles: [ADMIN])
+  login(user: UserLogin!): String!
+  # Client
+  client(client: ClientInput!): Client @auth(roles: [ADMIN])
+  # Ticket
+  ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
+  # Truck
+  truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
+  # Rock
+  rock(rock: RockInput!): Rock @auth(roles: [ADMIN, CASHIER])
   # Misc
   fileUpload(file: Upload!, folderKey: String!, id: ID!): String!
+}
+
+type Subscription {
+  newTicket: Ticket!
 }

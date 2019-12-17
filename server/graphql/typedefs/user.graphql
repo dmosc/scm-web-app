@@ -14,6 +14,10 @@ type User {
 # Enums
 enum Role {
   ADMIN
+  CASHIER
+  GUARD
+  ACCOUNTANT
+  CLIENT
 }
 
 # Inputs

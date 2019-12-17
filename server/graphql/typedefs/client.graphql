@@ -1,13 +1,15 @@
 # Types
 type Client {
+  id: ID!
   firstName: String!
   lastName: String!
+  email: String!
   role: Role!
-  trucks: [Truck!]!
+  trucks: [ID!]!
   businessName: String!
   rfc: String!
   CFDIuse: CFDIuse!
-  cellphone: [Int!]!
+  cellphone: [String!]!
   address: String!
   prices: Prices!
   credit: Float!
@@ -28,15 +30,30 @@ type Prices {
 input ClientInput {
   firstName: String!
   lastName: String!
-  trucks: [Truck!]!
+  email: String!
+  trucks: [ID!]!
   businessName: String!
   rfc: String!
   CFDIuse: CFDIuse!
-  cellphone: [Int!]!
+  cellphone: [String!]!
   address: String!
-  prices: Prices!
+  prices: PricesInput!
   credit: Float!
   bill: Boolean!
+}
+
+input PricesInput {
+  A1: Float
+  A2: Float
+  A3: Float
+  A4: Float
+  A5: Float
+  A6: Float
+  A7: Float
+}
+
+input ClientFilters {
+  limit: Int
 }
 
 # Enums
