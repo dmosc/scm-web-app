@@ -5,6 +5,12 @@ const GET_TRUCKS = gql`
     trucks(filters: $filters) {
       id
       plates
+      brand
+      model
+      client {
+        businessName
+      }
+      weight
       drivers
     }
   }

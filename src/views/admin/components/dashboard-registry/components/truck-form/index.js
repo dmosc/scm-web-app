@@ -8,10 +8,10 @@ import {
   InputNumber,
   Button,
   Select,
-  List,
   notification,
 } from 'antd';
-import ListContainer from './components/list';
+import TruckList from './components/components/trucks-list';
+import {FormContainer, TitleContainer, TitleList} from './elements';
 import {REGISTER_TRUCK} from './graphql/mutations';
 import {GET_TRUCKS, GET_CLIENTS} from './graphql/queries';
 
@@ -20,11 +20,10 @@ const {Option} = Select;
 class TruckForm extends Component {
   state = {
     loading: false,
-    loadingTrucks: false,
+    visible: false,
     loadingClients: false,
     trucks: [],
     clients: [],
-    currentTruck: null,
   };
 
   componentDidMount = async () => {
@@ -51,6 +50,7 @@ class TruckForm extends Component {
 
   handleSubmit = e => {
     const {form, client} = this.props;
+    const {trucks: oldTrucks} = this.state;
 
     this.setState({loading: true});
     e.preventDefault();
@@ -74,7 +74,9 @@ class TruckForm extends Component {
               },
             });
 
-            this.setState({loading: false});
+            const trucks = [truck, ...oldTrucks];
+            this.setState({loading: false, trucks});
+
             notification.open({
               message: `Camión ${truck.plates} ha sido registrado exitosamente!`,
             });
@@ -94,8 +96,6 @@ class TruckForm extends Component {
       }
     );
   };
-
-  setCurrentTruck = currentTruck => this.setState({currentTruck});
 
   onSearch = search =>
     this.setState(
@@ -128,18 +128,23 @@ class TruckForm extends Component {
     }
   };
 
+  toggleList = () => {
+    const {visible} = this.state;
+    this.setState({visible: !visible});
+  };
+
   render() {
     const {form} = this.props;
-    const {
-      loading,
-      loadingTrucks,
-      loadingClients,
-      trucks,
-      clients,
-    } = this.state;
+    const {loading, visible, loadingClients, trucks, clients} = this.state;
 
     return (
-      <React.Fragment>
+      <FormContainer>
+        <TitleContainer>
+          <TitleList>Registrar camión</TitleList>
+          <Button type="link" onClick={this.toggleList}>
+            Ver camiones
+          </Button>
+        </TitleContainer>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             {form.getFieldDecorator('client')(
@@ -256,32 +261,12 @@ class TruckForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-        <ListContainer title="Camiones registrados">
-          {
-            <List
-              loading={loadingTrucks}
-              itemLayout="horizontal"
-              dataSource={trucks}
-              size="small"
-              renderItem={truck => (
-                <List.Item
-                  actions={[
-                    <Icon
-                      type="edit"
-                      onClick={() => this.setCurrentTruck(truck)}
-                    />,
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={`${truck.plates}`}
-                    description={`${truck.drivers.join(', ')},`}
-                  />
-                </List.Item>
-              )}
-            />
-          }
-        </ListContainer>
-      </React.Fragment>
+        <TruckList
+          visible={visible}
+          trucks={trucks}
+          toggleList={this.toggleList}
+        />
+      </FormContainer>
     );
   }
 }

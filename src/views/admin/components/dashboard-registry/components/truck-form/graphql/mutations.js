@@ -5,6 +5,13 @@ const REGISTER_TRUCK = gql`
     truck(truck: $truck) {
       id
       plates
+      brand
+      model
+      client {
+        businessName
+      }
+      weight
+      drivers
     }
   }
 `;

@@ -11,7 +11,9 @@ const truckQueries = {
     return truck;
   }),
   trucks: authenticated(async (_, {filters: {limit}}) => {
-    const trucks = await Truck.find({}).limit(limit || 50);
+    const trucks = await Truck.find({})
+      .limit(limit || 50)
+      .populate('client');
 
     if (!trucks) throw new Error("Couldn't find any truck does not exists!");
 

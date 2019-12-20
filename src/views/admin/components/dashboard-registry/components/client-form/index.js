@@ -8,12 +8,12 @@ import {
   InputNumber,
   Button,
   Select,
-  List,
   notification,
 } from 'antd';
+import ClientList from './components/clients-list';
+import {TitleList, TitleContainer, FormContainer} from './elements';
 import {REGISTER_CLIENT} from './graphql/mutations';
 import {GET_CLIENTS} from './graphql/queries';
-import ListContainer from './components/list/index';
 
 const {Option} = Select;
 const {Group} = Radio;
@@ -21,15 +21,13 @@ const {Group} = Radio;
 class ClientForm extends Component {
   state = {
     loading: false,
-    loadingClients: false,
+    visible: false,
     clients: [],
     CFDIuse: ['G01', 'G03'],
-    currentClient: null,
   };
 
   componentDidMount = async () => {
     const {client} = this.props;
-    this.setState({loadingClients: true});
 
     try {
       const {
@@ -43,14 +41,17 @@ class ClientForm extends Component {
 
       if (!clients) throw new Error('No clients found');
 
-      this.setState({clients, loadingClients: false});
+      this.setState({clients});
     } catch (e) {
-      this.setState({loadingClients: false});
+      notification.open({
+        message: `No se han podido cargar los clientes correctamente.`,
+      });
     }
   };
 
   handleSubmit = e => {
     const {form, client} = this.props;
+    const {clients: oldClients} = this.state;
 
     this.setState({loading: true});
     e.preventDefault();
@@ -96,7 +97,9 @@ class ClientForm extends Component {
               },
             });
 
-            this.setState({loading: false});
+            const clients = [cli, ...oldClients];
+            this.setState({loading: false, clients});
+
             notification.open({
               message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`,
             });
@@ -117,14 +120,23 @@ class ClientForm extends Component {
     );
   };
 
-  setCurrentClient = currentClient => this.setState({currentClient});
+  toggleList = () => {
+    const {visible} = this.state;
+    this.setState({visible: !visible});
+  };
 
   render() {
     const {form} = this.props;
-    const {loading, loadingClients, clients, CFDIuse} = this.state;
+    const {loading, visible, clients, CFDIuse} = this.state;
 
     return (
-      <React.Fragment>
+      <FormContainer>
+        <TitleContainer>
+          <TitleList>Registrar cliente</TitleList>
+          <Button type="link" onClick={this.toggleList}>
+            Ver clientes
+          </Button>
+        </TitleContainer>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             {form.getFieldDecorator('firstName', {
@@ -253,32 +265,12 @@ class ClientForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-        <ListContainer title="Clientes registrados">
-          {
-            <List
-              loading={loadingClients}
-              itemLayout="horizontal"
-              dataSource={clients}
-              size="small"
-              renderItem={client => (
-                <List.Item
-                  actions={[
-                    <Icon
-                      type="edit"
-                      onClick={() => this.setCurrentClient(client)}
-                    />,
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={`${client.businessName}`}
-                    description={`${client.lastName}, ${client.firstName}`}
-                  />
-                </List.Item>
-              )}
-            />
-          }
-        </ListContainer>
-      </React.Fragment>
+        <ClientList
+          visible={visible}
+          clients={clients}
+          toggleList={this.toggleList}
+        />
+      </FormContainer>
     );
   }
 }

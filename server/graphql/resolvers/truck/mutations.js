@@ -22,7 +22,9 @@ const truckMutations = {
       await truck.save();
       await client.save();
 
-      return truck;
+      const newTruck = await Truck.findById(truck.id).populate('client');
+
+      return newTruck;
     } catch (e) {
       return e;
     }

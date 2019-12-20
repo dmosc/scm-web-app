@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Form, Row, Col} from 'antd';
+import {Form} from 'antd';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
 import ClientForm from './components/client-form';
@@ -20,26 +20,12 @@ class DashboardRegistry extends Component {
         onCollapse={onCollapse}
         page="Registros"
       >
-        <Row gutter={{xs: 8, sm: 16, md: 24}}>
-          <Col span={12}>
-            <Container
-              width="50vh"
-              title="Registrar cliente"
-              alignitems="center"
-            >
-              <ClientRegisterForm />
-            </Container>
-          </Col>
-          <Col span={12}>
-            <Container
-              width="50vh"
-              title="Registrar camión"
-              alignitems="center"
-            >
-              <TruckRegisterForm />
-            </Container>
-          </Col>
-        </Row>
+        <Container width="50%" alignitems="center">
+          <ClientRegisterForm />
+        </Container>
+        <Container width="50%" alignitems="center">
+          <TruckRegisterForm />
+        </Container>
       </Layout>
     );
   }
