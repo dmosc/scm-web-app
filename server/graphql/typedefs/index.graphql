@@ -3,6 +3,8 @@
 # import * from "ticket.graphql"
 # import * from "truck.graphql"
 # import * from "rock.graphql"
+# import * from "folio.graphql"
+# import * from "others.graphql"
 
 # Enums
 
@@ -23,11 +25,11 @@ type Query {
   ticket(id: ID!): Ticket
   tickets(filters: TicketFilters!): [Ticket!]!
   # Truck
-  truck(id: ID!): Truck
+  truck(id: ID, plates: String): Truck
   trucks(filters: TruckFilters!): [Truck!]!
   # Rock
   rock(id: ID!): Rock
-  rocks(filters: TicketFilters!): [Rock!]!
+  rocks(filters: RockFilters!): [Rock!]!
 }
 
 type Mutation {
@@ -38,14 +40,24 @@ type Mutation {
   client(client: ClientInput!): Client @auth(roles: [ADMIN])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
+  ticketInit(plates: String!, product: ID!, inTruckImage: String!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, GUARD])
+  ticketProductLoad(ticket: ID!, outTruckImage: String!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, GUARD])
+  ticketSubmit(ticket: ID!, driver: String!, weight: Float!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, GUARD])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN, CASHIER])
+  # Folio
+  folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
   # Misc
-  fileUpload(file: Upload!, folderKey: String!, id: ID!): String!
+  fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
+  imageUpload(image: Upload!, folderKey: s3FolderKey!, id: ID!): String!
 }
 
 type Subscription {
   newTicket: Ticket!
+  ticketUpdate: Ticket!
 }

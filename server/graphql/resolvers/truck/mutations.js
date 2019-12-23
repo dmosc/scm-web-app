@@ -1,4 +1,4 @@
-import {Truck, Client} from '../../../database/models';
+import {Truck, Client} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const truckMutations = {

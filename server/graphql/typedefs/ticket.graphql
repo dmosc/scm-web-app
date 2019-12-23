@@ -1,9 +1,11 @@
 # Types
 type Ticket {
+  id: ID!
   folio: String
-  client: ID
-  truck: ID
-  product: ID
+  driver: String
+  client: Client
+  truck: Truck
+  product: Rock
   tax: Float
   weight: Float
   totalWeight: Float
@@ -15,17 +17,8 @@ type Ticket {
 
 # Inputs
 input TicketInput {
-  folio: String
-  client: ID
-  truck: ID
-  product: ID
-  tax: Float
-  weight: Float
-  totalWeight: Float
-  totalPrice: Float
-  date: Date
-  inTruckImage: String
-  outTruckImage: String
+  plates: String!
+  product: ID!
 }
 
 input TicketFilters {

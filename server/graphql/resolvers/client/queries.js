@@ -1,4 +1,4 @@
-import {Client} from '../../../database/models/index';
+import {Client} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const clientQueries = {

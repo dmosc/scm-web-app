@@ -1,4 +1,4 @@
-import {User} from '../../../database/models';
+import {User} from '../../../mongo-db/models';
 import {ApolloError} from 'apollo-server-core';
 
 const userQueries = {

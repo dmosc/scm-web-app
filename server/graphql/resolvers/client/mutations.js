@@ -1,4 +1,4 @@
-import {Client} from '../../../database/models';
+import {Client} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const clientMutations = {

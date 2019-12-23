@@ -1,0 +1,11 @@
+# Types
+type Folio {
+  name: String!
+  count: Int!
+}
+
+# Inputs
+input FolioInput {
+  name: String!
+  count: Int!
+}

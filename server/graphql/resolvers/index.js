@@ -21,6 +21,12 @@ import truckQueries from './truck/queries';
 import rockMutations from './rock/mutations';
 import rockQueries from './rock/queries';
 
+// Folio
+import folioMutations from './folio/mutations';
+
+// AWS Stuff
+import uploaders from './aws/uploaders';
+
 const resolvers = {
   Query: {
     ...userQueries,
@@ -35,6 +41,8 @@ const resolvers = {
     ...ticketMutations,
     ...truckMutations,
     ...rockMutations,
+    ...folioMutations,
+    ...uploaders, // AWS
   },
   Subscription: {
     ...ticketSubscriptions,

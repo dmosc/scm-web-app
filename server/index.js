@@ -1,6 +1,9 @@
 import mongoose, {Schema} from 'mongoose';
+import sequelize from './sequelize-db';
 import server from './graphql';
-import {ENV, API_PORT, MONGO_DB_URI} from './config';
+import {ENV, API_PORT, MONGO_DB_URI, AWS_CONFIG} from './config';
+
+const {AURORA_DB_NAME} = AWS_CONFIG;
 
 (async () => {
   try {
@@ -20,7 +23,17 @@ import {ENV, API_PORT, MONGO_DB_URI} from './config';
       })
       .then(() => {
         Schema.Types.String.checkRequired(v => v !== null);
-        console.log(`Succesfully connected to database: ${MONGO_DB_URI} 📀`);
+        console.log(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
+      });
+
+    await sequelize.sync();
+    await sequelize
+      .authenticate()
+      .then(() => {
+        console.log(`📀 Succesfully connected to database: ${AURORA_DB_NAME}`);
+      })
+      .catch(err => {
+        console.error('Unable to connect to the database:', err);
       });
   } catch (e) {
     console.error.bind(console, e);

@@ -1,4 +1,4 @@
-import {Ticket} from '../../../database/models';
+import {Ticket} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import {ApolloError} from 'apollo-server';
 

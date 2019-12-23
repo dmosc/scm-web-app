@@ -1,10 +1,12 @@
-import {Truck} from '../../../database/models';
+import {Truck} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const truckQueries = {
   truck: authenticated(async (_, args) => {
-    const {id} = args;
-    const truck = await Truck.findById(id).populate('client');
+    const {id, plates} = args;
+    const truck = await Truck.findOne({$or: [{id}, {plates}]}).populate(
+      'client'
+    );
 
     if (!truck) throw new Error('Truck does not exists!');
 

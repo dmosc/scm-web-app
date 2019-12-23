@@ -1,4 +1,4 @@
-import {Rock} from '../../../database/models';
+import {Rock} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const rockMutations = {

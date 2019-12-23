@@ -10,3 +10,7 @@ input RockInput {
   name: String!
   price: Float!
 }
+
+input RockFilters {
+  limit: Int
+}

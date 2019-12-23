@@ -11,6 +11,11 @@ const ENV = {
 const AWS_CONFIG = {
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+  AURORA_DB_NAME: process.env.AURORA_DB_NAME,
+  AURORA_DB_USERNAME: process.env.AURORA_DB_USERNAME,
+  AURORA_DB_PASSWORD: process.env.AURORA_DB_PASSWORD,
+  AURORA_DB_HOST: process.env.AURORA_DB_HOST,
+  AURORA_DB_PORT: process.env.AURORA_DB_PORT,
 };
 
 const API_PORT = process.env.API_PORT;

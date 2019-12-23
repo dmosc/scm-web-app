@@ -3,6 +3,7 @@ import uniqueValidator from 'mongoose-unique-validator';
 
 const Ticket = new Schema({
   folio: {type: String, required: false},
+  driver: {type: String, required: false},
   client: {type: Schema.ObjectId, ref: 'Client', required: false},
   truck: {type: Schema.ObjectId, ref: 'Truck', required: false},
   product: {type: Schema.ObjectId, ref: 'Rock', required: false},

@@ -1,4 +1,4 @@
-import {User} from '../../../database/models';
+import {User} from '../../../mongo-db/models';
 import {hashSync as hash, compareSync as comparePasswords} from 'bcryptjs';
 import {AuthenticationError} from 'apollo-server-core';
 import jwt from 'jsonwebtoken';
