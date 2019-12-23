@@ -14,7 +14,7 @@ import {split} from 'apollo-link';
 import {setContext} from 'apollo-link-context';
 import ApolloClient from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
-import {LOCAL_SERVER_URI, LOCAL_WS_URI, SERVER_URI, WS_URI} from 'config';
+import {SERVER_URI, WS_URI} from 'config';
 
 const token = cookie.load('token');
 

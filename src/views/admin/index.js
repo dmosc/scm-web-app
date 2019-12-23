@@ -70,7 +70,6 @@ class Admin extends Component {
 
       this.setState({user});
     } catch (e) {
-      cookie.remove('token', {path: '/'});
       window.location.reload();
     }
   };

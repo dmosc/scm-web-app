@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
 const FormContainer = styled.div`
-  overflow: hidden;
+  overflow-y: scroll;
   position: relative;
+  max-height: 70vh;
 `;
 
 const TitleContainer = styled.div`

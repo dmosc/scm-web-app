@@ -5,27 +5,15 @@ const GET_TICKETS = gql`
     tickets(filters: $filters) {
       id
       folio
-      driver
       client {
-        firstName
-        lastName
         businessName
-        address
-        rfc
       }
       truck {
         plates
-        weight
       }
       product {
         name
-        price
       }
-      weight
-      totalWeight
-      totalPrice
-      inTruckImage
-      outTruckImage
     }
   }
 `;
