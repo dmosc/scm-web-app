@@ -6,14 +6,26 @@ const NEW_TICKET = gql`
       id
       folio
       driver
+      credit
       client {
         firstName
         lastName
         businessName
         address
         rfc
+        credit
+        prices {
+          N4B
+          N4D
+          N5
+          BASE
+          CNC
+          GRAVA2
+          MIXTO
+        }
       }
       truck {
+        id
         plates
         weight
       }
@@ -35,6 +47,24 @@ const TICKET_UPDATE = gql`
       totalWeight
       totalPrice
       outTruckImage
+      client {
+        firstName
+        lastName
+        businessName
+        address
+        rfc
+        credit
+        bill
+        prices {
+          N4B
+          N4D
+          N5
+          BASE
+          CNC
+          GRAVA2
+          MIXTO
+        }
+      }
     }
   }
 `;

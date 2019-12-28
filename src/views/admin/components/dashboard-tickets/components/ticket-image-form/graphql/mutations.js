@@ -5,15 +5,13 @@ const FILE_UPLOAD = gql`
     imageUpload(image: $image, folderKey: $folderKey, id: $id)
   }
 `;
-const REGISTER_TICKET_INIT = gql`
-  mutation ticketInit($ticket: TicketInitInput!) {
-    ticketInit(ticket: $ticket) {
-      id
-      truck {
-        plates
-      }
+
+const TICKET_OUT_IMAGE_SUBMIT = gql`
+  mutation ticketProductLoad($ticket: TicketProductLoadInput!) {
+    ticketProductLoad(ticket: $ticket) {
+      outTruckImage
     }
   }
 `;
 
-export {FILE_UPLOAD, REGISTER_TICKET_INIT};
+export {FILE_UPLOAD, TICKET_OUT_IMAGE_SUBMIT};

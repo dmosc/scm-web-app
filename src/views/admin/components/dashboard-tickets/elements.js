@@ -1,13 +1,21 @@
 import styled from 'styled-components';
-import {Card} from 'antd';
 
-const TicketContainer = styled(Card)`
-  background-color: #fdfdff;
-  font-size: 0.6;
-  border-radius: 5px;
-  border: none;
-  margin: 10px 0px;
-  box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
+const LoadingBarContainer = styled.div`
+  margin: 0;
+  padding: 0;
+  width: 4vh;
+  height: 1vh;
+  background: lightGrey;
 `;
 
-export {TicketContainer};
+const LoadingBar = styled.div`
+  margin: 0;
+  padding: 0;
+  width: 4vh;
+  height: 1vh;
+  width: ${props =>
+    props.totalPrice ? '4vh' : props.outTruckImage ? '3vh' : '2vh'}
+  background: green;
+`;
+
+export {LoadingBarContainer, LoadingBar};

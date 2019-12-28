@@ -19,9 +19,9 @@ const ticketMutations = {
     }
   }),
   ticketInit: authenticated(async (_, args, {pubsub}) => {
-    const newTicket = new Ticket({...args});
+    const newTicket = new Ticket({...args.ticket});
 
-    const {plates, product: productId} = args;
+    const {plates, product: productId} = args.ticket;
 
     const truck = await Truck.findOne({plates});
 
@@ -58,18 +58,18 @@ const ticketMutations = {
     }
   }),
   ticketProductLoad: authenticated(async (_, args, {pubsub}) => {
-    const {outTruckImage} = args;
-
-    const ticket = await Ticket.findOneAndUpdate(
-      {_id: args.ticket},
-      {outTruckImage},
-      {new: true}
-    );
-
-    if (!ticket) throw new Error('Ticket not found!');
+    const {id, outTruckImage} = args.ticket;
 
     try {
-      await ticket.save();
+      const newTicket = await Ticket.findOneAndUpdate(
+        {_id: id},
+        {outTruckImage},
+        {new: true}
+      );
+
+      const ticket = await Ticket.findById(newTicket.id).populate(
+        'client truck product'
+      );
 
       pubsub.publish('TICKET_UPDATE', {
         ticketUpdate: ticket,
@@ -81,19 +81,19 @@ const ticketMutations = {
     }
   }),
   ticketSubmit: authenticated(async (_, args, {pubsub}) => {
-    const {driver, weight} = args;
+    const {id, driver, weight, credit} = args.ticket;
 
     const newTicket = await Ticket.findOneAndUpdate(
-      {_id: args.ticket},
+      {_id: id},
       {driver: driver.toUpperCase(), weight: weight.toFixed(2)},
       {new: true}
     ).populate('client truck');
 
+    if (!newTicket) throw new Error('Ticket not found!');
+
     const client = await Client.findById(newTicket.client);
     const product = await Rock.findById(newTicket.product);
     const truck = await Truck.findById(newTicket.truck);
-
-    if (!newTicket) throw new Error('Ticket not found!');
 
     if (
       truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)
@@ -103,17 +103,34 @@ const ticketMutations = {
     newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(
       2
     );
-    newTicket.tax = client.bill
-      ? newTicket.totalWeight * product.price * TAX
-      : 0;
+
+    const price = client.prices[product.name]
+      ? client.prices[product.name]
+      : product.price;
+
+    newTicket.tax = client.bill ? newTicket.totalWeight * price * TAX : 0;
+
+    // Return client's prev credit if ticket is being updated
+    if (newTicket.totalPrice)
+      client.credit = (client.credit + newTicket.totalPrice).toFixed(2);
 
     newTicket.totalPrice = (
-      newTicket.totalWeight * product.price +
+      newTicket.totalWeight * price +
       newTicket.tax
     ).toFixed(2);
 
     try {
+      if (!credit) {
+        newTicket.credit = credit;
+      } else if (client.credit < newTicket.totalPrice) {
+        throw new Error("Client doesn't have sufficient credit!");
+      } else {
+        newTicket.credit = credit;
+        client.credit = (client.credit - newTicket.totalPrice).toFixed(2);
+      }
+
       await newTicket.save();
+      await client.save();
       await truck.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate(

@@ -14,13 +14,13 @@ const GET_CLIENTS = gql`
       cellphone
       address
       prices {
-        A1
-        A2
-        A3
-        A4
-        A5
-        A6
-        A7
+        N4B
+        N4D
+        N5
+        BASE
+        CNC
+        GRAVA2
+        MIXTO
       }
       credit
       bill

@@ -4,7 +4,7 @@ import authenticated from '../../middleware/authenticated';
 const truckQueries = {
   truck: authenticated(async (_, args) => {
     const {id, plates} = args;
-    const truck = await Truck.findOne({$or: [{id}, {plates}]}).populate(
+    const truck = await Truck.findOne({$or: [{_id: id}, {plates}]}).populate(
       'client'
     );
 

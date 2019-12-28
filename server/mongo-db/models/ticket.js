@@ -11,6 +11,7 @@ const Ticket = new Schema({
   weight: {type: Number, required: false},
   totalWeight: {type: Number, required: false},
   totalPrice: {type: Number, required: false},
+  credit: {type: Boolean, required: false},
   date: {type: Date, required: false, default: Date.now},
   inTruckImage: {type: String, required: false},
   outTruckImage: {type: String, required: false},

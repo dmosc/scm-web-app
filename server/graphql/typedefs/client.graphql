@@ -17,13 +17,13 @@ type Client {
 }
 
 type Prices {
-  A1: Float
-  A2: Float
-  A3: Float
-  A4: Float
-  A5: Float
-  A6: Float
-  A7: Float
+  N4B: Float
+  N4D: Float
+  N5: Float
+  BASE: Float
+  CNC: Float
+  GRAVA2: Float
+  MIXTO: Float
 }
 
 # Inputs
@@ -43,13 +43,13 @@ input ClientInput {
 }
 
 input PricesInput {
-  A1: Float
-  A2: Float
-  A3: Float
-  A4: Float
-  A5: Float
-  A6: Float
-  A7: Float
+  N4B: Float
+  N4D: Float
+  N5: Float
+  BASE: Float
+  CNC: Float
+  GRAVA2: Float
+  MIXTO: Float
 }
 
 input ClientFilters {

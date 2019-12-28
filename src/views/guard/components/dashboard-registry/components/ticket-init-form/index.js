@@ -55,13 +55,17 @@ class TicketInit extends Component {
             });
 
             throw new Error('No ha sido posible guardar la imagen!');
+          } else {
+            notification.open({
+              message: `¡La imagen ha sido subida exitosamente!`,
+            });
           }
 
           const {
             data: {ticketInit: ticket},
           } = await client.mutate({
             mutation: REGISTER_TICKET_INIT,
-            variables: {product, plates, inTruckImage},
+            variables: {ticket: {plates, product, inTruckImage}},
           });
 
           this.setState({loading: false, inTruckImage: null});
@@ -119,12 +123,12 @@ class TicketInit extends Component {
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             <React.Fragment>
-              <Row display="flex" justify="start">
-                <Col span={12}>
+              <Row display="flex" justify="start" gutter={1}>
+                <Col span={14}>
                   <Webcam
                     style={{
-                      height: '27vh',
-                      width: '36vh',
+                      height: '15vw',
+                      width: '20vw',
                       margin: 0,
                       padding: 0,
                       borderRadius: 5,
@@ -135,7 +139,7 @@ class TicketInit extends Component {
                     imageSmoothing={true}
                   />
                 </Col>
-                <Col span={12}>
+                <Col span={10}>
                   <Form.Item label="Placas">
                     {form.getFieldDecorator('plates', {
                       rules: [
@@ -182,17 +186,21 @@ class TicketInit extends Component {
                   </Button>
                 </Col>
               </Row>
-              <Row>
-                <Col span={12}>
+              <Row type="flex" align="bottom">
+                <Col span={14}>
                   {!inTruckImage ? (
                     <PreviewImageContainer>
                       <Icon style={{fontSize: 30}} type="file-image" />
                     </PreviewImageContainer>
                   ) : (
+                    <ImageContainer alt="Preview" src={inTruckImage} />
+                  )}
+                </Col>
+                <Col span={10}>
+                  {inTruckImage && (
                     <React.Fragment>
-                      <ImageContainer alt="Preview" src={inTruckImage} />
                       <Button
-                        style={{margin: 5}}
+                        style={{marginRight: 5}}
                         type="primary"
                         onClick={this.handleSubmit}
                         loading={loading}
@@ -200,7 +208,7 @@ class TicketInit extends Component {
                         {(loading && 'Espere..') || 'OK'}
                       </Button>
                       <Button
-                        style={{margin: 5}}
+                        style={{marginRight: 5}}
                         type="danger"
                         onClick={this.removeImage}
                       >

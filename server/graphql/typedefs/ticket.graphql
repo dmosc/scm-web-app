@@ -10,6 +10,7 @@ type Ticket {
   weight: Float
   totalWeight: Float
   totalPrice: Float
+  credit: Boolean
   date: Date
   inTruckImage: String
   outTruckImage: String
@@ -19,6 +20,24 @@ type Ticket {
 input TicketInput {
   plates: String!
   product: ID!
+}
+
+input TicketInitInput {
+  plates: String!
+  product: ID!
+  inTruckImage: String!
+}
+
+input TicketProductLoadInput {
+  id: ID!
+  outTruckImage: String!
+}
+
+input TicketSubmitInput {
+  id: ID!
+  driver: String!
+  weight: Float!
+  credit: Boolean!
 }
 
 input TicketFilters {

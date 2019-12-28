@@ -1,8 +1,15 @@
 import React, {Component} from 'react';
 import {Query, withApollo} from 'react-apollo';
-import {Collapse, Row, Col, Button, Icon} from 'antd';
+import ReactDOMServer from 'react-dom/server';
+import print from 'print-js';
+import mapStyles from 'react-map-styles';
+import {Form, Collapse} from 'antd';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
+import TicketImageForm from './components/ticket-image-form';
+import TicketSubmitForm from './components/ticket-submit-form/index';
+import TicketPanel from './components/ticket-panel';
+import {LoadingBarContainer, LoadingBar} from './elements';
 import {GET_TICKETS} from './graphql/queries';
 import {NEW_TICKET, TICKET_UPDATE} from './graphql/subscriptions';
 
@@ -10,20 +17,26 @@ const {Panel} = Collapse;
 class DashboardTickets extends Component {
   state = {
     tickets: [],
+    currentTicket: null,
+    currentForm: null,
   };
 
   componentDidMount = async () => {
     const {client} = this.props;
 
-    const {
-      data: {tickets},
-    } = await client.query({
-      query: GET_TICKETS,
-      variables: {filters: {}},
-    });
+    try {
+      const {
+        data: {tickets},
+      } = await client.query({
+        query: GET_TICKETS,
+        variables: {filters: {}},
+      });
 
-    if (!tickets) return;
-    this.setState({tickets});
+      if (!tickets) return;
+      this.setState({tickets});
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   subscribeToTickets = async subscribeToMore => {
@@ -60,9 +73,47 @@ class DashboardTickets extends Component {
     });
   };
 
+  setCurrent = (currentTicket, currentForm) =>
+    this.setState({currentTicket, currentForm});
+
+  printTicket = node => {
+    const {
+      props: {ticket},
+    } = node;
+
+    document
+      .getElementById('root')
+      .insertAdjacentHTML(
+        'beforeend',
+        `<div id="printable">${mapStyles(
+          ReactDOMServer.renderToString(node)
+        )}</div>`
+      );
+
+    print({
+      printable: 'printable',
+      type: 'html',
+      ignoreElements: ['skip'],
+      honorColor: true,
+      header: `Folio: ${ticket.folio}`,
+      style:
+        '@page { margin: 0; } #printable { margin: 50px; font-size: 16px; font-family: Courier; }',
+    });
+
+    const printable = document.getElementById('printable');
+    printable.parentNode.removeChild(printable);
+  };
+
   render() {
     const {user, collapsed, onCollapse} = this.props;
-    const {tickets} = this.state;
+    const {tickets, currentTicket, currentForm} = this.state;
+
+    const TicketImageRegisterForm = Form.create({name: 'image'})(
+      TicketImageForm
+    );
+    const TicketSubmitRegisterForm = Form.create({name: 'submit'})(
+      TicketSubmitForm
+    );
 
     return (
       <Layout
@@ -89,151 +140,43 @@ class DashboardTickets extends Component {
                 <Collapse accordion bordered={false}>
                   {tickets.map(ticket => (
                     <Panel
-                      header={`${ticket.truck.plates}`}
                       key={ticket.id}
+                      header={`${ticket.truck.plates}`}
                       extra={
-                        <div
-                          style={{
-                            margin: 0,
-                            padding: 0,
-                            width: '4vh',
-                            height: '1vh',
-                            background: 'lightGrey',
-                          }}
-                        >
-                          <div
-                            style={{
-                              margin: 0,
-                              padding: 0,
-                              width: ticket.totalPrice
-                                ? '4vh'
-                                : ticket.outTruckImage
-                                ? '3vh'
-                                : '2vh',
-                              height: '1vh',
-                              background: 'green',
-                            }}
+                        <LoadingBarContainer>
+                          <LoadingBar
+                            totalPrice={ticket.totalPrice}
+                            outTruckImage={ticket.outTruckImage}
                           />
-                        </div>
+                        </LoadingBarContainer>
                       }
                     >
-                      <Row>
-                        <Col span={8}>
-                          <Row>
-                            <b>
-                              <u>CLIENTE</u>
-                            </b>
-                          </Row>
-                          <Row>
-                            <b>RAZÓN SOCIAL</b>
-                            {`: ${ticket.client.businessName}`}
-                          </Row>
-                          <Row>
-                            <b>NOMBRE</b>
-                            {`: ${ticket.client.firstName}, ${ticket.client.lastName}`}
-                          </Row>
-                          <Row>
-                            <b>DIRECCIÓN</b>
-                            {`: ${ticket.client.address}`}
-                          </Row>
-                          <Row>
-                            <b>RFC</b>
-                            {`: ${ticket.client.rfc}`}
-                          </Row>
-                        </Col>
-                        <Col span={8}>
-                          <Row>
-                            <b>
-                              <u>CAMIÓN</u>
-                            </b>
-                          </Row>
-                          <Row>
-                            <b>CONDUCTOR</b>
-                            {`: ${ticket.driver}`}
-                          </Row>
-                          <Row>
-                            <b>PLACAS</b>
-                            {`: ${ticket.truck.plates}`}
-                          </Row>
-                          <Row>
-                            <a href={ticket.inTruckImage}>
-                              <b>IMAGEN ENTRADA</b>
-                            </a>
-                          </Row>
-                          <Row>
-                            <a
-                              href={
-                                (ticket.outTruckImage &&
-                                  ticket.outTruckImage) ||
-                                '#'
-                              }
-                            >
-                              <b>IMAGEN SALIDA</b>
-                            </a>
-                          </Row>
-                          <Row>
-                            <b>PESO</b>
-                            {`: ${ticket.truck.weight}`}
-                          </Row>
-                          <Row>
-                            <b>PESO BRUTO</b>
-                            {`: ${ticket.weight}`}
-                          </Row>
-                          <Row>
-                            <b>PESO NETO</b>
-                            {`: ${ticket.totalWeight}`}
-                          </Row>
-                        </Col>
-                        <Col span={8}>
-                          <Row>
-                            <b>
-                              <u>PRODUCTO</u>
-                            </b>
-                          </Row>
-                          <Row>
-                            <b>TIPO</b>
-                            {`: ${ticket.product.name}`}
-                          </Row>
-                          <Row>
-                            <b>PRECIO POR TONELADA</b>
-                            {`: ${ticket.product.price}`}
-                          </Row>
-                        </Col>
-                      </Row>
-                      <Row
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                        }}
-                      >
-                        <Col
-                          span={12}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                          }}
-                        >
-                          <Button type="primary">IMPRIMIR</Button>
-                        </Col>
-                        <Col
-                          span={12}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                          }}
-                        >
-                          <Row>
-                            <b>TOTAL</b>
-                            {`: ${ticket.totalPrice}`}
-                          </Row>
-                        </Col>
-                      </Row>
+                      <TicketPanel
+                        ticket={ticket}
+                        setCurrent={this.setCurrent}
+                        printTicket={this.printTicket}
+                      />
                     </Panel>
                   ))}
                 </Collapse>
               );
             }}
           </Query>
+          {(currentTicket && currentForm === 'image' && (
+            <TicketImageRegisterForm
+              user={user}
+              setCurrent={this.setCurrent}
+              currentTicket={currentTicket}
+              currentForm={currentForm}
+            />
+          )) ||
+            (currentForm === 'submit' && (
+              <TicketSubmitRegisterForm
+                setCurrent={this.setCurrent}
+                currentTicket={currentTicket}
+                currentForm={currentForm}
+              />
+            ))}
         </Container>
       </Layout>
     );
