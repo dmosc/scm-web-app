@@ -23,7 +23,7 @@ class App extends Component {
         {user && user.role === 'ADMIN' && <Redirect from="/auth" to="/admin" />}
         {user && user.role === 'GUARD' && <Redirect from="/auth" to="/guard" />}
         <Route path="/auth" render={() => <Auth />} />
-        {!token && <Redirect from={`${pathname}`} to="/auth" />}
+        {!user && <Redirect from={`${pathname}`} to="/auth" />}
         <Route path="/admin" render={() => <Admin />} />
         <Route path="/guard" render={() => <Guard />} />
       </Switch>

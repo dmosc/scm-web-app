@@ -31,15 +31,32 @@ input ClientInput {
   firstName: String!
   lastName: String!
   email: String!
-  trucks: [ID!]!
+  trucks: [ID!]
   businessName: String!
   rfc: String!
   CFDIuse: CFDIuse!
   cellphone: [String!]!
   address: String!
-  prices: PricesInput!
+  prices: PricesInput
   credit: Float!
   bill: Boolean!
+}
+
+# Inputs
+input ClientEditInput {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  trucks: [ID]
+  businessName: String
+  rfc: String
+  CFDIuse: CFDIuse
+  cellphone: [String]
+  address: String
+  prices: PricesInput
+  credit: Float
+  bill: Boolean
 }
 
 input PricesInput {

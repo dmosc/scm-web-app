@@ -1,74 +1,59 @@
 import React, {Component} from 'react';
 import {withApollo} from 'react-apollo';
 import {
+  Modal,
   Form,
-  Icon,
-  Radio,
   Input,
+  Radio,
   InputNumber,
-  Button,
   Select,
+  Button,
+  Icon,
   Typography,
   notification,
 } from 'antd';
-import ClientList from './components/clients-list';
 import PriceEditModal from './components/price-edit-modal';
-import {TitleList, TitleContainer, FormContainer} from './elements';
-import {REGISTER_CLIENT} from './graphql/mutations';
-import {GET_CLIENTS, GET_PRODUCTS} from './graphql/queries';
+import {GET_PRODUCTS} from './graphql/queries';
+import {EDIT_CLIENT} from './graphql/mutations';
 
 const {Option} = Select;
 const {Group} = Radio;
 const {Text} = Typography;
 
-class ClientForm extends Component {
+class EditForm extends Component {
   state = {
     loading: false,
-    showList: false,
     showPriceModal: false,
-    clients: [],
-    currentClient: null,
-    currentPrice: null,
-    currentPriceTotal: 0,
     prices: {},
     publicPrices: {},
+    currentPrice: null,
+    currentPriceTotal: 0,
     CFDIuse: ['G01', 'G03'],
   };
 
   componentDidMount = async () => {
-    const {client} = this.props;
+    const {currentClient, client} = this.props;
 
-    try {
-      const [
-        {
-          data: {clients},
-        },
-        {
-          data: {rocks: products},
-        },
-      ] = await Promise.all([
-        client.query({query: GET_CLIENTS, variables: {filters: {}}}),
-        client.query({query: GET_PRODUCTS, variables: {filters: {}}}),
-      ]);
+    const {
+      data: {rocks: products},
+    } = await client.query({query: GET_PRODUCTS, variables: {filters: {}}});
 
-      if (!clients) throw new Error('No clients found');
+    const prices = {...currentClient.prices};
+    const publicPrices = {};
 
-      const publicPrices = {};
-
-      products.forEach(({name, price}) => (publicPrices[name] = price));
-      this.setState({publicPrices});
-
-      this.setState({clients});
-    } catch (e) {
-      notification.open({
-        message: `No se han podido cargar los clientes correctamente.`,
-      });
-    }
+    products.forEach(({name, price}) => (publicPrices[name] = price));
+    this.setState({prices, publicPrices});
   };
 
   handleSubmit = e => {
-    const {form, client} = this.props;
-    const {clients: oldClients, prices: oldPrices} = this.state;
+    const {
+      form,
+      onClientEdit,
+      currentClient: {id},
+      setCurrentClient,
+      client,
+    } = this.props;
+    const {prices: oldPrices} = this.state;
 
     const prices = {...oldPrices};
 
@@ -98,11 +83,12 @@ class ClientForm extends Component {
         if (!err) {
           try {
             const {
-              data: {client: cli},
+              data: {clientEdit: cli},
             } = await client.mutate({
-              mutation: REGISTER_CLIENT,
+              mutation: EDIT_CLIENT,
               variables: {
                 client: {
+                  id,
                   firstName,
                   lastName,
                   email,
@@ -118,28 +104,17 @@ class ClientForm extends Component {
               },
             });
 
-            const clients = [cli, ...oldClients];
-            this.setState({
-              loading: false,
-              clients,
-              currentClient: null,
-              currentPrice: null,
-              currentPriceTotal: 0,
-              prices: {},
-            });
-
             notification.open({
-              message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`,
+              message: `Cliente ${cli.businessName} ha sido editado exitosamente!`,
             });
 
+            onClientEdit(cli);
             form.resetFields();
-            window.location.reload();
+            setCurrentClient();
           } catch (e) {
-            e['graphQLErrors'].map(({message}) =>
-              notification.open({
-                message,
-              })
-            );
+            notification.open({
+              message: `Ha habido un error modificando la información`,
+            });
             this.setState({loading: false});
           }
         } else {
@@ -149,20 +124,10 @@ class ClientForm extends Component {
     );
   };
 
-  toggleList = () => {
-    const {showList} = this.state;
-    this.setState({showList: !showList});
-  };
+  handleCancel = () => {
+    const {setCurrentClient} = this.props;
 
-  onClientEdit = client => {
-    const {clients: oldClients} = this.state;
-    const clients = [...oldClients];
-
-    clients.forEach(({id}, i) => {
-      if (client.id === id) clients[i] = {...client};
-    });
-
-    this.setState({clients});
+    setCurrentClient();
   };
 
   setCurrentPrice = currentPrice => {
@@ -201,34 +166,33 @@ class ClientForm extends Component {
   handleAttrChange = (key, val) => this.setState({[key]: val});
 
   render() {
-    const {form} = this.props;
+    const {form, currentClient} = this.props;
     const {
       loading,
-      showList,
       showPriceModal,
-      clients,
       prices,
-      publicPrices,
       currentPrice,
       currentPriceTotal,
       CFDIuse,
     } = this.state;
+
+    delete currentClient.prices.__typename;
 
     const parsedPrices = Object.keys(prices)
       .map(product => `${product}:${prices[product]}`)
       .filter(price => price.indexOf('null') === -1);
 
     return (
-      <FormContainer>
-        <TitleContainer>
-          <TitleList>Registrar cliente</TitleList>
-          <Button type="link" onClick={this.toggleList}>
-            Ver clientes
-          </Button>
-        </TitleContainer>
+      <Modal
+        title={`Editando cliente: ${currentClient.businessName}`}
+        visible={currentClient !== null}
+        footer={null}
+        onCancel={this.handleCancel}
+      >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             {form.getFieldDecorator('firstName', {
+              initialValue: currentClient.firstName,
               rules: [
                 {
                   required: true,
@@ -244,6 +208,7 @@ class ClientForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('lastName', {
+              initialValue: currentClient.lastName,
               rules: [
                 {
                   required: true,
@@ -258,7 +223,9 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('email')(
+            {form.getFieldDecorator('email', {
+              initialValue: currentClient.email,
+            })(
               <Input
                 prefix={<Icon type="mail" style={{color: 'rgba(0,0,0,.25)'}} />}
                 placeholder="Email"
@@ -266,7 +233,9 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('businessName')(
+            {form.getFieldDecorator('businessName', {
+              initialValue: currentClient.businessName,
+            })(
               <Input
                 prefix={<Icon type="info" style={{color: 'rgba(0,0,0,.25)'}} />}
                 placeholder="Razón social"
@@ -274,7 +243,9 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('rfc')(
+            {form.getFieldDecorator('rfc', {
+              initialValue: currentClient.rfc,
+            })(
               <Input
                 prefix={
                   <Icon type="number" style={{color: 'rgba(0,0,0,.25)'}} />
@@ -285,6 +256,7 @@ class ClientForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('CFDIuse', {
+              initialValue: currentClient.CFDIuse,
               rules: [{required: true, message: 'Seleccione un uso de CFDI!'}],
             })(
               <Select placeholder="Uso de CFDI">
@@ -298,6 +270,7 @@ class ClientForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('cellphone', {
+              initialValue: currentClient.cellphone,
               rules: [
                 {
                   required: true,
@@ -315,6 +288,7 @@ class ClientForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('address', {
+              initialValue: currentClient.address,
               rules: [
                 {required: true, message: 'Ingrese la dirección del cliente'},
               ],
@@ -325,11 +299,13 @@ class ClientForm extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item label="Crédito inicial" style={{color: 'rgba(0,0,0,.25)'}}>
-            {form.getFieldDecorator('credit', {initialValue: 0})(
+          <Form.Item label="Crédito" style={{color: 'rgba(0,0,0,.25)'}}>
+            {form.getFieldDecorator('credit', {
+              initialValue: currentClient.credit ? currentClient.credit : 0,
+            })(
               <InputNumber
                 style={{width: '100%'}}
-                placeholder="Crédito inicial en MXN"
+                placeholder="Crédito en MXN"
                 min={0}
                 step={0.1}
               />
@@ -338,8 +314,8 @@ class ClientForm extends Component {
           <Form.Item label="Precios especiales">
             {prices && (
               <Select
-                defaultValue={Object.keys(prices).filter(
-                  price => prices[price]
+                defaultValue={Object.keys(currentClient.prices).filter(
+                  price => currentClient.prices[price]
                 )}
                 placeholder="Precios especiales"
                 mode="multiple"
@@ -347,7 +323,7 @@ class ClientForm extends Component {
                 onSelect={this.setCurrentPrice}
                 onDeselect={this.onPriceDeselect}
               >
-                {Object.keys(publicPrices)
+                {Object.keys(prices)
                   .filter(price => !prices[price])
                   .map(product => (
                     <Option key={product} value={product}>
@@ -363,7 +339,7 @@ class ClientForm extends Component {
             </Text>
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('bill')(
+            {form.getFieldDecorator('bill', {initialValue: currentClient.bill})(
               <Group>
                 <Radio.Button value={false}>REMISIÓN</Radio.Button>
                 <Radio.Button value={true}>FACTURA</Radio.Button>
@@ -389,15 +365,9 @@ class ClientForm extends Component {
           onPriceUpdate={this.onPriceUpdate}
           togglePriceModal={this.togglePriceModal}
         />
-        <ClientList
-          visible={showList}
-          clients={clients}
-          onClientEdit={this.onClientEdit}
-          toggleList={this.toggleList}
-        />
-      </FormContainer>
+      </Modal>
     );
   }
 }
 
-export default withApollo(ClientForm);
+export default withApollo(EditForm);

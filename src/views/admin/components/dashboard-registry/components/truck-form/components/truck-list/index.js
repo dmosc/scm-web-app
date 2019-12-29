@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Drawer, List, Button, Icon} from 'antd';
+import {Form, Drawer, List, Button, Icon} from 'antd';
+import EditForm from './components/truck-edit-form';
 import {TitleList, TitleContainer} from './elements';
 
 class TruckList extends Component {
@@ -10,7 +11,17 @@ class TruckList extends Component {
   setCurrentTruck = currentTruck => this.setState({currentTruck});
 
   render() {
-    const {loadingTrucks, trucks, visible, toggleList} = this.props;
+    const {
+      loadingTrucks,
+      trucks,
+      visible,
+      toggleList,
+      onTruckEdit,
+    } = this.props;
+    const {currentTruck} = this.state;
+
+    const TruckEditForm = Form.create({name: 'truckEdit'})(EditForm);
+
     return (
       <React.Fragment>
         <Drawer
@@ -51,6 +62,14 @@ class TruckList extends Component {
             )}
           />
         </Drawer>
+        {currentTruck && (
+          <TruckEditForm
+            trucks={trucks}
+            onTruckEdit={onTruckEdit}
+            setCurrentTruck={this.setCurrentTruck}
+            currentTruck={currentTruck}
+          />
+        )}
       </React.Fragment>
     );
   }

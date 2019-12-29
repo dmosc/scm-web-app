@@ -1,9 +1,15 @@
 import styled from 'styled-components';
 
 const FormContainer = styled.div`
-  overflow-y: scroll;
   position: relative;
   max-height: 70vh;
+
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const TitleContainer = styled.div`

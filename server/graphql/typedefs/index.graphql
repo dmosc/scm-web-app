@@ -38,6 +38,7 @@ type Mutation {
   login(user: UserLogin!): String!
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN])
+  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
   ticketInit(ticket: TicketInitInput!): Ticket!
@@ -48,6 +49,7 @@ type Mutation {
     @auth(roles: [ADMIN, CASHIER, GUARD])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
+  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN, CASHIER])
   # Folio

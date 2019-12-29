@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Drawer, List, Button, Icon} from 'antd';
+import {Form, Drawer, List, Button, Icon} from 'antd';
+import EditForm from './components/client-edit-form';
 import {TitleList, TitleContainer} from './elements';
 
 class ClientList extends Component {
@@ -10,7 +11,17 @@ class ClientList extends Component {
   setCurrentClient = currentClient => this.setState({currentClient});
 
   render() {
-    const {loadingClients, clients, visible, toggleList} = this.props;
+    const {
+      visible,
+      loadingClients,
+      clients,
+      onClientEdit,
+      toggleList,
+    } = this.props;
+    const {currentClient} = this.state;
+
+    const ClientEditForm = Form.create({name: 'clientEdit'})(EditForm);
+
     return (
       <React.Fragment>
         <Drawer
@@ -19,7 +30,7 @@ class ClientList extends Component {
           onClose={() => toggleList()}
           visible={visible}
           getContainer={false}
-          style={{position: 'absolute'}}
+          style={{position: 'absolute', minHeight: 1000}}
           maskStyle={{backgroundColor: 'transparent'}}
           bodyStyle={{margin: 0, padding: 0}}
           width="100%"
@@ -52,6 +63,13 @@ class ClientList extends Component {
             )}
           />
         </Drawer>
+        {currentClient && (
+          <ClientEditForm
+            onClientEdit={onClientEdit}
+            setCurrentClient={this.setCurrentClient}
+            currentClient={currentClient}
+          />
+        )}
       </React.Fragment>
     );
   }

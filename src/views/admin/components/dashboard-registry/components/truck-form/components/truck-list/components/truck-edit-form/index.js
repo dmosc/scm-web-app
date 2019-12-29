@@ -2,55 +2,35 @@ import React, {Component} from 'react';
 import {withApollo} from 'react-apollo';
 import debounce from 'debounce';
 import {
+  Modal,
   Form,
-  Icon,
   Input,
   InputNumber,
-  Button,
   Select,
+  Button,
+  Icon,
   notification,
 } from 'antd';
-import TruckList from './components/truck-list';
-import {FormContainer, TitleContainer, TitleList} from './elements';
-import {REGISTER_TRUCK} from './graphql/mutations';
-import {GET_TRUCKS, GET_CLIENTS} from './graphql/queries';
+import {GET_CLIENTS} from './graphql/queries';
+import {EDIT_TRUCK} from './graphql/mutations';
 
 const {Option} = Select;
 
-class TruckForm extends Component {
+class EditForm extends Component {
   state = {
     loading: false,
-    visible: false,
     loadingClients: false,
-    trucks: [],
     clients: [],
   };
 
-  componentDidMount = async () => {
-    const {client} = this.props;
-    this.setState({loadingTrucks: true});
-
-    try {
-      const {
-        data: {trucks},
-      } = await client.query({
-        query: GET_TRUCKS,
-        variables: {
-          filters: {},
-        },
-      });
-
-      if (!trucks) throw new Error('No trucks found');
-
-      this.setState({trucks, loadingTrucks: false});
-    } catch (e) {
-      this.setState({loadingTrucks: false});
-    }
-  };
-
   handleSubmit = e => {
-    const {form, client} = this.props;
-    const {trucks: oldTrucks} = this.state;
+    const {
+      form,
+      currentTruck: {id},
+      setCurrentTruck,
+      onTruckEdit,
+      client,
+    } = this.props;
 
     this.setState({loading: true});
     e.preventDefault();
@@ -59,11 +39,12 @@ class TruckForm extends Component {
         if (!err) {
           try {
             const {
-              data: {truck},
+              data: {truckEdit: truck},
             } = await client.mutate({
-              mutation: REGISTER_TRUCK,
+              mutation: EDIT_TRUCK,
               variables: {
                 truck: {
+                  id,
                   plates,
                   brand,
                   model,
@@ -74,20 +55,18 @@ class TruckForm extends Component {
               },
             });
 
-            const trucks = [truck, ...oldTrucks];
-            this.setState({loading: false, trucks});
-
             notification.open({
-              message: `Camión ${truck.plates} ha sido registrado exitosamente!`,
+              message: `Camión ${truck.plates} ha sido editado exitosamente!`,
             });
 
+            onTruckEdit(truck);
+            setCurrentTruck();
             form.resetFields();
           } catch (e) {
-            e['graphQLErrors'].map(({message}) =>
-              notification.open({
-                message,
-              })
-            );
+            console.log(e);
+            notification.open({
+              message: 'Ha habido un error actualizando el camión',
+            });
             this.setState({loading: false});
           }
         } else {
@@ -99,7 +78,7 @@ class TruckForm extends Component {
 
   onSearch = search =>
     this.setState(
-      {search, loadingClients: !!search, sellers: []},
+      {search, loadingClients: !!search, clients: []},
       debounce(this.getClients(search), 1500)
     );
 
@@ -128,37 +107,26 @@ class TruckForm extends Component {
     }
   };
 
-  toggleList = () => {
-    const {visible} = this.state;
-    this.setState({visible: !visible});
-  };
+  handleCancel = () => {
+    const {setCurrentTruck} = this.props;
 
-  onTruckEdit = truck => {
-    const {trucks: oldTrucks} = this.state;
-    const trucks = [...oldTrucks];
-
-    trucks.forEach(({id}, i) => {
-      if (truck.id === id) trucks[i] = {...truck};
-    });
-
-    this.setState({trucks});
+    setCurrentTruck();
   };
 
   render() {
-    const {form} = this.props;
-    const {loading, visible, loadingClients, trucks, clients} = this.state;
+    const {form, currentTruck} = this.props;
+    const {loading, loadingClients, clients} = this.state;
 
     return (
-      <FormContainer>
-        <TitleContainer>
-          <TitleList>Registrar camión</TitleList>
-          <Button type="link" onClick={this.toggleList}>
-            Ver camiones
-          </Button>
-        </TitleContainer>
+      <Modal
+        title={`Editando camión: ${currentTruck.plates}`}
+        visible={currentTruck !== null}
+        footer={null}
+        onCancel={this.handleCancel}
+      >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {form.getFieldDecorator('client')(
+            {form.getFieldDecorator('client', {rules: [{required: true}]})(
               <Select
                 showSearch
                 style={{width: '100%'}}
@@ -177,12 +145,7 @@ class TruckForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('plates', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Las placas del camión son requeridas!',
-                },
-              ],
+              initialValue: currentTruck.plates,
             })(
               <Input
                 prefix={
@@ -194,12 +157,7 @@ class TruckForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('brand', {
-              rules: [
-                {
-                  required: true,
-                  message: 'La marca del camión es requerida!',
-                },
-              ],
+              initialValue: currentTruck.brand,
             })(
               <Input
                 prefix={<Icon type="car" style={{color: 'rgba(0,0,0,.25)'}} />}
@@ -209,12 +167,7 @@ class TruckForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('model', {
-              rules: [
-                {
-                  required: true,
-                  message: 'El modelo es requerido!',
-                },
-              ],
+              initialValue: currentTruck.model,
             })(
               <Input
                 prefix={
@@ -229,12 +182,7 @@ class TruckForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('weight', {
-              rules: [
-                {
-                  required: true,
-                  message: 'El peso del camión en KG es requerido!',
-                },
-              ],
+              initialValue: currentTruck.weight,
             })(
               <InputNumber
                 style={{width: '100%'}}
@@ -246,12 +194,7 @@ class TruckForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('drivers', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Ingrese 1 o más nombres de conductores',
-                },
-              ],
+              initialValue: currentTruck.drivers,
             })(
               <Select
                 placeholder="Conductor(es) del camión"
@@ -272,15 +215,9 @@ class TruckForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-        <TruckList
-          visible={visible}
-          trucks={trucks}
-          onTruckEdit={this.onTruckEdit}
-          toggleList={this.toggleList}
-        />
-      </FormContainer>
+      </Modal>
     );
   }
 }
 
-export default withApollo(TruckForm);
+export default withApollo(EditForm);

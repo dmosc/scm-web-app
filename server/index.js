@@ -1,18 +1,16 @@
 import mongoose, {Schema} from 'mongoose';
 import sequelize from './sequelize-db';
 import server from './graphql';
-import {ENV, API_PORT, MONGO_DB_URI, AWS_CONFIG} from './config';
+import {API_PORT, MONGO_DB_URI, AWS_CONFIG} from './config';
 
 const {AURORA_DB_NAME} = AWS_CONFIG;
 
 (async () => {
   try {
-    server
-      .listen(ENV.production ? API_PORT : 80)
-      .then(({url, subscriptionsUrl}) => {
-        console.log(`🚀  Server ready at ${url}`);
-        console.log(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
-      });
+    server.listen(API_PORT).then(({url, subscriptionsUrl}) => {
+      console.log(`🚀  Server ready at ${url}`);
+      console.log(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
+    });
 
     await mongoose
       .connect(MONGO_DB_URI, {

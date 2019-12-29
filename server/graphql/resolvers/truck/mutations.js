@@ -29,6 +29,37 @@ const truckMutations = {
       return e;
     }
   }),
+  truckEdit: authenticated(async (_, args) => {
+    try {
+      const oldTruck = await Truck.findOneAndUpdate(
+        {_id: args.truck.id},
+        {...args.truck},
+        {new: false}
+      );
+
+      const truck = await Truck.findById(oldTruck.id).populate('client');
+
+      truck.plates = truck.plates.toUpperCase();
+      truck.brand = truck.brand.toUpperCase();
+      truck.model = truck.model.toUpperCase();
+      truck.weight = truck.weight.toFixed(2);
+      truck.drivers = truck.drivers.map(driver => driver.toUpperCase());
+
+      const oldClient = await Client.findById(oldTruck.client);
+      const newClient = await Client.findById(truck.client);
+
+      oldClient.trucks.pull({_id: truck.id});
+      newClient.trucks.push({_id: truck.id});
+
+      await oldClient.save();
+      await newClient.save();
+      await truck.save();
+
+      return truck;
+    } catch (e) {
+      return e;
+    }
+  }),
 };
 
 export default truckMutations;

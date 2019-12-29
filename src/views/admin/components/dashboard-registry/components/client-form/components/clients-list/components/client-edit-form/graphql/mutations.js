@@ -1,8 +1,8 @@
 import {gql} from 'apollo-boost';
 
-const GET_CLIENTS = gql`
-  query clients($filters: ClientFilters!) {
-    clients(filters: $filters) {
+const EDIT_CLIENT = gql`
+  mutation clientEdit($client: ClientEditInput!) {
+    clientEdit(client: $client) {
       id
       firstName
       lastName
@@ -28,13 +28,4 @@ const GET_CLIENTS = gql`
   }
 `;
 
-const GET_PRODUCTS = gql`
-  query rocks($filters: RockFilters!) {
-    rocks(filters: $filters) {
-      name
-      price
-    }
-  }
-`;
-
-export {GET_CLIENTS, GET_PRODUCTS};
+export {EDIT_CLIENT};

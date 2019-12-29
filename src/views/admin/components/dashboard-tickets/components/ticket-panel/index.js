@@ -77,10 +77,6 @@ const TicketPanel = ({ticket, setCurrent, printTicket}) => {
                 <b>IMAGEN ENTRADA</b>
               </Link>
             </td>
-            <td>
-              <b>PESO</b>
-              {`: ${ticket.truck.weight}`}
-            </td>
           </tr>
           <tr>
             <td>
@@ -111,14 +107,6 @@ const TicketPanel = ({ticket, setCurrent, printTicket}) => {
                 </Link>
               )}
             </td>
-            <td>
-              {ticket.weight && (
-                <React.Fragment>
-                  <b>PESO BRUTO</b>
-                  {`: ${ticket.weight}`}
-                </React.Fragment>
-              )}
-            </td>
           </tr>
           <tr>
             <td>
@@ -127,6 +115,25 @@ const TicketPanel = ({ticket, setCurrent, printTicket}) => {
                 {ticket.client.credit}
               </Credit>
             </td>
+            <td>
+              <b>PESO</b>
+              {`: ${ticket.truck.weight}`}
+            </td>
+          </tr>
+          <tr>
+            <td />
+            <td>
+              {ticket.weight && (
+                <React.Fragment>
+                  <b>PESO BRUTO</b>
+                  {`: ${ticket.weight}`}
+                </React.Fragment>
+              )}
+            </td>
+            <td />
+          </tr>
+          <tr>
+            <td />
             <td>
               {ticket.totalWeight && (
                 <React.Fragment>
