@@ -1,0 +1,16 @@
+type Message {
+  id: Int!
+  username: String!
+  content: String!
+  createdAt: Date!
+  updatedAt: Date
+}
+
+input MessageInput {
+  username: String!
+  content: String!
+}
+
+input MessageFilters {
+  limit: Int
+}

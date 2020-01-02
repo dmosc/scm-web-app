@@ -24,8 +24,8 @@ const {AURORA_DB_NAME} = AWS_CONFIG;
         console.log(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
       });
 
-    await sequelize.sync();
-    await sequelize
+    sequelize.sync();
+    sequelize
       .authenticate()
       .then(() => {
         console.log(`📀 Succesfully connected to database: ${AURORA_DB_NAME}`);

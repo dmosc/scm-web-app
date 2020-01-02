@@ -4,6 +4,8 @@
 # import * from "truck.graphql"
 # import * from "rock.graphql"
 # import * from "folio.graphql"
+# import * from "post.graphql"
+# import * from "message.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -30,6 +32,12 @@ type Query {
   # Rock
   rock(id: ID!): Rock
   rocks(filters: RockFilters!): [Rock!]!
+  # Post
+  post(id: ID!): Post
+  posts(filters: PostFilters!): [Post!]!
+  # Message
+  message(id: ID!): Message
+  messages(filters: MessageFilters!): [Message!]!
 }
 
 type Mutation {
@@ -54,6 +62,10 @@ type Mutation {
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN, CASHIER])
   # Folio
   folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
+  # Post
+  post(post: PostInput!): Post @auth(roles: [ADMIN])
+  # Message
+  message(message: MessageInput!): Message @auth(roles: [ADMIN, CASHIER, GUARD])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: Upload!, folderKey: s3FolderKey!, id: ID!): String!
@@ -62,4 +74,6 @@ type Mutation {
 type Subscription {
   newTicket: Ticket!
   ticketUpdate: Ticket!
+  newPost: Post!
+  newMessage: Message!
 }

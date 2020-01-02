@@ -24,6 +24,16 @@ import rockQueries from './rock/queries';
 // Folio
 import folioMutations from './folio/mutations';
 
+// Post
+import postMutations from './post/mutations';
+import postQueries from './post/queries';
+import postSubscriptions from './post/subscriptions';
+
+// Message
+import messageMutations from './message/mutations';
+import messageQueries from './message/queries';
+import messageSubscriptions from './message/subscriptions';
+
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -34,6 +44,8 @@ const resolvers = {
     ...ticketQueries,
     ...truckQueries,
     ...rockQueries,
+    ...postQueries,
+    ...messageQueries,
   },
   Mutation: {
     ...userMutations,
@@ -42,10 +54,14 @@ const resolvers = {
     ...truckMutations,
     ...rockMutations,
     ...folioMutations,
+    ...postMutations,
+    ...messageMutations,
     ...uploaders, // AWS
   },
   Subscription: {
     ...ticketSubscriptions,
+    ...postSubscriptions,
+    ...messageSubscriptions,
   },
   Upload: GraphQLUpload,
 };
