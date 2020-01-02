@@ -126,11 +126,15 @@ class EditForm extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {form.getFieldDecorator('client', {rules: [{required: true}]})(
+            {form.getFieldDecorator('client', {
+              initialValue: currentTruck.client.id,
+              rules: [{required: true}],
+            })(
               <Select
+                disabled
                 showSearch
                 style={{width: '100%'}}
-                placeholder="Cliente"
+                placeholder={currentTruck.client.businessName}
                 onSearch={this.onSearch}
                 loading={loadingClients}
                 allowClear

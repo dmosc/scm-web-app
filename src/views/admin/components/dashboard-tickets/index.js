@@ -16,7 +16,6 @@ import {NEW_TICKET, TICKET_UPDATE} from './graphql/subscriptions';
 const {Panel} = Collapse;
 class DashboardTickets extends Component {
   state = {
-    tickets: [],
     currentTicket: null,
     currentForm: null,
   };
@@ -40,35 +39,37 @@ class DashboardTickets extends Component {
   };
 
   subscribeToTickets = async subscribeToMore => {
-    const {tickets: oldTickets} = this.state;
     subscribeToMore({
       document: NEW_TICKET,
       updateQuery: (prev, {subscriptionData: {data}}) => {
+        const {tickets: oldTickets} = prev;
         const {newTicket} = data;
         if (!newTicket) return prev;
 
+        for (let i = 0; i < oldTickets.length; i++)
+          if (newTicket.id === oldTickets[i].id) return prev;
+
         const tickets = [...oldTickets, newTicket];
-        this.setState({tickets});
+
+        return {tickets};
       },
     });
   };
 
   subscribeToTicketUpdates = async subscribeToMore => {
-    const {tickets: oldTickets} = this.state;
     subscribeToMore({
       document: TICKET_UPDATE,
       updateQuery: (prev, {subscriptionData: {data}}) => {
+        const {tickets: oldTickets} = prev;
         const {ticketUpdate} = data;
         if (!ticketUpdate) return prev;
 
-        oldTickets.forEach((ticket, i) =>
-          ticket.id === ticketUpdate.id
-            ? (oldTickets[i] = {...oldTickets[i], ...ticketUpdate})
-            : null
-        );
-
         const tickets = [...oldTickets];
-        this.setState({tickets});
+
+        for (let i = 0; i < oldTickets.length; i++)
+          if (ticketUpdate.id === oldTickets[i].id) tickets[i] = ticketUpdate;
+
+        return {tickets};
       },
     });
   };
@@ -106,7 +107,7 @@ class DashboardTickets extends Component {
 
   render() {
     const {user, collapsed, onCollapse} = this.props;
-    const {tickets, currentTicket, currentForm} = this.state;
+    const {currentTicket, currentForm} = this.state;
 
     const TicketImageRegisterForm = Form.create({name: 'image'})(
       TicketImageForm
@@ -124,17 +125,15 @@ class DashboardTickets extends Component {
       >
         <Container justifycontent="center" alignitems="center">
           <Query query={GET_TICKETS} variables={{filters: {}}}>
-            {({loading, error, subscribeToMore}) => {
+            {({loading, error, data, subscribeToMore}) => {
               if (loading) return <div>Cargando boletas...</div>;
               if (error)
                 return <div>¡No se han podido cargar las boletas!</div>;
 
-              this.unsubscribeToTickets = this.subscribeToTickets(
-                subscribeToMore
-              );
-              this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(
-                subscribeToMore
-              );
+              const {tickets} = data;
+
+              this.subscribeToTickets(subscribeToMore);
+              this.subscribeToTicketUpdates(subscribeToMore);
 
               return (
                 <Collapse accordion bordered={false}>

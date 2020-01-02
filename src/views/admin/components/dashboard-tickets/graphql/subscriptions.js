@@ -14,6 +14,7 @@ const NEW_TICKET = gql`
         address
         rfc
         credit
+        bill
         prices {
           N4B
           N4D
@@ -33,7 +34,11 @@ const NEW_TICKET = gql`
         name
         price
       }
+      weight
+      totalWeight
+      totalPrice
       inTruckImage
+      outTruckImage
     }
   }
 `;
@@ -42,11 +47,9 @@ const TICKET_UPDATE = gql`
   subscription ticketUpdate {
     ticketUpdate {
       id
+      folio
       driver
-      weight
-      totalWeight
-      totalPrice
-      outTruckImage
+      credit
       client {
         firstName
         lastName
@@ -65,6 +68,20 @@ const TICKET_UPDATE = gql`
           MIXTO
         }
       }
+      truck {
+        id
+        plates
+        weight
+      }
+      product {
+        name
+        price
+      }
+      weight
+      totalWeight
+      totalPrice
+      inTruckImage
+      outTruckImage
     }
   }
 `;

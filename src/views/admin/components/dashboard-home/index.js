@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
+import PostsList from './components/posts-list';
 
 class DashboardHome extends Component {
   state = {};
@@ -13,12 +14,8 @@ class DashboardHome extends Component {
         onCollapse={onCollapse}
         page="Dashboard"
       >
-        <Container display="flex" justifycontent="center" alignitems="center">
-          <img
-            src="/static/images/section_under_construction.png"
-            alt="Under Construction!"
-          />
-          <h1 style={{fontSize: 40}}>Sección en construcción...</h1>
+        <Container title="Posts recientes" width="30%">
+          <PostsList />
         </Container>
       </Layout>
     );
