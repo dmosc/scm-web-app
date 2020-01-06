@@ -13,6 +13,19 @@ const rockMutations = {
       return e;
     }
   }),
+  rockEdit: authenticated(async (_, args) => {
+    try {
+      const rock = await Rock.findOneAndUpdate(
+        {_id: args.rock.id},
+        {...args.rock},
+        {new: true}
+      );
+
+      return rock;
+    } catch (e) {
+      return e;
+    }
+  }),
 };
 
 export default rockMutations;

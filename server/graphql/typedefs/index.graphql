@@ -59,7 +59,8 @@ type Mutation {
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
   truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN])
   # Rock
-  rock(rock: RockInput!): Rock @auth(roles: [ADMIN, CASHIER])
+  rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
+  rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN, CASHIER])
   # Folio
   folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
   # Post

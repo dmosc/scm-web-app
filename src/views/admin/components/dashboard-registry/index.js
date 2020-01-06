@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {Form} from 'antd';
+import {Form, Carousel} from 'antd';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
 import ClientForm from './components/client-form';
 import TruckForm from './components/truck-form';
+import ProductForm from './components/product-form';
 
 class DashboardRegistry extends Component {
   state = {};
@@ -12,6 +13,7 @@ class DashboardRegistry extends Component {
 
     const ClientRegisterForm = Form.create({name: 'client'})(ClientForm);
     const TruckRegisterForm = Form.create({name: 'truck'})(TruckForm);
+    const ProductEditForm = Form.create({name: 'user'})(ProductForm);
 
     return (
       <Layout
@@ -20,11 +22,32 @@ class DashboardRegistry extends Component {
         onCollapse={onCollapse}
         page="Registros"
       >
-        <Container width="50%" alignitems="center">
+        <Container
+          background="transparent"
+          height="fit-content"
+          justify="center"
+          alignitems="center"
+        >
+          <Carousel
+            style={{backgroundColor: '#1890ff', borderRadius: 5}}
+            dotPosition="top"
+          >
+            <Container width="95%" display="flex" justify="center">
+              <Container width="50%">
           <ClientRegisterForm />
         </Container>
-        <Container width="50%" alignitems="center">
+              <Container width="50%">
           <TruckRegisterForm />
+        </Container>
+            </Container>
+            <Container width="95%" display="flex" justify="center">
+              <Container width="50%">
+              </Container>
+              <Container title="Editar precio de producto">
+                <ProductEditForm />
+              </Container>
+            </Container>
+          </Carousel>
         </Container>
       </Layout>
     );

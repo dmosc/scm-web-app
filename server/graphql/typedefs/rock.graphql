@@ -11,6 +11,12 @@ input RockInput {
   price: Float!
 }
 
+input RockEditInput {
+  id: ID!
+  name: String
+  price: Float
+}
+
 input RockFilters {
   limit: Int
 }

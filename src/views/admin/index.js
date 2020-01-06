@@ -26,12 +26,6 @@ const DashboardRegistry = Loadable({
   loading: TopBarProgress,
 });
 
-/* webpackChunkName: "DashboardTransactions" */
-const DashboardTransactions = Loadable({
-  loader: () => import('./components/dashboard-transactions'),
-  loading: TopBarProgress,
-});
-
 /* webpackChunkName: "DashboardHistory" */
 const DashboardHistory = Loadable({
   loader: () => import('./components/dashboard-history'),
@@ -103,16 +97,6 @@ class Admin extends Component {
           path="/admin/registros"
           render={() => (
             <DashboardRegistry
-              collapsed={collapsed}
-              onCollapse={this.onCollapse}
-              user={user}
-            />
-          )}
-        />
-        <Route
-          path="/admin/transacciones"
-          render={() => (
-            <DashboardTransactions
               collapsed={collapsed}
               onCollapse={this.onCollapse}
               user={user}

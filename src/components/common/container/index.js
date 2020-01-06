@@ -4,6 +4,7 @@ import {ContentContainer, TitleContainer} from './elements';
 const Container = ({
   children,
   title,
+  background,
   width,
   height,
   display,
@@ -12,6 +13,7 @@ const Container = ({
 }) => {
   return (
     <ContentContainer
+      background={background}
       width={width}
       height={height}
       display={display}

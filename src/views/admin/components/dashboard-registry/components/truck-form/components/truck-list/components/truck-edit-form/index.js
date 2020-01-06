@@ -63,7 +63,6 @@ class EditForm extends Component {
             setCurrentTruck();
             form.resetFields();
           } catch (e) {
-            console.log(e);
             notification.open({
               message: 'Ha habido un error actualizando el camión',
             });

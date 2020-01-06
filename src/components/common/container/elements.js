@@ -8,7 +8,8 @@ const ContentContainer = styled(Content)`
   padding: 30px;
   border-radius: 5px;
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
-  background-color: #ffffff;
+  background-color: ${props =>
+    props.background ? props.background : '#ffffff'};
   overflow-y: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;

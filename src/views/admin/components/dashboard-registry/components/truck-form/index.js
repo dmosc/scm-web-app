@@ -161,11 +161,11 @@ class TruckForm extends Component {
             {form.getFieldDecorator('client')(
               <Select
                 showSearch
+                allowClear
                 style={{width: '100%'}}
                 placeholder="Cliente"
                 onSearch={this.onSearch}
                 loading={loadingClients}
-                allowClear
               >
                 {clients.map(({id, businessName}) => (
                   <Option key={id} value={`${businessName}:${id}`}>

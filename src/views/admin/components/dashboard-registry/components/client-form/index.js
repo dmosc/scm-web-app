@@ -11,6 +11,7 @@ import {
   Typography,
   notification,
 } from 'antd';
+import CFDIuse from 'utils/enums/CFDIuse';
 import ClientList from './components/clients-list';
 import PriceEditModal from './components/price-edit-modal';
 import {TitleList, TitleContainer, FormContainer} from './elements';
@@ -32,7 +33,6 @@ class ClientForm extends Component {
     currentPriceTotal: 0,
     prices: {},
     publicPrices: {},
-    CFDIuse: ['G01', 'G03'],
   };
 
   componentDidMount = async () => {
@@ -211,7 +211,6 @@ class ClientForm extends Component {
       publicPrices,
       currentPrice,
       currentPriceTotal,
-      CFDIuse,
     } = this.state;
 
     const parsedPrices = Object.keys(prices)

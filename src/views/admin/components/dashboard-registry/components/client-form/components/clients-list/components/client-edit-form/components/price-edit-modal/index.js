@@ -28,7 +28,7 @@ const PriceEditModal = ({
         autoFocus
         placeholder="Precio por tonelada en MXN"
         min={0}
-        step={0.1}
+        step={0.01}
       />
       <Button onClick={onPriceUpdate} style={{margin: 5}} type="primary">
         Agregar

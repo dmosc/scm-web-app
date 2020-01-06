@@ -17,7 +17,6 @@ const Sidebar = ({collapsed, onCollapse}) => {
           {icon: 'dashboard', title: 'Dashboard'},
           {icon: 'unordered-list', title: 'Boletas'},
           {icon: 'cloud-upload', title: 'Registros'},
-          {icon: 'dollar', title: 'Transacciones'},
           {icon: 'history', title: 'Historial'},
           {icon: 'message', title: 'Mensajes'},
         ]}
