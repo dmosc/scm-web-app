@@ -4,6 +4,7 @@ import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
 import ClientForm from './components/client-form';
 import TruckForm from './components/truck-form';
+import UserForm from './components/user-form';
 import ProductForm from './components/product-form';
 
 class DashboardRegistry extends Component {
@@ -13,6 +14,7 @@ class DashboardRegistry extends Component {
 
     const ClientRegisterForm = Form.create({name: 'client'})(ClientForm);
     const TruckRegisterForm = Form.create({name: 'truck'})(TruckForm);
+    const UserRegisterForm = Form.create({name: 'user'})(UserForm);
     const ProductEditForm = Form.create({name: 'user'})(ProductForm);
 
     return (
@@ -34,14 +36,15 @@ class DashboardRegistry extends Component {
           >
             <Container width="95%" display="flex" justify="center">
               <Container width="50%">
-          <ClientRegisterForm />
-        </Container>
+                <ClientRegisterForm />
+              </Container>
               <Container width="50%">
-          <TruckRegisterForm />
-        </Container>
+                <TruckRegisterForm />
+              </Container>
             </Container>
             <Container width="95%" display="flex" justify="center">
               <Container width="50%">
+                <UserRegisterForm />
               </Container>
               <Container title="Editar precio de producto">
                 <ProductEditForm />

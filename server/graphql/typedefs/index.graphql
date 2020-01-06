@@ -20,6 +20,7 @@ directive @auth(roles: [Role]) on FIELD_DEFINITION
 type Query {
   # User
   user(id: ID!): User # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+  users(filters: UserFilters!): [User!]!
   # Client
   client(id: ID!): Client
   clients(filters: ClientFilters!): [Client!]!
@@ -42,8 +43,9 @@ type Query {
 
 type Mutation {
   # User
-  register(user: UserRegister!): String! @auth(roles: [ADMIN])
+  user(user: UserRegisterInput!): User! @auth(roles: [ADMIN])
   login(user: UserLogin!): String!
+  userEdit(user: UserEditInput!): User @auth(roles: [ADMIN])
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN])

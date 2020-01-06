@@ -2,10 +2,11 @@ import {User} from '../../../mongo-db/models';
 import {hashSync as hash, compareSync as comparePasswords} from 'bcryptjs';
 import {AuthenticationError} from 'apollo-server-core';
 import jwt from 'jsonwebtoken';
+import authenticated from '../../middleware/authenticated';
 import {JWT_SECRET} from '../../../config';
 
 const userMutations = {
-  register: async (_, args) => {
+  user: async (_, args) => {
     try {
       const user = new User({...args.user});
 
@@ -15,11 +16,7 @@ const userMutations = {
 
       await user.save();
 
-      const token = jwt.sign({id: user.id, role: user.role}, JWT_SECRET, {
-        expiresIn: 86400,
-      });
-
-      return token;
+      return user;
     } catch (e) {
       throw new Error(e);
     }
@@ -50,6 +47,19 @@ const userMutations = {
       throw new AuthenticationError(err);
     }
   },
+  userEdit: authenticated(async (_, args) => {
+    try {
+      const user = await User.findOneAndUpdate(
+        {_id: args.user.id},
+        {...args.user},
+        {new: true}
+      );
+
+      return user;
+    } catch (e) {
+      return e;
+    }
+  }),
 };
 
 export default userMutations;

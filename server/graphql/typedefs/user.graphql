@@ -21,7 +21,7 @@ enum Role {
 }
 
 # Inputs
-input UserRegister {
+input UserRegisterInput {
   username: String!
   email: String!
   password: String!
@@ -30,7 +30,21 @@ input UserRegister {
   lastName: String!
 }
 
+input UserEditInput {
+  id: ID!
+  username: String
+  email: String
+  password: String
+  role: Role
+  firstName: String
+  lastName: String
+}
+
 input UserLogin {
   usernameOrEmail: String!
   password: String!
+}
+
+input UserFilters {
+  limit: Int
 }
