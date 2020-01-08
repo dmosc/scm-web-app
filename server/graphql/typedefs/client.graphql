@@ -71,6 +71,7 @@ input PricesInput {
 
 input ClientFilters {
   limit: Int
+  search: String
 }
 
 # Enums

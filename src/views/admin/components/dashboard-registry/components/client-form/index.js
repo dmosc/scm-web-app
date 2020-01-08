@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {withApollo} from 'react-apollo';
+import debounce from 'debounce';
 import {
   Form,
   Icon,
@@ -33,10 +34,16 @@ class ClientForm extends Component {
     currentPriceTotal: 0,
     prices: {},
     publicPrices: {},
+    filters: {
+      search: ''
+    }
   };
 
-  componentDidMount = async () => {
+  componentDidMount = async () => this.getData();
+
+  getData = debounce(async () => {
     const {client} = this.props;
+    const {filters: {search}} = this.state;
 
     try {
       const [
@@ -47,11 +54,9 @@ class ClientForm extends Component {
           data: {rocks: products},
         },
       ] = await Promise.all([
-        client.query({query: GET_CLIENTS, variables: {filters: {}}}),
+        client.query({query: GET_CLIENTS, variables: {filters: {search}}}),
         client.query({query: GET_PRODUCTS, variables: {filters: {}}}),
       ]);
-
-      if (!clients) throw new Error('No clients found');
 
       const publicPrices = {};
 
@@ -64,7 +69,7 @@ class ClientForm extends Component {
         message: `No se han podido cargar los clientes correctamente.`,
       });
     }
-  };
+  }, 300);
 
   handleSubmit = e => {
     const {form, client} = this.props;
@@ -199,6 +204,14 @@ class ClientForm extends Component {
   };
 
   handleAttrChange = (key, val) => this.setState({[key]: val});
+
+  handleFilterChange = (key, value) => {
+    const {filters: oldFilters} = this.state;
+
+    const filters = {...oldFilters, [key]: value};
+
+    this.setState({filters}, this.getData);
+  };
 
   render() {
     const {form} = this.props;
@@ -391,6 +404,7 @@ class ClientForm extends Component {
         <ClientList
           visible={showList}
           clients={clients}
+          handleFilterChange={this.handleFilterChange}
           onClientEdit={this.onClientEdit}
           toggleList={this.toggleList}
         />

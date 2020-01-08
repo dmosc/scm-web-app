@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {Form, Drawer, List, Button, Icon} from 'antd';
+import {Form, Drawer, Row, Col, Input, List, Button, Icon} from 'antd';
 import EditForm from './components/client-edit-form';
 import {TitleList, TitleContainer} from './elements';
+
+const {Search} = Input;
 
 class ClientList extends Component {
   state = {
@@ -11,13 +13,7 @@ class ClientList extends Component {
   setCurrentClient = currentClient => this.setState({currentClient});
 
   render() {
-    const {
-      visible,
-      loadingClients,
-      clients,
-      onClientEdit,
-      toggleList,
-    } = this.props;
+    const {visible, loadingClients, clients, handleFilterChange, onClientEdit, toggleList} = this.props;
     const {currentClient} = this.state;
 
     const ClientEditForm = Form.create({name: 'clientEdit'})(EditForm);
@@ -35,12 +31,24 @@ class ClientList extends Component {
           bodyStyle={{margin: 0, padding: 0}}
           width="100%"
         >
-          <TitleContainer>
-            <TitleList>Lista de clientes</TitleList>
-            <Button type="link" onClick={() => toggleList()}>
-              Regresar
-            </Button>
-          </TitleContainer>
+            <Row>
+                <TitleContainer>
+                    <TitleList>Lista de clientes</TitleList>
+                    <Button type="link" onClick={() => toggleList()}>
+                        Regresar
+                    </Button>
+                </TitleContainer>
+            </Row>
+            <Row>
+                <Col span={12}>
+                    <Search
+                        style={{width: 250}}
+                        allowClear
+                        placeholder="Buscar clientes"
+                        onChange={({target: {value}}) => handleFilterChange('search', value)}
+                    />
+                </Col>
+            </Row>
           <List
             loading={loadingClients}
             itemLayout="horizontal"

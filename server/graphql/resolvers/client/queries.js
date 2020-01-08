@@ -10,8 +10,14 @@ const clientQueries = {
 
     return client;
   }),
-  clients: authenticated(async (_, {filters: {limit}}) => {
-    const clients = await Client.find({})
+  clients: authenticated(async (_, {filters: {limit, search}}) => {
+    const clients = await Client.find({
+      $or: [
+        {firstName: {$in: [new RegExp(search, 'i')]}},
+        {lastName: {$in: [new RegExp(search, 'i')]}},
+        {businessName: {$in: [new RegExp(search, 'i')]}},
+      ],
+    })
       .limit(limit || 50)
       .populate('trucks');
 
