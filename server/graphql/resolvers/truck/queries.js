@@ -12,8 +12,15 @@ const truckQueries = {
 
     return truck;
   }),
-  trucks: authenticated(async (_, {filters: {limit}}) => {
-    const trucks = await Truck.find({})
+  trucks: authenticated(async (_, {filters: {limit, search}}) => {
+    const trucks = await Truck.find({
+      $or: [
+        {plates: {$in: [new RegExp(search, 'i')]}},
+        {brand: {$in: [new RegExp(search, 'i')]}},
+        {model: {$in: [new RegExp(search, 'i')]}},
+        {drivers: {$in: [new RegExp(search, 'i')]}},
+      ],
+    })
       .limit(limit || 50)
       .populate('client');
 

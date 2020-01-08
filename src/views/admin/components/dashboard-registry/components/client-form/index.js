@@ -45,6 +45,8 @@ class ClientForm extends Component {
     const {client} = this.props;
     const {filters: {search}} = this.state;
 
+    this.setState({loadingClients: true});
+
     try {
       const [
         {

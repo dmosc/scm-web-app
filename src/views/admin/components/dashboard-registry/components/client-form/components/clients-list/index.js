@@ -13,7 +13,7 @@ class ClientList extends Component {
   setCurrentClient = currentClient => this.setState({currentClient});
 
   render() {
-    const {visible, loadingClients, clients, handleFilterChange, onClientEdit, toggleList} = this.props;
+    const {visible, loadingClients, clients, handleFilterChange, toggleList, onClientEdit} = this.props;
     const {currentClient} = this.state;
 
     const ClientEditForm = Form.create({name: 'clientEdit'})(EditForm);

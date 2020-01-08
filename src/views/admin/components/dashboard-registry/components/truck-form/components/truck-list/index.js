@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {Form, Drawer, List, Button, Icon} from 'antd';
+import {Form, Drawer, Row, Col, Input, List, Button, Icon} from 'antd';
 import EditForm from './components/truck-edit-form';
 import {TitleList, TitleContainer} from './elements';
+
+const {Search} = Input;
 
 class TruckList extends Component {
   state = {
@@ -11,13 +13,7 @@ class TruckList extends Component {
   setCurrentTruck = currentTruck => this.setState({currentTruck});
 
   render() {
-    const {
-      loadingTrucks,
-      trucks,
-      visible,
-      toggleList,
-      onTruckEdit,
-    } = this.props;
+    const {loadingTrucks, trucks, handleFilterChange, visible, toggleList, onTruckEdit} = this.props;
     const {currentTruck} = this.state;
 
     const TruckEditForm = Form.create({name: 'truckEdit'})(EditForm);
@@ -34,13 +30,25 @@ class TruckList extends Component {
           bodyStyle={{margin: 0, padding: 0}}
           width="100%"
         >
-          <TitleContainer>
-            <TitleList>Lista de camiones</TitleList>
-            <Button type="link" onClick={() => toggleList()}>
-              Regresar
-            </Button>
-          </TitleContainer>
-          <List
+            <Row>
+                <TitleContainer>
+                    <TitleList>Lista de camiones</TitleList>
+                    <Button type="link" onClick={() => toggleList()}>
+                        Regresar
+                    </Button>
+                </TitleContainer>
+            </Row>
+            <Row>
+                <Col span={12}>
+                    <Search
+                        style={{width: 250}}
+                        allowClear
+                        placeholder="Buscar camiones"
+                        onChange={({target: {value}}) => handleFilterChange('search', value)}
+                    />
+                </Col>
+            </Row>
+            <List
             loading={loadingTrucks}
             itemLayout="horizontal"
             dataSource={trucks}

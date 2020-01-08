@@ -24,10 +24,17 @@ class TruckForm extends Component {
     loadingClients: false,
     trucks: [],
     clients: [],
+    filters: {
+      search: ''
+    }
   };
 
-  componentDidMount = async () => {
+  componentDidMount = async () => this.getData();
+
+  getData = debounce(async () => {
     const {client} = this.props;
+    const {filters: {search}} = this.state;
+
     this.setState({loadingTrucks: true});
 
     try {
@@ -35,18 +42,14 @@ class TruckForm extends Component {
         data: {trucks},
       } = await client.query({
         query: GET_TRUCKS,
-        variables: {
-          filters: {},
-        },
+        variables: {filters: {search}}
       });
-
-      if (!trucks) throw new Error('No trucks found');
 
       this.setState({trucks, loadingTrucks: false});
     } catch (e) {
       this.setState({loadingTrucks: false});
     }
-  };
+  }, 300)
 
   handleSubmit = e => {
     const {form, client} = this.props;
@@ -97,12 +100,6 @@ class TruckForm extends Component {
     );
   };
 
-  onSearch = search =>
-    this.setState(
-      {search, loadingClients: !!search, sellers: []},
-      debounce(this.getClients(search), 1500)
-    );
-
   getClients = async key => {
     const {client} = this.props;
     if (!key) {
@@ -128,6 +125,12 @@ class TruckForm extends Component {
     }
   };
 
+  onSearch = search =>
+    this.setState(
+      {search, loadingClients: !!search, sellers: []},
+      debounce(this.getClients(search), 1500)
+    );
+
   toggleList = () => {
     const {visible} = this.state;
     this.setState({visible: !visible});
@@ -142,6 +145,14 @@ class TruckForm extends Component {
     });
 
     this.setState({trucks});
+  };
+
+  handleFilterChange = (key, value) => {
+    const {filters: oldFilters} = this.state;
+
+    const filters = {...oldFilters, [key]: value};
+
+    this.setState({filters}, this.getData);
   };
 
   render() {
@@ -275,6 +286,7 @@ class TruckForm extends Component {
         <TruckList
           visible={visible}
           trucks={trucks}
+          handleFilterChange={this.handleFilterChange}
           onTruckEdit={this.onTruckEdit}
           toggleList={this.toggleList}
         />

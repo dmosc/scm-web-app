@@ -30,4 +30,5 @@ input TruckEditInput {
 
 input TruckFilters {
   limit: Int
+  search: String
 }
