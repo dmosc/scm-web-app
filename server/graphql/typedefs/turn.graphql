@@ -1,0 +1,38 @@
+# Types
+type Turn {
+    id: ID!
+    user: User!
+    start: Date!
+    end: Date
+    period: Period!
+    folios: [String!]!
+}
+
+type TurnSummary {
+    clients: [ClientTurnSummary!]
+    upfront: Float
+    credit: Float
+    total: Float
+}
+
+# Enums
+enum Period {
+    MORNING
+    EVENING
+    NIGHT
+}
+
+# Inputs
+input TurnInitInput {
+    user: ID!
+    period: Period!
+}
+
+input TurnEndInput {
+    id: ID!
+}
+
+input TurnFilters {
+    limit: Int
+}
+

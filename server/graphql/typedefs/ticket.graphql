@@ -14,6 +14,7 @@ type Ticket {
   date: Date
   inTruckImage: String
   outTruckImage: String
+  turn: Turn
 }
 
 # Inputs

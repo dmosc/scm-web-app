@@ -10,32 +10,52 @@ import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form/index';
 import TicketPanel from './components/ticket-panel';
 import {LoadingBarContainer, LoadingBar} from './elements';
-import {GET_TICKETS} from './graphql/queries';
-import {NEW_TICKET, TICKET_UPDATE} from './graphql/subscriptions';
+import {GET_TICKETS, TURN_ACTIVE} from './graphql/queries';
+import {NEW_TICKET, TICKET_UPDATE, TURN_UPDATE} from './graphql/subscriptions';
+import TurnInitForm from "./components/turn-init-form";
+import TurnEndForm from "./components/turn-end-form";
 
 const {Panel} = Collapse;
+
 class DashboardTickets extends Component {
   state = {
     currentTicket: null,
     currentForm: null,
+    turnActive: null,
   };
 
   componentDidMount = async () => {
     const {client} = this.props;
 
     try {
-      const {
-        data: {tickets},
-      } = await client.query({
-        query: GET_TICKETS,
-        variables: {filters: {}},
-      });
+      const [
+          {
+            data: {tickets}
+          },
+          {
+            data: {turnActive}
+          }
+      ] = await Promise.all([
+        client.query({
+          query: GET_TICKETS,
+          variables: {filters: {}},
+        }),
+        client.query({
+          query: TURN_ACTIVE
+        })
+      ]);
 
       if (!tickets) return;
-      this.setState({tickets});
+      this.setState({tickets, turnActive});
     } catch (e) {
       console.log(e);
     }
+  };
+
+  componentWillUnmount = async () => {
+    await this.unsubscribeToTickets;
+    await this.unsubscribeToTicketUpdates;
+    await this.unsubscribeToTurnUpdates;
   };
 
   subscribeToTickets = async subscribeToMore => {
@@ -74,6 +94,21 @@ class DashboardTickets extends Component {
     });
   };
 
+  subscribeToTurnUpdates = async subscribeToMore => {
+    subscribeToMore({
+      document: TURN_UPDATE,
+      updateQuery: (prev, {subscriptionData: {data}}) => {
+        const {turnUpdate} = data;
+        if (!turnUpdate) return prev;
+
+        const turnActive = {...turnUpdate};
+
+        this.setState({turnActive});
+        return {turnActive};
+      },
+    });
+  };
+
   setCurrent = (currentTicket, currentForm) =>
     this.setState({currentTicket, currentForm});
 
@@ -107,7 +142,7 @@ class DashboardTickets extends Component {
 
   render() {
     const {user, collapsed, onCollapse} = this.props;
-    const {currentTicket, currentForm} = this.state;
+    const {currentTicket, currentForm, turnActive} = this.state;
 
     const TicketImageRegisterForm = Form.create({name: 'image'})(
       TicketImageForm
@@ -115,6 +150,8 @@ class DashboardTickets extends Component {
     const TicketSubmitRegisterForm = Form.create({name: 'submit'})(
       TicketSubmitForm
     );
+    const TurnInitRegisterForm = Form.create({name: 'turnInit'})(TurnInitForm);
+    const TurnEndRegisterForm = Form.create({name: 'turnEnd'})(TurnEndForm);
 
     return (
       <Layout
@@ -123,6 +160,9 @@ class DashboardTickets extends Component {
         onCollapse={onCollapse}
         page="Boletas"
       >
+        <Container width="20%" justifycontent="center" alignitems="center">
+          {turnActive && !turnActive.end ? <TurnEndRegisterForm turnActive={turnActive}/> : <TurnInitRegisterForm user={user}/>}
+        </Container>
         <Container justifycontent="center" alignitems="center">
           <Query query={GET_TICKETS} variables={{filters: {}}}>
             {({loading, error, data, subscribeToMore}) => {
@@ -132,8 +172,9 @@ class DashboardTickets extends Component {
 
               const {tickets} = data;
 
-              this.subscribeToTickets(subscribeToMore);
-              this.subscribeToTicketUpdates(subscribeToMore);
+              this.unsubscribeToTickets = this.subscribeToTickets(subscribeToMore);
+              this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(subscribeToMore);
+              this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
 
               return (
                 <Collapse accordion bordered={false}>

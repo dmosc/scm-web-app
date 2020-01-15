@@ -16,6 +16,12 @@ type Client {
   bill: Boolean!
 }
 
+type ClientTurnSummary {
+  info: Client!
+  count: Int!
+  tickets: [Ticket!]!
+}
+
 type Prices {
   N4B: Float
   N4D: Float

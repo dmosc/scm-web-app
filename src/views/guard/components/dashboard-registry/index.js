@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {withApollo} from 'react-apollo';
 import {Form} from 'antd';
 import Layout from 'components/layout/guard';
 import Container from 'components/common/container';
@@ -17,7 +18,7 @@ class DashboardRegistry extends Component {
         collapsed={collapsed}
         onCollapse={onCollapse}
         page="Registros"
-      >
+        >
         <Container title="Ingreso de camión" width="50%">
           <TicketInitForm user={user} />
         </Container>
@@ -29,4 +30,4 @@ class DashboardRegistry extends Component {
   }
 }
 
-export default DashboardRegistry;
+export default withApollo(DashboardRegistry);

@@ -86,4 +86,15 @@ const TICKET_UPDATE = gql`
   }
 `;
 
-export {NEW_TICKET, TICKET_UPDATE};
+const TURN_UPDATE = gql`
+    subscription ticketUpdate {
+      turnUpdate {
+        id
+        start
+        end
+        period
+      }
+    }
+`;
+
+export {NEW_TICKET, TICKET_UPDATE, TURN_UPDATE};

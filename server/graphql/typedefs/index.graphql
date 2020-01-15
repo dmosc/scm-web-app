@@ -6,6 +6,7 @@
 # import * from "folio.graphql"
 # import * from "post.graphql"
 # import * from "message.graphql"
+# import * from "turn.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -39,6 +40,11 @@ type Query {
   # Message
   message(id: ID!): Message
   messages(filters: MessageFilters!): [Message!]!
+  # Turn
+  turn(id: ID!): Turn
+  turns(filters: TurnFilters!): [Turn!]!
+  turnActive: Turn
+  turnSummary: TurnSummary! @auth(roles: [ADMIN, CASHIER])
 }
 
 type Mutation {
@@ -68,7 +74,10 @@ type Mutation {
   # Post
   post(post: PostInput!): Post @auth(roles: [ADMIN])
   # Message
-  message(message: MessageInput!): Message @auth(roles: [ADMIN, CASHIER, GUARD])
+  message(message: MessageInput!): Message @auth(roles: [ADMIN, CASHIER, GUARD])# Message
+  # Turn
+  turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER])
+  turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: Upload!, folderKey: s3FolderKey!, id: ID!): String!
@@ -79,4 +88,5 @@ type Subscription {
   ticketUpdate: Ticket!
   newPost: Post!
   newMessage: Message!
+  turnUpdate: Turn!
 }

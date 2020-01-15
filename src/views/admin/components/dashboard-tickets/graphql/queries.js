@@ -43,4 +43,15 @@ const GET_TICKETS = gql`
   }
 `;
 
-export {GET_TICKETS};
+const TURN_ACTIVE = gql`
+    query turnActive {
+        turnActive {
+          id
+          start
+          end
+          period
+        }
+    }
+`;
+
+export {GET_TICKETS, TURN_ACTIVE};
