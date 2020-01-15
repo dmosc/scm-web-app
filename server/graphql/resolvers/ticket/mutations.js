@@ -1,4 +1,4 @@
-import {Ticket, Client, Truck, Rock, Folio} from '../../../mongo-db/models';
+import {Ticket, Client, Truck, Rock, Folio, Turn} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import {ApolloError} from 'apollo-client';
 
@@ -36,17 +36,19 @@ const ticketMutations = {
     ).select('name count');
 
     newTicket.folio = folio.name.toString() + folio.count.toString();
+
+    const turn = await Turn.findOneAndUpdate({end: {$exists: false}}, {$push: {folios: newTicket.folio}});
+
     newTicket.client = client.id;
     newTicket.truck = truck.id;
     newTicket.product = product.id;
+    if(turn) newTicket.turn = turn.id;
 
     try {
       await newTicket.save();
       await truck.save();
 
-      const ticket = await Ticket.findById(newTicket.id).populate(
-        'client truck product'
-      );
+      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
 
       pubsub.publish('NEW_TICKET', {
         newTicket: ticket,
@@ -123,7 +125,7 @@ const ticketMutations = {
       if (!credit) {
         newTicket.credit = credit;
       } else if (client.credit < newTicket.totalPrice) {
-        throw new Error("Client doesn't have sufficient credit!");
+        return new Error("Client doesn't have sufficient credit!");
       } else {
         newTicket.credit = credit;
         client.credit = (client.credit - newTicket.totalPrice).toFixed(2);

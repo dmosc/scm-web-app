@@ -33,6 +33,11 @@ import postSubscriptions from './post/subscriptions';
 import messageMutations from './message/mutations';
 import messageQueries from './message/queries';
 import messageSubscriptions from './message/subscriptions';
+// Turn
+
+import turnMutations from './turn/mutations';
+import turnQueries from './turn/queries';
+import turnSubscriptions from './turn/subscriptions';
 
 // AWS Stuff
 import uploaders from './aws/uploaders';
@@ -46,6 +51,7 @@ const resolvers = {
     ...rockQueries,
     ...postQueries,
     ...messageQueries,
+    ...turnQueries,
   },
   Mutation: {
     ...userMutations,
@@ -56,12 +62,14 @@ const resolvers = {
     ...folioMutations,
     ...postMutations,
     ...messageMutations,
+    ...turnMutations,
     ...uploaders, // AWS
   },
   Subscription: {
     ...ticketSubscriptions,
     ...postSubscriptions,
     ...messageSubscriptions,
+    ...turnSubscriptions,
   },
   Upload: GraphQLUpload,
 };

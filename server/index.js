@@ -28,7 +28,7 @@ const {AURORA_DB_NAME} = AWS_CONFIG;
     sequelize
       .authenticate()
       .then(() => {
-        console.log(`📀 Succesfully connected to database: ${AURORA_DB_NAME}`);
+        console.log(`📀 Successfully connected to database: ${AURORA_DB_NAME}`);
       })
       .catch(err => {
         console.error('Unable to connect to the database:', err);
