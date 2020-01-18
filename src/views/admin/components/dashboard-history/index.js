@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
+import TicketsList from "./components/tickets-list";
 
 class DashboardHistory extends Component {
   state = {};
@@ -14,11 +15,7 @@ class DashboardHistory extends Component {
         page="Historial"
       >
         <Container display="flex" justifycontent="center" alignitems="center">
-          <img
-            src="/static/images/section_under_construction.png"
-            alt="Under Construction!"
-          />
-          <h1 style={{fontSize: 40}}>Sección en construcción...</h1>
+          <TicketsList />
         </Container>
       </Layout>
     );
