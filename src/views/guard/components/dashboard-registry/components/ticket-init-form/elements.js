@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const FormContainer = styled.div`
   overflow-y: scroll;
   position: relative;
-  height: 65vh;
+  height: 70vh;
 `;
 
 const PreviewImageContainer = styled.div`
@@ -27,4 +27,24 @@ const ImageContainer = styled.img`
   margin-bottom: 5px;
 `;
 
-export {FormContainer, PreviewImageContainer, ImageContainer};
+const ProductContainer = styled.div`
+    width: 100%;
+    height: fit-content;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    color: #FFFFFF;
+    font-weight: 600;
+    background-color: ${props => props.color ?? 'none'};
+    
+    -webkit-transition: background-color 100ms linear;
+    -ms-transition: background-color 100ms linear;
+    transition: background-color 100ms linear;
+    
+    :hover {
+        box-shadow: 0 0 1rem 0 rgba(136, 152, 170, 0.2);
+        cursor: pointer;
+    }
+`;
+
+export {FormContainer, PreviewImageContainer, ImageContainer, ProductContainer};

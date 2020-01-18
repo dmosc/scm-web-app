@@ -19,10 +19,10 @@ class DashboardRegistry extends Component {
         onCollapse={onCollapse}
         page="Registros"
         >
-        <Container title="Ingreso de camión" width="50%">
+        <Container title="Ingreso de camión" width="60%">
           <TicketInitForm user={user} />
         </Container>
-        <Container title="Camiones activos" width="50%">
+        <Container title="Camiones activos" width="40%">
           <TrucksList />
         </Container>
       </Layout>

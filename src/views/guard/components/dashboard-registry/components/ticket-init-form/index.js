@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {withApollo} from 'react-apollo';
-import {Form, Row, Col, Button, Select, Input, Icon, notification} from 'antd';
 import Webcam from 'react-webcam';
-import {GET_ROCKS} from './graphql/queries';
-import {FormContainer, ImageContainer, PreviewImageContainer} from './elements';
+import {Form, Row, Col, Button, Select, Input, Icon, notification, List} from 'antd';
+import ListContainer from "components/common/list";
+import {FormContainer, ImageContainer, PreviewImageContainer, ProductContainer} from './elements';
 import {REGISTER_TICKET_INIT, FILE_UPLOAD} from './graphql/mutations';
-import {GET_TRUCK} from './graphql/queries';
+import {GET_ROCKS, GET_TRUCK} from './graphql/queries';
 
 const {Option} = Select;
 
@@ -14,6 +14,20 @@ class TicketInit extends Component {
     loading: false,
     inTruckImage: null,
     products: [],
+    currentProduct: null
+  };
+
+  componentDidMount = async () => {
+    const {client} = this.props;
+
+    const {
+      data: {rocks: products},
+    } = await client.query({
+      query: GET_ROCKS,
+      variables: {filters: {}},
+    });
+
+    this.setState({products});
   };
 
   handleSubmit = e => {
@@ -22,14 +36,15 @@ class TicketInit extends Component {
       user: {id},
       client,
     } = this.props;
+    const {currentProduct} = this.state;
+
 
     e.preventDefault();
     this.setState({loading: true});
 
-    form.validateFields(async (err, {plates, product: productInfo}) => {
-      if (!err) {
+    form.validateFields(async (err, {plates}) => {
+      if (!err && currentProduct) {
         const {inTruckImage: image} = this.state;
-        const product = productInfo.substring(productInfo.indexOf(':') + 1);
 
         try {
           const {
@@ -65,10 +80,10 @@ class TicketInit extends Component {
             data: {ticketInit: ticket},
           } = await client.mutate({
             mutation: REGISTER_TICKET_INIT,
-            variables: {ticket: {plates, product, inTruckImage}},
+            variables: {ticket: {plates, product: currentProduct?.id, inTruckImage}},
           });
 
-          this.setState({loading: false, inTruckImage: null});
+          this.setState({loading: false, inTruckImage: null, currentProduct: null});
 
           notification.open({
             message: `Camión ${ticket.truck.plates} puede ingresar!`,
@@ -87,6 +102,10 @@ class TicketInit extends Component {
           this.setState({loading: false});
         }
       } else {
+        notification.open({
+          message: `¡Es necesario completar todos los datos!`,
+        });
+
         this.setState({loading: false});
       }
     });
@@ -101,43 +120,56 @@ class TicketInit extends Component {
 
   removeImage = () => this.setState({inTruckImage: null});
 
-  componentDidMount = async () => {
-    const {client} = this.props;
+  setCurrentProduct = currentProduct => {
+    const {currentProduct: oldProduct} = this.state;
 
-    const {
-      data: {rocks: products},
-    } = await client.query({
-      query: GET_ROCKS,
-      variables: {filters: {}},
-    });
-
-    this.setState({products});
+    if(!oldProduct) {
+      this.setState({currentProduct});
+    } else {
+      if(currentProduct.id === oldProduct.id) this.setState({currentProduct: null});
+      else this.setState({currentProduct});
+    }
   };
 
   render() {
     const {form} = this.props;
-    const {loading, inTruckImage, products} = this.state;
+    const {loading, inTruckImage, products, currentProduct} = this.state;
+
+    console.log(currentProduct);
 
     return (
       <FormContainer>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             <React.Fragment>
-              <Row display="flex" justify="start" gutter={1}>
+              <Row display="flex" justify="start">
                 <Col span={14}>
-                  <Webcam
-                    style={{
-                      height: '15vw',
-                      width: '20vw',
-                      margin: 0,
-                      padding: 0,
-                      borderRadius: 5,
-                    }}
-                    ref="webcamRef"
-                    screenshotQuality={1}
-                    audio={false}
-                    imageSmoothing={true}
-                  />
+                  <Row>
+                    <Col span={24}>
+                      <Webcam
+                          style={{
+                            height: '15vw',
+                            width: '20vw',
+                            margin: 0,
+                            padding: 0,
+                            borderRadius: 5,
+                          }}
+                          ref="webcamRef"
+                          screenshotQuality={1}
+                          audio={false}
+                          imageSmoothing={true}
+                      />
+                    </Col>
+                    <Col span={24}>
+                      {!inTruckImage ? (
+                          <PreviewImageContainer>
+                            <Icon style={{fontSize: 30}} type="file-image" />
+                          </PreviewImageContainer>
+                      ) : (
+                          <ImageContainer alt="Preview" src={inTruckImage} />
+                      )}
+                    </Col>
+                  </Row>
                 </Col>
                 <Col span={10}>
                   <Form.Item label="Placas">
@@ -161,61 +193,43 @@ class TicketInit extends Component {
                     )}
                   </Form.Item>
                   <Form.Item label="Producto">
-                    {form.getFieldDecorator('product', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'El tipo de producto es requerido!',
-                        },
-                      ],
-                    })(
-                      <Select showSearch placeholder="Seleccione un producto">
-                        {products.map(product => (
-                          <Option
-                            key={product.id}
-                            value={`${product.name}:${product.id}`}
-                          >
-                            {product.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
+                    <ListContainer height="40vh">
+                      <List
+                          size="small"
+                          dataSource={products}
+                          renderItem={product =>
+                              <List.Item>
+                                <ProductContainer
+                                    color={product.id === currentProduct?.id || !currentProduct ? product.color : '#D9D9D9'}
+                                    onClick={() => this.setCurrentProduct(product)}
+                                >
+                                  {product.name}
+                                </ProductContainer>
+                              </List.Item>
+                          }
+                      />
+                    </ListContainer>
                   </Form.Item>
-                  <Button type="default" onClick={this.captureImage}>
+                  <Button style={{marginRight: 5}} type="default" onClick={this.captureImage}>
                     Capturar
                   </Button>
-                </Col>
-              </Row>
-              <Row type="flex" align="bottom">
-                <Col span={14}>
-                  {!inTruckImage ? (
-                    <PreviewImageContainer>
-                      <Icon style={{fontSize: 30}} type="file-image" />
-                    </PreviewImageContainer>
-                  ) : (
-                    <ImageContainer alt="Preview" src={inTruckImage} />
-                  )}
-                </Col>
-                <Col span={10}>
-                  {inTruckImage && (
-                    <React.Fragment>
-                      <Button
-                        style={{marginRight: 5}}
-                        type="primary"
-                        onClick={this.handleSubmit}
-                        loading={loading}
-                      >
-                        {(loading && 'Espere..') || 'OK'}
-                      </Button>
-                      <Button
-                        style={{marginRight: 5}}
-                        type="danger"
-                        onClick={this.removeImage}
-                      >
-                        Cancelar
-                      </Button>
-                    </React.Fragment>
-                  )}
+                  <Button
+                      style={{marginRight: 5}}
+                      type="danger"
+                      disabled={!inTruckImage}
+                      onClick={this.removeImage}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                      style={{marginRight: 5}}
+                      type="primary"
+                      disabled={!inTruckImage}
+                      onClick={this.handleSubmit}
+                      loading={loading}
+                  >
+                    {(loading && 'Espere..') || 'OK'}
+                  </Button>
                 </Col>
               </Row>
             </React.Fragment>
