@@ -25,7 +25,7 @@ const ticketMutations = {
 
     const truck = await Truck.findOne({plates});
 
-    if (!truck) throw new Error('Truck is not registered!');
+    if (!truck) throw new Error('¡El camión no está registrado!');
 
     const client = await Client.findById(truck.client);
     const product = await Rock.findById(productId);
@@ -91,20 +91,15 @@ const ticketMutations = {
       {new: true}
     ).populate('client truck');
 
-    if (!newTicket) throw new Error('Ticket not found!');
+    if (!newTicket) throw new Error('¡No ha sido posible encontrar el ticket!');
 
     const client = await Client.findById(newTicket.client);
     const product = await Rock.findById(newTicket.product);
     const truck = await Truck.findById(newTicket.truck);
 
-    if (
-      truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)
-    )
-      truck.drivers.push(newTicket.driver);
+    if (truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)) truck.drivers.push(newTicket.driver);
 
-    newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(
-      2
-    );
+    newTicket.totalWeight = ((newTicket.weight - newTicket.truck.weight)/1000).toFixed(2);
 
     const price = client.prices[product.name]
       ? client.prices[product.name]
@@ -112,8 +107,7 @@ const ticketMutations = {
 
     newTicket.tax = client.bill ? newTicket.totalWeight * price * TAX : 0;
 
-    // Return client's prev credit if ticket is being updated
-    if (newTicket.totalPrice)
+    if((newTicket.credit && credit) || (newTicket.credit && !credit)) // Return previous credit to client
       client.credit = (client.credit + newTicket.totalPrice).toFixed(2);
 
     newTicket.totalPrice = (
@@ -121,13 +115,11 @@ const ticketMutations = {
       newTicket.tax
     ).toFixed(2);
 
+    newTicket.credit = credit;
+
     try {
-      if (!credit) {
-        newTicket.credit = credit;
-      } else if (client.credit < newTicket.totalPrice) {
-        return new Error("Client doesn't have sufficient credit!");
-      } else {
-        newTicket.credit = credit;
+      if(credit) {
+        if(client.credit < newTicket.totalPrice) return new Error("¡El cliente no tiene suficientes créditos!");
         client.credit = (client.credit - newTicket.totalPrice).toFixed(2);
       }
 
@@ -135,13 +127,9 @@ const ticketMutations = {
       await client.save();
       await truck.save();
 
-      const ticket = await Ticket.findById(newTicket.id).populate(
-        'client truck product'
-      );
+      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
 
-      pubsub.publish('TICKET_UPDATE', {
-        ticketUpdate: ticket,
-      });
+      pubsub.publish('TICKET_UPDATE', {ticketUpdate: ticket});
 
       return ticket;
     } catch (e) {

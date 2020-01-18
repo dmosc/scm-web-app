@@ -3,18 +3,21 @@ type Rock {
   id: ID!
   name: String!
   price: Float!
+  color: String!
 }
 
 # Inputs
 input RockInput {
   name: String!
   price: Float!
+  color: String!
 }
 
 input RockEditInput {
   id: ID!
   name: String
   price: Float
+  color: String
 }
 
 input RockFilters {

@@ -5,7 +5,7 @@ const messageMutations = {
   message: authenticated(async (_, args, {pubsub}) => {
     const message = Message.create({...args.message});
 
-    if (!message) throw new Error('There was an error creating the message');
+    if (!message) throw new Error('¡Hubo un error creando el mensaje!');
 
     pubsub.publish('NEW_MESSAGE', {
       newMessage: message,

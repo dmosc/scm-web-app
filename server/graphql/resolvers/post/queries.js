@@ -6,7 +6,7 @@ const postQueries = {
     const {id} = args;
     const post = await Post.findByPk(id);
 
-    if (!post) throw new Error('Post not found!');
+    if (!post) throw new Error('¡No se ha podido encontrar el post!');
 
     return post;
   }),
@@ -17,7 +17,7 @@ const postQueries = {
       order: [['createdAt', 'DESC']],
     });
 
-    if (!posts) throw new Error('Posts not found!');
+    if (!posts) throw new Error('¡Ha habido un error cargando los posts!');
 
     return posts;
   }),

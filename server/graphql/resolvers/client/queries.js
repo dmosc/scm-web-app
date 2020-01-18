@@ -6,7 +6,7 @@ const clientQueries = {
     const {id} = args;
     const client = await Client.findById(id).populate('trucks');
 
-    if (!client) throw new Error('Client does not exist!');
+    if (!client) throw new Error('¡El cliente no existe!');
 
     return client;
   }),
@@ -21,7 +21,7 @@ const clientQueries = {
       .limit(limit || 50)
       .populate('trucks');
 
-    if (!clients) throw new Error('Could not fetch clients!');
+    if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
 
     return clients;
   }),

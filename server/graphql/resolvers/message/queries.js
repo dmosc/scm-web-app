@@ -6,7 +6,7 @@ const messageQueries = {
     const {id} = args;
     const message = await Message.findByPk(id);
 
-    if (!message) throw new Error('Message not found!');
+    if (!message) throw new Error('¡No se ha podido encontrar el mensaje!');
 
     return message;
   }),
@@ -17,7 +17,7 @@ const messageQueries = {
       order: [['createdAt', 'ASC']],
     });
 
-    if (!messages) throw new Error('Messages not found!');
+    if (!messages) throw new Error('¡No se han podido cargar los mensajes!');
 
     return messages;
   }),

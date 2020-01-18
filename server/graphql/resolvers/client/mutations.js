@@ -22,13 +22,11 @@ const clientMutations = {
   }),
   clientEdit: authenticated(async (_, args) => {
     try {
-      const client = await Client.findOneAndUpdate(
-        {_id: args.client.id},
-        {...args.client},
-        {new: true}
+      return await Client.findOneAndUpdate(
+          {_id: args.client.id},
+          {...args.client},
+          {new: true}
       );
-
-      return client;
     } catch (e) {
       return e;
     }

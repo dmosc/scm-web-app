@@ -7,7 +7,7 @@ const ticketQueries = {
     const {id} = args;
     const ticket = await Ticket.findById(id).populate('client truck product');
 
-    if (!ticket) throw new Error('Ticket does not exists!');
+    if (!ticket) throw new Error('¡No ha sido posible encontrar el ticket!');
 
     return ticket;
   }),
@@ -16,7 +16,7 @@ const ticketQueries = {
       .limit(limit || 50)
       .populate('client truck product');
 
-    if (!tickets) throw new ApolloError('No tickets registered!');
+    if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
   }),
 };

@@ -6,7 +6,7 @@ const turnQueries = {
         const {id} = args;
         const turn = await Turn.findOne({_id: id}).populate('user');
 
-        if (!turn) throw new Error('Turn does not exists!');
+        if (!turn) throw new Error('¡No ha sido posible encontrar el turno!');
 
         return turn;
     }),
@@ -15,7 +15,7 @@ const turnQueries = {
             .limit(limit || 50)
             .populate('user');
 
-        if (!turns) throw new Error("Couldn't find any turns available!");
+        if (!turns) throw new Error("¡Ha habido un error cargando los turnos!");
 
         return turns;
     }),

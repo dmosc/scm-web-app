@@ -1,6 +1,6 @@
 import path from 'path';
 import {ApolloServer, PubSub} from 'apollo-server';
-import {makeExecutableSchema} from 'graphql-tools/dist/makeExecutableSchema.js';
+import {makeExecutableSchema} from 'graphql-tools';
 import {importSchema} from 'graphql-import';
 import schemaDirectives from './directives';
 import resolvers from './resolvers';

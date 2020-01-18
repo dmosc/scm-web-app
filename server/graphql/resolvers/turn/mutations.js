@@ -6,7 +6,7 @@ const turnMutations = {
     turnInit: authenticated(async (_, args, {pubsub}) => {
         const existentTurn = await Turn.findOne({end: {$exists: false}});
 
-        if(existentTurn) return new Error("There's and active turn going on!");
+        if(existentTurn) return new Error("¡Ya hay un turno activo!");
 
         const turn = new Turn({...args.turn});
         const start = new Date();
@@ -39,7 +39,7 @@ const turnMutations = {
 
             const turn = await Turn.findOneAndUpdate({_id: id}, {end: end.setHours(end.getHours() - offset)}, {new: true}).populate('user');
 
-            if(!turn) return new Error("Turn does not exist!");
+            if(!turn) return new Error("¡No ha sido posible encontrar el turno!");
 
             const tickets = await Ticket.find({folio: {$in: [...turn.folios]}}).populate('client truck product');
 
@@ -64,7 +64,7 @@ const turnMutations = {
                     outTruckImage: tickets[i].outTruckImage
                 });
 
-                if(!ticket) return new Error('There was an error uploading new Tickets to the database!');
+                if(!ticket) return new Error('¡Ha habido un error durante la migración de los tickets!');
 
                 const oldTicket = await Ticket.findByIdAndDelete(tickets[i].id);
 

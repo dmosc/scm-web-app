@@ -4,11 +4,9 @@ import authenticated from '../../middleware/authenticated';
 const truckQueries = {
   truck: authenticated(async (_, args) => {
     const {id, plates} = args;
-    const truck = await Truck.findOne({$or: [{_id: id}, {plates}]}).populate(
-      'client'
-    );
+    const truck = await Truck.findOne({$or: [{_id: id}, {plates}]}).populate('client');
 
-    if (!truck) throw new Error('Truck does not exists!');
+    if (!truck) throw new Error('¡El camión no existe!');
 
     return truck;
   }),
@@ -24,7 +22,7 @@ const truckQueries = {
       .limit(limit || 50)
       .populate('client');
 
-    if (!trucks) throw new Error("Couldn't find any truck does not exists!");
+    if (!trucks) throw new Error("¡No ha sido posible cargar los camiones!");
 
     return trucks;
   }),

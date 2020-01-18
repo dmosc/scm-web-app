@@ -5,7 +5,7 @@ const postMutations = {
   post: authenticated(async (_, args, {pubsub}) => {
     const post = Post.create({...args.post});
 
-    if (!post) throw new Error('There was an error creating the post');
+    if (!post) throw new Error('¡Hubo un error intentando crear el mensaje!');
 
     pubsub.publish('NEW_POST', {
       newPost: post,

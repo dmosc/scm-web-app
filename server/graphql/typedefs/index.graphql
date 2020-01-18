@@ -74,7 +74,7 @@ type Mutation {
   # Post
   post(post: PostInput!): Post @auth(roles: [ADMIN])
   # Message
-  message(message: MessageInput!): Message @auth(roles: [ADMIN, CASHIER, GUARD])# Message
+  message(message: MessageInput!): Message @auth(roles: [ADMIN, CASHIER, GUARD])
   # Turn
   turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER])
   turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER])

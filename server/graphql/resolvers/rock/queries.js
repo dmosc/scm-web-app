@@ -7,14 +7,14 @@ const ticketQueries = {
     const {id} = args;
     const rock = await Rock.findById(id).populate('client truck product');
 
-    if (!rock) throw new Error('Rock does not exists!');
+    if (!rock) throw new Error('¡No existe este producto!');
 
     return rock;
   }),
   rocks: authenticated(async (_, {filters: {limit}}) => {
     const rocks = await Rock.find({}).limit(limit || 10);
 
-    if (!rocks) throw new ApolloError('No rocks registered!');
+    if (!rocks) throw new ApolloError('¡No ha sido posible cargar los productos!');
     else return rocks;
   }),
 };

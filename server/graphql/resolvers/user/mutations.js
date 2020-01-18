@@ -1,5 +1,5 @@
 import {User} from '../../../mongo-db/models';
-import {hashSync as hash, compareSync as comparePasswords} from 'bcryptjs';
+import {compareSync as comparePasswords, hashSync as hash} from 'bcryptjs';
 import {AuthenticationError} from 'apollo-server-core';
 import jwt from 'jsonwebtoken';
 import authenticated from '../../middleware/authenticated';
@@ -31,7 +31,7 @@ const userMutations = {
       });
 
       if (!user || !comparePasswords(args.user.password, user.password)) {
-        throw new AuthenticationError('Incorrect user or password');
+        return new AuthenticationError('¡Usuario o contraseña incorrectos!');
       }
 
       const token = jwt.sign({id: user.id, role: user.role}, JWT_SECRET, {
@@ -49,13 +49,11 @@ const userMutations = {
   },
   userEdit: authenticated(async (_, args) => {
     try {
-      const user = await User.findOneAndUpdate(
-        {_id: args.user.id},
-        {...args.user},
-        {new: true}
+      return await User.findOneAndUpdate(
+          {_id: args.user.id},
+          {...args.user},
+          {new: true}
       );
-
-      return user;
     } catch (e) {
       return e;
     }

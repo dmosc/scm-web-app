@@ -1,4 +1,4 @@
-import {Truck, Client} from '../../../mongo-db/models';
+import {Client, Truck} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const truckMutations = {
@@ -11,20 +11,15 @@ const truckMutations = {
     truck.weight = truck.weight.toFixed(2);
     truck.drivers = truck.drivers.map(driver => driver.toUpperCase());
 
-    const client = await Client.findOneAndUpdate(
-      {_id: args.truck.client},
-      {$push: {trucks: truck._id}}
-    );
+    const client = await Client.findOneAndUpdate({_id: args.truck.client}, {$push: {trucks: truck._id}});
 
-    if (!client) throw new Error('Client does not exists!');
+    if (!client) throw new Error('¡El cliente no existe!');
 
     try {
       await truck.save();
       await client.save();
 
-      const newTruck = await Truck.findById(truck.id).populate('client');
-
-      return newTruck;
+      return await Truck.findById(truck.id).populate('client');
     } catch (e) {
       return e;
     }
