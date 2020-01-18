@@ -167,8 +167,7 @@ class DashboardTickets extends Component {
           <Query query={GET_TICKETS} variables={{filters: {}}}>
             {({loading, error, data, subscribeToMore}) => {
               if (loading) return <div>Cargando boletas...</div>;
-              if (error)
-                return <div>¡No se han podido cargar las boletas!</div>;
+              if (error) return <div>¡No se han podido cargar las boletas!</div>;
 
               const {tickets} = data;
 
@@ -177,28 +176,30 @@ class DashboardTickets extends Component {
               this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
 
               return (
-                <Collapse accordion bordered={false}>
-                  {tickets.map(ticket => (
-                    <Panel
-                      key={ticket.id}
-                      header={`${ticket.truck.plates}`}
-                      extra={
-                        <LoadingBarContainer>
-                          <LoadingBar
-                            totalPrice={ticket.totalPrice}
-                            outTruckImage={ticket.outTruckImage}
-                          />
-                        </LoadingBarContainer>
-                      }
-                    >
-                      <TicketPanel
-                        ticket={ticket}
-                        setCurrent={this.setCurrent}
-                        printTicket={this.printTicket}
-                      />
-                    </Panel>
-                  ))}
-                </Collapse>
+                  tickets.length === 0 ?
+                    <div>No hay tickets disponibles</div> :
+                    <Collapse accordion bordered={false}>
+                      {tickets.map(ticket => (
+                          <Panel
+                              key={ticket.id}
+                              header={`${ticket.truck.plates}`}
+                              extra={
+                                <LoadingBarContainer>
+                                  <LoadingBar
+                                      totalPrice={ticket.totalPrice}
+                                      outTruckImage={ticket.outTruckImage}
+                                  />
+                                </LoadingBarContainer>
+                              }
+                          >
+                            <TicketPanel
+                                ticket={ticket}
+                                setCurrent={this.setCurrent}
+                                printTicket={this.printTicket}
+                            />
+                          </Panel>
+                      ))}
+                    </Collapse>
               );
             }}
           </Query>

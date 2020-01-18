@@ -41,7 +41,7 @@ class TicketSubmitForm extends Component {
         },
       } = await client.query({query: GET_TRUCK_DRIVERS, variables: {id}});
 
-      this.setState({drivers}, this.calculateTotal());
+      this.setState({drivers}, this.calculateTotal);
     } catch (e) {
       console.log(e);
     }
@@ -101,7 +101,7 @@ class TicketSubmitForm extends Component {
     const totalWeight =
       currentTicket.totalWeight && weight === 0
         ? currentTicket.totalWeight
-        : (weight - currentTicket.truck.weight).toFixed(2);
+        : ((weight - currentTicket.truck.weight)/1000).toFixed(2);
     const tax = currentTicket.client.bill ? totalWeight * price * TAX : 0;
 
     const total = (totalWeight * price + tax).toFixed(2);
@@ -126,30 +126,53 @@ class TicketSubmitForm extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {form.getFieldDecorator('driver', {
-              initialValue: currentTicket.driver
-                ? [currentTicket.driver]
-                : drivers[0],
-              rules: [
-                {
-                  required: true,
-                  message: 'Nombre(s) y apellidos son requeridos',
-                },
-              ],
-            })(
-              <Select
-                mode="tags"
-                maxTagCount={1}
-                allowClear
-                showSearch
-                placeholder="Nombre(s) y apellidos del conductor"
-              >
-                {drivers.map(driver => (
-                  <Option key={driver} value={driver}>
-                    {driver}
-                  </Option>
-                ))}
-              </Select>
+            {currentTicket.driver ? (
+              form.getFieldDecorator('driver', {
+                initialValue: [currentTicket.driver],
+                rules: [
+                  {
+                    required: true,
+                    message: 'Nombre(s) y apellidos son requeridos',
+                  },
+                ],
+              })(
+                <Select
+                    mode="tags"
+                    maxTagCount={1}
+                    allowClear
+                    showSearch
+                    placeholder="Nombre(s) y apellidos del conductor"
+                >
+                  {drivers.map(driver => (
+                      <Option key={driver} value={driver}>
+                        {driver}
+                      </Option>
+                  ))}
+                </Select>
+              )
+            ) : (
+              form.getFieldDecorator('driver', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Nombre(s) y apellidos son requeridos',
+                  },
+                ],
+              })(
+                  <Select
+                      mode="tags"
+                      maxTagCount={1}
+                      allowClear
+                      showSearch
+                      placeholder="Nombre(s) y apellidos del conductor"
+                  >
+                    {drivers.map(driver => (
+                        <Option key={driver} value={driver}>
+                          {driver}
+                        </Option>
+                    ))}
+                  </Select>
+              )
             )}
           </Form.Item>
           <Form.Item>
@@ -159,13 +182,13 @@ class TicketSubmitForm extends Component {
                 {
                   required: true,
                   message:
-                    '¡Las toneladas registradas en báscula son requeridas!',
+                    '¡Los KG en báscula son requeridas!',
                 },
               ],
             })(
               <InputNumber
                 style={{width: '100%'}}
-                placeholder="Toneladas registradas en báscula"
+                placeholder="KG registrados en báscula"
                 min={0}
                 step={0.01}
                 onChange={value => this.handleAttributeChange('weight', value)}

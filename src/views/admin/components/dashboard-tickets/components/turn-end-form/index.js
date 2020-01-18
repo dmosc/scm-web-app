@@ -57,9 +57,10 @@ class TurnEndForm extends Component {
                 }
 
                 this.setState({loading: false});
+                window.location.reload();
             } else {
                 notification.error({message: "¡Ha habido un error intentando terminar el turno!"});
-                this.setState({loading: false});
+                this.setState({loading: false}, this.toggleSummary);
             }
         })
     };

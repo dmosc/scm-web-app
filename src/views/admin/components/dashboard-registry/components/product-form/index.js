@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {withApollo} from 'react-apollo';
 import {Form, Select, InputNumber, List, Button, notification} from 'antd';
+import ListContainer from "components/common/list";
 import {GET_ROCKS} from './graphql/queries';
 import {EDIT_ROCK} from './graphql/mutations';
 
@@ -27,6 +28,8 @@ class ProductForm extends Component {
   };
 
   setCurrentProduct = currentProduct => this.setState({currentProduct});
+
+  clearCurrentProduct = () => this.setState({currentProduct: null});
 
   handleSubmit = e => {
     const {form, client} = this.props;
@@ -84,12 +87,13 @@ class ProductForm extends Component {
 
     return (
       <React.Fragment>
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} layout="inline">
           <Form.Item>
             {form.getFieldDecorator('name')(
-              <Select showSearch allowClear placeholder="Tipo de producto">
+              <Select style={{minWidth: 200}} showSearch allowClear placeholder="Tipo de producto">
                 {products.map(product => (
                   <Option
+                    style={{width: '100%'}}
                     key={product.id}
                     value={product.name}
                     onClick={() => this.setCurrentProduct(product)}
@@ -100,21 +104,19 @@ class ProductForm extends Component {
               </Select>
             )}
           </Form.Item>
-          {currentProduct && (
-            <Form.Item>
-              {form.getFieldDecorator('price', {
-                initialValue: currentProduct.price,
-              })(
-                <InputNumber
-                  autoFocus
-                  style={{width: '100%'}}
-                  placeholder={currentProduct.price}
-                  min={0}
-                  step={0.1}
-                />
-              )}
-            </Form.Item>
-          )}
+          <Form.Item>
+            {form.getFieldDecorator('price', {
+              initialValue: currentProduct?.price,
+            })(
+              <InputNumber
+                autoFocus
+                style={{width: '100%'}}
+                placeholder={currentProduct?.price}
+                min={0}
+                step={0.1}
+              />
+            )}
+          </Form.Item>
           <Form.Item>
             <Button
               type="primary"
@@ -126,20 +128,22 @@ class ProductForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-        <List
-          loading={loadingProducts}
-          itemLayout="horizontal"
-          dataSource={products}
-          size="small"
-          renderItem={product => (
-            <List.Item>
-              <List.Item.Meta
-                title={`${product.name}`}
-                description={`${product.price}`}
-              />
-            </List.Item>
-          )}
-        />
+        <ListContainer height="40vh">
+          <List
+            loading={loadingProducts}
+            itemLayout="horizontal"
+            dataSource={products}
+            size="small"
+            renderItem={product => (
+              <List.Item>
+                <List.Item.Meta
+                  title={`${product.name}`}
+                  description={`${product.price}`}
+                />
+              </List.Item>
+            )}
+          />
+        </ListContainer>
       </React.Fragment>
     );
   }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Form, Drawer, Row, Col, Input, List, Button, Icon} from 'antd';
+import ListContainer from "components/common/list";
 import EditForm from './components/client-edit-form';
 import {TitleList, TitleContainer} from './elements';
 
@@ -49,27 +50,29 @@ class ClientList extends Component {
                     />
                 </Col>
             </Row>
-          <List
-            loading={loadingClients}
-            itemLayout="horizontal"
-            dataSource={clients}
-            size="small"
-            renderItem={client => (
-              <List.Item
-                actions={[
-                  <Icon
-                    type="edit"
-                    onClick={() => this.setCurrentClient(client)}
-                  />,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`${client.businessName}`}
-                  description={`${client.lastName}, ${client.firstName}`}
-                />
-              </List.Item>
-            )}
-          />
+            <ListContainer height="40vh">
+              <List
+                loading={loadingClients}
+                itemLayout="horizontal"
+                dataSource={clients}
+                size="small"
+                renderItem={client => (
+                  <List.Item
+                    actions={[
+                      <Icon
+                        type="edit"
+                        onClick={() => this.setCurrentClient(client)}
+                      />,
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={`${client.businessName}`}
+                      description={`${client.lastName}, ${client.firstName}`}
+                    />
+                  </List.Item>
+                )}
+              />
+            </ListContainer>
         </Drawer>
         {currentClient && (
           <ClientEditForm
