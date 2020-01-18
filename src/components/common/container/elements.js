@@ -17,9 +17,10 @@ const ContentContainer = styled(Content)`
     display: none;
   }
   display: ${props => (props.display ? props.display : null)}
+  flex-direction: ${props => (props.direction ? props.direction : null)}
   justify-content: ${props =>
-    props.justifycontent ? props.justifycontent : null}
-  align-items: ${props => (props.alignitems ? props.alignitems : null)}
+    props.justify ? props.justify : null}
+  align-items: ${props => (props.align ? props.align : null)}
   flex-wrap: wrap;
   width: ${props => (props.width ? props.width : 'fit-content')}
   max-width: ${props => (props.width ? props.width : null)}

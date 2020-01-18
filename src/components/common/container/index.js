@@ -8,8 +8,9 @@ const Container = ({
   width,
   height,
   display,
-  justifycontent,
-  alignitems,
+  direction,
+  justify,
+  align,
 }) => {
   return (
     <ContentContainer
@@ -17,8 +18,9 @@ const Container = ({
       width={width}
       height={height}
       display={display}
-      justifycontent={justifycontent}
-      alignitems={alignitems}
+      direction={direction}
+      justify={justify}
+      align={align}
     >
       {title && <TitleContainer>{title}</TitleContainer>}
       {children}
