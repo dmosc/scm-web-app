@@ -14,6 +14,7 @@ type Ticket {
   date: Date
   inTruckImage: String
   outTruckImage: String
+  bill: Boolean!
   turn: Turn
 }
 
@@ -39,6 +40,7 @@ input TicketSubmitInput {
   driver: String!
   weight: Float!
   credit: Boolean!
+  bill: Boolean!
 }
 
 input TicketFilters {

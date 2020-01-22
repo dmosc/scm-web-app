@@ -27,15 +27,8 @@ const ticketMutations = {
 
     if (!truck) throw new Error('¡El camión no está registrado!');
 
-    const client = await Client.findById(truck.client);
     const product = await Rock.findById(productId);
-    const folio = await Folio.findOneAndUpdate(
-      {name: client.bill ? 'A' : 'B'},
-      {$inc: {count: 1}},
-      {new: false}
-    ).select('name count');
-
-    newTicket.folio = folio.name.toString() + folio.count.toString();
+    const client = await Client.findById(truck.client);
 
     const turn = await Turn.findOneAndUpdate({end: {$exists: false}}, {$push: {folios: newTicket.folio}});
 
@@ -83,11 +76,11 @@ const ticketMutations = {
     }
   }),
   ticketSubmit: authenticated(async (_, args, {pubsub}) => {
-    const {id, driver, weight, credit} = args.ticket;
+    const {id, driver, weight, credit, bill} = args.ticket;
 
     const newTicket = await Ticket.findOneAndUpdate(
       {_id: id},
-      {driver: driver.toUpperCase(), weight: weight.toFixed(2)},
+      {driver: driver.toUpperCase(), weight: weight.toFixed(2), bill},
       {new: true}
     ).populate('client truck');
 
@@ -97,6 +90,14 @@ const ticketMutations = {
     const product = await Rock.findById(newTicket.product);
     const truck = await Truck.findById(newTicket.truck);
 
+    const folio = await Folio.findOneAndUpdate(
+        {name: newTicket.bill ? 'A' : 'B'},
+        {$inc: {count: 1}},
+        {new: false}
+    ).select('name count');
+
+    newTicket.folio = folio.name.toString() + folio.count.toString();
+
     if (truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)) truck.drivers.push(newTicket.driver);
 
     newTicket.totalWeight = ((newTicket.weight - newTicket.truck.weight)/1000).toFixed(2);
@@ -105,15 +106,12 @@ const ticketMutations = {
       ? client.prices[product.name]
       : product.price;
 
-    newTicket.tax = client.bill ? newTicket.totalWeight * price * TAX : 0;
+    newTicket.tax = newTicket.bill ? newTicket.totalWeight * price * TAX : 0;
+
+    newTicket.totalPrice = (newTicket.totalWeight * price + newTicket.tax).toFixed(2);
 
     if((newTicket.credit && credit) || (newTicket.credit && !credit)) // Return previous credit to client
       client.credit = (client.credit + newTicket.totalPrice).toFixed(2);
-
-    newTicket.totalPrice = (
-      newTicket.totalWeight * price +
-      newTicket.tax
-    ).toFixed(2);
 
     newTicket.credit = credit;
 

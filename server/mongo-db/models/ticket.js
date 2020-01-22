@@ -15,6 +15,7 @@ const Ticket = new Schema({
   date: {type: Date, required: false, default: Date.now},
   inTruckImage: {type: String, required: false},
   outTruckImage: {type: String, required: false},
+  bill: {type: Boolean, required: true, default: false},
   turn: {type: Schema.Types.ObjectId, ref: 'Turn', required: false},
 });
 

@@ -1,9 +1,9 @@
 # Types
 type Client {
   id: ID!
-  firstName: String!
-  lastName: String!
-  email: String!
+  firstName: String
+  lastName: String
+  email: String
   role: Role!
   trucks: [ID!]!
   businessName: String!
@@ -11,9 +11,9 @@ type Client {
   CFDIuse: CFDIuse!
   cellphone: [String!]!
   address: String!
+  zipcode: String
   prices: Prices!
   credit: Float!
-  bill: Boolean!
 }
 
 type ClientTurnSummary {
@@ -23,13 +23,15 @@ type ClientTurnSummary {
 }
 
 type Prices {
-  N4B: Float
-  N4D: Float
-  N5: Float
+  A4B: Float
+  A4D: Float
+  A5: Float
   BASE: Float
   CNC: Float
-  GRAVA2: Float
-  MIXTO: Float
+  G2: Float
+  MIX: Float
+  SUBBASE: Float
+  SELLO: Float
 }
 
 # Inputs
@@ -43,9 +45,9 @@ input ClientInput {
   CFDIuse: CFDIuse!
   cellphone: [String!]!
   address: String!
+  zipcode: String
   prices: PricesInput
   credit: Float!
-  bill: Boolean!
 }
 
 # Inputs
@@ -60,19 +62,21 @@ input ClientEditInput {
   CFDIuse: CFDIuse
   cellphone: [String]
   address: String
+  zipcode: String
   prices: PricesInput
   credit: Float
-  bill: Boolean
 }
 
 input PricesInput {
-  N4B: Float
-  N4D: Float
-  N5: Float
+  A4B: Float
+  A4D: Float
+  A5: Float
   BASE: Float
   CNC: Float
-  GRAVA2: Float
-  MIXTO: Float
+  G2: Float
+  MIX: Float
+  SUBBASE: Float
+  SELLO: Float
 }
 
 input ClientFilters {
@@ -84,4 +88,5 @@ input ClientFilters {
 enum CFDIuse {
   G01
   G03
+  NE
 }

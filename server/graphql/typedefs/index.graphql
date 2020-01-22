@@ -49,12 +49,12 @@ type Query {
 
 type Mutation {
   # User
-  user(user: UserRegisterInput!): User! @auth(roles: [ADMIN])
+  user(user: UserRegisterInput!): User!
   login(user: UserLogin!): String!
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN])
   # Client
-  client(client: ClientInput!): Client @auth(roles: [ADMIN])
-  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN])
+  client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
+  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, CASHIER])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
   ticketInit(ticket: TicketInitInput!): Ticket!
@@ -65,7 +65,7 @@ type Mutation {
     @auth(roles: [ADMIN, CASHIER, GUARD])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
-  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN])
+  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
   rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN, CASHIER])

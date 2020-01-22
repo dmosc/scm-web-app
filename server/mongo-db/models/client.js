@@ -17,9 +17,9 @@ const Client = User.discriminator(
     CFDIuse: {type: String, enum: [...CFDIuse]},
     cellphone: [{type: String, required: true, default: []}],
     address: {type: String, required: true},
+    zipcode: {type: String, required: false},
     prices: {type: Object, required: true, default: {}},
     credit: {type: Number, required: true, default: 0},
-    bill: {type: Boolean, required: true, default: false},
   })
 );
 
