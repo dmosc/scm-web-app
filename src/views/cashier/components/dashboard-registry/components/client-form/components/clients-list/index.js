@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Form, Drawer, Row, Col, Input, List, Button, Icon} from 'antd';
+import ListContainer from "components/common/list";
 import EditForm from './components/client-edit-form';
 import {TitleList, TitleContainer} from './elements';
-import ListContainer from "../../../../../../../../components/common/list";
 
 const {Search} = Input;
 
@@ -67,7 +67,7 @@ class ClientList extends Component {
                   >
                     <List.Item.Meta
                       title={`${client.businessName}`}
-                      description={`${client.lastName}, ${client.firstName}`}
+                      description={`${client.lastName} ${client.firstName}`.trim()}
                     />
                   </List.Item>
                 )}

@@ -4,7 +4,6 @@ import {
   Modal,
   Form,
   Input,
-  Radio,
   InputNumber,
   Select,
   Button,
@@ -12,12 +11,12 @@ import {
   Typography,
   notification,
 } from 'antd';
+import CFDIuse from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
 import {GET_PRODUCTS} from './graphql/queries';
 import {EDIT_CLIENT} from './graphql/mutations';
 
 const {Option} = Select;
-const {Group} = Radio;
 const {Text} = Typography;
 
 class EditForm extends Component {
@@ -28,7 +27,6 @@ class EditForm extends Component {
     publicPrices: {},
     currentPrice: null,
     currentPriceTotal: 0,
-    CFDIuse: ['G01', 'G03'],
   };
 
   componentDidMount = async () => {
@@ -65,21 +63,7 @@ class EditForm extends Component {
     this.setState({loading: true});
     e.preventDefault();
     form.validateFields(
-      async (
-        err,
-        {
-          firstName,
-          lastName,
-          email,
-          businessName,
-          rfc,
-          CFDIuse,
-          cellphone,
-          address,
-          credit,
-          bill,
-        }
-      ) => {
+      async (err, {firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, credit}) => {
         if (!err) {
           try {
             const {
@@ -87,21 +71,8 @@ class EditForm extends Component {
             } = await client.mutate({
               mutation: EDIT_CLIENT,
               variables: {
-                client: {
-                  id,
-                  firstName,
-                  lastName,
-                  email,
-                  businessName,
-                  rfc,
-                  CFDIuse,
-                  cellphone,
-                  address,
-                  prices,
-                  credit,
-                  bill,
-                },
-              },
+                client: {id, firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, prices, credit}
+              }
             });
 
             notification.open({
@@ -173,7 +144,6 @@ class EditForm extends Component {
       prices,
       currentPrice,
       currentPriceTotal,
-      CFDIuse,
     } = this.state;
 
     delete currentClient.prices.__typename;
@@ -191,15 +161,7 @@ class EditForm extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {form.getFieldDecorator('firstName', {
-              initialValue: currentClient.firstName,
-              rules: [
-                {
-                  required: true,
-                  message: 'Nombre(s) del vendedor es requerido!',
-                },
-              ],
-            })(
+            {form.getFieldDecorator('firstName', {initialValue: currentClient.firstName})(
               <Input
                 prefix={<Icon type="info" style={{color: 'rgba(0,0,0,.25)'}} />}
                 placeholder="Nombre(s)"
@@ -207,15 +169,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('lastName', {
-              initialValue: currentClient.lastName,
-              rules: [
-                {
-                  required: true,
-                  message: 'Apellidos del vendedor son requerido!',
-                },
-              ],
-            })(
+            {form.getFieldDecorator('lastName', {initialValue: currentClient.lastName})(
               <Input
                 prefix={<Icon type="info" style={{color: 'rgba(0,0,0,.25)'}} />}
                 placeholder="Apellidos"
@@ -223,9 +177,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('email', {
-              initialValue: currentClient.email,
-            })(
+            {form.getFieldDecorator('email', {initialValue: currentClient.email})(
               <Input
                 prefix={<Icon type="mail" style={{color: 'rgba(0,0,0,.25)'}} />}
                 placeholder="Email"
@@ -233,9 +185,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('businessName', {
-              initialValue: currentClient.businessName,
-            })(
+            {form.getFieldDecorator('businessName', {initialValue: currentClient.businessName})(
               <Input
                 prefix={<Icon type="info" style={{color: 'rgba(0,0,0,.25)'}} />}
                 placeholder="Razón social"
@@ -243,9 +193,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('rfc', {
-              initialValue: currentClient.rfc,
-            })(
+            {form.getFieldDecorator('rfc', {initialValue: currentClient.rfc})(
               <Input
                 prefix={
                   <Icon type="number" style={{color: 'rgba(0,0,0,.25)'}} />
@@ -269,15 +217,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('cellphone', {
-              initialValue: currentClient.cellphone,
-              rules: [
-                {
-                  required: true,
-                  message: 'Ingrese 1 o más números de contacto',
-                },
-              ],
-            })(
+            {form.getFieldDecorator('cellphone', {initialValue: currentClient.cellphone})(
               <Select
                 placeholder="Números de contacto"
                 mode="tags"
@@ -337,14 +277,6 @@ class EditForm extends Component {
                 ? parsedPrices.join(', ')
                 : 'Ningún precio especial seleccionado'}
             </Text>
-          </Form.Item>
-          <Form.Item>
-            {form.getFieldDecorator('bill', {initialValue: currentClient.bill})(
-              <Group>
-                <Radio.Button value={false}>REMISIÓN</Radio.Button>
-                <Radio.Button value={true}>FACTURA</Radio.Button>
-              </Group>
-            )}
           </Form.Item>
           <Form.Item>
             <Button

@@ -67,7 +67,7 @@ class ClientList extends Component {
                   >
                     <List.Item.Meta
                       title={`${client.businessName}`}
-                      description={`${client.lastName}, ${client.firstName}`}
+                      description={`${client.lastName} ${client.firstName}`.trim()}
                     />
                   </List.Item>
                 )}

@@ -49,7 +49,7 @@ class TruckForm extends Component {
     } catch (e) {
       this.setState({loadingTrucks: false});
     }
-  }, 300)
+  }, 300);
 
   handleSubmit = e => {
     const {form, client} = this.props;
@@ -100,9 +100,9 @@ class TruckForm extends Component {
     );
   };
 
-  getClients = async key => {
+  getClients = async search => {
     const {client} = this.props;
-    if (!key) {
+    if (!search) {
       this.setState({clients: [], loadingClients: false});
       return;
     }
@@ -115,7 +115,7 @@ class TruckForm extends Component {
       } = await client.query({
         query: GET_CLIENTS,
         variables: {
-          filters: {limit: 10},
+          filters: {limit: 10, search},
         },
       });
 

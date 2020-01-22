@@ -29,12 +29,12 @@ class DashboardTickets extends Component {
 
     try {
       const [
-        {
-          data: {tickets}
-        },
-        {
-          data: {turnActive}
-        }
+          {
+            data: {tickets}
+          },
+          {
+            data: {turnActive}
+          }
       ] = await Promise.all([
         client.query({
           query: GET_TICKETS,
@@ -110,7 +110,7 @@ class DashboardTickets extends Component {
   };
 
   setCurrent = (currentTicket, currentForm) =>
-      this.setState({currentTicket, currentForm});
+    this.setState({currentTicket, currentForm});
 
   printTicket = node => {
     const {
@@ -118,13 +118,13 @@ class DashboardTickets extends Component {
     } = node;
 
     document
-        .getElementById('root')
-        .insertAdjacentHTML(
-            'beforeend',
-            `<div id="printable">${mapStyles(
-                ReactDOMServer.renderToString(node)
-            )}</div>`
-        );
+      .getElementById('root')
+      .insertAdjacentHTML(
+        'beforeend',
+        `<div id="printable">${mapStyles(
+          ReactDOMServer.renderToString(node)
+        )}</div>`
+      );
 
     print({
       printable: 'printable',
@@ -133,7 +133,7 @@ class DashboardTickets extends Component {
       honorColor: true,
       header: `Folio: ${ticket.folio}`,
       style:
-          '@page { margin: 0; } #printable { margin: 50px; font-size: 16px; font-family: Courier; }',
+        '@page { margin: 0; } #printable { margin: 50px; font-size: 16px; font-family: Courier; }',
     });
 
     const printable = document.getElementById('printable');
@@ -145,81 +145,81 @@ class DashboardTickets extends Component {
     const {currentTicket, currentForm, turnActive} = this.state;
 
     const TicketImageRegisterForm = Form.create({name: 'image'})(
-        TicketImageForm
+      TicketImageForm
     );
     const TicketSubmitRegisterForm = Form.create({name: 'submit'})(
-        TicketSubmitForm
+      TicketSubmitForm
     );
     const TurnInitRegisterForm = Form.create({name: 'turnInit'})(TurnInitForm);
     const TurnEndRegisterForm = Form.create({name: 'turnEnd'})(TurnEndForm);
 
     return (
-        <Layout
-            user={user}
-            collapsed={collapsed}
-            onCollapse={onCollapse}
-            page="Boletas"
-        >
-          <Container width="20%" justifycontent="center" alignitems="center">
-            {turnActive && !turnActive.end ? <TurnEndRegisterForm turnActive={turnActive}/> : <TurnInitRegisterForm user={user}/>}
-          </Container>
-          <Container justifycontent="center" alignitems="center">
-            <Query query={GET_TICKETS} variables={{filters: {}}}>
-              {({loading, error, data, subscribeToMore}) => {
-                if (loading) return <div>Cargando boletas...</div>;
-                if (error) return <div>¡No se han podido cargar las boletas!</div>;
+      <Layout
+        user={user}
+        collapsed={collapsed}
+        onCollapse={onCollapse}
+        page="Boletas"
+      >
+        <Container width="20%" justifycontent="center" alignitems="center">
+          {turnActive && !turnActive.end ? <TurnEndRegisterForm turnActive={turnActive}/> : <TurnInitRegisterForm user={user}/>}
+        </Container>
+        <Container justifycontent="center" alignitems="center">
+          <Query query={GET_TICKETS} variables={{filters: {}}}>
+            {({loading, error, data, subscribeToMore}) => {
+              if (loading) return <div>Cargando boletas...</div>;
+              if (error) return <div>¡No se han podido cargar las boletas!</div>;
 
-                const {tickets} = data;
+              const {tickets} = data;
 
-                this.unsubscribeToTickets = this.subscribeToTickets(subscribeToMore);
-                this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(subscribeToMore);
-                this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
+              this.unsubscribeToTickets = this.subscribeToTickets(subscribeToMore);
+              this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(subscribeToMore);
+              this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
 
-                return (
-                    tickets.length === 0 ?
-                        <div>No hay tickets disponibles...</div> :
-                        <Collapse accordion bordered={false}>
-                          {tickets.map(ticket => (
-                              <Panel
-                                  key={ticket.id}
-                                  header={`${ticket.truck.plates}`}
-                                  extra={
-                                    <LoadingBarContainer>
-                                      <LoadingBar
-                                          totalPrice={ticket.totalPrice}
-                                          outTruckImage={ticket.outTruckImage}
-                                      />
-                                    </LoadingBarContainer>
-                                  }
-                              >
-                                <TicketPanel
-                                    ticket={ticket}
-                                    setCurrent={this.setCurrent}
-                                    printTicket={this.printTicket}
-                                />
-                              </Panel>
-                          ))}
-                        </Collapse>
-                );
-              }}
-            </Query>
-            {(currentTicket && currentForm === 'image' && (
-                <TicketImageRegisterForm
-                    user={user}
-                    setCurrent={this.setCurrent}
-                    currentTicket={currentTicket}
-                    currentForm={currentForm}
-                />
-            )) ||
+              return (
+                  tickets.length === 0 ?
+                    <div>No hay tickets disponibles</div> :
+                    <Collapse accordion bordered={false}>
+                      {tickets.map(ticket => (
+                          <Panel
+                              key={ticket.id}
+                              header={`${ticket.truck.plates}`}
+                              extra={
+                                <LoadingBarContainer>
+                                  <LoadingBar
+                                      totalPrice={ticket.totalPrice}
+                                      outTruckImage={ticket.outTruckImage}
+                                  />
+                                </LoadingBarContainer>
+                              }
+                          >
+                            <TicketPanel
+                                ticket={ticket}
+                                setCurrent={this.setCurrent}
+                                printTicket={this.printTicket}
+                            />
+                          </Panel>
+                      ))}
+                    </Collapse>
+              );
+            }}
+          </Query>
+          {(currentTicket && currentForm === 'image' && (
+            <TicketImageRegisterForm
+              user={user}
+              setCurrent={this.setCurrent}
+              currentTicket={currentTicket}
+              currentForm={currentForm}
+            />
+          )) ||
             (currentForm === 'submit' && (
-                <TicketSubmitRegisterForm
-                    setCurrent={this.setCurrent}
-                    currentTicket={currentTicket}
-                    currentForm={currentForm}
-                />
+              <TicketSubmitRegisterForm
+                setCurrent={this.setCurrent}
+                currentTicket={currentTicket}
+                currentForm={currentForm}
+              />
             ))}
-          </Container>
-        </Layout>
+        </Container>
+      </Layout>
     );
   }
 }

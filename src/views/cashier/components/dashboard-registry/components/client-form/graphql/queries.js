@@ -14,16 +14,17 @@ const GET_CLIENTS = gql`
       cellphone
       address
       prices {
-        N4B
-        N4D
-        N5
+        A4B
+        A4D
+        A5
         BASE
         CNC
-        GRAVA2
-        MIXTO
+        G2
+        MIX
+        SUBBASE
+        SELLO
       }
       credit
-      bill
     }
   }
 `;

@@ -4,7 +4,6 @@ import debounce from 'debounce';
 import {
   Form,
   Icon,
-  Radio,
   Input,
   InputNumber,
   Button,
@@ -20,7 +19,6 @@ import {REGISTER_CLIENT} from './graphql/mutations';
 import {GET_CLIENTS, GET_PRODUCTS} from './graphql/queries';
 
 const {Option} = Select;
-const {Group} = Radio;
 const {Text} = Typography;
 
 class ClientForm extends Component {
@@ -86,22 +84,7 @@ class ClientForm extends Component {
 
     this.setState({loading: true});
     e.preventDefault();
-    form.validateFields(
-      async (
-        err,
-        {
-          firstName,
-          lastName,
-          email,
-          businessName,
-          rfc,
-          CFDIuse,
-          cellphone,
-          address,
-          credit,
-          bill,
-        }
-      ) => {
+    form.validateFields(async (err, {firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, credit}) => {
         if (!err) {
           try {
             const {
@@ -109,19 +92,7 @@ class ClientForm extends Component {
             } = await client.mutate({
               mutation: REGISTER_CLIENT,
               variables: {
-                client: {
-                  firstName,
-                  lastName,
-                  email,
-                  businessName,
-                  rfc,
-                  CFDIuse,
-                  cellphone,
-                  address,
-                  prices,
-                  credit,
-                  bill,
-                },
+                client: {firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, prices, credit},
               },
             });
 
@@ -375,14 +346,6 @@ class ClientForm extends Component {
                 ? parsedPrices.join(', ')
                 : 'Ningún precio especial seleccionado'}
             </Text>
-          </Form.Item>
-          <Form.Item>
-            {form.getFieldDecorator('bill')(
-              <Group>
-                <Radio.Button value={false}>REMISIÓN</Radio.Button>
-                <Radio.Button value={true}>FACTURA</Radio.Button>
-              </Group>
-            )}
           </Form.Item>
           <Form.Item>
             <Button
