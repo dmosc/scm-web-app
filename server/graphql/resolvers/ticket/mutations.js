@@ -30,12 +30,9 @@ const ticketMutations = {
     const product = await Rock.findById(productId);
     const client = await Client.findById(truck.client);
 
-    const turn = await Turn.findOneAndUpdate({end: {$exists: false}}, {$push: {folios: newTicket.folio}});
-
     newTicket.client = client.id;
     newTicket.truck = truck.id;
     newTicket.product = product.id;
-    if(turn) newTicket.turn = turn.id;
 
     try {
       await newTicket.save();
@@ -97,6 +94,10 @@ const ticketMutations = {
     ).select('name count');
 
     newTicket.folio = folio.name.toString() + folio.count.toString();
+
+    const turn = await Turn.findOneAndUpdate({end: {$exists: false}}, {$push: {folios: newTicket.folio}});
+
+    if(turn) newTicket.turn = turn.id;
 
     if (truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)) truck.drivers.push(newTicket.driver);
 

@@ -14,11 +14,6 @@ const turnMutations = {
 
         turn.start = start.setHours(start.getHours() - offset);
 
-        const tickets = await Ticket.find({turn: {$exists: false}});
-        turn.folios = tickets.map(({folio}) => folio);
-
-        await Ticket.updateMany({turn: {$exists: false}}, {turn: turn._id});
-
         try {
             await turn.save();
 
