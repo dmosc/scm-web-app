@@ -43,15 +43,16 @@ class ClientList extends Component {
             <Row>
                 <Col span={12}>
                     <Search
-                        style={{width: 250}}
+                        style={{width: 250, marginBottom: 10}}
                         allowClear
                         placeholder="Buscar clientes"
                         onChange={({target: {value}}) => handleFilterChange('search', value)}
                     />
                 </Col>
             </Row>
-            <ListContainer height="40vh">
+            <ListContainer height="100vh">
               <List
+                style={{minHeight: '100vh'}}
                 loading={loadingClients}
                 itemLayout="horizontal"
                 dataSource={clients}

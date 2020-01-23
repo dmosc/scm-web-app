@@ -173,6 +173,7 @@ const TicketPanel = ({ticket, setCurrent, printTicket}) => {
         <Button
           style={{margin: 5}}
           type="primary"
+          disabled={!ticket.outTruckImage}
           onClick={() => setCurrent(ticket, 'submit')}
         >
           Completar datos

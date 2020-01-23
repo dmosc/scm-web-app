@@ -197,6 +197,23 @@ class TicketSubmitForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
+            {form.getFieldDecorator('bill', {
+              initialValue: currentTicket.bill,
+              rules: [
+                {
+                  required: true,
+                  message:
+                      '¡Tipo de boleta es requerido!',
+                },
+              ],
+            })(
+                <Group disabled={!!currentTicket.bill} onChange={({target: {value}}) => this.handleAttributeChange('bill', value)}>
+                  <Radio.Button value={true}>FACTURA</Radio.Button>
+                  <Radio.Button value={false}>REMISIÓN</Radio.Button>
+                </Group>
+            )}
+          </Form.Item>
+          <Form.Item>
             {form.getFieldDecorator('credit', {initialValue: currentTicket.credit})(
               <Group>
                 <Radio.Button value={false}>CONTADO</Radio.Button>
@@ -214,23 +231,6 @@ class TicketSubmitForm extends Component {
                     CRÉDITO
                   </Radio.Button>
                 </Tooltip>
-              </Group>
-            )}
-          </Form.Item>
-          <Form.Item>
-            {form.getFieldDecorator('bill', {
-              initialValue: currentTicket.bill,
-              rules: [
-                {
-                  required: true,
-                  message:
-                      '¡Tipo de boleta es requerido!',
-                },
-              ],
-            })(
-              <Group onChange={({target: {value}}) => this.handleAttributeChange('bill', value)}>
-                <Radio.Button value={true}>FACTURA</Radio.Button>
-                <Radio.Button value={false}>REMISIÓN</Radio.Button>
               </Group>
             )}
           </Form.Item>

@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
 import {withApollo} from 'react-apollo';
 import Webcam from 'react-webcam';
-import {Form, Row, Col, Button, Select, Input, Icon, notification, List} from 'antd';
+import {Form, Row, Col, Button, Input, Icon, notification, List} from 'antd';
 import ListContainer from "components/common/list";
 import {FormContainer, ImageContainer, PreviewImageContainer, ProductContainer} from './elements';
 import {REGISTER_TICKET_INIT, FILE_UPLOAD} from './graphql/mutations';
 import {GET_ROCKS, GET_TRUCK} from './graphql/queries';
-
-const {Option} = Select;
 
 class TicketInit extends Component {
   state = {

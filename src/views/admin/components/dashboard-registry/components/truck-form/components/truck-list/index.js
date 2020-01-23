@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Form, Drawer, Row, Col, Input, List, Button, Icon} from 'antd';
+import ListContainer from "components/common/list";
 import EditForm from './components/truck-edit-form';
 import {TitleList, TitleContainer} from './elements';
 
@@ -41,34 +42,36 @@ class TruckList extends Component {
             <Row>
                 <Col span={12}>
                     <Search
-                        style={{width: 250}}
+                        style={{width: 250, marginBottom: 10}}
                         allowClear
                         placeholder="Buscar camiones"
                         onChange={({target: {value}}) => handleFilterChange('search', value)}
                     />
                 </Col>
             </Row>
-            <List
-            loading={loadingTrucks}
-            itemLayout="horizontal"
-            dataSource={trucks}
-            size="small"
-            renderItem={truck => (
-              <List.Item
-                actions={[
-                  <Icon
-                    type="edit"
-                    onClick={() => this.setCurrentTruck(truck)}
-                  />,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`${truck.plates}`}
-                  description={`${truck.drivers.join(', ')},`}
+            <ListContainer height="100vh">
+                <List
+                    loading={loadingTrucks}
+                    itemLayout="horizontal"
+                    dataSource={trucks}
+                    size="small"
+                    renderItem={truck => (
+                        <List.Item
+                            actions={[
+                                <Icon
+                                    type="edit"
+                                    onClick={() => this.setCurrentTruck(truck)}
+                                />,
+                            ]}
+                        >
+                            <List.Item.Meta
+                                title={`${truck.plates}`}
+                                description={`${truck.drivers.join(', ')},`}
+                            />
+                        </List.Item>
+                    )}
                 />
-              </List.Item>
-            )}
-          />
+            </ListContainer>
         </Drawer>
         {currentTruck && (
           <TruckEditForm
