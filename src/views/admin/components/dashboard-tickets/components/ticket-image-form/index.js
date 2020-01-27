@@ -11,6 +11,8 @@ class TicketImageForm extends Component {
     outTruckImage: null,
   };
 
+  componentDidMount = () => this.setState({outTruckImage: '/static/images/truck_image.png'});
+
   handleSubmit = e => {
     const {
       form,
@@ -80,7 +82,7 @@ class TicketImageForm extends Component {
     this.setState({outTruckImage});
   };
 
-  removeImage = () => this.setState({outTruckImage: null});
+  removeImage = () => this.setState({outTruckImage: '/static/images/truck_image.png'});
 
   handleCancel = () => {
     const {setCurrent} = this.props;

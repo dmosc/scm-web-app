@@ -25,7 +25,7 @@ class TicketInit extends Component {
       variables: {filters: {}},
     });
 
-    this.setState({products});
+    this.setState({products, inTruckImage: '/static/images/truck_image.png'});
   };
 
   handleSubmit = e => {
@@ -81,7 +81,7 @@ class TicketInit extends Component {
             variables: {ticket: {plates, product: currentProduct?.id, inTruckImage}},
           });
 
-          this.setState({loading: false, inTruckImage: null, currentProduct: null});
+          this.setState({loading: false, inTruckImage: '/static/images/truck_image.png', currentProduct: null});
 
           notification.open({
             message: `Camión ${ticket.truck.plates} puede ingresar!`,
@@ -116,7 +116,7 @@ class TicketInit extends Component {
     this.setState({inTruckImage});
   };
 
-  removeImage = () => this.setState({inTruckImage: null});
+  removeImage = () => this.setState({inTruckImage: '/static/images/truck_image.png'});
 
   setCurrentProduct = currentProduct => {
     const {currentProduct: oldProduct} = this.state;
