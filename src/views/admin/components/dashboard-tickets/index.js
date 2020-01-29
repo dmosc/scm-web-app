@@ -3,17 +3,18 @@ import {Query, withApollo} from 'react-apollo';
 import ReactDOMServer from 'react-dom/server';
 import print from 'print-js';
 import mapStyles from 'react-map-styles';
-import {Form, Collapse} from 'antd';
+import {Form, Collapse, List} from 'antd';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
+import ListContainer from "components/common/list";
 import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form/index';
 import TicketPanel from './components/ticket-panel';
 import {LoadingBarContainer, LoadingBar} from './elements';
-import {GET_TICKETS, TURN_ACTIVE} from './graphql/queries';
-import {NEW_TICKET, TICKET_UPDATE, TURN_UPDATE} from './graphql/subscriptions';
 import TurnInitForm from "./components/turn-init-form";
 import TurnEndForm from "./components/turn-end-form";
+import {GET_TICKETS, TURN_ACTIVE} from './graphql/queries';
+import {NEW_TICKET, TICKET_UPDATE, TURN_UPDATE} from './graphql/subscriptions';
 
 const {Panel} = Collapse;
 
@@ -84,13 +85,13 @@ class DashboardTickets extends Component {
         const {ticketUpdate} = data;
         if (!ticketUpdate) return prev;
 
-        const tickets = [...oldTickets];
+        let tickets = [...oldTickets];
 
         for (let i = 0; i < oldTickets.length; i++)
           if (ticketUpdate.id === oldTickets[i].id) tickets[i] = ticketUpdate;
 
         return {tickets};
-      },
+      }
     });
   };
 
@@ -140,6 +141,8 @@ class DashboardTickets extends Component {
     printable.parentNode.removeChild(printable);
   };
 
+  onTurnUpdate = turnActive => this.setState({turnActive});
+
   render() {
     const {user, collapsed, onCollapse} = this.props;
     const {currentTicket, currentForm, turnActive} = this.state;
@@ -160,12 +163,25 @@ class DashboardTickets extends Component {
         onCollapse={onCollapse}
         page="Boletas"
       >
-        <Container width="20%" justifycontent="center" alignitems="center">
+        <Container width="20%" height={turnActive && !turnActive.end  ? "70vh" : null} justifycontent="center" alignitems="center">
           {turnActive && !turnActive.end ? <TurnEndRegisterForm turnActive={turnActive}/> : <TurnInitRegisterForm user={user}/>}
+          {turnActive && !turnActive.end && <ListContainer height="25vh">
+            <List
+                loading={false}
+                itemLayout="horizontal"
+                dataSource={turnActive.folios}
+                size="small"
+                renderItem={folio => (
+                    <List.Item>
+                      <List.Item.Meta title={folio} />
+                    </List.Item>
+                )}
+            />
+          </ListContainer>}
         </Container>
         <Container justifycontent="center" alignitems="center">
           <Query query={GET_TICKETS} variables={{filters: {}}}>
-            {({loading, error, data, subscribeToMore}) => {
+            {({loading, error, data, refetch, subscribeToMore}) => {
               if (loading) return <div>Cargando boletas...</div>;
               if (error) return <div>¡No se han podido cargar las boletas!</div>;
 
@@ -179,13 +195,15 @@ class DashboardTickets extends Component {
                   tickets.length === 0 ?
                     <div>No hay tickets disponibles</div> :
                     <Collapse accordion bordered={false}>
-                      {tickets.map(ticket => (
+                      {tickets.filter(ticket => !ticket.turn).map(ticket => (
                           <Panel
+                              disabled={!turnActive}
                               key={ticket.id}
                               header={`${ticket.truck.plates}`}
                               extra={
                                 <LoadingBarContainer>
                                   <LoadingBar
+                                      disabled={!turnActive}
                                       totalPrice={ticket.totalPrice}
                                       outTruckImage={ticket.outTruckImage}
                                   />
@@ -194,6 +212,9 @@ class DashboardTickets extends Component {
                           >
                             <TicketPanel
                                 ticket={ticket}
+                                turn={turnActive}
+                                onTurnUpdate={this.onTurnUpdate}
+                                refetch={refetch}
                                 setCurrent={this.setCurrent}
                                 printTicket={this.printTicket}
                             />

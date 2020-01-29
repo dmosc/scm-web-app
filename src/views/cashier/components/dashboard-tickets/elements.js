@@ -16,7 +16,7 @@ const LoadingBar = styled.div`
   height: 1vh;
   width: ${props =>
     props.totalPrice && props.outTruckImage ? '7vw' : props.outTruckImage || props.totalPrice ? '5vw' : '3vw'}
-  background-color: green;
+  background-color: ${props => props.disabled ? 'lightGrey' : 'green'};
   border-radius: 5px;
   
   -webkit-transition: width 1000ms ease;

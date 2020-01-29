@@ -36,6 +36,9 @@ const NEW_TICKET = gql`
         name
         price
       }
+      turn {
+        id
+      }
       weight
       totalWeight
       totalPrice
@@ -81,6 +84,9 @@ const TICKET_UPDATE = gql`
         name
         price
       }
+      turn {
+        id
+      }
       weight
       totalWeight
       totalPrice
@@ -97,6 +103,7 @@ const TURN_UPDATE = gql`
         start
         end
         period
+        folios
       }
     }
 `;

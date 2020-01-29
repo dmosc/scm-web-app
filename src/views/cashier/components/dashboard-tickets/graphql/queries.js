@@ -36,6 +36,9 @@ const GET_TICKETS = gql`
         name
         price
       }
+      turn {
+        id
+      }
       weight
       totalWeight
       totalPrice
@@ -52,6 +55,7 @@ const TURN_ACTIVE = gql`
           start
           end
           period
+          folios
         }
     }
 `;

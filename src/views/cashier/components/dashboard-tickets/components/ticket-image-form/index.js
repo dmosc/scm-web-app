@@ -11,6 +11,8 @@ class TicketImageForm extends Component {
     outTruckImage: null,
   };
 
+  componentDidMount = () => this.setState({outTruckImage: '/static/images/truck_image.png'});
+
   handleSubmit = e => {
     const {
       form,
@@ -37,8 +39,6 @@ class TicketImageForm extends Component {
             notification.error({
               message: `¡No ha sido posible guardar la imagen correctamente!`,
             });
-
-            throw new Error('No ha sido posible guardar la imagen!');
           } else {
             notification.success({
               message: `¡La imagen ha sido subida exitosamente!`,
@@ -80,7 +80,7 @@ class TicketImageForm extends Component {
     this.setState({outTruckImage});
   };
 
-  removeImage = () => this.setState({outTruckImage: null});
+  removeImage = () => this.setState({outTruckImage: '/static/images/truck_image.png'});
 
   handleCancel = () => {
     const {setCurrent} = this.props;
