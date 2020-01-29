@@ -1,4 +1,4 @@
-import {Ticket, Client, Truck, Rock, Folio, Turn} from '../../../mongo-db/models';
+import {Ticket, Client, Truck, Rock, Folio} from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import {ApolloError} from 'apollo-client';
 
@@ -39,10 +39,10 @@ const ticketMutations = {
       await truck.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+      const activeTickets = await Ticket.find({}).populate('client truck product');
 
-      pubsub.publish('NEW_TICKET', {
-        newTicket: ticket,
-      });
+      pubsub.publish('NEW_TICKET', {newTicket: ticket});
+      pubsub.publish('ACTIVE_TICKETS', {activeTickets: activeTickets});
 
       return ticket;
     } catch (e) {
@@ -59,13 +59,9 @@ const ticketMutations = {
         {new: true}
       );
 
-      const ticket = await Ticket.findById(newTicket.id).populate(
-        'client truck product'
-      );
+      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
 
-      pubsub.publish('TICKET_UPDATE', {
-        ticketUpdate: ticket,
-      });
+      pubsub.publish('TICKET_UPDATE', {ticketUpdate: ticket});
 
       return ticket;
     } catch (e) {
@@ -94,10 +90,6 @@ const ticketMutations = {
     ).select('name count');
 
     newTicket.folio = folio.name.toString() + folio.count.toString();
-
-    const turn = await Turn.findOneAndUpdate({end: {$exists: false}}, {$push: {folios: newTicket.folio}});
-
-    if(turn) newTicket.turn = turn.id;
 
     if (truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)) truck.drivers.push(newTicket.driver);
 
@@ -134,7 +126,7 @@ const ticketMutations = {
     } catch (e) {
       return new ApolloError(e);
     }
-  }),
+  })
 };
 
 export default ticketMutations;

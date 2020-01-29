@@ -74,6 +74,7 @@ input PricesInput {
   BASE: Float
   CNC: Float
   G2: Float
+  G112: Float
   MIX: Float
   SUBBASE: Float
   SELLO: Float

@@ -17,9 +17,7 @@ const turnMutations = {
         try {
             await turn.save();
 
-            pubsub.publish('TURN_UPDATE', {
-                turnUpdate: turn,
-            });
+            pubsub.publish('TURN_UPDATE', {turnUpdate: turn});
 
             return await Turn.findById(turn.id).populate('user');
         } catch(e) {
@@ -66,15 +64,41 @@ const turnMutations = {
                 if(!oldTicket) await ticket.destroy();
             }
 
-            pubsub.publish('TURN_UPDATE', {
-                turnUpdate: turn,
-            });
+            const activeTickets = await Ticket.find({}).populate('client truck product');
+
+            pubsub.publish('TURN_UPDATE', {turnUpdate: turn});
+            pubsub.publish('ACTIVE_TICKETS', {activeTickets: activeTickets});
 
             return turn;
         } catch(e) {
             return e;
         }
     }),
+    turnAddTicket: authenticated(async (_, args, {pubsub}) => {
+        const ticket = await Ticket.findById(args.turn.ticket);
+
+        if(!ticket) throw new Error('!No ha sido posible encontrar el ticket!');
+
+        const turn = await Turn.findOne({end: {$exists: false}});
+
+        for(let i = 0; i < turn.folios.length; i++) if(turn.folios[i] === ticket.folio) throw new Error('¡Este folio ya fue agregado al turno!');
+
+        if(!turn) throw new Error('!No hay ningún turno activo!');
+
+        turn.folios.push(ticket.folio);
+        ticket.turn = turn.id;
+
+        try {
+            await ticket.save();
+            await turn.save();
+
+            pubsub.publish('TICKET_UPDATE', {ticketUpdate: ticket});
+
+            return turn;
+        } catch(e) {
+            return e;
+        }
+    })
 };
 
 export default turnMutations;

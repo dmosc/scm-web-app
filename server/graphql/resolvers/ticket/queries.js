@@ -5,7 +5,7 @@ import {ApolloError} from 'apollo-server';
 const ticketQueries = {
   ticket: authenticated(async (_, args) => {
     const {id} = args;
-    const ticket = await Ticket.findById(id).populate('client truck product');
+    const ticket = await Ticket.findById(id).populate('client truck product turn');
 
     if (!ticket) throw new Error('¡No ha sido posible encontrar el ticket!');
 
@@ -14,7 +14,7 @@ const ticketQueries = {
   tickets: authenticated(async (_, {filters: {limit}}) => {
     const tickets = await Ticket.find({})
       .limit(limit || 50)
-      .populate('client truck product');
+      .populate('client truck product turn');
 
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;

@@ -32,6 +32,11 @@ input TurnEndInput {
     id: ID!
 }
 
+input TurnAddTicket {
+    id: ID!
+    ticket: ID!
+}
+
 input TurnFilters {
     limit: Int
 }

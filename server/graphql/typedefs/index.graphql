@@ -78,6 +78,7 @@ type Mutation {
   # Turn
   turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER])
   turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER])
+  turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: Upload!, folderKey: s3FolderKey!, id: ID!): String!
@@ -86,6 +87,7 @@ type Mutation {
 type Subscription {
   newTicket: Ticket!
   ticketUpdate: Ticket!
+  activeTickets: [Ticket!]!
   newPost: Post!
   newMessage: Message!
   turnUpdate: Turn!
