@@ -1,57 +1,60 @@
 import React, {Component} from 'react';
-import {withApollo} from 'react-apollo';
+import {Query, withApollo} from 'react-apollo';
 import {List} from 'antd';
-import {GET_TICKETS} from './graphql/queries';
 import {ListContainer} from './elements';
+import {GET_TICKETS} from './graphql/queries';
+import {ACTIVE_TICKETS} from "./graphql/subscriptions";
 
 class TrucksList extends Component {
-  state = {
-    loadingTrucks: false,
-    tickets: [],
+  componentWillUnmount = async () => {
+    await this.unsubscribeToActiveTickets;
   };
 
-  componentDidMount = async () => {
-    const {client} = this.props;
-    this.setState({loadingTrucks: true});
+  subscribeToActiveTickets = async subscribeToMore => {
+    subscribeToMore({
+      document: ACTIVE_TICKETS,
+      updateQuery: (prev, {subscriptionData: {data}}) => {
+        const {activeTickets} = data;
+        if (!activeTickets) return prev;
 
-    try {
-      const {
-        data: {tickets},
-      } = await client.query({
-        query: GET_TICKETS,
-        variables: {
-          filters: {},
-        },
-      });
+        const tickets = [...activeTickets];
 
-      if (!tickets) throw new Error('No tickets found');
-
-      this.setState({loadingTrucks: false, tickets});
-    } catch (e) {
-      this.setState({loadingTrucks: false});
-    }
+        return {tickets};
+      },
+    });
   };
 
   render() {
-    const {loadingTrucks, tickets} = this.state;
-
     return (
-      <ListContainer>
-        <List
-          loading={loadingTrucks}
-          itemLayout="horizontal"
-          dataSource={tickets}
-          size="small"
-          renderItem={ticket => (
-            <List.Item>
-              <List.Item.Meta
-                title={`${ticket.truck.plates} : ${ticket.product.name}`}
-                description={`${ticket.client.businessName}`}
-              />
-            </List.Item>
-          )}
-        />
-      </ListContainer>
+        <Query query={GET_TICKETS} variables={{filters: {}}}>
+          {({loading, error, data, subscribeToMore}) => {
+            if (loading) return <div>Cargando boletas...</div>;
+            if (error) return <div>¡No se han podido cargar las boletas!</div>;
+
+            const {tickets} = data;
+
+            this.unsubscribeToActiveTickets = this.subscribeToActiveTickets(subscribeToMore);
+
+            return(
+                <ListContainer>
+                  <List
+                      loading={loading}
+                      itemLayout="horizontal"
+                      dataSource={tickets}
+                      size="small"
+                      renderItem={ticket => (
+                          <List.Item>
+                            <List.Item.Meta
+                                title={`${ticket.truck.plates} : ${ticket.product.name}`}
+                                description={`${ticket.client.businessName}`}
+                            />
+                          </List.Item>
+                      )}
+                  />
+                </ListContainer>
+            );
+          }}
+        </Query>
     );
   }
 }

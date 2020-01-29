@@ -10,6 +10,7 @@ import {GET_ROCKS, GET_TRUCK} from './graphql/queries';
 class TicketInit extends Component {
   state = {
     loading: false,
+    plates: null,
     inTruckImage: null,
     products: [],
     currentProduct: null
@@ -28,85 +29,76 @@ class TicketInit extends Component {
     this.setState({products, inTruckImage: '/static/images/truck_image.png'});
   };
 
-  handleSubmit = e => {
+  handleSubmit = async e => {
     const {
-      form,
       user: {id},
       client,
     } = this.props;
-    const {currentProduct} = this.state;
-
+    const {plates, inTruckImage: image, currentProduct} = this.state;
 
     e.preventDefault();
     this.setState({loading: true});
 
-    form.validateFields(async (err, {plates}) => {
-      if (!err && currentProduct) {
-        const {inTruckImage: image} = this.state;
+    if (plates && image && currentProduct) {
+      try {
+        const {
+          data: {truck},
+        } = await client.query({
+          query: GET_TRUCK,
+          variables: {plates},
+      });
 
-        try {
-          const {
-            data: {truck},
-          } = await client.query({
-            query: GET_TRUCK,
-            variables: {plates},
-          });
+        if (!truck) throw new Error('Camión tiene que pasar a registrarse primero!');
 
-          if (!truck)
-            throw new Error('Camión tiene que pasar a registrarse primero!');
-
-          const {
-            data: {imageUpload: inTruckImage},
-          } = await client.mutate({
-            mutation: FILE_UPLOAD,
-            variables: {image, folderKey: 'trucks', id},
-          });
-
-          if (!inTruckImage) {
-            notification.open({
-              message: `No ha sido posible guardar la imagen correctamente!`,
-            });
-
-            throw new Error('No ha sido posible guardar la imagen!');
-          } else {
-            notification.open({
-              message: `¡La imagen ha sido subida exitosamente!`,
-            });
-          }
-
-          const {
-            data: {ticketInit: ticket},
-          } = await client.mutate({
-            mutation: REGISTER_TICKET_INIT,
-            variables: {ticket: {plates, product: currentProduct?.id, inTruckImage}},
-          });
-
-          this.setState({loading: false, inTruckImage: '/static/images/truck_image.png', currentProduct: null});
-
-          notification.open({
-            message: `Camión ${ticket.truck.plates} puede ingresar!`,
-          });
-
-          form.resetFields();
-        } catch (e) {
-          if (e['graphQLErrors']) {
-            e['graphQLErrors'].map(({message}) =>
-              notification.open({
-                message,
-              })
-            );
-          }
-
-          this.setState({loading: false});
-        }
-      } else {
-        notification.open({
-          message: `¡Es necesario completar todos los datos!`,
+        const {
+          data: {imageUpload: inTruckImage},
+        } = await client.mutate({
+          mutation: FILE_UPLOAD,
+          variables: {image, folderKey: 'trucks', id},
         });
+
+        if (!inTruckImage) {
+          notification.open({
+            message: `No ha sido posible guardar la imagen correctamente!`,
+          });
+
+          throw new Error('No ha sido posible guardar la imagen!');
+        } else {
+          notification.open({
+            message: `¡La imagen ha sido subida exitosamente!`,
+          });
+        }
+
+        const {
+          data: {ticketInit: ticket},
+        } = await client.mutate({
+          mutation: REGISTER_TICKET_INIT,
+          variables: {ticket: {plates, product: currentProduct?.id, inTruckImage}},
+        });
+
+        this.setState({loading: false, plates: null, inTruckImage: '/static/images/truck_image.png', currentProduct: null});
+
+        notification.open({
+          message: `Camión ${ticket.truck.plates} puede ingresar!`,
+        });
+      } catch (e) {
+        if (e['graphQLErrors']) {
+          e['graphQLErrors'].map(({message}) =>
+            notification.open({
+              message,
+            })
+          );
+        }
 
         this.setState({loading: false});
       }
-    });
+    } else {
+      notification.open({
+        message: `¡Es necesario completar todos los datos!`,
+      });
+
+      this.setState({loading: false});
+    }
   };
 
   captureImage = () => {
@@ -129,11 +121,12 @@ class TicketInit extends Component {
     }
   };
 
-  render() {
-    const {form} = this.props;
-    const {loading, inTruckImage, products, currentProduct} = this.state;
+  setPlates = plates => {
+    this.setState({plates: plates.replace(/[^0-9a-z]/gi, '').toUpperCase()});
+  }
 
-    console.log(currentProduct);
+  render() {
+    const {loading, plates, inTruckImage, products, currentProduct} = this.state;
 
     return (
       <FormContainer>
@@ -166,32 +159,45 @@ class TicketInit extends Component {
                       ) : (
                           <ImageContainer alt="Preview" src={inTruckImage} />
                       )}
+                      <Button style={{marginRight: 5}} type="default" onClick={this.captureImage}>
+                        Capturar
+                      </Button>
+                      <Button
+                          style={{marginRight: 5}}
+                          type="danger"
+                          disabled={!inTruckImage}
+                          onClick={this.removeImage}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                          style={{marginRight: 5}}
+                          type="primary"
+                          disabled={!inTruckImage}
+                          onClick={this.handleSubmit}
+                          loading={loading}
+                      >
+                        {(loading && 'Espere..') || 'OK'}
+                      </Button>
                     </Col>
                   </Row>
                 </Col>
                 <Col span={10}>
                   <Form.Item label="Placas">
-                    {form.getFieldDecorator('plates', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Las placas del camión son requeridas!',
-                        },
-                      ],
-                    })(
-                      <Input
-                        prefix={
-                          <Icon
-                            type="number"
-                            style={{color: 'rgba(0,0,0,.25)'}}
-                          />
-                        }
-                        placeholder="Placas"
-                      />
-                    )}
+                    <Input
+                      prefix={
+                        <Icon
+                          type="number"
+                          style={{color: 'rgba(0,0,0,.25)'}}
+                        />
+                      }
+                      value={plates || ''}
+                      placeholder="Placas"
+                      onChange={({target: {value: plates}}) => this.setPlates(plates)}
+                    />
                   </Form.Item>
                   <Form.Item label="Producto">
-                    <ListContainer height="40vh">
+                    <ListContainer height="53vh">
                       <List
                           size="small"
                           dataSource={products}
@@ -208,26 +214,6 @@ class TicketInit extends Component {
                       />
                     </ListContainer>
                   </Form.Item>
-                  <Button style={{marginRight: 5}} type="default" onClick={this.captureImage}>
-                    Capturar
-                  </Button>
-                  <Button
-                      style={{marginRight: 5}}
-                      type="danger"
-                      disabled={!inTruckImage}
-                      onClick={this.removeImage}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                      style={{marginRight: 5}}
-                      type="primary"
-                      disabled={!inTruckImage}
-                      onClick={this.handleSubmit}
-                      loading={loading}
-                  >
-                    {(loading && 'Espere..') || 'OK'}
-                  </Button>
                 </Col>
               </Row>
             </React.Fragment>
