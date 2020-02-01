@@ -25,10 +25,6 @@ class TicketPanel extends Component {
   render() {
     const {ticket, setCurrent, printTicket} = this.props;
 
-    const price = ticket.client.prices[ticket.product.name]
-        ? ticket.client.prices[ticket.product.name]
-        : ticket.product.price;
-
     return (
       <React.Fragment>
         <table style={{width: '100%', margin: 10}}>
@@ -66,28 +62,37 @@ class TicketPanel extends Component {
                 )}
               </td>
               <td>
-                <b>TIPO</b>
-                {`: ${ticket.product.name}`}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <b>NOMBRE</b>
-                {`: ${ticket.client.firstName}, ${ticket.client.lastName}`}
-              </td>
-              <td>
-                <b>PLACAS</b>
-                {`: ${ticket.truck.plates}`}
-              </td>
-              <td>
-                <b>PRECIO POR TONELADA</b>
-                {`: ${price}`}
+                {ticket.driver && (
+                  <React.Fragment>
+                    <b>TIPO</b>
+                    {`: ${ticket.product.name}`}
+                  </React.Fragment>
+                )}
               </td>
             </tr>
             <tr>
               <td>
                 <b>DIRECCIÓN</b>
                 {`: ${ticket.client.address}`}
+              </td>
+              <td>
+                <b>PLACAS</b>
+                {`: ${ticket.truck.plates}`}
+              </td>
+              <td>
+                {ticket.totalWeight && (
+                  <React.Fragment>
+                    <b>PESO NETO</b>
+                    {`: ${ticket.totalWeight} tons`}
+                  </React.Fragment>
+                )}
+              </td>
+              <td />
+            </tr>
+            <tr>
+              <td>
+                <b>CÓDIGO POSTAL</b>
+                {`: ${ticket.client.zipcode}`}
               </td>
               <td id="skip">
                 <Link
@@ -102,73 +107,50 @@ class TicketPanel extends Component {
             </tr>
             <tr>
               <td>
-                <b>RFC</b>
-                {`: ${ticket.client.rfc}`}
-              </td>
-              <td id="skip">
-                {(!ticket.outTruckImage && (
-                  <Button
-                    type="link"
-                    style={{
-                      margin: 0,
-                      padding: 0,
-                      height: 'fit-content',
-                      color: '#f5222d',
-                    }}
-                    onClick={() => setCurrent(ticket, 'image')}
-                  >
-                    <b>IMAGEN SALIDA</b>
-                  </Button>
-                )) || (
-                  <Link
-                    href={ticket.outTruckImage}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <b>IMAGEN SALIDA</b>
-                  </Link>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td>
                 <b>CRÉDITO: </b>
                 <Credit credit={ticket.client.credit}>
                   {ticket.client.credit}
                 </Credit>
               </td>
-              <td>
-                <b>PESO</b>
-                {`: ${ticket.truck.weight}`}
+              <td id="skip">
+                <Link
+                  href={ticket.outTruckImage}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  style={{color: !ticket.outTruckImage ? '#f5222d' : null}}
+                >
+                  <b>IMAGEN SALIDA</b>
+                </Link>
               </td>
             </tr>
             <tr>
+              <td />
               <td />
               <td>
                 {ticket.weight && (
-                  <React.Fragment>
-                    <b>PESO BRUTO</b>
-                    {`: ${ticket.weight}`}
-                  </React.Fragment>
+                    <React.Fragment>
+                      <b>PESO BRUTO</b>
+                      {`: ${ticket.weight} tons`}
+                    </React.Fragment>
                 )}
               </td>
-              <td />
             </tr>
             <tr>
               <td />
+              <td />
               <td>
-                {ticket.totalWeight && (
-                  <React.Fragment>
-                    <b>PESO NETO</b>
-                    {`: ${ticket.totalWeight}`}
-                  </React.Fragment>
-                )}
+                <b>PESO CAMIÓN</b>
+                {`: ${ticket.truck.weight} tons`}
               </td>
+            </tr>
+            <tr>
+              <td />
+              <td />
               <td>
                 {ticket.totalPrice && (
                   <React.Fragment>
                     <b>TOTAL</b>
-                    {`: ${ticket.totalPrice}`}
+                    {`: $${ticket.totalPrice}`}
                   </React.Fragment>
                 )}
               </td>
@@ -178,19 +160,10 @@ class TicketPanel extends Component {
         <span id="skip">
           <Button
             style={{margin: 5}}
-            onClick={() =>
-              printTicket(
-                <TicketPanel
-                  ticket={ticket}
-                  setCurrent={setCurrent}
-                  printTicket={printTicket}
-                />
-              )
-            }
-            disabled={!ticket.totalPrice}
-            type="primary"
+            type="danger"
+            onClick={() => setCurrent(ticket, 'image')}
           >
-            Imprimir
+            Tomar foto
           </Button>
           <Button
             style={{margin: 5}}
@@ -198,7 +171,23 @@ class TicketPanel extends Component {
             disabled={!ticket.outTruckImage}
             onClick={() => setCurrent(ticket, 'submit')}
           >
-            Completar datos
+            Cobrar
+          </Button>
+          <Button
+              style={{margin: 5}}
+              onClick={() =>
+                  printTicket(
+                      <TicketPanel
+                          ticket={ticket}
+                          setCurrent={setCurrent}
+                          printTicket={printTicket}
+                      />
+                  )
+              }
+              disabled={!ticket.totalPrice}
+              type="primary"
+          >
+            Imprimir
           </Button>
           <Button
             style={{margin: 5}}

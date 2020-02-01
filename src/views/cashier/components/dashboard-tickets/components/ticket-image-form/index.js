@@ -39,6 +39,8 @@ class TicketImageForm extends Component {
             notification.error({
               message: `¡No ha sido posible guardar la imagen correctamente!`,
             });
+
+            return;
           } else {
             notification.success({
               message: `¡La imagen ha sido subida exitosamente!`,

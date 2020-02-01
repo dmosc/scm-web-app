@@ -4,7 +4,7 @@ import ReactDOMServer from 'react-dom/server';
 import print from 'print-js';
 import mapStyles from 'react-map-styles';
 import {Form, Collapse, List} from 'antd';
-import Layout from 'components/layout/cashier';
+import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
 import ListContainer from "components/common/list";
 import TicketImageForm from './components/ticket-image-form';

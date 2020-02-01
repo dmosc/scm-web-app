@@ -13,6 +13,7 @@ const NEW_TICKET = gql`
         lastName
         businessName
         address
+        zipcode
         rfc
         credit
         prices {
@@ -63,6 +64,7 @@ const TICKET_UPDATE = gql`
         address
         rfc
         credit
+        zipcode
         prices {
           A4B
           A4D

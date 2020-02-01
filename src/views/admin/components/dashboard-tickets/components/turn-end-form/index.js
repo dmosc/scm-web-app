@@ -99,15 +99,15 @@ class TurnEndForm extends Component {
                         </Column>
                         <Column span={6}>
                             <ColumnTitle color="#52c41a">CONTADO</ColumnTitle>
-                            <Title level={4}>{`$${summary.upfront}`}</Title>
+                            <Title level={4}>{`$${summary.upfront.toFixed(2)}`}</Title>
                         </Column>
                         <Column span={6}>
                             <ColumnTitle color="#f5222d">CRÉDITO</ColumnTitle>
-                            <Title level={4}>{`$${summary.credit}`}</Title>
+                            <Title level={4}>{`$${summary.credit.toFixed(2)}`}</Title>
                         </Column>
                         <Column span={6}>
                             <ColumnTitle color="#1890ff">TOTAL</ColumnTitle>
-                            <Title level={4}>{`$${summary.total}`}</Title>
+                            <Title level={4}>{`$${summary.total.toFixed(2)}`}</Title>
                         </Column>
                     </Row>
                     <Row>
@@ -120,19 +120,19 @@ class TurnEndForm extends Component {
                                                 <Row style={{margin: 5, padding: 10}} gutter={{ xs: 8, sm: 16, md: 24}}>
                                                     <Column span={6}>
                                                         <Text code>PESO NETO</Text>
-                                                        <Title level={4}>{`${ticket.totalWeight} tons`}</Title>
+                                                        <Title level={4}>{`${ticket.totalWeight.toFixed(2)} tons`}</Title>
                                                     </Column>
                                                     <Column span={6}>
                                                         <Text code>SUBTOTAL</Text>
-                                                        <Title level={4}>{`$${ticket.totalPrice-ticket.tax}`}</Title>
+                                                        <Title level={4}>{`$${(ticket.totalPrice-ticket.tax).toFixed(2)}`}</Title>
                                                     </Column>
                                                     <Column span={6}>
                                                         <Text code>IMPUESTO</Text>
-                                                        <Title level={4}>{`$${ticket.tax}`}</Title>
+                                                        <Title level={4}>{`$${ticket.tax.toFixed(2)}`}</Title>
                                                     </Column>
                                                     <Column span={6}>
                                                         <Text code>TOTAL</Text>
-                                                        <Title level={4}>{`$${ticket.totalPrice}`}</Title>
+                                                        <Title level={4}>{`$${ticket.totalPrice.toFixed(2)}`}</Title>
                                                     </Column>
                                                 </Row>
                                             </Panel>

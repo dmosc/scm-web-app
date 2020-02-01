@@ -103,7 +103,7 @@ class TicketSubmitForm extends Component {
     const totalWeight =
       currentTicket.totalWeight && weight === 0
         ? currentTicket.totalWeight
-        : ((weight - currentTicket.truck.weight)/1000).toFixed(2);
+        : (weight - currentTicket.truck.weight).toFixed(2);
     const tax = bill ? totalWeight * price * TAX : 0;
 
     const total = (totalWeight * price + tax).toFixed(2);
