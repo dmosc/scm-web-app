@@ -39,7 +39,7 @@ const ticketMutations = {
       await truck.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
-      const activeTickets = await Ticket.find({}).populate('client truck product');
+      const activeTickets = await Ticket.find({turn: {$exists: false}}).populate('client truck product');
 
       pubsub.publish('NEW_TICKET', {newTicket: ticket});
       pubsub.publish('ACTIVE_TICKETS', {activeTickets: activeTickets});
@@ -93,7 +93,7 @@ const ticketMutations = {
 
     if (truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver)) truck.drivers.push(newTicket.driver);
 
-    newTicket.totalWeight = ((newTicket.weight - newTicket.truck.weight)/1000).toFixed(2);
+    newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(2);
 
     const price = client.prices[product.name]
       ? client.prices[product.name]

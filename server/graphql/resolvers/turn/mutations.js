@@ -64,10 +64,7 @@ const turnMutations = {
                 if(!oldTicket) await ticket.destroy();
             }
 
-            const activeTickets = await Ticket.find({}).populate('client truck product');
-
             pubsub.publish('TURN_UPDATE', {turnUpdate: turn});
-            pubsub.publish('ACTIVE_TICKETS', {activeTickets: activeTickets});
 
             return turn;
         } catch(e) {
@@ -92,7 +89,9 @@ const turnMutations = {
             await ticket.save();
             await turn.save();
 
-            pubsub.publish('TICKET_UPDATE', {ticketUpdate: ticket});
+            const activeTickets = await Ticket.find({turn: {$exists: false}}).populate('client truck product');
+
+            pubsub.publish('ACTIVE_TICKETS', {activeTickets: activeTickets});
 
             return turn;
         } catch(e) {
