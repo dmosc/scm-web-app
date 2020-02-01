@@ -15,8 +15,12 @@ import {NEW_MESSAGES} from './graphql/subscriptions';
 const {Paragraph} = Typography;
 
 class Chat extends Component {
-  subscribeToMessages = async subscribeToMore => {
-    subscribeToMore({
+  componentWillUnmount = () => {
+    this.unsubscribeToMessages();
+  };
+
+  subscribeToMessages = subscribeToMore => {
+    return subscribeToMore({
       document: NEW_MESSAGES,
       updateQuery: (prev, {subscriptionData: {data}}) => {
         const {messages: oldMessages} = prev;
@@ -44,7 +48,7 @@ class Chat extends Component {
 
           const {messages} = data;
 
-          this.subscribeToMessages(subscribeToMore);
+          if(!this.unsubscribeToMessages) this.unsubscribeToMessages = this.subscribeToMessages(subscribeToMore);
 
           return (
             <div>

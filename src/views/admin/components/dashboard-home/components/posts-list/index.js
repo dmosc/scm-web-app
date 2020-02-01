@@ -8,8 +8,12 @@ import {NEW_POSTS} from './graphql/subscriptions';
 const {Title, Paragraph, Text} = Typography;
 
 class PostsList extends Component {
-  subscribeToPosts = async subscribeToMore => {
-    subscribeToMore({
+  componentWillUnmount = () => {
+    this.unsubscribeToPosts();
+  };
+
+  subscribeToPosts = subscribeToMore => {
+    return subscribeToMore({
       document: NEW_POSTS,
       updateQuery: (prev, {subscriptionData: {data}}) => {
         const {posts: oldPosts} = prev;
@@ -35,7 +39,7 @@ class PostsList extends Component {
 
           const {posts} = data;
 
-          this.subscribeToPosts(subscribeToMore);
+          if(!this.unsubscribeToPosts) this.unsubscribeToPosts = this.subscribeToPosts(subscribeToMore);
 
           return (
             <PostsListContainer>

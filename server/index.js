@@ -1,4 +1,5 @@
 import mongoose, {Schema} from 'mongoose';
+import events from 'events';
 import sequelize from './sequelize-db';
 import server from './graphql';
 import {API_PORT, MONGO_DB_URI, AWS_CONFIG} from './config';
@@ -33,6 +34,8 @@ const {AURORA_DB_NAME} = AWS_CONFIG;
       .catch(err => {
         console.error('Unable to connect to the database:', err);
       });
+
+    events.EventEmitter.defaultMaxListeners = 30;
   } catch (e) {
     console.error.bind(console, e);
   }

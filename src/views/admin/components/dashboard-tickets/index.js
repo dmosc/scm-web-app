@@ -53,14 +53,14 @@ class DashboardTickets extends Component {
     }
   };
 
-  componentWillUnmount = async () => {
-    await this.unsubscribeToTickets;
-    await this.unsubscribeToTicketUpdates;
-    await this.unsubscribeToTurnUpdates;
+  componentWillUnmount = () => {
+    this.unsubscribeToTickets();
+    this.unsubscribeToTicketUpdates();
+    this.unsubscribeToTurnUpdates();
   };
 
-  subscribeToTickets = async subscribeToMore => {
-    subscribeToMore({
+  subscribeToTickets = subscribeToMore => {
+    return subscribeToMore({
       document: NEW_TICKET,
       updateQuery: (prev, {subscriptionData: {data}}) => {
         const {tickets: oldTickets} = prev;
@@ -77,8 +77,8 @@ class DashboardTickets extends Component {
     });
   };
 
-  subscribeToTicketUpdates = async subscribeToMore => {
-    subscribeToMore({
+  subscribeToTicketUpdates = subscribeToMore => {
+    return subscribeToMore({
       document: TICKET_UPDATE,
       updateQuery: (prev, {subscriptionData: {data}}) => {
         const {tickets: oldTickets} = prev;
@@ -95,8 +95,8 @@ class DashboardTickets extends Component {
     });
   };
 
-  subscribeToTurnUpdates = async subscribeToMore => {
-    subscribeToMore({
+  subscribeToTurnUpdates = subscribeToMore => {
+    return subscribeToMore({
       document: TURN_UPDATE,
       updateQuery: (prev, {subscriptionData: {data}}) => {
         const {turnUpdate} = data;
@@ -187,9 +187,9 @@ class DashboardTickets extends Component {
 
               const {tickets} = data;
 
-              this.unsubscribeToTickets = this.subscribeToTickets(subscribeToMore);
-              this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(subscribeToMore);
-              this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
+              if(!this.unsubscribeToTickets) this.unsubscribeToTickets = this.subscribeToTickets(subscribeToMore);
+              if(!this.unsubscribeToTicketUpdates) this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(subscribeToMore);
+              if(!this.unsubscribeToTurnUpdates) this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
 
               return (
                   tickets.length === 0 ?

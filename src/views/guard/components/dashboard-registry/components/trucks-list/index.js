@@ -10,7 +10,7 @@ class TrucksList extends Component {
     await this.unsubscribeToActiveTickets;
   };
 
-  subscribeToActiveTickets = async subscribeToMore => {
+  subscribeToActiveTickets = subscribeToMore => {
     subscribeToMore({
       document: ACTIVE_TICKETS,
       updateQuery: (prev, {subscriptionData: {data}}) => {
