@@ -41,7 +41,6 @@ const ticketMutations = {
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
       const activeTickets = await Ticket.find({turn: {$exists: false}}).populate('client truck product');
 
-      pubsub.publish('NEW_TICKET', {newTicket: ticket});
       pubsub.publish('ACTIVE_TICKETS', {activeTickets: activeTickets});
 
       return ticket;

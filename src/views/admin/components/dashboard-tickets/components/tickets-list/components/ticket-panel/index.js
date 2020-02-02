@@ -6,14 +6,11 @@ import {ADD_TICKET_TO_TURN} from "./graphql/mutations";
 
 class TicketPanel extends Component {
   addTicketToTurn = async ticket => {
-    const {turn: {id}, onTurnUpdate, refetch, client} = this.props;
+    const {turn: {id}, refetch, client} = this.props;
 
     try {
-      const {data: {turnAddTicket: turn}} = await client.mutate({
-        mutation: ADD_TICKET_TO_TURN, variables: {turn: {id, ticket}}
-      });
+      await client.mutate({mutation: ADD_TICKET_TO_TURN, variables: {turn: {id, ticket}}});
 
-      onTurnUpdate(turn);
       refetch();
     } catch(e) {
       notification.error({

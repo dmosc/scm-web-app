@@ -14,18 +14,18 @@ import {split} from 'apollo-link';
 import {setContext} from 'apollo-link-context';
 import ApolloClient from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
-import {LOCAL_SERVER_URI, LOCAL_WS_URI} from 'config';
+import {SERVER_URI, WS_URI} from 'config';
 
 const token = cookie.load('token');
 
 const httpLink = createUploadLink({
-  uri: LOCAL_SERVER_URI,
+  uri: SERVER_URI,
 });
 
 const wsLink = new WebSocketLink({
-  uri: LOCAL_WS_URI,
+  uri: WS_URI,
   options: {
-    reconnect: true,
+    // reconnect: true,
     connectionParams: {
       authentication: token ? `Bearer ${token}` : '',
     },

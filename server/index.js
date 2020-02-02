@@ -35,7 +35,7 @@ const {AURORA_DB_NAME} = AWS_CONFIG;
         console.error('Unable to connect to the database:', err);
       });
 
-    events.EventEmitter.defaultMaxListeners = 30;
+    events.EventEmitter.defaultMaxListeners = 100;
   } catch (e) {
     console.error.bind(console, e);
   }

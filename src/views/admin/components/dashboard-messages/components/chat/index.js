@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Query, withApollo} from 'react-apollo';
+import {graphql} from "@apollo/react-hoc";
 import {Typography} from 'antd';
 import MessageForm from './components/message-form';
 import {
@@ -15,6 +15,12 @@ import {NEW_MESSAGES} from './graphql/subscriptions';
 const {Paragraph} = Typography;
 
 class Chat extends Component {
+  componentDidMount = () => {
+    const { data: { subscribeToMore }} = this.props;
+
+    if(!this.unsubscribeToMessages) this.unsubscribeToMessages = this.subscribeToMessages(subscribeToMore);
+  };
+
   componentWillUnmount = () => {
     this.unsubscribeToMessages();
   };
@@ -38,66 +44,58 @@ class Chat extends Component {
   };
 
   render() {
-    const {user} = this.props;
+    const {user, data} = this.props;
+
+    const {loading, error, messages} = data;
+
+    if (loading) return <div>Cargando mensajes recientes...</div>;
+    if (error) return <div>¡No se han podido cargar los mensajes!</div>;
 
     return (
-      <Query query={GET_MESSAGES} variables={{filters: {}}}>
-        {({loading, error, data, subscribeToMore}) => {
-          if (loading) return <div>Cargando mensajes recientes...</div>;
-          if (error) return <div>¡No se han podido cargar los mensajes!</div>;
-
-          const {messages} = data;
-
-          if(!this.unsubscribeToMessages) this.unsubscribeToMessages = this.subscribeToMessages(subscribeToMore);
-
-          return (
-            <div>
-              <ChatContainer>
-                <ScrollableContext>
-                  {messages.map(message => (
-                    <MessageContainer
+        <div>
+          <ChatContainer>
+            <ScrollableContext>
+              {messages.map(message => (
+                  <MessageContainer
                       key={message.id}
                       username={
                         message.username === user.username
-                          ? message.username
-                          : undefined
-                      }
-                    >
-                      <Message
-                        username={
-                          message.username === user.username
                             ? message.username
                             : undefined
-                        }
-                      >
-                        <MessageSender
-                          username={
-                            message.username === user.username
+                      }
+                  >
+                    <Message
+                        username={
+                          message.username === user.username
                               ? message.username
                               : undefined
+                        }
+                    >
+                      <MessageSender
+                          username={
+                            message.username === user.username
+                                ? message.username
+                                : undefined
                           }
                           strong
-                        >
-                          {message.username}
-                        </MessageSender>
-                        <Paragraph
+                      >
+                        {message.username}
+                      </MessageSender>
+                      <Paragraph
                           copyable
                           ellipsis={{rows: 5, expandable: true}}
-                        >
-                          {message.content}
-                        </Paragraph>
-                      </Message>
-                    </MessageContainer>
-                  ))}
-                </ScrollableContext>
-              </ChatContainer>
-              <MessageForm user={user} />
-            </div>
-          );
-        }}
-      </Query>
+                      >
+                        {message.content}
+                      </Paragraph>
+                    </Message>
+                  </MessageContainer>
+              ))}
+            </ScrollableContext>
+          </ChatContainer>
+          <MessageForm user={user} />
+        </div>
     );
   }
 }
 
-export default withApollo(Chat);
+export default graphql(GET_MESSAGES, {options: () => ({variables: {filters: {}}})})(Chat);

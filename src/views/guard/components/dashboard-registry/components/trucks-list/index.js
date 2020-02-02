@@ -1,17 +1,23 @@
 import React, {Component} from 'react';
-import {Query, withApollo} from 'react-apollo';
+import {graphql} from '@apollo/react-hoc';
 import {List} from 'antd';
 import {ListContainer} from './elements';
 import {GET_TICKETS} from './graphql/queries';
 import {ACTIVE_TICKETS} from "./graphql/subscriptions";
 
 class TrucksList extends Component {
-  componentWillUnmount = async () => {
-    await this.unsubscribeToActiveTickets;
+  componentDidMount = () => {
+    const { data: { subscribeToMore }} = this.props;
+
+    if(!this.unsubscribeToActiveTickets) this.unsubscribeToActiveTickets = this.subscribeToActiveTickets(subscribeToMore);
+  };
+
+  componentWillUnmount = () => {
+    this.unsubscribeToActiveTickets();
   };
 
   subscribeToActiveTickets = subscribeToMore => {
-    subscribeToMore({
+    return subscribeToMore({
       document: ACTIVE_TICKETS,
       updateQuery: (prev, {subscriptionData: {data}}) => {
         const {activeTickets} = data;
@@ -25,38 +31,30 @@ class TrucksList extends Component {
   };
 
   render() {
+    const {data} = this.props;
+    const {loading, error, tickets} = data;
+
     return (
-        <Query query={GET_TICKETS} variables={{filters: {}}}>
-          {({loading, error, data, subscribeToMore}) => {
-            if (loading) return <div>Cargando boletas...</div>;
-            if (error) return <div>¡No se han podido cargar las boletas!</div>;
-
-            const {tickets} = data;
-
-            this.unsubscribeToActiveTickets = this.subscribeToActiveTickets(subscribeToMore);
-
-            return(
-                <ListContainer>
-                  <List
-                      loading={loading}
-                      itemLayout="horizontal"
-                      dataSource={tickets}
-                      size="small"
-                      renderItem={ticket => (
-                          <List.Item>
-                            <List.Item.Meta
-                                title={`${ticket.truck.plates} : ${ticket.product.name}`}
-                                description={`${ticket.client.businessName}`}
-                            />
-                          </List.Item>
-                      )}
-                  />
-                </ListContainer>
-            );
-          }}
-        </Query>
+        <ListContainer>
+          {error ? <div>¡No se han podido cargar los camiones!</div> : loading ? <div>Cargando camiones activos...</div> :
+              <List
+                  loading={loading}
+                  itemLayout="horizontal"
+                  dataSource={tickets}
+                  size="small"
+                  renderItem={ticket => (
+                      <List.Item>
+                        <List.Item.Meta
+                            title={`${ticket.truck.plates} : ${ticket.product.name}`}
+                            description={`${ticket.client.businessName}`}
+                        />
+                      </List.Item>
+                  )}
+              />
+          }
+        </ListContainer>
     );
   }
 }
 
-export default withApollo(TrucksList);
+export default graphql(GET_TICKETS, {options: () => ({variables: {filters: {}}})})(TrucksList);

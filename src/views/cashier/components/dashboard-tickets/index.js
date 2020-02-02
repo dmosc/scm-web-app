@@ -1,98 +1,34 @@
 import React, {Component} from 'react';
-import {Query, withApollo} from 'react-apollo';
 import ReactDOMServer from 'react-dom/server';
+import {graphql} from "@apollo/react-hoc";
 import print from 'print-js';
 import mapStyles from 'react-map-styles';
-import {Form, Collapse, List} from 'antd';
-import Layout from 'components/layout/admin';
+import {Form, List} from 'antd';
+import Layout from 'components/layout/cashier';
 import Container from 'components/common/container';
-import ListContainer from "components/common/list";
+import ListContainer from 'components/common/list';
 import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form/index';
-import TicketPanel from './components/ticket-panel';
-import {LoadingBarContainer, LoadingBar} from './elements';
 import TurnInitForm from "./components/turn-init-form";
 import TurnEndForm from "./components/turn-end-form";
-import {GET_TICKETS, TURN_ACTIVE} from './graphql/queries';
-import {NEW_TICKET, TICKET_UPDATE, TURN_UPDATE} from './graphql/subscriptions';
-
-const {Panel} = Collapse;
+import TicketsList from "./components/tickets-list";
+import {TURN_ACTIVE} from './graphql/queries';
+import {TURN_UPDATE} from './graphql/subscriptions';
 
 class DashboardTickets extends Component {
   state = {
     currentTicket: null,
     currentForm: null,
-    turnActive: null,
   };
 
   componentDidMount = async () => {
-    const {client} = this.props;
+    const { data: { subscribeToMore }} = this.props;
 
-    try {
-      const [
-          {
-            data: {tickets}
-          },
-          {
-            data: {turnActive}
-          }
-      ] = await Promise.all([
-        client.query({
-          query: GET_TICKETS,
-          variables: {filters: {}},
-        }),
-        client.query({
-          query: TURN_ACTIVE
-        })
-      ]);
-
-      if (!tickets) return;
-      this.setState({tickets, turnActive});
-    } catch (e) {
-      console.log(e);
-    }
+    if(!this.unsubscribeToTurnUpdates) this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
   };
 
   componentWillUnmount = () => {
-    this.unsubscribeToTickets();
-    this.unsubscribeToTicketUpdates();
     this.unsubscribeToTurnUpdates();
-  };
-
-  subscribeToTickets = subscribeToMore => {
-    return subscribeToMore({
-      document: NEW_TICKET,
-      updateQuery: (prev, {subscriptionData: {data}}) => {
-        const {tickets: oldTickets} = prev;
-        const {newTicket} = data;
-        if (!newTicket) return prev;
-
-        for (let i = 0; i < oldTickets.length; i++)
-          if (newTicket.id === oldTickets[i].id) return prev;
-
-        const tickets = [...oldTickets, newTicket];
-
-        return {tickets};
-      },
-    });
-  };
-
-  subscribeToTicketUpdates = subscribeToMore => {
-    return subscribeToMore({
-      document: TICKET_UPDATE,
-      updateQuery: (prev, {subscriptionData: {data}}) => {
-        const {tickets: oldTickets} = prev;
-        const {ticketUpdate} = data;
-        if (!ticketUpdate) return prev;
-
-        let tickets = [...oldTickets];
-
-        for (let i = 0; i < oldTickets.length; i++)
-          if (ticketUpdate.id === oldTickets[i].id) tickets[i] = ticketUpdate;
-
-        return {tickets};
-      }
-    });
   };
 
   subscribeToTurnUpdates = subscribeToMore => {
@@ -103,15 +39,12 @@ class DashboardTickets extends Component {
         if (!turnUpdate) return prev;
 
         const turnActive = {...turnUpdate};
-
-        this.setState({turnActive});
         return {turnActive};
       },
     });
   };
 
-  setCurrent = (currentTicket, currentForm) =>
-    this.setState({currentTicket, currentForm});
+  setCurrent = (currentTicket, currentForm) => this.setState({currentTicket, currentForm});
 
   printTicket = node => {
     const {
@@ -141,18 +74,15 @@ class DashboardTickets extends Component {
     printable.parentNode.removeChild(printable);
   };
 
-  onTurnUpdate = turnActive => this.setState({turnActive});
-
   render() {
-    const {user, collapsed, onCollapse} = this.props;
-    const {currentTicket, currentForm, turnActive} = this.state;
+    const {user, collapsed, onCollapse, data} = this.props;
 
-    const TicketImageRegisterForm = Form.create({name: 'image'})(
-      TicketImageForm
-    );
-    const TicketSubmitRegisterForm = Form.create({name: 'submit'})(
-      TicketSubmitForm
-    );
+    const {currentTicket, currentForm} = this.state;
+
+    const {loading, error, turnActive, refetch} = data;
+
+    const TicketImageRegisterForm = Form.create({name: 'image'})(TicketImageForm);
+    const TicketSubmitRegisterForm = Form.create({name: 'submit'})(TicketSubmitForm);
     const TurnInitRegisterForm = Form.create({name: 'turnInit'})(TurnInitForm);
     const TurnEndRegisterForm = Form.create({name: 'turnEnd'})(TurnEndForm);
 
@@ -180,50 +110,14 @@ class DashboardTickets extends Component {
           </ListContainer>}
         </Container>
         <Container justifycontent="center" alignitems="center">
-          <Query query={GET_TICKETS} variables={{filters: {}}}>
-            {({loading, error, data, refetch, subscribeToMore}) => {
-              if (loading) return <div>Cargando boletas...</div>;
-              if (error) return <div>¡No se han podido cargar las boletas!</div>;
-
-              const {tickets} = data;
-
-              if(!this.unsubscribeToTickets) this.unsubscribeToTickets = this.subscribeToTickets(subscribeToMore);
-              if(!this.unsubscribeToTicketUpdates) this.unsubscribeToTicketUpdates = this.subscribeToTicketUpdates(subscribeToMore);
-              if(!this.unsubscribeToTurnUpdates) this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
-
-              return (
-                tickets.length === 0 ?
-                  <div>No hay tickets disponibles</div> :
-                  <Collapse accordion bordered={false}>
-                    {tickets.filter(ticket => !ticket.turn).map(ticket => (
-                      <Panel
-                        disabled={!turnActive}
-                        key={ticket.id}
-                        header={`${ticket.truck.plates}`}
-                        extra={
-                          <LoadingBarContainer>
-                            <LoadingBar
-                              disabled={!turnActive}
-                              totalPrice={ticket.totalPrice}
-                              outTruckImage={ticket.outTruckImage}
-                            />
-                          </LoadingBarContainer>
-                        }
-                      >
-                        <TicketPanel
-                          ticket={ticket}
-                          turn={turnActive}
-                          onTurnUpdate={this.onTurnUpdate}
-                          refetch={refetch}
-                          setCurrent={this.setCurrent}
-                          printTicket={this.printTicket}
-                        />
-                      </Panel>
-                    ))}
-                  </Collapse>
-              );
-            }}
-          </Query>
+          {error ? <div>¡No se han podido cargar las boletas!</div> : loading ? <div>Cargando boletas...</div> :
+              <TicketsList
+                  turnActive={turnActive}
+                  setCurrent={this.setCurrent}
+                  printTicket={this.printTicket}
+                  refetch={refetch}
+              />
+          }
           {(currentTicket && currentForm === 'image' && (
             <TicketImageRegisterForm
               user={user}
@@ -245,4 +139,4 @@ class DashboardTickets extends Component {
   }
 }
 
-export default withApollo(DashboardTickets);
+export default graphql(TURN_ACTIVE)(DashboardTickets);
