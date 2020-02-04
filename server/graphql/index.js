@@ -15,15 +15,6 @@ const schema = makeExecutableSchema({
 
 const pubsub = new PubSub();
 
-setInterval(() => {
-  console.log("NEW_MESSAGE: ", pubsub.ee.listenerCount("NEW_MESSAGE"));
-  console.log("NEW_POST: ", pubsub.ee.listenerCount("NEW_POST"));
-  console.log("NEW_TICKET: ", pubsub.ee.listenerCount("NEW_TICKET"));
-  console.log("TICKET_UPDATE: ", pubsub.ee.listenerCount("TICKET_UPDATE"));
-  console.log("ACTIVE_TICKETS: ", pubsub.ee.listenerCount("ACTIVE_TICKETS"));
-  console.log("TURN_UPDATE: ", pubsub.ee.listenerCount("TURN_UPDATE"));
-}, 1000);
-
 const server = new ApolloServer({
   schema,
   context: ({ req, res }) => {
