@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const NEW_TICKET = gql`
   subscription newTicket {
@@ -99,15 +99,15 @@ const TICKET_UPDATE = gql`
 `;
 
 const TURN_UPDATE = gql`
-    subscription ticketUpdate {
-      turnUpdate {
-        id
-        start
-        end
-        period
-        folios
-      }
+  subscription ticketUpdate {
+    turnUpdate {
+      id
+      start
+      end
+      period
+      folios
     }
+  }
 `;
 
-export {NEW_TICKET, TICKET_UPDATE, TURN_UPDATE};
+export { NEW_TICKET, TICKET_UPDATE, TURN_UPDATE };

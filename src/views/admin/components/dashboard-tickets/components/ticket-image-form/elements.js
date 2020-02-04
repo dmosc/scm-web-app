@@ -21,4 +21,4 @@ const ImageContainer = styled.img`
   margin: 0px 5px;
 `;
 
-export {PreviewImageContainer, ImageContainer};
+export { PreviewImageContainer, ImageContainer };

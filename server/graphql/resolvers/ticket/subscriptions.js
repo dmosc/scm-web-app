@@ -1,12 +1,12 @@
 const ticketSubscriptions = {
   newTicket: {
-    subscribe: (_, __, {pubsub}) => pubsub.asyncIterator('NEW_TICKET'),
+    subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_TICKET')
   },
   ticketUpdate: {
-    subscribe: (_, __, {pubsub}) => pubsub.asyncIterator('TICKET_UPDATE'),
+    subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('TICKET_UPDATE')
   },
   activeTickets: {
-    subscribe: (_, __, {pubsub}) => pubsub.asyncIterator('ACTIVE_TICKETS')
+    subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('ACTIVE_TICKETS')
   }
 };
 

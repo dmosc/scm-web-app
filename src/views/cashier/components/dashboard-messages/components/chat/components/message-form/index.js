@@ -1,57 +1,54 @@
-import React, {Component} from 'react';
-import {withApollo} from 'react-apollo';
-import {Form, Button, Input, notification} from 'antd';
-import {REGISTER_MESSAGE} from './graphql/mutations';
+import React, { Component } from 'react';
+import { withApollo } from 'react-apollo';
+import { Form, Button, Input, notification } from 'antd';
+import { REGISTER_MESSAGE } from './graphql/mutations';
 
 class MessageForm extends Component {
   state = {
     loading: false,
-    content: '',
+    content: ''
   };
 
   sendMessage = async e => {
     const {
-      user: {username},
-      client,
+      user: { username },
+      client
     } = this.props;
-    const {content} = this.state;
+    const { content } = this.state;
 
-    this.setState({loading: true});
+    this.setState({ loading: true });
     e.preventDefault();
 
     try {
       await client.mutate({
         mutation: REGISTER_MESSAGE,
-        variables: {message: {username, content}},
+        variables: { message: { username, content } }
       });
 
-      this.setState({loading: false, content: ''});
+      this.setState({ loading: false, content: '' });
     } catch (e) {
       notification.error({
-        message: `No se ha podido enviar el mensaje`,
+        message: `No se ha podido enviar el mensaje`
       });
-      this.setState({loading: false, content: ''});
+      this.setState({ loading: false, content: '' });
     }
   };
 
-  setContent = content => this.setState({content});
+  setContent = content => this.setState({ content });
 
   render() {
-    const {loading, content} = this.state;
+    const { loading, content } = this.state;
 
     return (
-      <Form
-        onSubmit={this.sendMessage}
-        style={{display: 'flex', justifyContent: 'space-around'}}
-      >
+      <Form onSubmit={this.sendMessage} style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Input
-          style={{width: '70%'}}
+          style={{ width: '70%' }}
           placeholder="Escribir un mensaje..."
           value={content}
-          onChange={({target: {value}}) => this.setContent(value)}
+          onChange={({ target: { value } }) => this.setContent(value)}
         />
         <Button
-          style={{width: '20%'}}
+          style={{ width: '20%' }}
           disabled={!content.trim()}
           type="primary"
           htmlType="submit"

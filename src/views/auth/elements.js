@@ -7,4 +7,4 @@ const LoginContainer = styled.div`
   align-items: flex-start;
 `;
 
-export {LoginContainer};
+export { LoginContainer };

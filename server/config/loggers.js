@@ -1,12 +1,12 @@
-import {Signale} from 'signale';
+import { Signale } from 'signale';
 
 const seeder = new Signale({
   interactive: true,
   scope: 'db:seed',
   config: {
     displayTimestamp: true,
-    displayDate: true,
-  },
+    displayDate: true
+  }
 });
 
 const dropper = new Signale({
@@ -14,8 +14,8 @@ const dropper = new Signale({
   scope: 'db:drop',
   config: {
     displayTimestamp: true,
-    displayDate: true,
-  },
+    displayDate: true
+  }
 });
 
-export {seeder, dropper};
+export { seeder, dropper };

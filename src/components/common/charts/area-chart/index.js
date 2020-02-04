@@ -1,12 +1,5 @@
-import React, {PureComponent} from 'react';
-import {
-  AreaChart as AChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip
-} from 'recharts';
+import React, { PureComponent } from 'react';
+import { AreaChart as AChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 const data = [
   {

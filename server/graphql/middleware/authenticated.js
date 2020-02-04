@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import {JWT_SECRET} from '../../config';
-import {AuthenticationError} from 'apollo-server-errors';
+import { JWT_SECRET } from '../../config';
+import { AuthenticationError } from 'apollo-server-errors';
 
-const authenticated = next => (_, args, {req, res, pubsub}) => {
+const authenticated = next => (_, args, { req, res, pubsub }) => {
   const authentication = req.headers.authentication;
 
   if (authentication) {
@@ -11,7 +11,7 @@ const authenticated = next => (_, args, {req, res, pubsub}) => {
     if (token) {
       try {
         jwt.verify(token, JWT_SECRET);
-        return next(_, args, {req, res, pubsub});
+        return next(_, args, { req, res, pubsub });
       } catch (e) {
         throw new AuthenticationError('Invalid/Expired token');
       }

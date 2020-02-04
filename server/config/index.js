@@ -5,7 +5,7 @@ dotenv.config();
 const ENV = {
   development: process.env.NODE_ENV === 'development',
   test: process.env.NODE_ENV === 'test',
-  production: process.env.NODE_ENV === 'production',
+  production: process.env.NODE_ENV === 'production'
 };
 
 const AWS_CONFIG = {
@@ -15,7 +15,7 @@ const AWS_CONFIG = {
   AURORA_DB_USERNAME: process.env.AURORA_DB_USERNAME,
   AURORA_DB_PASSWORD: process.env.AURORA_DB_PASSWORD,
   AURORA_DB_HOST: process.env.AURORA_DB_HOST,
-  AURORA_DB_PORT: process.env.AURORA_DB_PORT,
+  AURORA_DB_PORT: process.env.AURORA_DB_PORT
 };
 
 const API_PORT = process.env.API_PORT;
@@ -33,5 +33,5 @@ export {
   MONGO_DB_LOCAL_URI,
   S3_BUCKET,
   S3_REGION,
-  JWT_SECRET,
+  JWT_SECRET
 };

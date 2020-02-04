@@ -1,20 +1,20 @@
-import React, {Component} from 'react';
-import {Form, Drawer, List, Button, Icon} from 'antd';
+import React, { Component } from 'react';
+import { Form, Drawer, List, Button, Icon } from 'antd';
 import EditForm from './components/user-edit-form';
-import {TitleList, TitleContainer} from './elements';
+import { TitleList, TitleContainer } from './elements';
 
 class UserList extends Component {
   state = {
-    currentUser: null,
+    currentUser: null
   };
 
-  setCurrentUser = currentUser => this.setState({currentUser});
+  setCurrentUser = currentUser => this.setState({ currentUser });
 
   render() {
-    const {loadingUsers, users, visible, toggleList, onUserEdit} = this.props;
-    const {currentUser} = this.state;
+    const { loadingUsers, users, visible, toggleList, onUserEdit } = this.props;
+    const { currentUser } = this.state;
 
-    const UserEditForm = Form.create({name: 'userEdit'})(EditForm);
+    const UserEditForm = Form.create({ name: 'userEdit' })(EditForm);
 
     return (
       <React.Fragment>
@@ -23,9 +23,9 @@ class UserList extends Component {
           onClose={() => toggleList()}
           visible={visible}
           getContainer={false}
-          style={{position: 'absolute'}}
-          maskStyle={{backgroundColor: 'transparent'}}
-          bodyStyle={{margin: 0, padding: 0}}
+          style={{ position: 'absolute' }}
+          maskStyle={{ backgroundColor: 'transparent' }}
+          bodyStyle={{ margin: 0, padding: 0 }}
           width="100%"
         >
           <TitleContainer>
@@ -40,14 +40,7 @@ class UserList extends Component {
             dataSource={users}
             size="small"
             renderItem={user => (
-              <List.Item
-                actions={[
-                  <Icon
-                    type="edit"
-                    onClick={() => this.setCurrentUser(user)}
-                  />,
-                ]}
-              >
+              <List.Item actions={[<Icon type="edit" onClick={() => this.setCurrentUser(user)} />]}>
                 <List.Item.Meta
                   title={`${user.username}`}
                   description={`${user.firstName} ${user.lastName}`}

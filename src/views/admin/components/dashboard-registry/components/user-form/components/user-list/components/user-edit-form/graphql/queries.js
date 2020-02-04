@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_USERS = gql`
   query users($filters: UserFilters!) {
@@ -14,4 +14,4 @@ const GET_USERS = gql`
   }
 `;
 
-export {GET_USERS};
+export { GET_USERS };

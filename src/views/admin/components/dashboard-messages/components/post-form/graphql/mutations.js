@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const REGISTER_POST = gql`
   mutation post($post: PostInput!) {
@@ -8,4 +8,4 @@ const REGISTER_POST = gql`
   }
 `;
 
-export {REGISTER_POST};
+export { REGISTER_POST };

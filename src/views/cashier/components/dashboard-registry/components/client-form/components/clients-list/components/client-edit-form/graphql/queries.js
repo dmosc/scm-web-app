@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_PRODUCTS = gql`
   query rocks($filters: RockFilters!) {
@@ -9,4 +9,4 @@ const GET_PRODUCTS = gql`
   }
 `;
 
-export {GET_PRODUCTS};
+export { GET_PRODUCTS };

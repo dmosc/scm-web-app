@@ -15,8 +15,12 @@ const LoadingBar = styled.div`
   width: 4vh;
   height: 1vh;
   width: ${props =>
-    props.totalPrice && props.outTruckImage ? '7vw' : props.outTruckImage || props.totalPrice ? '5vw' : '3vw'}
-  background-color: ${props => props.disabled ? 'lightGrey' : 'green'};
+    props.totalPrice && props.outTruckImage
+      ? '7vw'
+      : props.outTruckImage || props.totalPrice
+      ? '5vw'
+      : '3vw'}
+  background-color: ${props => (props.disabled ? 'lightGrey' : 'green')};
   border-radius: 5px;
   
   -webkit-transition: width 1000ms ease;
@@ -24,4 +28,4 @@ const LoadingBar = styled.div`
   transition: width 1000ms ease;
 `;
 
-export {LoadingBarContainer, LoadingBar};
+export { LoadingBarContainer, LoadingBar };

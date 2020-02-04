@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const TICKET_SUBMIT = gql`
   mutation ticketSubmit($ticket: TicketSubmitInput!) {
@@ -14,4 +14,4 @@ const TICKET_SUBMIT = gql`
   }
 `;
 
-export {TICKET_SUBMIT};
+export { TICKET_SUBMIT };

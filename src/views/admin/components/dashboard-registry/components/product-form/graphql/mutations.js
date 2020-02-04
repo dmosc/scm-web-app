@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const EDIT_ROCK = gql`
   mutation rockEdit($rock: RockEditInput!) {
@@ -10,4 +10,4 @@ const EDIT_ROCK = gql`
   }
 `;
 
-export {EDIT_ROCK};
+export { EDIT_ROCK };

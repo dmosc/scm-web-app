@@ -1,4 +1,4 @@
-import {GraphQLUpload} from 'graphql-upload';
+import { GraphQLUpload } from 'graphql-upload';
 
 // User
 import userQueries from './user/queries';
@@ -51,7 +51,7 @@ const resolvers = {
     ...rockQueries,
     ...postQueries,
     ...messageQueries,
-    ...turnQueries,
+    ...turnQueries
   },
   Mutation: {
     ...userMutations,
@@ -63,15 +63,15 @@ const resolvers = {
     ...postMutations,
     ...messageMutations,
     ...turnMutations,
-    ...uploaders, // AWS
+    ...uploaders // AWS
   },
   Subscription: {
     ...ticketSubscriptions,
     ...postSubscriptions,
     ...messageSubscriptions,
-    ...turnSubscriptions,
+    ...turnSubscriptions
   },
-  Upload: GraphQLUpload,
+  Upload: GraphQLUpload
 };
 
 export default resolvers;

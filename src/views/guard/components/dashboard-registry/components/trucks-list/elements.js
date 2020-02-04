@@ -7,4 +7,4 @@ const ListContainer = styled.div`
   max-height: 65vh;
 `;
 
-export {ListContainer};
+export { ListContainer };

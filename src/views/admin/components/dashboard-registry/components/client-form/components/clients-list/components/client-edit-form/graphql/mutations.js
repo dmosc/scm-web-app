@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const EDIT_CLIENT = gql`
   mutation clientEdit($client: ClientEditInput!) {
@@ -29,4 +29,4 @@ const EDIT_CLIENT = gql`
   }
 `;
 
-export {EDIT_CLIENT};
+export { EDIT_CLIENT };

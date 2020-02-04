@@ -10,7 +10,9 @@
     "db:drop": "babel-node server/database/drop.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint",
+    "prettier": "prettier --write \"**/*.{js,graphql,json,css}\""
   },
   "dependencies": {
     "@apollo/react-hoc": "^3.1.3",
@@ -36,6 +38,8 @@
     "express": "^4.17.1",
     "graphql": "^14.5.8",
     "graphql-import": "^0.7.1",
+    "graphql-tag": "^2.10.2",
+    "graphql-tools": "^4.0.6",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.8.1",
@@ -75,5 +79,23 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "husky": "^4.2.1",
+    "prettier": "^1.19.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn lint .",
+      "pre-commit": "yarn prettier ."
+    }
   }
 }

@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {withApollo} from 'react-apollo';
+import React, { Component } from 'react';
+import { withApollo } from 'react-apollo';
 import {
   Form,
   Modal,
@@ -9,14 +9,14 @@ import {
   InputNumber,
   Tooltip,
   Typography,
-  notification,
+  notification
 } from 'antd';
-import {TICKET_SUBMIT} from './graphql/mutations';
-import {GET_TRUCK_DRIVERS} from './graphql/queries';
+import { TICKET_SUBMIT } from './graphql/mutations';
+import { GET_TRUCK_DRIVERS } from './graphql/queries';
 
-const {Option} = Select;
-const {Group} = Radio;
-const {Title, Text} = Typography;
+const { Option } = Select;
+const { Group } = Radio;
+const { Title, Text } = Typography;
 
 class TicketSubmitForm extends Component {
   state = {
@@ -30,35 +30,35 @@ class TicketSubmitForm extends Component {
   componentDidMount = async () => {
     const {
       currentTicket: {
-        truck: {id},
+        truck: { id },
         bill
       },
-      client,
+      client
     } = this.props;
 
     try {
       const {
         data: {
-          truck: {drivers},
-        },
-      } = await client.query({query: GET_TRUCK_DRIVERS, variables: {id}});
+          truck: { drivers }
+        }
+      } = await client.query({ query: GET_TRUCK_DRIVERS, variables: { id } });
 
-      this.setState({drivers, bill}, this.calculateTotal);
+      this.setState({ drivers, bill }, this.calculateTotal);
     } catch (e) {
       console.log(e);
     }
   };
 
   handleSubmit = e => {
-    const {form, currentTicket, setCurrent, client} = this.props;
+    const { form, currentTicket, setCurrent, client } = this.props;
 
-    const {id} = currentTicket;
+    const { id } = currentTicket;
 
-    this.setState({loading: true});
+    this.setState({ loading: true });
     e.preventDefault();
-    form.validateFields(async (err, {driver, weight, credit, bill}) => {
+    form.validateFields(async (err, { driver, weight, credit, bill }) => {
       if (err) {
-        this.setState({loading: false});
+        this.setState({ loading: false });
         return;
       }
 
@@ -66,35 +66,35 @@ class TicketSubmitForm extends Component {
         await client.mutate({
           mutation: TICKET_SUBMIT,
           variables: {
-            ticket: {id, driver: driver[0], weight, credit, bill},
-          },
+            ticket: { id, driver: driver[0], weight, credit, bill }
+          }
         });
 
-        this.setState({loading: false});
+        this.setState({ loading: false });
         form.resetFields();
         setCurrent();
         notification.success({
-          message: '¡La información ha sido actualizada correctamente!',
+          message: '¡La información ha sido actualizada correctamente!'
         });
       } catch (e) {
-        this.setState({loading: false});
+        this.setState({ loading: false });
         notification.error({
-          message: '¡Ha habido un error modificando la información!',
+          message: '¡Ha habido un error modificando la información!'
         });
       }
     });
   };
 
   handleCancel = () => {
-    const {setCurrent} = this.props;
+    const { setCurrent } = this.props;
 
     setCurrent();
   };
 
   calculateTotal = () => {
     const TAX = 0.16;
-    const {currentTicket} = this.props;
-    const {weight, bill} = this.state;
+    const { currentTicket } = this.props;
+    const { weight, bill } = this.state;
 
     const price = currentTicket.client.prices[currentTicket.product.name]
       ? currentTicket.client.prices[currentTicket.product.name]
@@ -108,15 +108,15 @@ class TicketSubmitForm extends Component {
 
     const total = (totalWeight * price + tax).toFixed(2);
 
-    if (total > 0) this.setState({total, tax: tax.toFixed(2)});
-    else this.setState({total: 0, tax: 0});
+    if (total > 0) this.setState({ total, tax: tax.toFixed(2) });
+    else this.setState({ total: 0, tax: 0 });
   };
 
-  handleAttributeChange = (key, val) => this.setState({[key]: val}, this.calculateTotal);
+  handleAttributeChange = (key, val) => this.setState({ [key]: val }, this.calculateTotal);
 
   render() {
-    const {form, currentTicket, currentForm} = this.props;
-    const {drivers, total, tax} = this.state;
+    const { form, currentTicket, currentForm } = this.props;
+    const { drivers, total, tax } = this.state;
 
     return (
       <Modal
@@ -127,54 +127,52 @@ class TicketSubmitForm extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {currentTicket.driver ? (
-              form.getFieldDecorator('driver', {
-                initialValue: [currentTicket.driver],
-                rules: [
-                  {
-                    required: true,
-                    message: 'Nombre(s) y apellidos son requeridos',
-                  },
-                ],
-              })(
-                <Select
+            {currentTicket.driver
+              ? form.getFieldDecorator('driver', {
+                  initialValue: [currentTicket.driver],
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Nombre(s) y apellidos son requeridos'
+                    }
+                  ]
+                })(
+                  <Select
                     mode="tags"
                     maxTagCount={1}
                     allowClear
                     showSearch
                     placeholder="Nombre(s) y apellidos del conductor"
-                >
-                  {drivers.map(driver => (
+                  >
+                    {drivers.map(driver => (
                       <Option key={driver} value={driver}>
                         {driver}
                       </Option>
-                  ))}
-                </Select>
-              )
-            ) : (
-              form.getFieldDecorator('driver', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Nombre(s) y apellidos son requeridos',
-                  },
-                ],
-              })(
-                  <Select
-                      mode="tags"
-                      maxTagCount={1}
-                      allowClear
-                      showSearch
-                      placeholder="Nombre(s) y apellidos del conductor"
-                  >
-                    {drivers.map(driver => (
-                        <Option key={driver} value={driver}>
-                          {driver}
-                        </Option>
                     ))}
                   </Select>
-              )
-            )}
+                )
+              : form.getFieldDecorator('driver', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Nombre(s) y apellidos son requeridos'
+                    }
+                  ]
+                })(
+                  <Select
+                    mode="tags"
+                    maxTagCount={1}
+                    allowClear
+                    showSearch
+                    placeholder="Nombre(s) y apellidos del conductor"
+                  >
+                    {drivers.map(driver => (
+                      <Option key={driver} value={driver}>
+                        {driver}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('weight', {
@@ -182,13 +180,12 @@ class TicketSubmitForm extends Component {
               rules: [
                 {
                   required: true,
-                  message:
-                    '¡Los KG en báscula son requeridas!',
-                },
-              ],
+                  message: '¡Los KG en báscula son requeridas!'
+                }
+              ]
             })(
               <InputNumber
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder="KG registrados en báscula"
                 min={0}
                 step={0.01}
@@ -202,19 +199,21 @@ class TicketSubmitForm extends Component {
               rules: [
                 {
                   required: true,
-                  message:
-                      '¡Tipo de boleta es requerido!',
-                },
-              ],
+                  message: '¡Tipo de boleta es requerido!'
+                }
+              ]
             })(
-                <Group disabled={!!currentTicket.bill} onChange={({target: {value}}) => this.handleAttributeChange('bill', value)}>
-                  <Radio.Button value={true}>FACTURA</Radio.Button>
-                  <Radio.Button value={false}>REMISIÓN</Radio.Button>
-                </Group>
+              <Group
+                disabled={!!currentTicket.bill}
+                onChange={({ target: { value } }) => this.handleAttributeChange('bill', value)}
+              >
+                <Radio.Button value={true}>FACTURA</Radio.Button>
+                <Radio.Button value={false}>REMISIÓN</Radio.Button>
+              </Group>
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('credit', {initialValue: currentTicket.credit})(
+            {form.getFieldDecorator('credit', { initialValue: currentTicket.credit })(
               <Group>
                 <Radio.Button value={false}>CONTADO</Radio.Button>
                 <Tooltip
@@ -224,10 +223,7 @@ class TicketSubmitForm extends Component {
                       : `Cliente tiene disponible $${currentTicket.client.credit}`
                   }
                 >
-                  <Radio.Button
-                    disabled={currentTicket.client.credit < total}
-                    value={true}
-                  >
+                  <Radio.Button disabled={currentTicket.client.credit < total} value={true}>
                     CRÉDITO
                   </Radio.Button>
                 </Tooltip>
@@ -235,9 +231,7 @@ class TicketSubmitForm extends Component {
             )}
           </Form.Item>
           <Row>
-            <Text disabled>
-              {total > 0 ? `Subtotal: $${(total - tax).toFixed(2)} MXN` : '-'}
-            </Text>
+            <Text disabled>{total > 0 ? `Subtotal: $${(total - tax).toFixed(2)} MXN` : '-'}</Text>
           </Row>
           <Row>
             <Text disabled>{total > 0 ? `Tax: $${tax} MXN` : '-'}</Text>

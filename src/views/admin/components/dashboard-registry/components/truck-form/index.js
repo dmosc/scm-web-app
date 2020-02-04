@@ -1,21 +1,13 @@
-import React, {Component} from 'react';
-import {withApollo} from 'react-apollo';
+import React, { Component } from 'react';
+import { withApollo } from 'react-apollo';
 import debounce from 'debounce';
-import {
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Button,
-  Select,
-  notification,
-} from 'antd';
+import { Form, Icon, Input, InputNumber, Button, Select, notification } from 'antd';
 import TruckList from './components/truck-list';
-import {FormContainer, TitleContainer, TitleList} from './elements';
-import {REGISTER_TRUCK} from './graphql/mutations';
-import {GET_TRUCKS, GET_CLIENTS} from './graphql/queries';
+import { FormContainer, TitleContainer, TitleList } from './elements';
+import { REGISTER_TRUCK } from './graphql/mutations';
+import { GET_TRUCKS, GET_CLIENTS } from './graphql/queries';
 
-const {Option} = Select;
+const { Option } = Select;
 
 class TruckForm extends Component {
   state = {
@@ -32,132 +24,132 @@ class TruckForm extends Component {
   componentDidMount = async () => this.getData();
 
   getData = debounce(async () => {
-    const {client} = this.props;
-    const {filters: {search}} = this.state;
+    const { client } = this.props;
+    const {
+      filters: { search }
+    } = this.state;
 
-    this.setState({loadingTrucks: true});
+    this.setState({ loadingTrucks: true });
 
     try {
       const {
-        data: {trucks},
+        data: { trucks }
       } = await client.query({
         query: GET_TRUCKS,
-        variables: {filters: {search}}
+        variables: { filters: { search } }
       });
 
-      this.setState({trucks, loadingTrucks: false});
+      this.setState({ trucks, loadingTrucks: false });
     } catch (e) {
-      this.setState({loadingTrucks: false});
+      this.setState({ loadingTrucks: false });
     }
   }, 300);
 
   handleSubmit = e => {
-    const {form, client} = this.props;
-    const {trucks: oldTrucks} = this.state;
+    const { form, client } = this.props;
+    const { trucks: oldTrucks } = this.state;
 
-    this.setState({loading: true});
+    this.setState({ loading: true });
     e.preventDefault();
-    form.validateFields(
-      async (err, {plates, brand, model, weight, client: cli, drivers}) => {
-        if (!err) {
-          try {
-            const {
-              data: {truck},
-            } = await client.mutate({
-              mutation: REGISTER_TRUCK,
-              variables: {
-                truck: {
-                  plates,
-                  brand,
-                  model,
-                  weight,
-                  client: cli.substring(cli.indexOf(':') + 1),
-                  drivers,
-                },
-              },
-            });
+    form.validateFields(async (err, { plates, brand, model, weight, client: cli, drivers }) => {
+      if (!err) {
+        try {
+          const {
+            data: { truck }
+          } = await client.mutate({
+            mutation: REGISTER_TRUCK,
+            variables: {
+              truck: {
+                plates,
+                brand,
+                model,
+                weight,
+                client: cli.substring(cli.indexOf(':') + 1),
+                drivers
+              }
+            }
+          });
 
-            const trucks = [truck, ...oldTrucks];
-            this.setState({loading: false, trucks});
+          const trucks = [truck, ...oldTrucks];
+          this.setState({ loading: false, trucks });
 
+          notification.open({
+            message: `Camión ${truck.plates} ha sido registrado exitosamente!`
+          });
+
+          form.resetFields();
+        } catch (e) {
+          e['graphQLErrors'].map(({ message }) =>
             notification.open({
-              message: `Camión ${truck.plates} ha sido registrado exitosamente!`,
-            });
-
-            form.resetFields();
-          } catch (e) {
-            e['graphQLErrors'].map(({message}) =>
-              notification.open({
-                message,
-              })
-            );
-            this.setState({loading: false});
-          }
-        } else {
-          this.setState({loading: false});
+              message
+            })
+          );
+          this.setState({ loading: false });
         }
+      } else {
+        this.setState({ loading: false });
       }
-    );
+    });
   };
 
   getClients = async search => {
-    const {client} = this.props;
+    const { client } = this.props;
     if (!search) {
-      this.setState({clients: [], loadingClients: false});
+      this.setState({ clients: [], loadingClients: false });
       return;
     }
 
-    this.setState({loadingClients: true});
+    this.setState({ loadingClients: true });
 
     try {
       const {
-        data: {clients},
+        data: { clients }
       } = await client.query({
         query: GET_CLIENTS,
         variables: {
-          filters: {limit: 10, search},
-        },
+          filters: { limit: 10, search }
+        }
       });
 
-      this.setState({loadingClients: false, clients});
+      this.setState({ loadingClients: false, clients });
     } catch (e) {
-      notification.open({message: e});
+      notification.open({ message: e });
     }
   };
 
   onSearch = search =>
     this.setState(
-      {search, loadingClients: !!search, sellers: []},
+      { search, loadingClients: !!search, sellers: [] },
       debounce(this.getClients(search), 1500)
     );
 
   toggleList = () => {
-    const {visible} = this.state;
-    this.setState({visible: !visible});
+    const { visible } = this.state;
+    this.setState({ visible: !visible });
   };
 
   onTruckEdit = truck => {
-    const {trucks: oldTrucks} = this.state;
+    const { trucks: oldTrucks } = this.state;
     const trucks = [...oldTrucks];
 
-    trucks.forEach(({id}, i) => {
-      if (truck.id === id) trucks[i] = {...truck};
+    trucks.forEach(({ id }, i) => {
+      if (truck.id === id) trucks[i] = { ...truck };
     });
 
-    this.setState({trucks});
+    this.setState({ trucks });
   };
 
   handleFilterChange = (key, value) => {
-    const {filters: oldFilters} = this.state;
+    const { filters: oldFilters } = this.state;
 
-    const filters = {...oldFilters, [key]: value};
+    const filters = { ...oldFilters, [key]: value };
 
-    this.setState({filters}, this.getData);
+    this.setState({ filters }, this.getData);
   };
 
   render() {
-    const {form} = this.props;
-    const {loading, visible, loadingClients, trucks, clients} = this.state;
+    const { form } = this.props;
+    const { loading, visible, loadingClients, trucks, clients } = this.state;
 
     return (
       <FormContainer>
@@ -173,12 +165,12 @@ class TruckForm extends Component {
               <Select
                 showSearch
                 allowClear
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder="Cliente"
                 onSearch={this.onSearch}
                 loading={loadingClients}
               >
-                {clients.map(({id, businessName}) => (
+                {clients.map(({ id, businessName }) => (
                   <Option key={id} value={`${businessName}:${id}`}>
                     <span>{`${businessName}`}</span>
                   </Option>
@@ -191,14 +183,12 @@ class TruckForm extends Component {
               rules: [
                 {
                   required: true,
-                  message: 'Las placas del camión son requeridas!',
-                },
-              ],
+                  message: 'Las placas del camión son requeridas!'
+                }
+              ]
             })(
               <Input
-                prefix={
-                  <Icon type="number" style={{color: 'rgba(0,0,0,.25)'}} />
-                }
+                prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Placas"
               />
             )}
@@ -208,12 +198,12 @@ class TruckForm extends Component {
               rules: [
                 {
                   required: true,
-                  message: 'La marca del camión es requerida!',
-                },
-              ],
+                  message: 'La marca del camión es requerida!'
+                }
+              ]
             })(
               <Input
-                prefix={<Icon type="car" style={{color: 'rgba(0,0,0,.25)'}} />}
+                prefix={<Icon type="car" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Marca"
               />
             )}
@@ -223,17 +213,12 @@ class TruckForm extends Component {
               rules: [
                 {
                   required: true,
-                  message: 'El modelo es requerido!',
-                },
-              ],
+                  message: 'El modelo es requerido!'
+                }
+              ]
             })(
               <Input
-                prefix={
-                  <Icon
-                    type="unordered-list"
-                    style={{color: 'rgba(0,0,0,.25)'}}
-                  />
-                }
+                prefix={<Icon type="unordered-list" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Modelo"
               />
             )}
@@ -243,12 +228,12 @@ class TruckForm extends Component {
               rules: [
                 {
                   required: true,
-                  message: 'El peso del camión en KG es requerido!',
-                },
-              ],
+                  message: 'El peso del camión en KG es requerido!'
+                }
+              ]
             })(
               <InputNumber
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder="Peso neto en KG"
                 min={0}
                 step={0.1}
@@ -260,9 +245,9 @@ class TruckForm extends Component {
               rules: [
                 {
                   required: true,
-                  message: 'Ingrese 1 o más nombres de conductores',
-                },
-              ],
+                  message: 'Ingrese 1 o más nombres de conductores'
+                }
+              ]
             })(
               <Select
                 placeholder="Conductor(es) del camión"
@@ -273,12 +258,7 @@ class TruckForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon="save"
-              loading={loading}
-            >
+            <Button type="primary" htmlType="submit" icon="save" loading={loading}>
               {(loading && 'Espere..') || 'Guardar'}
             </Button>
           </Form.Item>

@@ -1,10 +1,10 @@
 // Amazon S3 stuff
 import AWS from 'aws-sdk';
-import {AWS_CONFIG, S3_REGION} from '../../config';
+import { AWS_CONFIG, S3_REGION } from '../../config';
 
 AWS.config.update({
   ...AWS_CONFIG,
-  region: S3_REGION,
+  region: S3_REGION
 });
 
 // Initialize AWS S3

@@ -13,4 +13,4 @@ const GET_USER_DATA = gql`
   }
 `;
 
-export {GET_USER_DATA};
+export { GET_USER_DATA };

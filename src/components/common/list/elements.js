@@ -16,4 +16,4 @@ const TitleList = styled.h1`
   font-weight: bold;
 `;
 
-export {ContentList, TitleList};
+export { ContentList, TitleList };

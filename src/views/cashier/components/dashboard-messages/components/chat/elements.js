@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import ScrollableFeed from 'react-scrollable-feed';
-import {Typography} from 'antd';
+import { Typography } from 'antd';
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 const ChatContainer = styled.div`
   height: 55vh;
@@ -48,10 +48,4 @@ const ScrollableContext = styled(ScrollableFeed)`
   }
 `;
 
-export {
-  ChatContainer,
-  MessageContainer,
-  MessageSender,
-  Message,
-  ScrollableContext,
-};
+export { ChatContainer, MessageContainer, MessageSender, Message, ScrollableContext };

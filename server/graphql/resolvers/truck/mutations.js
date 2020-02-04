@@ -1,9 +1,9 @@
-import {Client, Truck} from '../../../mongo-db/models';
+import { Client, Truck } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const truckMutations = {
   truck: authenticated(async (_, args) => {
-    const truck = new Truck({...args.truck});
+    const truck = new Truck({ ...args.truck });
 
     truck.plates = truck.plates.toUpperCase();
     truck.brand = truck.brand.toUpperCase();
@@ -11,7 +11,10 @@ const truckMutations = {
     truck.weight = truck.weight.toFixed(2);
     truck.drivers = truck.drivers.map(driver => driver.toUpperCase());
 
-    const client = await Client.findOneAndUpdate({_id: args.truck.client}, {$push: {trucks: truck._id}});
+    const client = await Client.findOneAndUpdate(
+      { _id: args.truck.client },
+      { $push: { trucks: truck._id } }
+    );
 
     if (!client) throw new Error('¡El cliente no existe!');
 
@@ -27,9 +30,9 @@ const truckMutations = {
   truckEdit: authenticated(async (_, args) => {
     try {
       const oldTruck = await Truck.findOneAndUpdate(
-        {_id: args.truck.id},
-        {...args.truck},
-        {new: false}
+        { _id: args.truck.id },
+        { ...args.truck },
+        { new: false }
       );
 
       const truck = await Truck.findById(oldTruck.id).populate('client');
@@ -43,8 +46,8 @@ const truckMutations = {
       const oldClient = await Client.findById(oldTruck.client);
       const newClient = await Client.findById(truck.client);
 
-      oldClient.trucks.pull({_id: truck.id});
-      newClient.trucks.push({_id: truck.id});
+      oldClient.trucks.pull({ _id: truck.id });
+      newClient.trucks.push({ _id: truck.id });
 
       await oldClient.save();
       await newClient.save();
@@ -54,7 +57,7 @@ const truckMutations = {
     } catch (e) {
       return e;
     }
-  }),
+  })
 };
 
 export default truckMutations;

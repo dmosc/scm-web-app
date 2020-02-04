@@ -1,13 +1,5 @@
-import React, {PureComponent} from 'react';
-import {
-  BarChart as BChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from 'recharts';
+import React, { PureComponent } from 'react';
+import { BarChart as BChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const data = [
   {

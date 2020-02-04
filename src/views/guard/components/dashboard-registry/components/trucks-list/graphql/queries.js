@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_TICKETS = gql`
   query tickets($filters: TicketFilters!) {
@@ -18,4 +18,4 @@ const GET_TICKETS = gql`
   }
 `;
 
-export {GET_TICKETS};
+export { GET_TICKETS };

@@ -1,9 +1,9 @@
-import {Folio} from '../../../mongo-db/models';
+import { Folio } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const folioMutations = {
   folio: authenticated(async (_, args) => {
-    const folio = new Folio({...args.folio});
+    const folio = new Folio({ ...args.folio });
     folio.name = folio.name.toUpperCase();
 
     try {
@@ -12,7 +12,7 @@ const folioMutations = {
     } catch (e) {
       return e;
     }
-  }),
+  })
 };
 
 export default folioMutations;

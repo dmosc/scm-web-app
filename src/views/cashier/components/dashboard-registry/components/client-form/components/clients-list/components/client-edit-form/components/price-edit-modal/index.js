@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, InputNumber, Button} from 'antd';
+import { Modal, InputNumber, Button } from 'antd';
 
 const PriceEditModal = ({
   visible,
@@ -7,7 +7,7 @@ const PriceEditModal = ({
   currentPriceTotal,
   handleAttrChange,
   onPriceUpdate,
-  togglePriceModal,
+  togglePriceModal
 }) => {
   return (
     <Modal
@@ -20,17 +20,15 @@ const PriceEditModal = ({
       onCancel={togglePriceModal}
     >
       <InputNumber
-        onChange={currentPriceTotal =>
-          handleAttrChange('currentPriceTotal', currentPriceTotal)
-        }
+        onChange={currentPriceTotal => handleAttrChange('currentPriceTotal', currentPriceTotal)}
         value={currentPriceTotal}
-        style={{margin: 5, width: '50%'}}
+        style={{ margin: 5, width: '50%' }}
         autoFocus
         placeholder="Precio por tonelada en MXN"
         min={0}
         step={0.01}
       />
-      <Button onClick={onPriceUpdate} style={{margin: 5}} type="primary">
+      <Button onClick={onPriceUpdate} style={{ margin: 5 }} type="primary">
         Agregar
       </Button>
     </Modal>

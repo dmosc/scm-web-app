@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_TICKETS = gql`
   query tickets($filters: TicketFilters!) {
@@ -50,15 +50,15 @@ const GET_TICKETS = gql`
 `;
 
 const TURN_ACTIVE = gql`
-    query turnActive {
-        turnActive {
-          id
-          start
-          end
-          period
-          folios
-        }
+  query turnActive {
+    turnActive {
+      id
+      start
+      end
+      period
+      folios
     }
+  }
 `;
 
-export {GET_TICKETS, TURN_ACTIVE};
+export { GET_TICKETS, TURN_ACTIVE };

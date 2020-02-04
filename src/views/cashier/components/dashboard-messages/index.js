@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Layout from 'components/layout/cashier';
 import Container from 'components/common/container';
 import Chat from './components/chat';
@@ -6,7 +6,7 @@ import Chat from './components/chat';
 class DashboardMessages extends Component {
   state = {};
   render() {
-    const {user, collapsed, onCollapse} = this.props;
+    const { user, collapsed, onCollapse } = this.props;
 
     return (
       <Layout

@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {withApollo} from 'react-apollo';
-import {Switch, Route, Redirect, withRouter} from 'react-router-dom';
+import React, { Component } from 'react';
+import { withApollo } from 'react-apollo';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import jwt from 'jsonwebtoken';
 import cookie from 'react-cookies';
 import './App.css';
-import {JWT_SECRET} from 'config';
-import {Admin, Auth, Cashier, Guard} from 'views';
+import { JWT_SECRET } from 'config';
+import { Admin, Auth, Cashier, Guard } from 'views';
 
 class App extends Component {
   render() {
@@ -14,8 +14,8 @@ class App extends Component {
 
     const {
       history: {
-        location: {pathname},
-      },
+        location: { pathname }
+      }
     } = this.props;
 
     return (

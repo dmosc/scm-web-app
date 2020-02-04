@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const USER_LOGIN = gql`
   mutation login($user: UserLogin!) {
@@ -6,4 +6,4 @@ const USER_LOGIN = gql`
   }
 `;
 
-export {USER_LOGIN};
+export { USER_LOGIN };

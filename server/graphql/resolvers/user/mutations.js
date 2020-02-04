@@ -1,14 +1,14 @@
-import {User} from '../../../mongo-db/models';
-import {compareSync as comparePasswords, hashSync as hash} from 'bcryptjs';
-import {AuthenticationError} from 'apollo-server-core';
+import { User } from '../../../mongo-db/models';
+import { compareSync as comparePasswords, hashSync as hash } from 'bcryptjs';
+import { AuthenticationError } from 'apollo-server-core';
 import jwt from 'jsonwebtoken';
 import authenticated from '../../middleware/authenticated';
-import {JWT_SECRET} from '../../../config';
+import { JWT_SECRET } from '../../../config';
 
 const userMutations = {
   user: async (_, args) => {
     try {
-      const user = new User({...args.user});
+      const user = new User({ ...args.user });
 
       user.password = hash(args.user.password, 10);
       user.username = args.user.username.toLowerCase().trim();
@@ -21,25 +21,25 @@ const userMutations = {
       throw new Error(e);
     }
   },
-  login: async (_, args, {res}) => {
+  login: async (_, args, { res }) => {
     try {
       const user = await User.findOne({
         $or: [
-          {username: args.user.usernameOrEmail.toLowerCase()},
-          {email: args.user.usernameOrEmail.toLowerCase()},
-        ],
+          { username: args.user.usernameOrEmail.toLowerCase() },
+          { email: args.user.usernameOrEmail.toLowerCase() }
+        ]
       });
 
       if (!user || !comparePasswords(args.user.password, user.password)) {
         return new AuthenticationError('¡Usuario o contraseña incorrectos!');
       }
 
-      const token = jwt.sign({id: user.id, role: user.role}, JWT_SECRET, {
-        expiresIn: 86400,
+      const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+        expiresIn: 86400
       });
 
       res.cookie('token', token, {
-        maxAge: 86400 * 1000,
+        maxAge: 86400 * 1000
       });
 
       return token;
@@ -49,15 +49,11 @@ const userMutations = {
   },
   userEdit: authenticated(async (_, args) => {
     try {
-      return await User.findOneAndUpdate(
-          {_id: args.user.id},
-          {...args.user},
-          {new: true}
-      );
+      return await User.findOneAndUpdate({ _id: args.user.id }, { ...args.user }, { new: true });
     } catch (e) {
       return e;
     }
-  }),
+  })
 };
 
 export default userMutations;

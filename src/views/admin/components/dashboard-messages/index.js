@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Form} from 'antd';
+import React, { Component } from 'react';
+import { Form } from 'antd';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
 import Chat from './components/chat';
@@ -8,9 +8,9 @@ import PostForm from './components/post-form';
 class DashboardMessages extends Component {
   state = {};
   render() {
-    const {user, collapsed, onCollapse} = this.props;
+    const { user, collapsed, onCollapse } = this.props;
 
-    const PostRegisterForm = Form.create({name: 'post'})(PostForm);
+    const PostRegisterForm = Form.create({ name: 'post' })(PostForm);
 
     return (
       <Layout

@@ -1,33 +1,41 @@
-import React, {Component} from 'react';
-import {withApollo} from 'react-apollo';
-import {Button, notification} from 'antd';
-import {Link, Credit} from './elements';
-import {ADD_TICKET_TO_TURN} from "./graphql/mutations";
+import React, { Component } from 'react';
+import { withApollo } from 'react-apollo';
+import { Button, notification } from 'antd';
+import { Link, Credit } from './elements';
+import { ADD_TICKET_TO_TURN } from './graphql/mutations';
 
 class TicketPanel extends Component {
   addTicketToTurn = async ticket => {
-    const {turn: {id}, onTurnUpdate, refetch, client} = this.props;
+    const {
+      turn: { id },
+      onTurnUpdate,
+      refetch,
+      client
+    } = this.props;
 
     try {
-      const {data: {turnAddTicket: turn}} = await client.mutate({
-        mutation: ADD_TICKET_TO_TURN, variables: {turn: {id, ticket}}
+      const {
+        data: { turnAddTicket: turn }
+      } = await client.mutate({
+        mutation: ADD_TICKET_TO_TURN,
+        variables: { turn: { id, ticket } }
       });
 
       onTurnUpdate(turn);
       refetch();
-    } catch(e) {
+    } catch (e) {
       notification.error({
-        message: e.toString(),
+        message: e.toString()
       });
     }
   };
 
   render() {
-    const {ticket, setCurrent, printTicket} = this.props;
+    const { ticket, setCurrent, printTicket } = this.props;
 
     return (
       <React.Fragment>
-        <table style={{width: '100%', margin: 10}}>
+        <table style={{ width: '100%', margin: 10 }}>
           <thead>
             <tr>
               <td>
@@ -108,16 +116,14 @@ class TicketPanel extends Component {
             <tr>
               <td>
                 <b>CRÉDITO: </b>
-                <Credit credit={ticket.client.credit}>
-                  {ticket.client.credit}
-                </Credit>
+                <Credit credit={ticket.client.credit}>{ticket.client.credit}</Credit>
               </td>
               <td id="skip">
                 <Link
                   href={ticket.outTruckImage}
                   rel="noopener noreferrer"
                   target="_blank"
-                  style={{color: !ticket.outTruckImage ? '#f5222d' : null}}
+                  style={{ color: !ticket.outTruckImage ? '#f5222d' : null }}
                 >
                   <b>IMAGEN SALIDA</b>
                 </Link>
@@ -128,10 +134,10 @@ class TicketPanel extends Component {
               <td />
               <td>
                 {ticket.weight && (
-                    <React.Fragment>
-                      <b>PESO BRUTO</b>
-                      {`: ${ticket.weight} tons`}
-                    </React.Fragment>
+                  <React.Fragment>
+                    <b>PESO BRUTO</b>
+                    {`: ${ticket.weight} tons`}
+                  </React.Fragment>
                 )}
               </td>
             </tr>
@@ -158,15 +164,11 @@ class TicketPanel extends Component {
           </tbody>
         </table>
         <span id="skip">
-          <Button
-            style={{margin: 5}}
-            type="danger"
-            onClick={() => setCurrent(ticket, 'image')}
-          >
+          <Button style={{ margin: 5 }} type="danger" onClick={() => setCurrent(ticket, 'image')}>
             Tomar foto
           </Button>
           <Button
-            style={{margin: 5}}
+            style={{ margin: 5 }}
             type="primary"
             disabled={!ticket.outTruckImage}
             onClick={() => setCurrent(ticket, 'submit')}
@@ -174,23 +176,19 @@ class TicketPanel extends Component {
             Cobrar
           </Button>
           <Button
-              style={{margin: 5}}
-              onClick={() =>
-                  printTicket(
-                      <TicketPanel
-                          ticket={ticket}
-                          setCurrent={setCurrent}
-                          printTicket={printTicket}
-                      />
-                  )
-              }
-              disabled={!ticket.totalPrice}
-              type="primary"
+            style={{ margin: 5 }}
+            onClick={() =>
+              printTicket(
+                <TicketPanel ticket={ticket} setCurrent={setCurrent} printTicket={printTicket} />
+              )
+            }
+            disabled={!ticket.totalPrice}
+            type="primary"
           >
             Imprimir
           </Button>
           <Button
-            style={{margin: 5}}
+            style={{ margin: 5 }}
             type="dashed"
             disabled={!ticket.totalPrice}
             onClick={() => this.addTicketToTurn(ticket.id)}

@@ -1,11 +1,5 @@
-import React, {PureComponent} from 'react';
-import {
-  Radar,
-  RadarChart as RChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis
-} from 'recharts';
+import React, { PureComponent } from 'react';
+import { Radar, RadarChart as RChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 
 const data = [
   {
@@ -55,13 +49,7 @@ class RadarChart extends PureComponent {
         <PolarGrid />
         <PolarAngleAxis dataKey="subject" />
         <PolarRadiusAxis />
-        <Radar
-          name="Mike"
-          dataKey="A"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.6}
-        />
+        <Radar name="Mike" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
       </RChart>
     );
   }

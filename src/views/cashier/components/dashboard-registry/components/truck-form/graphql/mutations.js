@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const REGISTER_TRUCK = gql`
   mutation truck($truck: TruckInput!) {
@@ -16,4 +16,4 @@ const REGISTER_TRUCK = gql`
   }
 `;
 
-export {REGISTER_TRUCK};
+export { REGISTER_TRUCK };

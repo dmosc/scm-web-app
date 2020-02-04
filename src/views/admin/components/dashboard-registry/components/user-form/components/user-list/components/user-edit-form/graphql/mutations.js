@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const EDIT_USER = gql`
   mutation userEdit($user: UserEditInput!) {
@@ -14,4 +14,4 @@ const EDIT_USER = gql`
   }
 `;
 
-export {EDIT_USER};
+export { EDIT_USER };

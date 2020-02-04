@@ -15,4 +15,4 @@ const Credit = styled.span`
   color: ${props => (props.credit > 0 ? '#52c41a' : '#f5222d')};
 `;
 
-export {Link, Credit};
+export { Link, Credit };

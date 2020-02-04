@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const NEW_POSTS = gql`
   subscription newPost {
@@ -11,4 +11,4 @@ const NEW_POSTS = gql`
   }
 `;
 
-export {NEW_POSTS};
+export { NEW_POSTS };

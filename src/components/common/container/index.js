@@ -1,5 +1,5 @@
 import React from 'react';
-import {ContentContainer, TitleContainer} from './elements';
+import { ContentContainer, TitleContainer } from './elements';
 
 const Container = ({
   children,
@@ -10,7 +10,7 @@ const Container = ({
   display,
   direction,
   justify,
-  align,
+  align
 }) => {
   return (
     <ContentContainer

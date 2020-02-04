@@ -1,25 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router} from 'react-router-dom';
-import {preloadReady} from 'react-loadable';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { preloadReady } from 'react-loadable';
 import cookie from 'react-cookies';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import {ApolloProvider} from 'react-apollo';
-import {createUploadLink} from 'apollo-upload-client';
-import {WebSocketLink} from 'apollo-link-ws';
-import {getMainDefinition} from 'apollo-utilities';
-import {split} from 'apollo-link';
-import {setContext} from 'apollo-link-context';
+import { ApolloProvider } from 'react-apollo';
+import { createUploadLink } from 'apollo-upload-client';
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
+import { split } from 'apollo-link';
+import { setContext } from 'apollo-link-context';
 import ApolloClient from 'apollo-client';
-import {InMemoryCache} from 'apollo-cache-inmemory';
-import {SERVER_URI, WS_URI} from 'config';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { SERVER_URI, WS_URI } from 'config';
 
 const token = cookie.load('token');
 
 const httpLink = createUploadLink({
-  uri: SERVER_URI,
+  uri: SERVER_URI
 });
 
 const wsLink = new WebSocketLink({
@@ -27,27 +27,24 @@ const wsLink = new WebSocketLink({
   options: {
     // reconnect: true,
     connectionParams: {
-      authentication: token ? `Bearer ${token}` : '',
-    },
-  },
+      authentication: token ? `Bearer ${token}` : ''
+    }
+  }
 });
 
-const authLink = setContext((_, {headers}) => {
+const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      authentication: token ? `Bearer ${token}` : '',
-    },
+      authentication: token ? `Bearer ${token}` : ''
+    }
   };
 });
 
 const link = split(
-  ({query}) => {
+  ({ query }) => {
     const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,
   authLink.concat(httpLink)
@@ -55,7 +52,7 @@ const link = split(
 
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache()
 });
 
 window.onload = async () => {

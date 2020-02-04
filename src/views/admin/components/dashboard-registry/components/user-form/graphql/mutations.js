@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const REGISTER_USER = gql`
   mutation user($user: UserRegisterInput!) {
@@ -14,4 +14,4 @@ const REGISTER_USER = gql`
   }
 `;
 
-export {REGISTER_USER};
+export { REGISTER_USER };

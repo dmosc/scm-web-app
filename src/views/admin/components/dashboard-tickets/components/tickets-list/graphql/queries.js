@@ -1,52 +1,52 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_TICKETS = gql`
-    query tickets($filters: TicketFilters!) {
-        tickets(filters: $filters) {
-            id
-            folio
-            driver
-            credit
-            bill
-            client {
-                firstName
-                lastName
-                businessName
-                address
-                zipcode
-                rfc
-                credit
-                prices {
-                    A4B
-                    A4D
-                    A5
-                    BASE
-                    CNC
-                    G2
-                    MIX
-                    SUBBASE
-                    SELLO
-                }
-            }
-            truck {
-                id
-                plates
-                weight
-            }
-            product {
-                name
-                price
-            }
-            turn {
-                id
-            }
-            weight
-            totalWeight
-            totalPrice
-            inTruckImage
-            outTruckImage
+  query tickets($filters: TicketFilters!) {
+    tickets(filters: $filters) {
+      id
+      folio
+      driver
+      credit
+      bill
+      client {
+        firstName
+        lastName
+        businessName
+        address
+        zipcode
+        rfc
+        credit
+        prices {
+          A4B
+          A4D
+          A5
+          BASE
+          CNC
+          G2
+          MIX
+          SUBBASE
+          SELLO
         }
+      }
+      truck {
+        id
+        plates
+        weight
+      }
+      product {
+        name
+        price
+      }
+      turn {
+        id
+      }
+      weight
+      totalWeight
+      totalPrice
+      inTruckImage
+      outTruckImage
     }
+  }
 `;
 
-export {GET_TICKETS};
+export { GET_TICKETS };

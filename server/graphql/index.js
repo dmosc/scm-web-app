@@ -1,11 +1,11 @@
-import path from "path";
-import { ApolloServer, PubSub } from "apollo-server";
-import { makeExecutableSchema } from "graphql-tools";
-import { importSchema } from "graphql-import";
-import schemaDirectives from "./directives";
-import resolvers from "./resolvers";
+import path from 'path';
+import { ApolloServer, PubSub } from 'apollo-server';
+import { makeExecutableSchema } from 'graphql-tools';
+import { importSchema } from 'graphql-import';
+import schemaDirectives from './directives';
+import resolvers from './resolvers';
 
-const typeDefs = importSchema(path.join(__dirname, "./typedefs/index.graphql"));
+const typeDefs = importSchema(path.join(__dirname, './typedefs/index.graphql'));
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -21,7 +21,7 @@ const server = new ApolloServer({
     return { req, res, pubsub };
   },
   cors: {
-    origin: "*",
+    origin: '*',
     credentials: true
   }
 });

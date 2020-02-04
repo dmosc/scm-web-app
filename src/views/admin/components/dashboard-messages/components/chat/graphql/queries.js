@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_MESSAGES = gql`
   query messages($filters: MessageFilters!) {
@@ -10,4 +10,4 @@ const GET_MESSAGES = gql`
   }
 `;
 
-export {GET_MESSAGES};
+export { GET_MESSAGES };

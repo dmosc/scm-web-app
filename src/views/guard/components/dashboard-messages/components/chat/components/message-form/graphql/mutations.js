@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const REGISTER_MESSAGE = gql`
   mutation message($message: MessageInput!) {
@@ -8,4 +8,4 @@ const REGISTER_MESSAGE = gql`
   }
 `;
 
-export {REGISTER_MESSAGE};
+export { REGISTER_MESSAGE };

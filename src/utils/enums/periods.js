@@ -1,3 +1,3 @@
-const periods = ["MORNING", "EVENING", "NIGHT"];
+const periods = ['MORNING', 'EVENING', 'NIGHT'];
 
 export default periods;

@@ -1,30 +1,33 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import {graphql} from "@apollo/react-hoc";
+import { graphql } from '@apollo/react-hoc';
 import print from 'print-js';
 import mapStyles from 'react-map-styles';
-import {Form, List} from 'antd';
+import { Form, List } from 'antd';
 import Layout from 'components/layout/admin';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
 import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form/index';
-import TurnInitForm from "./components/turn-init-form";
-import TurnEndForm from "./components/turn-end-form";
-import TicketsList from "./components/tickets-list";
-import {TURN_ACTIVE} from './graphql/queries';
-import {TURN_UPDATE} from './graphql/subscriptions';
+import TurnInitForm from './components/turn-init-form';
+import TurnEndForm from './components/turn-end-form';
+import TicketsList from './components/tickets-list';
+import { TURN_ACTIVE } from './graphql/queries';
+import { TURN_UPDATE } from './graphql/subscriptions';
 
 class DashboardTickets extends Component {
   state = {
     currentTicket: null,
-    currentForm: null,
+    currentForm: null
   };
 
   componentDidMount = async () => {
-    const { data: { subscribeToMore }} = this.props;
+    const {
+      data: { subscribeToMore }
+    } = this.props;
 
-    if(!this.unsubscribeToTurnUpdates) this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
+    if (!this.unsubscribeToTurnUpdates)
+      this.unsubscribeToTurnUpdates = this.subscribeToTurnUpdates(subscribeToMore);
   };
 
   componentWillUnmount = () => {
@@ -34,30 +37,28 @@ class DashboardTickets extends Component {
   subscribeToTurnUpdates = subscribeToMore => {
     return subscribeToMore({
       document: TURN_UPDATE,
-      updateQuery: (prev, {subscriptionData: {data}}) => {
-        const {turnUpdate} = data;
+      updateQuery: (prev, { subscriptionData: { data } }) => {
+        const { turnUpdate } = data;
         if (!turnUpdate) return prev;
 
-        const turnActive = {...turnUpdate};
-        return {turnActive};
-      },
+        const turnActive = { ...turnUpdate };
+        return { turnActive };
+      }
     });
   };
 
-  setCurrent = (currentTicket, currentForm) => this.setState({currentTicket, currentForm});
+  setCurrent = (currentTicket, currentForm) => this.setState({ currentTicket, currentForm });
 
   printTicket = node => {
     const {
-      props: {ticket},
+      props: { ticket }
     } = node;
 
     document
       .getElementById('root')
       .insertAdjacentHTML(
         'beforeend',
-        `<div id="printable">${mapStyles(
-          ReactDOMServer.renderToString(node)
-        )}</div>`
+        `<div id="printable">${mapStyles(ReactDOMServer.renderToString(node))}</div>`
       );
 
     print({
@@ -67,7 +68,7 @@ class DashboardTickets extends Component {
       honorColor: true,
       header: `Folio: ${ticket.folio}`,
       style:
-        '@page { margin: 0; } #printable { margin: 50px; font-size: 16px; font-family: Courier; }',
+        '@page { margin: 0; } #printable { margin: 50px; font-size: 16px; font-family: Courier; }'
     });
 
     const printable = document.getElementById('printable');
@@ -75,49 +76,59 @@ class DashboardTickets extends Component {
   };
 
   render() {
-    const {user, collapsed, onCollapse, data} = this.props;
+    const { user, collapsed, onCollapse, data } = this.props;
 
-    const {currentTicket, currentForm} = this.state;
+    const { currentTicket, currentForm } = this.state;
 
-    const {loading, error, turnActive, refetch} = data;
+    const { loading, error, turnActive, refetch } = data;
 
-    const TicketImageRegisterForm = Form.create({name: 'image'})(TicketImageForm);
-    const TicketSubmitRegisterForm = Form.create({name: 'submit'})(TicketSubmitForm);
-    const TurnInitRegisterForm = Form.create({name: 'turnInit'})(TurnInitForm);
-    const TurnEndRegisterForm = Form.create({name: 'turnEnd'})(TurnEndForm);
+    const TicketImageRegisterForm = Form.create({ name: 'image' })(TicketImageForm);
+    const TicketSubmitRegisterForm = Form.create({ name: 'submit' })(TicketSubmitForm);
+    const TurnInitRegisterForm = Form.create({ name: 'turnInit' })(TurnInitForm);
+    const TurnEndRegisterForm = Form.create({ name: 'turnEnd' })(TurnEndForm);
 
     return (
-      <Layout
-        user={user}
-        collapsed={collapsed}
-        onCollapse={onCollapse}
-        page="Boletas"
-      >
-        <Container width="20%" height={turnActive && !turnActive.end  ? "70vh" : null} justifycontent="center" alignitems="center">
-          {turnActive && !turnActive.end ? <TurnEndRegisterForm turnActive={turnActive}/> : <TurnInitRegisterForm user={user}/>}
-          {turnActive && !turnActive.end && <ListContainer height="25vh">
-            <List
+      <Layout user={user} collapsed={collapsed} onCollapse={onCollapse} page="Boletas">
+        <Container
+          width="20%"
+          height={turnActive && !turnActive.end ? '70vh' : null}
+          justifycontent="center"
+          alignitems="center"
+        >
+          {turnActive && !turnActive.end ? (
+            <TurnEndRegisterForm turnActive={turnActive} />
+          ) : (
+            <TurnInitRegisterForm user={user} />
+          )}
+          {turnActive && !turnActive.end && (
+            <ListContainer height="25vh">
+              <List
                 loading={false}
                 itemLayout="horizontal"
                 dataSource={turnActive.folios}
                 size="small"
                 renderItem={folio => (
-                    <List.Item>
-                      <List.Item.Meta title={folio} />
-                    </List.Item>
+                  <List.Item>
+                    <List.Item.Meta title={folio} />
+                  </List.Item>
                 )}
-            />
-          </ListContainer>}
+              />
+            </ListContainer>
+          )}
         </Container>
         <Container justifycontent="center" alignitems="center">
-          {error ? <div>¡No se han podido cargar las boletas!</div> : loading ? <div>Cargando boletas...</div> :
-              <TicketsList
-                  turnActive={turnActive}
-                  setCurrent={this.setCurrent}
-                  printTicket={this.printTicket}
-                  refetch={refetch}
-              />
-          }
+          {error ? (
+            <div>¡No se han podido cargar las boletas!</div>
+          ) : loading ? (
+            <div>Cargando boletas...</div>
+          ) : (
+            <TicketsList
+              turnActive={turnActive}
+              setCurrent={this.setCurrent}
+              printTicket={this.printTicket}
+              refetch={refetch}
+            />
+          )}
           {(currentTicket && currentForm === 'image' && (
             <TicketImageRegisterForm
               user={user}

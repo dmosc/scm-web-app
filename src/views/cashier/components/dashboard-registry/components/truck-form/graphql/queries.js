@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_TRUCKS = gql`
   query trucks($filters: TruckFilters!) {
@@ -25,4 +25,4 @@ const GET_CLIENTS = gql`
   }
 `;
 
-export {GET_TRUCKS, GET_CLIENTS};
+export { GET_TRUCKS, GET_CLIENTS };

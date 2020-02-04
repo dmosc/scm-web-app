@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const REGISTER_CLIENT = gql`
   mutation client($client: ClientInput!) {
@@ -29,4 +29,4 @@ const REGISTER_CLIENT = gql`
   }
 `;
 
-export {REGISTER_CLIENT};
+export { REGISTER_CLIENT };

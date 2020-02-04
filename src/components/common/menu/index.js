@@ -1,9 +1,9 @@
 import React from 'react';
-import {withRouter, Link} from 'react-router-dom';
-import {MenuContainer, MenuItem} from './elements';
-import {Icon} from 'antd';
+import { withRouter, Link } from 'react-router-dom';
+import { MenuContainer, MenuItem } from './elements';
+import { Icon } from 'antd';
 
-const Menu = ({items, mode, history}) => {
+const Menu = ({ items, mode, history }) => {
   return (
     <MenuContainer
       theme="light"
@@ -13,7 +13,7 @@ const Menu = ({items, mode, history}) => {
         .substring(history.location.pathname.lastIndexOf('/') + 1)}
       mode={mode}
     >
-      {items.map(({icon, title}, i) => (
+      {items.map(({ icon, title }, i) => (
         <MenuItem key={title.toLowerCase().replace(/\s/g, '-')}>
           <Link to={`${title.toLowerCase().replace(/\s/g, '-')}`}>
             <Icon type={icon} />

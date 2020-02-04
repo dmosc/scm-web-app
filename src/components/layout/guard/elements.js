@@ -8,4 +8,4 @@ const Main = styled.div`
   overflow-y: scroll;
 `;
 
-export {Main};
+export { Main };

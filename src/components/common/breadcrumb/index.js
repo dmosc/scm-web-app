@@ -1,6 +1,6 @@
 import React from 'react';
-import {withRouter} from 'react-router-dom';
-import {BreadCrumbContainer, BreadcrumbItem} from './elements';
+import { withRouter } from 'react-router-dom';
+import { BreadCrumbContainer, BreadcrumbItem } from './elements';
 
 const BreadCrumb = props => {
   return (

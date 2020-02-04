@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_POSTS = gql`
   query posts($filters: PostFilters!) {
@@ -11,4 +11,4 @@ const GET_POSTS = gql`
   }
 `;
 
-export {GET_POSTS};
+export { GET_POSTS };

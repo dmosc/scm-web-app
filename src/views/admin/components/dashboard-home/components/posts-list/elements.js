@@ -13,4 +13,4 @@ const PostsListContainer = styled.div`
   }
 `;
 
-export {PostsListContainer};
+export { PostsListContainer };

@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const FILE_UPLOAD = gql`
   mutation imageUpload($image: Upload!, $folderKey: s3FolderKey!, $id: ID!) {
@@ -16,4 +16,4 @@ const REGISTER_TICKET_INIT = gql`
   }
 `;
 
-export {FILE_UPLOAD, REGISTER_TICKET_INIT};
+export { FILE_UPLOAD, REGISTER_TICKET_INIT };

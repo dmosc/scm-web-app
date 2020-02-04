@@ -1,23 +1,20 @@
 import React from 'react';
-import {withRouter} from 'react-router-dom';
-import {Icon, PageHeader, Menu} from 'antd';
+import { withRouter } from 'react-router-dom';
+import { Icon, PageHeader, Menu } from 'antd';
 import cookie from 'react-cookies';
-import {NavbarContainer} from './elements';
-import {MenuItem} from 'components/common/menu/elements';
+import { NavbarContainer } from './elements';
+import { MenuItem } from 'components/common/menu/elements';
 
 const handleLogout = () => {
-  cookie.remove('token', {path: '/'});
+  cookie.remove('token', { path: '/' });
   window.location.reload();
 };
 
 const NavBar = props => {
-  const {page, history, user} = props;
+  const { page, history, user } = props;
   return (
     <NavbarContainer>
-      <Menu
-        mode="horizontal"
-        style={{display: 'flex', justifyContent: 'flex-end'}}
-      >
+      <Menu mode="horizontal" style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <MenuItem key="1" disabled={true}>
           <Icon type="user" />
           <span>{user.firstName}</span>
@@ -34,7 +31,7 @@ const NavBar = props => {
       <PageHeader
         style={{
           margin: 0,
-          padding: '10px 20px',
+          padding: '10px 20px'
         }}
         onBack={() => history.goBack()}
         title={page}

@@ -1,14 +1,14 @@
-import mongoose, {Schema} from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import events from 'events';
 import sequelize from './sequelize-db';
 import server from './graphql';
-import {API_PORT, MONGO_DB_URI, AWS_CONFIG} from './config';
+import { API_PORT, MONGO_DB_URI, AWS_CONFIG } from './config';
 
-const {AURORA_DB_NAME} = AWS_CONFIG;
+const { AURORA_DB_NAME } = AWS_CONFIG;
 
 (async () => {
   try {
-    server.listen(API_PORT).then(({url, subscriptionsUrl}) => {
+    server.listen(API_PORT).then(({ url, subscriptionsUrl }) => {
       console.log(`🚀  Server ready at ${url}`);
       console.log(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
     });
@@ -18,7 +18,7 @@ const {AURORA_DB_NAME} = AWS_CONFIG;
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
-        useFindAndModify: false,
+        useFindAndModify: false
       })
       .then(() => {
         Schema.Types.String.checkRequired(v => v !== null);

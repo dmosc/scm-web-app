@@ -1,15 +1,14 @@
 import styled from 'styled-components';
-import {Layout as Layer} from 'antd';
+import { Layout as Layer } from 'antd';
 
-const {Content} = Layer;
+const { Content } = Layer;
 
 const ContentContainer = styled(Content)`
   margin: 30px;
   padding: 30px;
   border-radius: 5px;
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
-  background-color: ${props =>
-    props.background ? props.background : '#ffffff'};
+  background-color: ${props => (props.background ? props.background : '#ffffff')};
   overflow-y: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -18,8 +17,7 @@ const ContentContainer = styled(Content)`
   }
   display: ${props => (props.display ? props.display : null)}
   flex-direction: ${props => (props.direction ? props.direction : null)}
-  justify-content: ${props =>
-    props.justify ? props.justify : null}
+  justify-content: ${props => (props.justify ? props.justify : null)}
   align-items: ${props => (props.align ? props.align : null)}
   flex-wrap: wrap;
   width: ${props => (props.width ? props.width : 'fit-content')}
@@ -37,4 +35,4 @@ const TitleContainer = styled.h1`
   font-weight: bold;
 `;
 
-export {ContentContainer, TitleContainer};
+export { ContentContainer, TitleContainer };

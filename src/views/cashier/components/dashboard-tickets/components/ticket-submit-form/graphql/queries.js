@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import { gql } from 'apollo-boost';
 
 const GET_TRUCK_DRIVERS = gql`
   query truck($id: ID!) {
@@ -8,4 +8,4 @@ const GET_TRUCK_DRIVERS = gql`
   }
 `;
 
-export {GET_TRUCK_DRIVERS};
+export { GET_TRUCK_DRIVERS };
