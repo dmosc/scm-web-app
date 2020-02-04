@@ -85,10 +85,10 @@ type Mutation {
 }
 
 type Subscription {
-  newTicket: Ticket!
-  ticketUpdate: Ticket!
-  activeTickets: [Ticket!]!
-  newPost: Post!
-  newMessage: Message!
-  turnUpdate: Turn!
+  newTicket: Ticket! @auth(roles: [ADMIN, CASHIER])
+  ticketUpdate: Ticket! @auth(roles: [ADMIN, CASHIER])
+  activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, GUARD])
+  newPost: Post! @auth(roles: [ADMIN, CASHIER])
+  newMessage: Message! @auth(roles: [ADMIN, CASHIER])
+  turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER])
 }
