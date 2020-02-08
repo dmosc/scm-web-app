@@ -2,8 +2,8 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { Icon, PageHeader, Menu } from 'antd';
 import cookie from 'react-cookies';
-import { NavbarContainer } from './elements';
 import { MenuItem } from 'components/common/menu/elements';
+import { NavbarContainer } from './elements';
 
 const handleLogout = () => {
   cookie.remove('token', { path: '/' });

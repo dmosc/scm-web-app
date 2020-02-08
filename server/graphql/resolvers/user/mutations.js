@@ -1,7 +1,7 @@
-import { User } from '../../../mongo-db/models';
 import { compareSync as comparePasswords, hashSync as hash } from 'bcryptjs';
 import { AuthenticationError } from 'apollo-server-core';
 import jwt from 'jsonwebtoken';
+import { User } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import { JWT_SECRET } from '../../../config';
 

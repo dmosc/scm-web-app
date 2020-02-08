@@ -18,24 +18,19 @@ class UserForm extends Component {
 
   componentDidMount = async () => {
     const { client } = this.props;
-    this.setState({ loadingUsers: true });
 
-    try {
-      const {
-        data: { users }
-      } = await client.query({
-        query: GET_USERS,
-        variables: {
-          filters: {}
-        }
-      });
+    const {
+      data: { users }
+    } = await client.query({
+      query: GET_USERS,
+      variables: {
+        filters: {}
+      }
+    });
 
-      if (!users) throw new Error('No users found');
+    if (!users) throw new Error('No users found');
 
-      this.setState({ users, loadingUsers: false });
-    } catch (e) {
-      this.setState({ loadingUsers: false });
-    }
+    this.setState({ users });
   };
 
   handleSubmit = e => {
@@ -65,7 +60,7 @@ class UserForm extends Component {
 
           form.resetFields();
         } catch (e) {
-          e['graphQLErrors'].map(({ message }) =>
+          e.graphQLErrors.map(({ message }) =>
             notification.open({
               message
             })

@@ -44,12 +44,17 @@ const turnMutations = {
         'client truck product'
       );
 
+      const ticketsToCreate = [];
+      const ticketsToDelete = [];
+      const ticketsToDestroy = [];
+
       for (let i = 0; i < tickets.length; i++) {
         const {
           client: { prices },
           product: { name: product, price }
         } = tickets[i];
-        const ticket = await NewTicket.create({
+
+        const ticket = NewTicket.create({
           folio: tickets[i].folio,
           driver: tickets[i].driver,
           client: `${tickets[i].client.firstName} ${tickets[i].client.lastName}`,
@@ -68,12 +73,25 @@ const turnMutations = {
           outTruckImage: tickets[i].outTruckImage
         });
 
+        ticketsToCreate.push(ticket);
+
         if (!ticket) return new Error('¡Ha habido un error durante la migración de los tickets!');
 
-        const oldTicket = await Ticket.findByIdAndDelete(tickets[i].id);
+        const oldTicket = Ticket.findByIdAndDelete(tickets[i].id);
 
-        if (!oldTicket) await ticket.destroy();
+        ticketsToDelete.push(oldTicket);
       }
+
+      const [ticketsCreated, ticketsDeleted] = await Promise.all([
+        Promise.all(ticketsToCreate),
+        Promise.all(ticketsToDelete)
+      ]);
+
+      for (let i = 0; i < ticketsDeleted.length; i++) {
+        if (!ticketsDeleted[i]) ticketsToDestroy.push(ticketsCreated[i].destroy());
+      }
+
+      await Promise.all(ticketsToDestroy);
 
       pubsub.publish('TURN_UPDATE', { turnUpdate: turn });
 
@@ -105,7 +123,7 @@ const turnMutations = {
         'client truck product'
       );
 
-      pubsub.publish('ACTIVE_TICKETS', { activeTickets: activeTickets });
+      pubsub.publish('ACTIVE_TICKETS', { activeTickets });
       pubsub.publish('TURN_UPDATE', { turnUpdate: turn });
 
       return turn;

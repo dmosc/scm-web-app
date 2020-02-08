@@ -1,6 +1,6 @@
+import { ApolloError } from 'apollo-server';
 import { Rock } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
-import { ApolloError } from 'apollo-server';
 
 const ticketQueries = {
   rock: authenticated(async (_, args) => {

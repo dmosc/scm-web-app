@@ -1,6 +1,6 @@
+import { ApolloError } from 'apollo-client';
 import { Ticket, Client, Truck, Rock, Folio } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
-import { ApolloError } from 'apollo-client';
 
 const TAX = 0.16;
 
@@ -41,7 +41,7 @@ const ticketMutations = {
         'client truck product'
       );
 
-      pubsub.publish('ACTIVE_TICKETS', { activeTickets: activeTickets });
+      pubsub.publish('ACTIVE_TICKETS', { activeTickets });
 
       return ticket;
     } catch (e) {

@@ -1,5 +1,23 @@
 import { Signale } from 'signale';
 
+const mongoDB = new Signale({
+  interactive: true,
+  scope: 'db',
+  config: {
+    displayTimestamp: true,
+    displayDate: true
+  }
+});
+
+const auroraDB = new Signale({
+  interactive: true,
+  scope: 'db',
+  config: {
+    displayTimestamp: true,
+    displayDate: true
+  }
+});
+
 const seeder = new Signale({
   interactive: true,
   scope: 'db:seed',
@@ -18,4 +36,12 @@ const dropper = new Signale({
   }
 });
 
-export { seeder, dropper };
+const api = new Signale({
+  scope: 'api',
+  config: {
+    displayTimestamp: true,
+    displayDate: true
+  }
+});
+
+export { mongoDB, auroraDB, seeder, dropper, api };

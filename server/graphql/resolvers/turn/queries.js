@@ -58,12 +58,12 @@ const turnQueries = {
 
     if (clients.length === 0) return { clients, upfront: 0, credit: 0, total: 0 };
 
-    let upfront = 0,
-      credit = 0,
-      total = 0;
-    for (let client of clients) {
+    let upfront = 0;
+    let credit = 0;
+    let total = 0;
+    for (const client of clients) {
       const { tickets } = client;
-      for (let ticket of tickets) {
+      for (const ticket of tickets) {
         if (ticket.credit) credit += ticket.totalPrice;
         else upfront += ticket.totalPrice;
 
@@ -78,7 +78,7 @@ const turnQueries = {
       delete clients[i].info._id;
 
       const { tickets } = clients[i];
-      for (let ticket of tickets) {
+      for (const ticket of tickets) {
         ticket.product = { ...ticket.product[0] };
         ticket.truck = { ...ticket.truck[0] };
 

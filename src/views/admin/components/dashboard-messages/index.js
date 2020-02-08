@@ -7,6 +7,7 @@ import PostForm from './components/post-form';
 
 class DashboardMessages extends Component {
   state = {};
+
   render() {
     const { user, collapsed, onCollapse } = this.props;
 

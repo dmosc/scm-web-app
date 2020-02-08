@@ -28,7 +28,7 @@ class MessageForm extends Component {
       this.setState({ loading: false, content: '' });
     } catch (e) {
       notification.error({
-        message: `No se ha podido enviar el mensaje`
+        message: 'No se ha podido enviar el mensaje'
       });
       this.setState({ loading: false, content: '' });
     }

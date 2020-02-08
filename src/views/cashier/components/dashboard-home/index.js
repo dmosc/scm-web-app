@@ -5,6 +5,7 @@ import PostsList from './components/posts-list';
 
 class DashboardHome extends Component {
   state = {};
+
   render() {
     const { user, collapsed, onCollapse } = this.props;
     return (

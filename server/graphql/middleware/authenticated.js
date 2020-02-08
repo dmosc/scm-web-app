@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../../config';
 import { AuthenticationError } from 'apollo-server-errors';
+import { JWT_SECRET } from '../../config';
 
 const authenticated = next => (_, args, { req, res, pubsub }) => {
-  const authentication = req.headers.authentication;
+  const { authentication } = req.headers;
 
   if (authentication) {
     const token = authentication.split('Bearer ')[1];

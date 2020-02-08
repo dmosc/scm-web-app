@@ -2,38 +2,34 @@ import mongoose, { Schema } from 'mongoose';
 import events from 'events';
 import sequelize from './sequelize-db';
 import server from './graphql';
+import { mongoDB, auroraDB, api } from './config/loggers';
 import { API_PORT, MONGO_DB_URI, AWS_CONFIG } from './config';
 
 const { AURORA_DB_NAME } = AWS_CONFIG;
 
 (async () => {
   try {
-    server.listen(API_PORT).then(({ url, subscriptionsUrl }) => {
-      console.log(`🚀  Server ready at ${url}`);
-      console.log(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
-    });
+    mongoDB.await('Connecting with MongoDB database');
+    auroraDB.await('Connecting with AuroraDB database');
 
-    await mongoose
-      .connect(MONGO_DB_URI, {
+    await Promise.all([
+      mongoose.connect(MONGO_DB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false
-      })
-      .then(() => {
-        Schema.Types.String.checkRequired(v => v !== null);
-        console.log(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
-      });
+      }),
+      sequelize.sync(),
+      sequelize.authenticate().then(() => {})
+    ]);
 
-    sequelize.sync();
-    sequelize
-      .authenticate()
-      .then(() => {
-        console.log(`📀 Successfully connected to database: ${AURORA_DB_NAME}`);
-      })
-      .catch(err => {
-        console.error('Unable to connect to the database:', err);
-      });
+    Schema.Types.String.checkRequired(v => v !== null);
+    mongoDB.success(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
+    auroraDB.success(`📀 Successfully connected to database: ${AURORA_DB_NAME}`);
+
+    const { url, subscriptionsUrl } = await server.listen(API_PORT);
+    api.success(`🚀  Server ready at ${url}`);
+    api.success(`🚀  Subscriptions ready at ${subscriptionsUrl}`);
 
     events.EventEmitter.defaultMaxListeners = 100;
   } catch (e) {

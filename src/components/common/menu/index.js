@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter, Link } from 'react-router-dom';
-import { MenuContainer, MenuItem } from './elements';
 import { Icon } from 'antd';
+import { MenuContainer, MenuItem } from './elements';
 
 const Menu = ({ items, mode, history }) => {
   return (
@@ -13,7 +13,7 @@ const Menu = ({ items, mode, history }) => {
         .substring(history.location.pathname.lastIndexOf('/') + 1)}
       mode={mode}
     >
-      {items.map(({ icon, title }, i) => (
+      {items.map(({ icon, title }) => (
         <MenuItem key={title.toLowerCase().replace(/\s/g, '-')}>
           <Link to={`${title.toLowerCase().replace(/\s/g, '-')}`}>
             <Icon type={icon} />

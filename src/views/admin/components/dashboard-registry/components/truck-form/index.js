@@ -29,20 +29,14 @@ class TruckForm extends Component {
       filters: { search }
     } = this.state;
 
-    this.setState({ loadingTrucks: true });
+    const {
+      data: { trucks }
+    } = await client.query({
+      query: GET_TRUCKS,
+      variables: { filters: { search } }
+    });
 
-    try {
-      const {
-        data: { trucks }
-      } = await client.query({
-        query: GET_TRUCKS,
-        variables: { filters: { search } }
-      });
-
-      this.setState({ trucks, loadingTrucks: false });
-    } catch (e) {
-      this.setState({ loadingTrucks: false });
-    }
+    this.setState({ trucks });
   }, 300);
 
   handleSubmit = e => {
@@ -79,7 +73,7 @@ class TruckForm extends Component {
 
           form.resetFields();
         } catch (e) {
-          e['graphQLErrors'].map(({ message }) =>
+          e.graphQLErrors.map(({ message }) =>
             notification.open({
               message
             })
@@ -118,10 +112,7 @@ class TruckForm extends Component {
   };
 
   onSearch = search =>
-    this.setState(
-      { search, loadingClients: !!search, sellers: [] },
-      debounce(this.getClients(search), 1500)
-    );
+    this.setState({ loadingClients: !!search }, debounce(this.getClients(search), 1500));
 
   toggleList = () => {
     const { visible } = this.state;

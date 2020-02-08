@@ -36,17 +36,13 @@ class TicketSubmitForm extends Component {
       client
     } = this.props;
 
-    try {
-      const {
-        data: {
-          truck: { drivers }
-        }
-      } = await client.query({ query: GET_TRUCK_DRIVERS, variables: { id } });
+    const {
+      data: {
+        truck: { drivers }
+      }
+    } = await client.query({ query: GET_TRUCK_DRIVERS, variables: { id } });
 
-      this.setState({ drivers, bill }, this.calculateTotal);
-    } catch (e) {
-      console.log(e);
-    }
+    this.setState({ drivers, bill }, this.calculateTotal);
   };
 
   handleSubmit = e => {
@@ -54,11 +50,9 @@ class TicketSubmitForm extends Component {
 
     const { id } = currentTicket;
 
-    this.setState({ loading: true });
     e.preventDefault();
     form.validateFields(async (err, { driver, weight, credit, bill }) => {
       if (err) {
-        this.setState({ loading: false });
         return;
       }
 
@@ -70,14 +64,12 @@ class TicketSubmitForm extends Component {
           }
         });
 
-        this.setState({ loading: false });
         form.resetFields();
         setCurrent();
         notification.success({
           message: '¡La información ha sido actualizada correctamente!'
         });
       } catch (e) {
-        this.setState({ loading: false });
         notification.error({
           message: '¡Ha habido un error modificando la información!'
         });

@@ -17,7 +17,7 @@ class UserList extends Component {
     const UserEditForm = Form.create({ name: 'userEdit' })(EditForm);
 
     return (
-      <React.Fragment>
+      <>
         <Drawer
           closable={false}
           onClose={() => toggleList()}
@@ -57,7 +57,7 @@ class UserList extends Component {
             currentUser={currentUser}
           />
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

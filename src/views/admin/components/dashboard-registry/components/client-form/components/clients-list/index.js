@@ -27,7 +27,7 @@ class ClientList extends Component {
     const ClientEditForm = Form.create({ name: 'clientEdit' })(EditForm);
 
     return (
-      <React.Fragment>
+      <>
         <Drawer
           placement="right"
           closable={false}
@@ -84,7 +84,7 @@ class ClientList extends Component {
             currentClient={currentClient}
           />
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

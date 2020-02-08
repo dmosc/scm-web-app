@@ -18,7 +18,6 @@ class ClientForm extends Component {
     showList: false,
     showPriceModal: false,
     clients: [],
-    currentClient: null,
     currentPrice: null,
     currentPriceTotal: 0,
     prices: {},
@@ -35,8 +34,6 @@ class ClientForm extends Component {
     const {
       filters: { search }
     } = this.state;
-
-    this.setState({ loadingClients: true });
 
     try {
       const [
@@ -59,7 +56,7 @@ class ClientForm extends Component {
       this.setState({ clients });
     } catch (e) {
       notification.open({
-        message: `No se han podido cargar los clientes correctamente.`
+        message: 'No se han podido cargar los clientes correctamente.'
       });
     }
   }, 300);
@@ -106,7 +103,6 @@ class ClientForm extends Component {
             this.setState({
               loading: false,
               clients,
-              currentClient: null,
               currentPrice: null,
               currentPriceTotal: 0,
               prices: {}
@@ -119,7 +115,7 @@ class ClientForm extends Component {
             form.resetFields();
             window.location.reload();
           } catch (e) {
-            e['graphQLErrors'].map(({ message }) =>
+            e.graphQLErrors.map(({ message }) =>
               notification.open({
                 message
               })

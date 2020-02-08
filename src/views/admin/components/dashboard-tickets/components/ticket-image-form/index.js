@@ -6,10 +6,14 @@ import { ImageContainer, PreviewImageContainer } from './elements';
 import { FILE_UPLOAD, TICKET_OUT_IMAGE_SUBMIT } from './graphql/mutations';
 
 class TicketImageForm extends Component {
-  state = {
-    loading: false,
-    outTruckImage: null
-  };
+  constructor(props) {
+    super(props);
+    this.camRef = React.createRef();
+    this.state = {
+      loading: false,
+      outTruckImage: null
+    };
+  }
 
   componentDidMount = () => this.setState({ outTruckImage: '/static/images/truck_image.png' });
 
@@ -37,13 +41,13 @@ class TicketImageForm extends Component {
 
           if (!outTruckImage) {
             notification.error({
-              message: `¡No ha sido posible guardar la imagen correctamente!`
+              message: '¡No ha sido posible guardar la imagen correctamente!'
             });
 
             throw new Error('No ha sido posible guardar la imagen!');
           } else {
             notification.success({
-              message: `¡La imagen ha sido subida exitosamente!`
+              message: '¡La imagen ha sido subida exitosamente!'
             });
           }
 
@@ -58,7 +62,7 @@ class TicketImageForm extends Component {
           setCurrent();
         } catch (e) {
           this.setState({ loading: false });
-          e['graphQLErrors'].map(({ message }) =>
+          e.graphQLErrors.map(({ message }) =>
             notification.error(message, 'error', {
               duration: 3000,
               closeable: true
@@ -76,7 +80,7 @@ class TicketImageForm extends Component {
   };
 
   captureImage = () => {
-    const { webcamRef } = this.refs;
+    const { webcamRef } = this.camRef;
     const outTruckImage = webcamRef.getScreenshot();
 
     this.setState({ outTruckImage });
@@ -112,7 +116,7 @@ class TicketImageForm extends Component {
                 padding: 0,
                 borderRadius: 5
               }}
-              ref="webcamRef"
+              ref={this.camRef}
               screenshotQuality={1}
               audio={false}
               imageSmoothing={true}
@@ -133,7 +137,7 @@ class TicketImageForm extends Component {
             Capturar
           </Button>
           {outTruckImage && (
-            <React.Fragment>
+            <>
               <Button style={{ margin: 5 }} type="danger" onClick={this.removeImage}>
                 Cancelar
               </Button>
@@ -145,7 +149,7 @@ class TicketImageForm extends Component {
               >
                 {(loading && 'Espere..') || 'OK'}
               </Button>
-            </React.Fragment>
+            </>
           )}
         </Row>
       </Modal>

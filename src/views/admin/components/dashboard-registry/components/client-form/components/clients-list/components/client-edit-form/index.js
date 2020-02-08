@@ -97,7 +97,7 @@ class EditForm extends Component {
             setCurrentClient();
           } catch (e) {
             notification.open({
-              message: `Ha habido un error modificando la información`
+              message: 'Ha habido un error modificando la información'
             });
             this.setState({ loading: false });
           }

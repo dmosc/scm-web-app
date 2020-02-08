@@ -5,6 +5,7 @@ import TicketsList from './components/tickets-list';
 
 class DashboardHistory extends Component {
   state = {};
+
   render() {
     const { user, collapsed, onCollapse } = this.props;
     return (

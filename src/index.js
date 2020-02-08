@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { preloadReady } from 'react-loadable';
 import cookie from 'react-cookies';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-
 import { ApolloProvider } from 'react-apollo';
 import { createUploadLink } from 'apollo-upload-client';
 import { WebSocketLink } from 'apollo-link-ws';
@@ -15,6 +12,7 @@ import { setContext } from 'apollo-link-context';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { SERVER_URI, WS_URI } from 'config';
+import App from './App';
 
 const token = cookie.load('token');
 
@@ -67,8 +65,3 @@ window.onload = async () => {
     document.getElementById('root')
   );
 };
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();

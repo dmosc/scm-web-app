@@ -44,7 +44,7 @@ const uploaders = {
       const newFilename = Date.now() + id + type;
       const S3Path = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
 
-      const Body = new Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+      const Body = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
 
       const params = {
         Bucket: S3_BUCKET,

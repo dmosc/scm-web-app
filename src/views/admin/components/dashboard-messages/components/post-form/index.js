@@ -32,20 +32,20 @@ class PostForm extends Component {
           notification.open({
             message: post
               ? `Post ${post.title} ha sido publicado exitosamente`
-              : `Ha habido un error realizando la publicación`
+              : 'Ha habido un error realizando la publicación'
           });
 
           form.resetFields();
           this.setState({ loading: false });
         } catch (e) {
           notification.error({
-            message: `No se puede realizar la publicación`
+            message: 'No se puede realizar la publicación'
           });
         }
         this.setState({ loading: false });
       } else {
         notification.error({
-          message: `¡Complete los campos faltantes!`
+          message: '¡Complete los campos faltantes!'
         });
         this.setState({ loading: false });
       }

@@ -65,8 +65,7 @@ class ProductForm extends Component {
 
           form.resetFields();
         } catch (e) {
-          console.log(e);
-          e['graphQLErrors'].map(({ message }) =>
+          e.graphQLErrors.map(({ message }) =>
             notification.open({
               message
             })
@@ -84,7 +83,7 @@ class ProductForm extends Component {
     const { loading, loadingProducts, currentProduct, products } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <Form onSubmit={this.handleSubmit} layout="inline">
           <Form.Item>
             {form.getFieldDecorator('name')(
@@ -139,7 +138,7 @@ class ProductForm extends Component {
             )}
           />
         </ListContainer>
-      </React.Fragment>
+      </>
     );
   }
 }

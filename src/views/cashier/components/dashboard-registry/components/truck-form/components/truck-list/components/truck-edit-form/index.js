@@ -66,7 +66,7 @@ class EditForm extends Component {
 
   onSearch = search =>
     this.setState(
-      { search, loadingClients: !!search, clients: [] },
+      { loadingClients: !!search, clients: [] },
       debounce(this.getClients(search), 1500)
     );
 

@@ -27,7 +27,7 @@ class TruckList extends Component {
     const TruckEditForm = Form.create({ name: 'truckEdit' })(EditForm);
 
     return (
-      <React.Fragment>
+      <>
         <Drawer
           closable={false}
           onClose={() => toggleList()}
@@ -83,7 +83,7 @@ class TruckList extends Component {
             currentTruck={currentTruck}
           />
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -27,7 +27,7 @@ class TicketPanel extends Component {
     const { ticket, setCurrent, printTicket } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <table style={{ width: '100%', margin: 10 }}>
           <thead>
             <tr>
@@ -56,18 +56,18 @@ class TicketPanel extends Component {
               </td>
               <td>
                 {ticket.driver && (
-                  <React.Fragment>
+                  <>
                     <b>CONDUCTOR</b>
                     {`: ${ticket.driver}`}
-                  </React.Fragment>
+                  </>
                 )}
               </td>
               <td>
                 {ticket.driver && (
-                  <React.Fragment>
+                  <>
                     <b>TIPO</b>
                     {`: ${ticket.product.name}`}
-                  </React.Fragment>
+                  </>
                 )}
               </td>
             </tr>
@@ -82,10 +82,10 @@ class TicketPanel extends Component {
               </td>
               <td>
                 {ticket.totalWeight && (
-                  <React.Fragment>
+                  <>
                     <b>PESO NETO</b>
                     {`: ${ticket.totalWeight} tons`}
-                  </React.Fragment>
+                  </>
                 )}
               </td>
               <td />
@@ -127,10 +127,10 @@ class TicketPanel extends Component {
               <td />
               <td>
                 {ticket.weight && (
-                  <React.Fragment>
+                  <>
                     <b>PESO BRUTO</b>
                     {`: ${ticket.weight} tons`}
-                  </React.Fragment>
+                  </>
                 )}
               </td>
             </tr>
@@ -147,10 +147,10 @@ class TicketPanel extends Component {
               <td />
               <td>
                 {ticket.totalPrice && (
-                  <React.Fragment>
+                  <>
                     <b>TOTAL</b>
                     {`: $${ticket.totalPrice}`}
-                  </React.Fragment>
+                  </>
                 )}
               </td>
             </tr>
@@ -189,7 +189,7 @@ class TicketPanel extends Component {
             Agregar a turno
           </Button>
         </span>
-      </React.Fragment>
+      </>
     );
   }
 }

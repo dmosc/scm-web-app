@@ -1,5 +1,5 @@
-import { User } from '../../../mongo-db/models';
 import { ApolloError } from 'apollo-server-core';
+import { User } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const userQueries = {

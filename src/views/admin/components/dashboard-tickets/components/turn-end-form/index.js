@@ -28,16 +28,12 @@ class TurnEndForm extends Component {
   getSummary = async () => {
     const { client } = this.props;
 
-    try {
-      const {
-        data: { turnSummary: summary }
-      } = await client.query({ query: GET_TURN_SUMMARY, fetchPolicy: 'network-only' });
-      const ticketCount = summary.clients.reduce((total, { count }) => (total += count), 0);
+    const {
+      data: { turnSummary: summary }
+    } = await client.query({ query: GET_TURN_SUMMARY, fetchPolicy: 'network-only' });
+    const ticketCount = summary.clients.reduce((total, { count }) => (total += count), 0);
 
-      this.setState({ summary, ticketCount }, this.toggleSummary);
-    } catch (e) {
-      console.log(e);
-    }
+    this.setState({ summary, ticketCount }, this.toggleSummary);
   };
 
   toggleSummary = () => {
@@ -54,7 +50,7 @@ class TurnEndForm extends Component {
 
     this.setState({ loading: true });
     e.preventDefault();
-    form.validateFields(async (err, { period }) => {
+    form.validateFields(async err => {
       if (!err) {
         try {
           await client.mutate({ mutation: END_TURN, variables: { turn: { id } } });
@@ -79,7 +75,7 @@ class TurnEndForm extends Component {
     const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
 
     return (
-      <React.Fragment>
+      <>
         <Form.Item>
           <span>Turno empezó: </span>
           <Title>{start.toLocaleTimeString()}</Title>
@@ -186,7 +182,7 @@ class TurnEndForm extends Component {
             </Row>
           </Drawer>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

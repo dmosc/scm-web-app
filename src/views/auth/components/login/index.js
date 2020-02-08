@@ -32,7 +32,7 @@ class Login extends Component {
 
           window.location.reload();
         } catch (e) {
-          e['graphQLErrors'].map(({ message }) =>
+          e.graphQLErrors.map(({ message }) =>
             toast(message, 'error', { duration: 3000, closeable: true })
           );
 

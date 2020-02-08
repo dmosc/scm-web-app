@@ -8,13 +8,17 @@ import { REGISTER_TICKET_INIT, FILE_UPLOAD } from './graphql/mutations';
 import { GET_ROCKS, GET_TRUCK } from './graphql/queries';
 
 class TicketInit extends Component {
-  state = {
-    loading: false,
-    plates: null,
-    inTruckImage: null,
-    products: [],
-    currentProduct: null
-  };
+  constructor(props) {
+    super(props);
+    this.camRef = React.createRef();
+    this.state = {
+      loading: false,
+      plates: null,
+      inTruckImage: null,
+      products: [],
+      currentProduct: null
+    };
+  }
 
   componentDidMount = async () => {
     const { client } = this.props;
@@ -59,13 +63,13 @@ class TicketInit extends Component {
 
         if (!inTruckImage) {
           notification.open({
-            message: `No ha sido posible guardar la imagen correctamente!`
+            message: 'No ha sido posible guardar la imagen correctamente!'
           });
 
           throw new Error('No ha sido posible guardar la imagen!');
         } else {
           notification.open({
-            message: `¡La imagen ha sido subida exitosamente!`
+            message: '¡La imagen ha sido subida exitosamente!'
           });
         }
 
@@ -87,8 +91,8 @@ class TicketInit extends Component {
           message: `Camión ${ticket.truck.plates} puede ingresar!`
         });
       } catch (e) {
-        if (e['graphQLErrors']) {
-          e['graphQLErrors'].map(({ message }) =>
+        if (e.graphQLErrors) {
+          e.graphQLErrors.map(({ message }) =>
             notification.open({
               message
             })
@@ -99,7 +103,7 @@ class TicketInit extends Component {
       }
     } else {
       notification.open({
-        message: `¡Es necesario completar todos los datos!`
+        message: '¡Es necesario completar todos los datos!'
       });
 
       this.setState({ loading: false });
@@ -107,7 +111,7 @@ class TicketInit extends Component {
   };
 
   captureImage = () => {
-    const { webcamRef } = this.refs;
+    const { webcamRef } = this.camRef;
     const inTruckImage = webcamRef.getScreenshot();
 
     this.setState({ inTruckImage });
@@ -120,10 +124,8 @@ class TicketInit extends Component {
 
     if (!oldProduct) {
       this.setState({ currentProduct });
-    } else {
-      if (currentProduct.id === oldProduct.id) this.setState({ currentProduct: null });
-      else this.setState({ currentProduct });
-    }
+    } else if (currentProduct.id === oldProduct.id) this.setState({ currentProduct: null });
+    else this.setState({ currentProduct });
   };
 
   setPlates = plates => {
@@ -137,7 +139,7 @@ class TicketInit extends Component {
       <FormContainer>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            <React.Fragment>
+            <>
               <Row display="flex" justify="start">
                 <Col span={14}>
                   <Row>
@@ -150,7 +152,7 @@ class TicketInit extends Component {
                           padding: 0,
                           borderRadius: 5
                         }}
-                        ref="webcamRef"
+                        ref={this.camRef}
                         screenshotQuality={1}
                         audio={false}
                         imageSmoothing={true}
@@ -220,7 +222,7 @@ class TicketInit extends Component {
                   </Form.Item>
                 </Col>
               </Row>
-            </React.Fragment>
+            </>
           </Form.Item>
         </Form>
       </FormContainer>

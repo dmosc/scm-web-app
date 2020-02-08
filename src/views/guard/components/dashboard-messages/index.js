@@ -5,6 +5,7 @@ import Chat from './components/chat';
 
 class DashboardMessages extends Component {
   state = {};
+
   render() {
     const { user, collapsed, onCollapse } = this.props;
 

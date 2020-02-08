@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 export { default as User } from './user';
 export { default as Client } from './client';
 export { default as Ticket } from './ticket';

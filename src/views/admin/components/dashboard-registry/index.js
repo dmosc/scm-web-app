@@ -38,7 +38,7 @@ class DashboardRegistry extends Component {
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
             {view === 1 ? (
-              <React.Fragment>
+              <>
                 <Col span={12}>
                   <Container width="90%" height="55vh">
                     <ClientRegisterForm />
@@ -49,9 +49,9 @@ class DashboardRegistry extends Component {
                     <TruckRegisterForm />
                   </Container>
                 </Col>
-              </React.Fragment>
+              </>
             ) : (
-              <React.Fragment>
+              <>
                 <Col span={12}>
                   <Container width="90%" height="55vh">
                     <UserRegisterForm />
@@ -62,7 +62,7 @@ class DashboardRegistry extends Component {
                     <ProductEditForm />
                   </Container>
                 </Col>
-              </React.Fragment>
+              </>
             )}
           </Row>
         </Container>

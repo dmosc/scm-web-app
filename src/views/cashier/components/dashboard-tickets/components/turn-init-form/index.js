@@ -33,11 +33,7 @@ class TurnInitForm extends Component {
     form.validateFields(async (err, { period }) => {
       if (!err) {
         try {
-          const {
-            data: { turnInit: turn }
-          } = await client.mutate({ mutation: INIT_TURN, variables: { turn: { user, period } } });
-
-          console.log(turn);
+          await client.mutate({ mutation: INIT_TURN, variables: { turn: { user, period } } });
         } catch (e) {
           notification.error({ message: e.toString() });
         }

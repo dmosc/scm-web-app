@@ -53,8 +53,7 @@ class EditForm extends Component {
             setCurrentUser();
             form.resetFields();
           } catch (e) {
-            console.log(e);
-            e['graphQLErrors'].map(({ message }) =>
+            e.graphQLErrors.map(({ message }) =>
               notification.open({
                 message
               })

@@ -10,6 +10,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const { roles } = this.args;
     const { resolve = defaultFieldResolver } = field;
+
     field.resolve = (...args) => {
       const {
         req: {
