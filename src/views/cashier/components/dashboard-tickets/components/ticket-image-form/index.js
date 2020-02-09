@@ -80,8 +80,7 @@ class TicketImageForm extends Component {
   };
 
   captureImage = () => {
-    const { webcamRef } = this.camRef;
-    const outTruckImage = webcamRef.getScreenshot();
+    const outTruckImage = this.camRef.current.getScreenshot();
 
     this.setState({ outTruckImage });
   };

@@ -77,7 +77,13 @@ class TicketInit extends Component {
           data: { ticketInit: ticket }
         } = await client.mutate({
           mutation: REGISTER_TICKET_INIT,
-          variables: { ticket: { plates, product: currentProduct?.id, inTruckImage } }
+          variables: {
+            ticket: {
+              plates,
+              product: currentProduct?.id,
+              inTruckImage
+            }
+          }
         });
 
         this.setState({
@@ -111,8 +117,7 @@ class TicketInit extends Component {
   };
 
   captureImage = () => {
-    const { webcamRef } = this.camRef;
-    const inTruckImage = webcamRef.getScreenshot();
+    const inTruckImage = this.camRef.current.getScreenshot();
 
     this.setState({ inTruckImage });
   };
