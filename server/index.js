@@ -20,7 +20,7 @@ const { AURORA_DB_NAME } = AWS_CONFIG;
         useFindAndModify: false
       }),
       sequelize.sync(),
-      sequelize.authenticate().then(() => {})
+      sequelize.authenticate()
     ]);
 
     Schema.Types.String.checkRequired(v => v !== null);
