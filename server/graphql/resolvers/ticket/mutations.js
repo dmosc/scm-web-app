@@ -1,5 +1,7 @@
 import { ApolloError } from 'apollo-client';
-import { Ticket, Client, Truck, Rock, Folio } from '../../../mongo-db/models';
+import Transaction from 'mongoose-transactions';
+import { Client, Folio, Rock, Ticket, Truck } from '../../../mongo-db/models';
+import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
 const TAX = 0.16;
@@ -17,35 +19,44 @@ const ticketMutations = {
     }
   }),
   ticketInit: authenticated(async (_, args, { pubsub }) => {
+    const transaction = new Transaction();
+    const { plates, product: productId, inTruckImage: image, folderKey, id } = args.ticket;
     const newTicket = new Ticket({ ...args.ticket });
 
-    const { plates, product: productId } = args.ticket;
+    const ticketExists = await Ticket.aggregate([
+      { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+      { $match: { 'truck.plates': plates, turn: { $exists: false } } }
+    ]);
 
-    const truck = await Truck.findOne({ plates });
-
-    if (!truck) throw new Error('¡El camión no está registrado!');
-
-    const product = await Rock.findById(productId);
-    const client = await Client.findById(truck.client);
-
-    newTicket.client = client.id;
-    newTicket.truck = truck.id;
-    newTicket.product = product.id;
+    if (ticketExists.length !== 0) throw new Error(`¡El camión ${plates} ya está activo!`);
 
     try {
+      const truck = await Truck.findOne({ plates });
+      const product = await Rock.findById(productId);
+      const client = await Client.findById(truck.client);
+
+      newTicket.client = client.id;
+      newTicket.truck = truck.id;
+      newTicket.product = product.id;
+
+      transaction.insert('Ticket', newTicket);
+      await transaction.run();
+
+      newTicket.inTruckImage = await uploaders.imageUpload(_, { image, folderKey, id });
+
       await newTicket.save();
-      await truck.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
-        'client truck product'
-      );
+      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate('client truck product');
 
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
 
       return ticket;
     } catch (e) {
-      return new ApolloError(e);
+      const transactionError = await transaction.rollback().catch(console.error);
+      await transaction.clean();
+
+      return new ApolloError(transactionError);
     }
   }),
   ticketProductLoad: authenticated(async (_, args, { pubsub }) => {

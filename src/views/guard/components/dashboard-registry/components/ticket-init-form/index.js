@@ -4,7 +4,7 @@ import Webcam from 'react-webcam';
 import { Form, Row, Col, Button, Input, Icon, notification, List } from 'antd';
 import ListContainer from 'components/common/list';
 import { FormContainer, ImageContainer, PreviewImageContainer, ProductContainer } from './elements';
-import { REGISTER_TICKET_INIT, FILE_UPLOAD } from './graphql/mutations';
+import { REGISTER_TICKET_INIT } from './graphql/mutations';
 import { GET_ROCKS, GET_TRUCK } from './graphql/queries';
 
 class TicketInit extends Component {
@@ -38,12 +38,12 @@ class TicketInit extends Component {
       user: { id },
       client
     } = this.props;
-    const { plates, inTruckImage: image, currentProduct } = this.state;
+    const { plates, inTruckImage, currentProduct } = this.state;
 
     e.preventDefault();
     this.setState({ loading: true });
 
-    if (plates && image && currentProduct) {
+    if (plates && inTruckImage && currentProduct) {
       try {
         const {
           data: { truck }
@@ -55,25 +55,6 @@ class TicketInit extends Component {
         if (!truck) throw new Error('Camión tiene que pasar a registrarse primero!');
 
         const {
-          data: { imageUpload: inTruckImage }
-        } = await client.mutate({
-          mutation: FILE_UPLOAD,
-          variables: { image, folderKey: 'trucks', id }
-        });
-
-        if (!inTruckImage) {
-          notification.open({
-            message: 'No ha sido posible guardar la imagen correctamente!'
-          });
-
-          throw new Error('No ha sido posible guardar la imagen!');
-        } else {
-          notification.open({
-            message: '¡La imagen ha sido subida exitosamente!'
-          });
-        }
-
-        const {
           data: { ticketInit: ticket }
         } = await client.mutate({
           mutation: REGISTER_TICKET_INIT,
@@ -81,7 +62,9 @@ class TicketInit extends Component {
             ticket: {
               plates,
               product: currentProduct?.id,
-              inTruckImage
+              inTruckImage,
+              folderKey: 'trucks',
+              id
             }
           }
         });
