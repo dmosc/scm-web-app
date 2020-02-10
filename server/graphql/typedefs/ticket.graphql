@@ -28,6 +28,8 @@ input TicketInitInput {
   plates: String!
   product: ID!
   inTruckImage: String!
+  folderKey: s3FolderKey!
+  id: ID!
 }
 
 input TicketProductLoadInput {
