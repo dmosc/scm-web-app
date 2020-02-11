@@ -26,6 +26,12 @@ const Clients = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Clients" */
+const Products = Loadable({
+  loader: () => import('./views/registry/products'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "History" */
 const History = Loadable({
   loader: () => import('./views/history'),
@@ -74,6 +80,12 @@ const App = ({
             <Route
               path="/registros/clientes"
               render={() => <Clients collapsed={collapsed} onCollapse={setCollapsed} />}
+            />
+          )}
+          {isAdmin && (
+            <Route
+              path="/registros/productos"
+              render={() => <Products collapsed={collapsed} onCollapse={setCollapsed} />}
             />
           )}
           {isAdmin && (

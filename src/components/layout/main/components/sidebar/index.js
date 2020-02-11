@@ -72,10 +72,10 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
               </Item>
             )}
             {isAdmin && (
-              <Item key="registros/precios">
-                <Link to="/registros/precios">
+              <Item key="registros/productos">
+                <Link to="/registros/productos">
                   <Icon type="star" />
-                  Precios
+                  Productos
                 </Link>
               </Item>
             )}
