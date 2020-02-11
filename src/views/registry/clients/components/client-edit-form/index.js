@@ -1,69 +1,60 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import debounce from 'debounce';
-import { Form, Icon, Input, InputNumber, Button, Select, Typography, notification } from 'antd';
-import CFDIuse from 'utils/enums/CFDIuse';
-import ClientList from './components/clients-list';
+import {
+  Drawer,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Button,
+  Icon,
+  Typography,
+  notification
+} from 'antd';
+import CFDIuseComponent from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
-import { TitleList, TitleContainer, FormContainer } from './elements';
-import { REGISTER_CLIENT } from './graphql/mutations';
-import { GET_CLIENTS, GET_PRODUCTS } from './graphql/queries';
+import { GET_PRODUCTS } from './graphql/queries';
+import { EDIT_CLIENT } from './graphql/mutations';
 
 const { Option } = Select;
 const { Text } = Typography;
 
-class ClientForm extends Component {
+class EditForm extends Component {
   state = {
     loading: false,
-    showList: false,
     showPriceModal: false,
-    clients: [],
-    currentPrice: null,
-    currentPriceTotal: 0,
     prices: {},
     publicPrices: {},
-    filters: {
-      search: ''
-    }
+    currentPrice: null,
+    currentPriceTotal: 0
   };
 
-  componentDidMount = async () => this.getData();
+  componentDidMount = async () => {
+    const { currentClient, client } = this.props;
 
-  getData = debounce(async () => {
-    const { client } = this.props;
     const {
-      filters: { search }
-    } = this.state;
+      data: { rocks: products }
+    } = await client.query({ query: GET_PRODUCTS, variables: { filters: {} } });
 
-    try {
-      const [
-        {
-          data: { clients }
-        },
-        {
-          data: { rocks: products }
-        }
-      ] = await Promise.all([
-        client.query({ query: GET_CLIENTS, variables: { filters: { search } } }),
-        client.query({ query: GET_PRODUCTS, variables: { filters: {} } })
-      ]);
+    const prices = { ...currentClient.prices };
+    const publicPrices = {};
 
-      const publicPrices = {};
-
-      products.forEach(({ name, price }) => (publicPrices[name] = price));
-      this.setState({ publicPrices });
-
-      this.setState({ clients });
-    } catch (e) {
-      notification.open({
-        message: 'No se han podido cargar los clientes correctamente.'
-      });
-    }
-  }, 300);
+    products.forEach(({ name, price }) => {
+      publicPrices[name] = price;
+    });
+    this.setState({ prices, publicPrices });
+  };
 
   handleSubmit = e => {
-    const { form, client } = this.props;
-    const { clients: oldClients, prices: oldPrices } = this.state;
+    const {
+      form,
+      onClientEdit,
+      currentClient: { id },
+      setCurrentClient,
+      client
+    } = this.props;
+    const { prices: oldPrices } = this.state;
 
     const prices = { ...oldPrices };
 
@@ -80,11 +71,12 @@ class ClientForm extends Component {
         if (!err) {
           try {
             const {
-              data: { client: cli }
+              data: { clientEdit: cli }
             } = await client.mutate({
-              mutation: REGISTER_CLIENT,
+              mutation: EDIT_CLIENT,
               variables: {
                 client: {
+                  id,
                   firstName,
                   lastName,
                   email,
@@ -99,27 +91,17 @@ class ClientForm extends Component {
               }
             });
 
-            const clients = [cli, ...oldClients];
-            this.setState({
-              loading: false,
-              clients,
-              currentPrice: null,
-              currentPriceTotal: 0,
-              prices: {}
-            });
-
             notification.open({
-              message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
+              message: `Cliente ${cli.businessName} ha sido editado exitosamente!`
             });
 
+            onClientEdit(cli);
             form.resetFields();
-            window.location.reload();
-          } catch (e) {
-            e.graphQLErrors.map(({ message }) =>
-              notification.open({
-                message
-              })
-            );
+            setCurrentClient();
+          } catch (error) {
+            notification.open({
+              message: 'Ha habido un error modificando la información'
+            });
             this.setState({ loading: false });
           }
         } else {
@@ -129,20 +111,10 @@ class ClientForm extends Component {
     );
   };
 
-  toggleList = () => {
-    const { showList } = this.state;
-    this.setState({ showList: !showList });
-  };
+  handleCancel = () => {
+    const { setCurrentClient } = this.props;
 
-  onClientEdit = client => {
-    const { clients: oldClients } = this.state;
-    const clients = [...oldClients];
-
-    clients.forEach(({ id }, i) => {
-      if (client.id === id) clients[i] = { ...client };
-    });
-
-    this.setState({ clients });
+    setCurrentClient();
   };
 
   setCurrentPrice = currentPrice => {
@@ -177,49 +149,33 @@ class ClientForm extends Component {
 
   handleAttrChange = (key, val) => this.setState({ [key]: val });
 
-  handleFilterChange = (key, value) => {
-    const { filters: oldFilters } = this.state;
-
-    const filters = { ...oldFilters, [key]: value };
-
-    this.setState({ filters }, this.getData);
-  };
-
   render() {
-    const { form } = this.props;
+    const { form, currentClient } = this.props;
     const {
       loading,
-      showList,
       showPriceModal,
-      clients,
       prices,
-      publicPrices,
       currentPrice,
-      currentPriceTotal
+      currentPriceTotal,
+      publicPrices
     } = this.state;
+
+    delete currentClient.prices.__typename;
 
     const parsedPrices = Object.keys(prices)
       .map(product => `${product}:${prices[product]}`)
       .filter(price => price.indexOf('null') === -1);
 
     return (
-      <FormContainer>
-        <TitleContainer>
-          <TitleList>Registrar cliente</TitleList>
-          <Button type="link" onClick={this.toggleList}>
-            Ver clientes
-          </Button>
-        </TitleContainer>
+      <Drawer
+        title={`Editando cliente: ${currentClient.businessName}`}
+        visible={currentClient !== null}
+        onClose={this.handleCancel}
+        width={600}
+      >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {form.getFieldDecorator('firstName', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Nombre(s) del vendedor es requerido!'
-                }
-              ]
-            })(
+            {form.getFieldDecorator('firstName', { initialValue: currentClient.firstName })(
               <Input
                 prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Nombre(s)"
@@ -227,14 +183,7 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('lastName', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Apellidos del vendedor son requerido!'
-                }
-              ]
-            })(
+            {form.getFieldDecorator('lastName', { initialValue: currentClient.lastName })(
               <Input
                 prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Apellidos"
@@ -242,7 +191,7 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('email')(
+            {form.getFieldDecorator('email', { initialValue: currentClient.email })(
               <Input
                 prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Email"
@@ -250,7 +199,7 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('businessName')(
+            {form.getFieldDecorator('businessName', { initialValue: currentClient.businessName })(
               <Input
                 prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Razón social"
@@ -258,7 +207,7 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('rfc')(
+            {form.getFieldDecorator('rfc', { initialValue: currentClient.rfc })(
               <Input
                 prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="RFC"
@@ -267,10 +216,11 @@ class ClientForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('CFDIuse', {
+              initialValue: currentClient.CFDIuse,
               rules: [{ required: true, message: 'Seleccione un uso de CFDI!' }]
             })(
               <Select placeholder="Uso de CFDI">
-                {CFDIuse.map(option => (
+                {CFDIuseComponent.map(option => (
                   <Option key={option} value={option}>
                     {`${option}`}
                   </Option>
@@ -279,14 +229,7 @@ class ClientForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('cellphone', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Ingrese 1 o más números de contacto'
-                }
-              ]
-            })(
+            {form.getFieldDecorator('cellphone', { initialValue: currentClient.cellphone })(
               <Select
                 placeholder="Números de contacto"
                 mode="tags"
@@ -297,6 +240,7 @@ class ClientForm extends Component {
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('address', {
+              initialValue: currentClient.address,
               rules: [{ required: true, message: 'Ingrese la dirección del cliente' }]
             })(
               <Input
@@ -305,11 +249,13 @@ class ClientForm extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item label="Crédito inicial" style={{ color: 'rgba(0,0,0,.25)' }}>
-            {form.getFieldDecorator('credit', { initialValue: 0 })(
+          <Form.Item label="Crédito" style={{ color: 'rgba(0,0,0,.25)' }}>
+            {form.getFieldDecorator('credit', {
+              initialValue: currentClient.credit ? currentClient.credit : 0
+            })(
               <InputNumber
                 style={{ width: '100%' }}
-                placeholder="Crédito inicial en MXN"
+                placeholder="Crédito en MXN"
                 min={0}
                 step={0.1}
               />
@@ -318,7 +264,9 @@ class ClientForm extends Component {
           <Form.Item label="Precios especiales">
             {prices && (
               <Select
-                defaultValue={Object.keys(prices).filter(price => prices[price])}
+                defaultValue={Object.keys(currentClient.prices).filter(
+                  price => currentClient.prices[price]
+                )}
                 placeholder="Precios especiales"
                 mode="multiple"
                 tokenSeparators={[',']}
@@ -354,16 +302,17 @@ class ClientForm extends Component {
           onPriceUpdate={this.onPriceUpdate}
           togglePriceModal={this.togglePriceModal}
         />
-        <ClientList
-          visible={showList}
-          clients={clients}
-          handleFilterChange={this.handleFilterChange}
-          onClientEdit={this.onClientEdit}
-          toggleList={this.toggleList}
-        />
-      </FormContainer>
+      </Drawer>
     );
   }
 }
 
-export default withApollo(ClientForm);
+EditForm.propTypes = {
+  client: PropTypes.object.isRequired,
+  form: PropTypes.object.isRequired,
+  currentClient: PropTypes.object.isRequired,
+  onClientEdit: PropTypes.func.isRequired,
+  setCurrentClient: PropTypes.func.isRequired
+};
+
+export default withApollo(EditForm);

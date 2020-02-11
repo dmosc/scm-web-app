@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Layout as Layer } from 'antd';
 import { Sidebar, Navbar, Footer } from './components';
-import { Main } from './elements';
 
 const Layout = ({ children, collapsed, onCollapse }) => {
   return (
@@ -10,7 +9,7 @@ const Layout = ({ children, collapsed, onCollapse }) => {
       <Sidebar collapsed={collapsed} onCollapse={onCollapse} />
       <Layer>
         <Navbar />
-        <Main>{children}</Main>
+        {children}
         <Footer />
       </Layer>
     </Layer>

@@ -15,6 +15,7 @@ import TurnEndForm from './components/turn-end-form';
 import TicketsList from './components/tickets-list';
 import { TURN_ACTIVE } from './graphql/queries';
 import { TURN_UPDATE } from './graphql/subscriptions';
+import TicketsContainer from './elements';
 
 class Tickets extends Component {
   state = {
@@ -92,7 +93,7 @@ class Tickets extends Component {
     const TurnEndRegisterForm = Form.create({ name: 'turnEnd' })(TurnEndForm);
 
     return (
-      <>
+      <TicketsContainer>
         <Container
           width="20%"
           height={turnActive && !turnActive.end ? '70vh' : null}
@@ -149,7 +150,7 @@ class Tickets extends Component {
               />
             ))}
         </Container>
-      </>
+      </TicketsContainer>
     );
   }
 }

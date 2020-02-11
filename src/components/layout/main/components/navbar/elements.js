@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Layout } from 'antd';
+import { Layout, Menu as CommonMenu } from 'antd';
 
 const { Header } = Layout;
 
@@ -8,4 +8,10 @@ const NavbarContainer = styled(Header)`
   padding: 0px !important;
 `;
 
-export { NavbarContainer };
+const Menu = styled(CommonMenu)`
+  align-items: center;
+  height: 100%;
+  display: flex;
+`;
+
+export { NavbarContainer, Menu };

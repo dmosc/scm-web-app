@@ -5,7 +5,7 @@ import Loadable from 'react-loadable';
 import Layout from 'components/layout/main';
 import { useAuth } from 'components/providers/withAuth';
 import TopBarProgress from 'react-topbar-progress-indicator';
-import { Auth } from 'views';
+import Auth from 'views/auth';
 import './App.css';
 
 /* webpackChunkName: "Dashboard" */
@@ -20,9 +20,9 @@ const Tickets = Loadable({
   loading: TopBarProgress
 });
 
-/* webpackChunkName: "Registry" */
-const Registry = Loadable({
-  loader: () => import('./views/registry'),
+/* webpackChunkName: "Clients" */
+const Clients = Loadable({
+  loader: () => import('./views/registry/clients'),
   loading: TopBarProgress
 });
 
@@ -72,8 +72,8 @@ const App = ({
           )}
           {(isAdmin || isCashier) && (
             <Route
-              path="/registros"
-              render={() => <Registry collapsed={collapsed} onCollapse={setCollapsed} />}
+              path="/registros/clientes"
+              render={() => <Clients collapsed={collapsed} onCollapse={setCollapsed} />}
             />
           )}
           {isAdmin && (

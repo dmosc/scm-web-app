@@ -12,15 +12,4 @@ const FormContainer = styled.div`
   }
 `;
 
-const TitleContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const TitleList = styled.h1`
-  text-transform: uppercase;
-  font-weight: bold;
-`;
-
-export { FormContainer, TitleContainer, TitleList };
+export default FormContainer;

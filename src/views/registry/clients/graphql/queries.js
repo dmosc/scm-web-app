@@ -29,13 +29,4 @@ const GET_CLIENTS = gql`
   }
 `;
 
-const GET_PRODUCTS = gql`
-  query rocks($filters: RockFilters!) {
-    rocks(filters: $filters) {
-      name
-      price
-    }
-  }
-`;
-
-export { GET_CLIENTS, GET_PRODUCTS };
+export { GET_CLIENTS };

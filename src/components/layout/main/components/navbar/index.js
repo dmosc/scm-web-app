@@ -2,11 +2,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { Icon, PageHeader, Menu } from 'antd';
+import { Icon, PageHeader } from 'antd';
 import { useAuth } from 'components/providers/withAuth';
 import cookie from 'react-cookies';
 import { MenuItem } from 'components/common/menu/elements';
-import { NavbarContainer } from './elements';
+import { NavbarContainer, Menu } from './elements';
 
 const NavBar = ({ history, location }) => {
   const handleLogout = () => {

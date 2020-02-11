@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, InputNumber, Button } from 'antd';
 
 const PriceEditModal = ({
   visible,
   currentPrice,
   currentPriceTotal,
-  handleAttrChange,
+  setCurrentPriceTotal,
   onPriceUpdate,
   togglePriceModal
 }) => {
@@ -17,10 +18,10 @@ const PriceEditModal = ({
       title={`Editando precio: ${currentPrice}`}
       visible={visible}
       footer={null}
-      onCancel={togglePriceModal}
+      onCancel={() => togglePriceModal(false)}
     >
       <InputNumber
-        onChange={currentPriceTotal => handleAttrChange('currentPriceTotal', currentPriceTotal)}
+        onChange={setCurrentPriceTotal}
         value={currentPriceTotal}
         style={{ margin: 5, width: '50%' }}
         autoFocus
@@ -33,6 +34,19 @@ const PriceEditModal = ({
       </Button>
     </Modal>
   );
+};
+
+PriceEditModal.defaultProps = {
+  currentPrice: 0
+};
+
+PriceEditModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  currentPrice: PropTypes.any,
+  currentPriceTotal: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  setCurrentPriceTotal: PropTypes.func.isRequired,
+  onPriceUpdate: PropTypes.func.isRequired,
+  togglePriceModal: PropTypes.func.isRequired
 };
 
 export default PriceEditModal;

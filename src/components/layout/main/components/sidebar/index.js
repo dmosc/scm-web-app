@@ -52,7 +52,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             }
           >
             <Item key="registros/clientes">
-              <Link to="/registros/clients">
+              <Link to="/registros/clientes">
                 <Icon type="usergroup-add" />
                 Clientes
               </Link>
@@ -80,6 +80,14 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
               </Item>
             )}
           </SubMenu>
+        )}
+        {(isAdmin || isCashier || isGuard) && (
+          <Item key="historial">
+            <Link to="/historial">
+              <Icon type="history" />
+              <span>Historial</span>
+            </Link>
+          </Item>
         )}
         {(isAdmin || isCashier || isGuard) && (
           <Item key="mensajes">
