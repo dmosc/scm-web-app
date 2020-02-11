@@ -84,6 +84,7 @@ const Clients = ({ client }) => {
     {
       title: 'Action',
       key: 'action',
+      align: 'right',
       render: row => (
         <Button onClick={() => setCurrentClient(row)} type="default" icon="edit" size="small" />
       )

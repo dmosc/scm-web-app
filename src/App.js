@@ -32,6 +32,12 @@ const Products = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Clients" */
+const Trucks = Loadable({
+  loader: () => import('./views/registry/trucks'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "History" */
 const History = Loadable({
   loader: () => import('./views/history'),
@@ -80,6 +86,12 @@ const App = ({
             <Route
               path="/registros/clientes"
               render={() => <Clients collapsed={collapsed} onCollapse={setCollapsed} />}
+            />
+          )}
+          {(isAdmin || isCashier) && (
+            <Route
+              path="/registros/camiones"
+              render={() => <Trucks collapsed={collapsed} onCollapse={setCollapsed} />}
             />
           )}
           {isAdmin && (

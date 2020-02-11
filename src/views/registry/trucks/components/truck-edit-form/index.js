@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import debounce from 'debounce';
-import { Modal, Form, Input, InputNumber, Select, Button, Icon, notification } from 'antd';
-import { GET_CLIENTS } from './graphql/queries';
+import { Drawer, Form, Input, InputNumber, Select, Button, Icon, notification } from 'antd';
 import { EDIT_TRUCK } from './graphql/mutations';
 
 const { Option } = Select;
 
 class EditForm extends Component {
   state = {
-    loading: false,
-    loadingClients: false,
-    clients: []
+    loading: false
   };
 
   handleSubmit = e => {
@@ -23,9 +20,9 @@ class EditForm extends Component {
       client
     } = this.props;
 
-    this.setState({ loading: true });
     e.preventDefault();
-    form.validateFields(async (err, { plates, brand, model, weight, client: cli, drivers }) => {
+    this.setState({ loading: true });
+    form.validateFields(async (err, { plates, brand, model, weight, cli, drivers }) => {
       if (!err) {
         try {
           const {
@@ -39,7 +36,7 @@ class EditForm extends Component {
                 brand,
                 model,
                 weight,
-                client: cli.substring(cli.indexOf(':') + 1),
+                client: cli,
                 drivers
               }
             }
@@ -52,47 +49,16 @@ class EditForm extends Component {
           onTruckEdit(truck);
           setCurrentTruck();
           form.resetFields();
-        } catch (e) {
+        } catch (error) {
           notification.open({
             message: 'Ha habido un error actualizando el camión'
           });
-          this.setState({ loading: false });
         }
+        this.setState({ loading: false });
       } else {
         this.setState({ loading: false });
       }
     });
-  };
-
-  onSearch = search =>
-    this.setState(
-      { loadingClients: !!search, clients: [] },
-      debounce(this.getClients(search), 1500)
-    );
-
-  getClients = async key => {
-    const { client } = this.props;
-    if (!key) {
-      this.setState({ clients: [], loadingClients: false });
-      return;
-    }
-
-    this.setState({ loadingClients: true });
-
-    try {
-      const {
-        data: { clients }
-      } = await client.query({
-        query: GET_CLIENTS,
-        variables: {
-          filters: { limit: 10 }
-        }
-      });
-
-      this.setState({ loadingClients: false, clients });
-    } catch (e) {
-      notification.open({ message: e });
-    }
   };
 
   handleCancel = () => {
@@ -102,36 +68,26 @@ class EditForm extends Component {
   };
 
   render() {
-    const { form, currentTruck } = this.props;
-    const { loading, loadingClients, clients } = this.state;
+    const { currentTruck, form } = this.props;
+    const { loading } = this.state;
 
     return (
-      <Modal
+      <Drawer
         title={`Editando camión: ${currentTruck.plates}`}
         visible={currentTruck !== null}
-        footer={null}
-        onCancel={this.handleCancel}
+        onClose={this.handleCancel}
+        width={600}
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
             {form.getFieldDecorator('client', {
-              initialValue: currentTruck.client.id,
+              initialValue: currentTruck.client.businessName,
               rules: [{ required: true }]
             })(
-              <Select
-                disabled
-                showSearch
-                style={{ width: '100%' }}
-                placeholder={currentTruck.client.businessName}
-                onSearch={this.onSearch}
-                loading={loadingClients}
-                allowClear
-              >
-                {clients.map(({ id, businessName }) => (
-                  <Option key={id} value={`${businessName}:${id}`}>
-                    <span>{`${businessName}`}</span>
-                  </Option>
-                ))}
+              <Select disabled>
+                <Option value={currentTruck.client.id}>
+                  <span>{currentTruck.client.buinessName}</span>
+                </Option>
               </Select>
             )}
           </Form.Item>
@@ -195,9 +151,17 @@ class EditForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-      </Modal>
+      </Drawer>
     );
   }
 }
+
+EditForm.propTypes = {
+  client: PropTypes.object.isRequired,
+  form: PropTypes.object.isRequired,
+  currentTruck: PropTypes.object.isRequired,
+  setCurrentTruck: PropTypes.func.isRequired,
+  onTruckEdit: PropTypes.func.isRequired
+};
 
 export default withApollo(EditForm);

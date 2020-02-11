@@ -1,13 +1,14 @@
 import { gql } from 'apollo-boost';
 
-const EDIT_TRUCK = gql`
-  mutation truckEdit($truck: TruckEditInput!) {
-    truckEdit(truck: $truck) {
+const GET_TRUCKS = gql`
+  query trucks($filters: TruckFilters!) {
+    trucks(filters: $filters) {
       id
       plates
       brand
       model
       client {
+        id
         businessName
       }
       weight
@@ -16,4 +17,4 @@ const EDIT_TRUCK = gql`
   }
 `;
 
-export { EDIT_TRUCK };
+export { GET_TRUCKS };
