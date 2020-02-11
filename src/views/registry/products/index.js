@@ -58,6 +58,7 @@ const Products = ({ client }) => {
     {
       title: 'Action',
       key: 'action',
+      align: 'right',
       render: row => (
         <Button
           onClick={() => handleToggleEditModal(row)}

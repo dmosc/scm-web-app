@@ -47,7 +47,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             title={
               <span className="submenu-title-wrapper">
                 <Icon type="cloud-upload" />
-                Registros
+                <span>Registros</span>
               </span>
             }
           >
