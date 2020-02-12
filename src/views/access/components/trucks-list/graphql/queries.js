@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 
-const GET_TICKETS = gql`
+const GET_ACTIVE_TICKETS = gql`
     query activeTickets($filters: TicketFilters!) {
         activeTickets(filters: $filters) {
             id
@@ -18,4 +18,4 @@ const GET_TICKETS = gql`
     }
 `;
 
-export { GET_TICKETS };
+export { GET_ACTIVE_TICKETS };

@@ -25,16 +25,13 @@ const NavBar = ({ history, location }) => {
     <NavbarContainer>
       <Menu mode="horizontal" style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <PageHeader
-          style={{
-            marginRight: 'auto',
-            padding: '10px 20px'
-          }}
+          style={{ marginRight: 'auto', padding: '0px 20px' }}
           onBack={() => history.goBack()}
           title={format(location.pathname)}
         />
         <MenuItem key="1" disabled={true}>
           <Icon type="user" />
-          <span>{user.firstName}</span>
+          {user?.firstName && <span>{`Bienvenido, ${user.firstName} ${user.lastName}`}</span>}
         </MenuItem>
         <MenuItem onClick={() => window.location.reload()} key="2">
           <Icon type="reload" />

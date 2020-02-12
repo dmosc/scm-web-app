@@ -72,7 +72,7 @@ const Products = ({ client }) => {
 
   return (
     <TableContainer>
-      <Card>
+      <Card bordered={false}>
         <ProductEditForm
           visible={isEditModalOpen}
           currentProduct={currentProduct}

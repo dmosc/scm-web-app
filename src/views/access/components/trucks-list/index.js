@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { graphql } from '@apollo/react-hoc';
 import { List } from 'antd';
 import { ListContainer } from './elements';
-import { GET_TICKETS } from './graphql/queries';
+import { GET_ACTIVE_TICKETS } from './graphql/queries';
 import { ACTIVE_TICKETS } from './graphql/subscriptions';
 
 class TrucksList extends Component {

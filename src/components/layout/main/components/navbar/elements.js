@@ -10,7 +10,7 @@ const NavbarContainer = styled(Header)`
 
 const Menu = styled(CommonMenu)`
   align-items: center;
-  height: 100%;
+  height: fit-content;
   display: flex;
 `;
 

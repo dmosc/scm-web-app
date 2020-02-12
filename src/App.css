@@ -1,1 +1,11 @@
 @import '~antd/dist/antd.css';
+
+/* Hide scrollbar Chrome, Safari and Opera */
+* {
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbar IE and Edge */
+*::-webkit-scrollbar {
+  display: none;
+}

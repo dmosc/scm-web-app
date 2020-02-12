@@ -74,17 +74,17 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             {isAdmin && (
               <Item key="registros/productos">
                 <Link to="/registros/productos">
-                  <Icon type="star" />
+                  <Icon type="star"/>
                   Productos
                 </Link>
               </Item>
             )}
           </SubMenu>
         )}
-        {(isAdmin || isCashier || isGuard) && (
+        {isAdmin && (
           <Item key="historial">
             <Link to="/historial">
-              <Icon type="history" />
+              <Icon type="history"/>
               <span>Historial</span>
             </Link>
           </Item>

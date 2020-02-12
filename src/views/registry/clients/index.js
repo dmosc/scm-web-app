@@ -93,7 +93,7 @@ const Clients = ({ client }) => {
 
   return (
     <TableContainer>
-      <Card>
+      <Card bordered={false}>
         <Table
           loading={loading}
           columns={columns}

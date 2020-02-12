@@ -119,7 +119,9 @@ const turnMutations = {
       await ticket.save();
       await turn.save();
 
-      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate('client truck product');
+      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
+        'client truck product'
+      );
 
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
       pubsub.publish('TURN_UPDATE', { turnUpdate: turn });
