@@ -21,7 +21,7 @@ const userMutations = {
       throw new Error(e);
     }
   },
-  login: async (_, args, { res }) => {
+  login: async (_, args, { res, req }) => {
     try {
       const user = await User.findOne({
         $or: [
@@ -38,14 +38,9 @@ const userMutations = {
         expiresIn: 86400
       });
 
-      // Set cookies both for the real app and for testing
       res.cookie('token', token, {
         maxAge: 86400 * 1000,
-        domain: '.now.sh'
-      });
-
-      res.cookie('token', token, {
-        maxAge: 86400 * 1000
+        domain: req.hostname
       });
 
       return token;
