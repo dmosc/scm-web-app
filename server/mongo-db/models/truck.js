@@ -12,6 +12,6 @@ const Truck = new Schema({
 });
 
 Truck.plugin(uniqueValidator);
-Truck.plugin(softDelete, { deletedBy: true });
+Truck.plugin(softDelete, { deletedAt: true });
 
 export default model('Truck', Truck);

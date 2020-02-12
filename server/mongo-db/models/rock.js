@@ -8,7 +8,7 @@ const Rock = new Schema({
   color: { type: String, required: true, index: { unique: true } }
 });
 
-Rock.plugin(softDelete, { deletedBy: true });
+Rock.plugin(softDelete, { deletedAt: true });
 Rock.plugin(uniqueValidator);
 
 export default model('Rock', Rock);

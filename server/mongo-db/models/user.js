@@ -18,6 +18,6 @@ const User = new Schema(
 );
 
 User.plugin(uniqueValidator);
-User.plugin(softDelete, { deletedBy: true });
+User.plugin(softDelete, { deletedAt: true });
 
 export default model('User', User);

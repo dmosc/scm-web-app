@@ -19,6 +19,6 @@ const Ticket = new Schema({
   turn: { type: Schema.Types.ObjectId, ref: 'Turn', required: false }
 });
 
-Ticket.plugin(softDelete, { deletedBy: true });
+Ticket.plugin(softDelete, { deletedAt: true });
 
 export default model('Ticket', Ticket);

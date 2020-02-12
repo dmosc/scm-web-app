@@ -7,7 +7,7 @@ const Folio = new Schema({
   count: { type: Number, required: true }
 });
 
-Folio.plugin(softDelete, { deletedBy: true });
+Folio.plugin(softDelete, { deletedAt: true });
 Folio.plugin(uniqueValidator);
 
 export default model('Folio', Folio);

@@ -10,6 +10,6 @@ const Turn = new Schema({
   folios: [{ type: String, required: true, default: [] }]
 });
 
-Turn.plugin(softDelete, { deletedBy: true });
+Turn.plugin(softDelete, { deletedAt: true });
 
 export default model('Turn', Turn);
