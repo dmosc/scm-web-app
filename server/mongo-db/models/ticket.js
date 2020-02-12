@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import uniqueValidator from 'mongoose-unique-validator';
+import softDelete from 'mongoose-delete';
 
 const Ticket = new Schema({
   folio: { type: String, required: false },
@@ -19,5 +19,6 @@ const Ticket = new Schema({
   turn: { type: Schema.Types.ObjectId, ref: 'Turn', required: false }
 });
 
-Ticket.plugin(uniqueValidator);
+Ticket.plugin(softDelete, { deletedBy: true });
+
 export default model('Ticket', Ticket);

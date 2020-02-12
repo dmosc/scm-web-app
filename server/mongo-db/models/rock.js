@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
+import softDelete from 'mongoose-delete';
 
 const Rock = new Schema({
   name: { type: String, required: true, index: { unique: true } },
@@ -7,5 +8,7 @@ const Rock = new Schema({
   color: { type: String, required: true, index: { unique: true } }
 });
 
+Rock.plugin(softDelete, { deletedBy: true });
 Rock.plugin(uniqueValidator);
+
 export default model('Rock', Rock);

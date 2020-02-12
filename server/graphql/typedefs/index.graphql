@@ -55,6 +55,7 @@ type Mutation {
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, CASHIER])
+  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
   ticketInit(ticket: TicketInitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, GUARD])
@@ -63,6 +64,7 @@ type Mutation {
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
   truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER])
+  truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
   rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN, CASHIER])
