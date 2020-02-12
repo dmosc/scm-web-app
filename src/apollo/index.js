@@ -8,7 +8,7 @@ import uploadLink from './config/upload-link';
 import wsLink from './config/ws-link';
 import errorHandler from './config/error-handler';
 
-const link = ApolloLink.from([errorHandler, uploadLink, wsLink]);
+const link = ApolloLink.from([errorHandler, wsLink, uploadLink]);
 
 const client = new ApolloClient({
   link,
