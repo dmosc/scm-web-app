@@ -18,6 +18,14 @@ const ticketQueries = {
 
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
+  }),
+  activeTickets: authenticated(async (_, { filters: { limit } }) => {
+    const activeTickets = await Ticket.find({ turn: { $exists: false } })
+      .limit(limit || 50)
+      .populate('client truck product');
+
+    if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
+    else return activeTickets;
   })
 };
 

@@ -26,16 +26,14 @@ class TrucksList extends Component {
         const { activeTickets } = data;
         if (!activeTickets) return prev;
 
-        const tickets = [...activeTickets];
-
-        return { tickets };
+        return { activeTickets: [...activeTickets] };
       }
     });
   };
 
   render() {
     const { data } = this.props;
-    const { loading, error, tickets } = data;
+    const { loading, error, activeTickets: tickets } = data;
 
     return (
       <ListContainer>
@@ -64,6 +62,6 @@ class TrucksList extends Component {
   }
 }
 
-export default graphql(GET_TICKETS, { options: () => ({ variables: { filters: {} } }) })(
+export default graphql(GET_ACTIVE_TICKETS, { options: () => ({ variables: { filters: {} } }) })(
   TrucksList
 );

@@ -28,6 +28,7 @@ type Query {
   # Ticket
   ticket(id: ID!): Ticket
   tickets(filters: TicketFilters!): [Ticket!]!
+  activeTickets(filters: TicketFilters!): [Ticket!]!
   # Truck
   truck(id: ID, plates: String): Truck
   trucks(filters: TruckFilters!): [Truck!]!
