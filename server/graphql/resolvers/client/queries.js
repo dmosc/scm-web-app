@@ -4,7 +4,7 @@ import authenticated from '../../middleware/authenticated';
 const clientQueries = {
   client: authenticated(async (_, args) => {
     const { id } = args;
-    const client = await Client.findById(id).populate('trucks');
+    const client = await Client.findOne({ _id: id, deleted: false }).populate('trucks');
 
     if (!client) throw new Error('¡El cliente no existe!');
 
@@ -12,6 +12,7 @@ const clientQueries = {
   }),
   clients: authenticated(async (_, { filters: { limit, search } }) => {
     const clients = await Client.find({
+      deleted: false,
       $or: [
         { firstName: { $in: [new RegExp(search, 'i')] } },
         { lastName: { $in: [new RegExp(search, 'i')] } },

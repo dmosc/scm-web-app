@@ -4,7 +4,10 @@ import authenticated from '../../middleware/authenticated';
 const truckQueries = {
   truck: authenticated(async (_, args) => {
     const { id, plates } = args;
-    const truck = await Truck.findOne({ $or: [{ _id: id }, { plates }] }).populate('client');
+    const truck = await Truck.findOne({
+      deleted: false,
+      $or: [{ _id: id }, { plates }]
+    }).populate('client');
 
     if (!truck) throw new Error('¡El camión no existe!');
 
@@ -12,6 +15,7 @@ const truckQueries = {
   }),
   trucks: authenticated(async (_, { filters: { limit, search } }) => {
     const trucks = await Truck.find({
+      deleted: false,
       $or: [
         { plates: { $in: [new RegExp(search, 'i')] } },
         { brand: { $in: [new RegExp(search, 'i')] } },
