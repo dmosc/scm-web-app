@@ -47,4 +47,5 @@ input UserLogin {
 
 input UserFilters {
   limit: Int
+  search: String
 }

@@ -19,7 +19,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["prettier", "import", "react"],
+  "plugins": ["prettier", "import", "react", "react-hooks"],
   "rules": {
     "space-in-parens": [0, "always"],
     "no-multiple-empty-lines": [2, { "max": 1, "maxEOF": 0, "maxBOF": 0 }],
@@ -36,8 +36,10 @@
     "no-case-declarations": [1],
     "no-return-assign": [1],
     "no-restricted-syntax": "off",
+    "react/jsx-props-no-spreading": "off",
     "import/prefer-default-export": "off",
     "react/state-in-constructor": "off",
+    "react-hooks/exhaustive-deps": "warn",
     "no-param-reassign": [1],
     "no-shadow": [1],
     "camelcase": [1],
