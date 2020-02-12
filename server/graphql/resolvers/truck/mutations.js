@@ -60,7 +60,8 @@ const truckMutations = {
   }),
   truckDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
     try {
-      return Truck.deleteById(id, userRequesting.id);
+      await Truck.deleteById(id, userRequesting.id);
+      return true;
     } catch (e) {
       return e;
     }
