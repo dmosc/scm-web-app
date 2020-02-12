@@ -26,15 +26,21 @@ const Clients = Loadable({
   loading: TopBarProgress
 });
 
-/* webpackChunkName: "Clients" */
-const Products = Loadable({
-  loader: () => import('./views/registry/products'),
+/* webpackChunkName: "Trucks" */
+const Trucks = Loadable({
+  loader: () => import('./views/registry/trucks'),
   loading: TopBarProgress
 });
 
-/* webpackChunkName: "Clients" */
-const Trucks = Loadable({
-  loader: () => import('./views/registry/trucks'),
+/* webpackChunkName: "Users" */
+const Users = Loadable({
+  loader: () => import('./views/registry/users'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "Products" */
+const Products = Loadable({
+  loader: () => import('./views/registry/products'),
   loading: TopBarProgress
 });
 
@@ -70,54 +76,15 @@ const App = ({
       {!token && <Redirect from={`${pathname}`} to="/auth" />}
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
-          {(isAdmin || isCashier) && (
-            <Route
-              path="/dashboard"
-              render={() => <Dashboard collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {(isAdmin || isCashier) && (
-            <Route
-              path="/boletas"
-              render={() => <Tickets collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {(isAdmin || isCashier) && (
-            <Route
-              path="/registros/clientes"
-              render={() => <Clients collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {(isAdmin || isCashier) && (
-            <Route
-              path="/registros/camiones"
-              render={() => <Trucks collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {isAdmin && (
-            <Route
-              path="/registros/productos"
-              render={() => <Products collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {isAdmin && (
-            <Route
-              path="/historial"
-              render={() => <History collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {(isAdmin || isCashier || isGuard) && (
-            <Route
-              path="/mensajes"
-              render={() => <Messages collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
-          {(isAdmin || isGuard) && (
-            <Route
-              path="/accesos"
-              render={() => <Access collapsed={collapsed} onCollapse={setCollapsed} />}
-            />
-          )}
+          {(isAdmin || isCashier) && <Route path="/dashboard" component={Dashboard} />}
+          {(isAdmin || isCashier) && <Route path="/boletas" component={Tickets} />}
+          {(isAdmin || isCashier) && <Route path="/registros/clientes" component={Clients} />}
+          {(isAdmin || isCashier) && <Route path="/registros/camiones" component={Trucks} />}
+          {isAdmin && <Route path="/registros/productos" component={Products} />}
+          {isAdmin && <Route path="/registros/usuarios" component={Users} />}
+          {isAdmin && <Route path="/historial" component={History} />}
+          {(isAdmin || isCashier || isGuard) && <Route path="/mensajes" component={Messages} />}
+          {(isAdmin || isGuard) && <Route path="/accesos" component={Access} />}
           {isGuard && <Redirect to="/accesos" />}
           {!isGuard && <Redirect to="/dashboard" />}
         </Switch>

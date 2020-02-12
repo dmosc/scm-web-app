@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { hashSync as hash } from 'bcryptjs';
-import { Modal, Form, Input, Select, Button, Icon, notification } from 'antd';
+import { Drawer, Form, Input, Select, Button, Icon, notification } from 'antd';
 import roles from 'utils/enums/roles';
 import { EDIT_USER } from './graphql/mutations';
 
@@ -52,8 +53,8 @@ class EditForm extends Component {
             onUserEdit(user);
             setCurrentUser();
             form.resetFields();
-          } catch (e) {
-            e.graphQLErrors.map(({ message }) =>
+          } catch (errors) {
+            errors.graphQLErrors.map(({ message }) =>
               notification.open({
                 message
               })
@@ -78,11 +79,11 @@ class EditForm extends Component {
     const { loading } = this.state;
 
     return (
-      <Modal
+      <Drawer
         title={`Editando usuario: ${currentUser.username}`}
         visible={currentUser !== null}
-        footer={null}
-        onCancel={this.handleCancel}
+        onClose={this.handleCancel}
+        width={600}
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
@@ -145,13 +146,29 @@ class EditForm extends Component {
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" icon="save" loading={loading}>
-              {(loading && 'Espere..') || 'Guardar'}
+              {(loading && 'Espere...') || 'Guardar'}
             </Button>
           </Form.Item>
         </Form>
-      </Modal>
+      </Drawer>
     );
   }
 }
+
+EditForm.propTypes = {
+  client: PropTypes.object.isRequired,
+  form: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape({
+    id: PropTypes.string,
+    password: PropTypes.string,
+    username: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    role: PropTypes.string
+  }).isRequired,
+  onUserEdit: PropTypes.func.isRequired,
+  setCurrentUser: PropTypes.func.isRequired
+};
 
 export default withApollo(EditForm);
