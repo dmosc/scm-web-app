@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Table, notification, Button } from 'antd';
+import { Form, Table, notification, Button, Row, Modal } from 'antd';
 import { withApollo } from 'react-apollo';
 import shortid from 'shortid';
 import Title from './components/title';
 import { GET_CLIENTS } from './graphql/queries';
+import { DELETE_CLIENT } from './graphql/mutations';
 import { TableContainer, Card } from './elements';
 import EditForm from './components/client-edit-form';
 import NewForm from './components/new-client-form';
+
+const { confirm } = Modal;
 
 const Clients = ({ client }) => {
   const [loading, setLoading] = useState(true);
@@ -55,6 +58,27 @@ const Clients = ({ client }) => {
     setClients(oldClients);
   };
 
+  const deleteClient = clientToDelete => {
+    confirm({
+      title: '¿Estás seguro de que deseas eliminar a este cliente?',
+      content: 'Una vez eliminado, ya no aparecerá en la lista de usuarios',
+      okType: 'danger',
+      onOk: async () => {
+        await client.mutate({
+          mutation: DELETE_CLIENT,
+          variables: { id: clientToDelete.id }
+        });
+
+        setClients(clients.filter(({ id }) => id !== clientToDelete.id));
+
+        notification.open({
+          message: `El cliente ${clientToDelete.businessName} ha sido removido`
+        });
+      },
+      onCancel: () => {}
+    });
+  };
+
   const columns = [
     {
       title: 'Negocio',
@@ -86,7 +110,16 @@ const Clients = ({ client }) => {
       key: 'action',
       align: 'right',
       render: row => (
-        <Button onClick={() => setCurrentClient(row)} type="default" icon="edit" size="small" />
+        <Row>
+          <Button
+            style={{ marginRight: 5 }}
+            onClick={() => setCurrentClient(row)}
+            type="default"
+            icon="edit"
+            size="small"
+          />
+          <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
+        </Row>
       )
     }
   ];

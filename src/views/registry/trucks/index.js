@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Table, notification, Button, Tag } from 'antd';
+import { Form, Table, notification, Button, Tag, Modal, Row } from 'antd';
 import { withApollo } from 'react-apollo';
 import shortid from 'shortid';
 import { GET_TRUCKS } from './graphql/queries';
+import { DELETE_TRUCK } from './graphql/mutations';
 import { TableContainer, Card } from './elements';
 import Title from './components/title';
 import EditForm from './components/truck-edit-form';
 import NewForm from './components/new-truck-form';
+
+const { confirm } = Modal;
 
 const Trucks = ({ client }) => {
   const [loading, setLoading] = useState(true);
@@ -47,6 +50,27 @@ const Trucks = ({ client }) => {
 
     getData();
   }, [filters, client]);
+
+  const deleteTruck = truckToDelete => {
+    confirm({
+      title: '¿Estás seguro de que deseas eliminar a este camión?',
+      content: 'Una vez eliminado, ya no aparecerá en la lista de camiones',
+      okType: 'danger',
+      onOk: async () => {
+        await client.mutate({
+          mutation: DELETE_TRUCK,
+          variables: { id: truckToDelete.id }
+        });
+
+        setTrucks(trucks.filter(({ id }) => id !== truckToDelete.id));
+
+        notification.open({
+          message: `El camión ${truckToDelete.plates} ha sido removido`
+        });
+      },
+      onCancel: () => {}
+    });
+  };
 
   const onTruckEdit = truck => {
     const oldTrucks = [...trucks];
@@ -102,7 +126,16 @@ const Trucks = ({ client }) => {
       key: 'action',
       align: 'right',
       render: row => (
-        <Button onClick={() => setCurrentTruck(row)} type="default" icon="edit" size="small" />
+        <Row>
+          <Button
+            style={{ marginRight: 5 }}
+            onClick={() => setCurrentTruck(row)}
+            type="default"
+            icon="edit"
+            size="small"
+          />
+          <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small" />
+        </Row>
       )
     }
   ];
