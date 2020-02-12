@@ -38,6 +38,12 @@ const userMutations = {
         expiresIn: 86400
       });
 
+      // Set cookies both for the real app and for testing
+      res.cookie('token', token, {
+        maxAge: 86400 * 1000,
+        domain: '.now.sh'
+      });
+
       res.cookie('token', token, {
         maxAge: 86400 * 1000
       });
