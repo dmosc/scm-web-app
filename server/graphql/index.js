@@ -1,8 +1,9 @@
 import path from 'path';
-import { ApolloServer, PubSub } from 'apollo-server';
+import { ApolloServer } from 'apollo-server';
 import { makeExecutableSchema } from 'graphql-tools';
 import { importSchema } from 'graphql-import';
 import schemaDirectives from './directives';
+import context from './middleware/context';
 import resolvers from './resolvers';
 
 const typeDefs = importSchema(path.join(__dirname, './typedefs/index.graphql'));
@@ -13,23 +14,14 @@ const schema = makeExecutableSchema({
   schemaDirectives
 });
 
-const pubsub = new PubSub();
-
 const server = new ApolloServer({
   schema,
-  context: ({ req, res, connection }) => {
-    if (connection) {
-      return { req: connection.context, pubsub };
-    }
-    return { req, res, pubsub };
-  },
+  context,
   subscriptions: {
-    onConnect: connectionParams => {
-      return { headers: connectionParams };
-    }
+    onConnect: ({ token }) => ({ token })
   },
   cors: {
-    origin: '*',
+    origin: true,
     credentials: true
   }
 });
