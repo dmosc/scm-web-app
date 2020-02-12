@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import softDelete from 'mongoose-delete';
 import uniqueValidator from 'mongoose-unique-validator';
 import roles from '../enums/roles';
 
@@ -17,4 +18,6 @@ const User = new Schema(
 );
 
 User.plugin(uniqueValidator);
+User.plugin(softDelete, { deletedBy: true });
+
 export default model('User', User);

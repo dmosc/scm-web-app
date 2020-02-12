@@ -1,26 +1,11 @@
-import jwt from 'jsonwebtoken';
 import { AuthenticationError } from 'apollo-server-errors';
-import { JWT_SECRET } from '../../config';
 
-const authenticated = next => (_, args, { req, res, pubsub }) => {
-  const { authentication } = req.headers;
-
-  if (authentication) {
-    const token = authentication.split('Bearer ')[1];
-
-    if (token) {
-      try {
-        jwt.verify(token, JWT_SECRET);
-        return next(_, args, { req, res, pubsub });
-      } catch (e) {
-        throw new AuthenticationError('Invalid/Expired token');
-      }
-    }
-
-    throw new Error("Authentication token 'Bearer [token] '");
+const authenticated = next => (_, args, ctx) => {
+  if (!ctx.req.userRequesting) {
+    throw new AuthenticationError('You must be signed in to view this resource.');
   }
 
-  throw new Error('Authentication header must be provided');
+  return next(_, args, ctx);
 };
 
 export default authenticated;

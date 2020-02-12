@@ -30,6 +30,14 @@ const clientMutations = {
     } catch (e) {
       return e;
     }
+  }),
+  clientDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      await Client.deleteById(id, userRequesting.id);
+      return true;
+    } catch (e) {
+      return e;
+    }
   })
 };
 

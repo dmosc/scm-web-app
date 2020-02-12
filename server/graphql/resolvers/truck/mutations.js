@@ -57,6 +57,14 @@ const truckMutations = {
     } catch (e) {
       return e;
     }
+  }),
+  truckDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      await Truck.deleteById(id, userRequesting.id);
+      return true;
+    } catch (e) {
+      return e;
+    }
   })
 };
 
