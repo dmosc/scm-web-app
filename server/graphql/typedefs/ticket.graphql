@@ -18,6 +18,28 @@ type Ticket {
   turn: Turn
 }
 
+type ArchiveTicket {
+  id: Int!
+  folio: String!
+  driver: String!
+  client: String!
+  businessName: String!
+  address: String!
+  rfc: String!
+  plates: String!
+  truckWeight: Float!
+  totalWeight: Float!
+  tons: Float!
+  product: String!
+  price: Float!
+  tax: Float!
+  total: Float!
+  inTruckImage: String!
+  outTruckImage: String!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
 # Inputs
 input TicketInput {
   plates: String!
@@ -47,4 +69,9 @@ input TicketSubmitInput {
 
 input TicketFilters {
   limit: Int
+  offset: Int
+  search: String
+  start: Date
+  end: Date
+  date: Date
 }
