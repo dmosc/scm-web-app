@@ -40,7 +40,7 @@ const userMutations = {
 
       res.cookie('token', token, {
         maxAge: 86400 * 1000,
-        domain: req.hostname
+        domain: req.headers['X-Forwarded-Host'].split(':')[0]
       });
 
       return token;
