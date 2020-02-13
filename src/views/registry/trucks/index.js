@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Form, Table, notification, Button, Tag, Modal, Row } from 'antd';
 import { withApollo } from 'react-apollo';
+import { useDebounce } from 'use-lodash-debounce';
+import PropTypes from 'prop-types';
 import shortid from 'shortid';
+import { Form, Table, notification, Button, Tag, Modal, Row } from 'antd';
 import { GET_TRUCKS } from './graphql/queries';
 import { DELETE_TRUCK } from './graphql/mutations';
 import { TableContainer, Card } from './elements';
@@ -18,6 +19,7 @@ const Trucks = ({ client }) => {
   const [filters, setFilters] = useState({ search: '' });
   const [currentTruck, setCurrentTruck] = useState(null);
   const [isNewTruckModalOpen, toggleNewTruckModal] = useState(false);
+  const debouncedFilters = useDebounce(filters, 1000);
 
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
@@ -36,7 +38,7 @@ const Trucks = ({ client }) => {
           data: { trucks: trucksToSet }
         } = await client.query({
           query: GET_TRUCKS,
-          variables: { filters }
+          variables: { filters: debouncedFilters }
         });
 
         setTrucks(trucksToSet);
@@ -49,7 +51,7 @@ const Trucks = ({ client }) => {
     };
 
     getData();
-  }, [filters, client]);
+  }, [debouncedFilters, client]);
 
   const deleteTruck = truckToDelete => {
     confirm({
@@ -122,7 +124,7 @@ const Trucks = ({ client }) => {
         ))
     },
     {
-      title: 'Action',
+      title: 'Acciones',
       key: 'action',
       align: 'right',
       render: row => (

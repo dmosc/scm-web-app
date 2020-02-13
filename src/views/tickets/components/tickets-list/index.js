@@ -70,7 +70,7 @@ class TicketList extends Component {
     return tickets?.length === 0 ? (
       <div>No hay tickets disponibles</div>
     ) : (
-      <Collapse accordion bordered={false}>
+      <Collapse accordion>
         {tickets
           ?.filter(ticket => !ticket.turn)
           .map(ticket => (

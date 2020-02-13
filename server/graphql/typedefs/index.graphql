@@ -29,6 +29,7 @@ type Query {
   ticket(id: ID!): Ticket
   tickets(filters: TicketFilters!): [Ticket!]!
   activeTickets(filters: TicketFilters!): [Ticket!]!
+  archivedTickets(filters: TicketFilters!): [ArchiveTicket!]!
   # Truck
   truck(id: ID, plates: String): Truck
   trucks(filters: TruckFilters!): [Truck!]!
