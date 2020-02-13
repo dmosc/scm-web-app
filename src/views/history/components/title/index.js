@@ -1,14 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { withApollo } from 'react-apollo';
 import moment from 'moment';
-import { DatePicker, Typography, Input } from 'antd';
+import { DatePicker, Typography, Input, Button } from 'antd';
 import TitleContainer from './elements';
+import { GET_REPORT } from './graphql/queries';
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
 const { Search } = Input;
 
-const TableTitle = ({ handleFilterChange, handleDateFilterChange }) => {
+const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filters }) => {
+  const [loading, setLoading] = useState(false);
+  const downloadReport = async () => {
+    setLoading(true);
+    const {
+      data: { archivedTicketsReport }
+    } = await client.query({
+      query: GET_REPORT,
+      variables: { filters }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(archivedTicketsReport);
+    link.download = `Tickets-Report-${new Date().toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    setLoading(false);
+  };
+
   return (
     <TitleContainer>
       <Title style={{ margin: 'auto 10px' }} level={3}>
@@ -36,13 +60,18 @@ const TableTitle = ({ handleFilterChange, handleDateFilterChange }) => {
         }}
         onChange={dates => handleDateFilterChange(dates)}
       />
+      <Button loading={loading} type="primary" icon="file-excel" onClick={downloadReport}>
+        {(loading && 'Generando...') || 'Descargar .xls'}
+      </Button>
     </TitleContainer>
   );
 };
 
 TableTitle.propTypes = {
+  client: PropTypes.object.isRequired,
   handleFilterChange: PropTypes.func.isRequired,
-  handleDateFilterChange: PropTypes.func.isRequired
+  handleDateFilterChange: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired
 };
 
-export default TableTitle;
+export default withApollo(TableTitle);

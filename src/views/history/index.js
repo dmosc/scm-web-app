@@ -25,8 +25,14 @@ const History = ({ client }) => {
     const start = dates[0];
     const end = dates[1];
 
-    const filtersToSet = { ...filters, start, end };
-    setFilters(filtersToSet);
+    // This is a special case when 'De hoy' filter is set
+    // and, since start and end are equal, nothing is returned
+    // because nothing is between to equal dates
+    if (start && end && start.toString() === end.toString()) {
+      setFilters({ ...filters, start: null, end: null, date: start });
+    } else {
+      setFilters({ ...filters, start, end });
+    }
   };
 
   useEffect(() => {
@@ -40,9 +46,12 @@ const History = ({ client }) => {
           variables: { filters: debouncedFilters }
         });
 
-        archivedTickets.forEach(ticket => (ticket.subtotal = ticket.total - ticket.tax));
+        const archivedTicketsToSet = archivedTickets.map(ticket => ({
+          ...ticket,
+          subtotal: ticket.total - ticket.tax
+        }));
 
-        setTickets(archivedTickets);
+        setTickets(archivedTicketsToSet);
         setLoading(false);
       } catch (e) {
         notification.open({
@@ -202,6 +211,7 @@ const History = ({ client }) => {
               <Title
                 style={{ margin: 'auto 10px' }}
                 level={3}
+                filters={filters}
                 handleFilterChange={handleFilterChange}
                 handleDateFilterChange={handleDateFilterChange}
               />
