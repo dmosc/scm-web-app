@@ -16,7 +16,9 @@ const clientQueries = {
       $or: [
         { firstName: { $in: [new RegExp(search, 'i')] } },
         { lastName: { $in: [new RegExp(search, 'i')] } },
-        { businessName: { $in: [new RegExp(search, 'i')] } }
+        { businessName: { $in: [new RegExp(search, 'i')] } },
+        { email: { $in: [new RegExp(search, 'i')] } },
+        { phone: { $in: [new RegExp(search, 'i')] } }
       ]
     })
       .limit(limit || 50)
