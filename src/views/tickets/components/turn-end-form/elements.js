@@ -6,6 +6,7 @@ const Column = styled(Col)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
 `;
 
 const ColumnTitle = styled(Tag)`
