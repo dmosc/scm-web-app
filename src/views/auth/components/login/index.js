@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withApollo } from 'react-apollo';
 import cookie from 'react-cookies';
 import toast from 'toast-me';
+import { ENV } from 'config';
 import { Form, Icon, Input, Button } from 'antd';
 import { USER_LOGIN } from './graphql/mutations';
 
@@ -27,7 +28,8 @@ class Login extends Component {
 
           cookie.save('token', token, {
             path: '/',
-            expires: new Date().setDate(Date.now() + 1000 * 60 * 60 * 24 * 14)
+            expires: new Date().setDate(Date.now() + 1000 * 60 * 60 * 24 * 14),
+            domain: ENV.PRODUCTION ? '.gemsa-server.xyz' : 'localhost'
           });
 
           window.location.reload();
