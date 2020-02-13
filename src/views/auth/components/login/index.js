@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { withApollo } from 'react-apollo';
-import cookie from 'react-cookies';
 import toast from 'toast-me';
-import { ENV } from 'config';
 import { Form, Icon, Input, Button } from 'antd';
 import { USER_LOGIN } from './graphql/mutations';
 
@@ -18,28 +16,18 @@ class Login extends Component {
     e.preventDefault();
     form.validateFields(async (err, { username, password }) => {
       if (!err) {
-        try {
-          const {
-            data: { login: token }
-          } = await client.mutate({
-            mutation: USER_LOGIN,
-            variables: { user: { usernameOrEmail: username, password } }
-          });
+        const { errors } = await client.mutate({
+          mutation: USER_LOGIN,
+          variables: { user: { usernameOrEmail: username, password } }
+        });
 
-          cookie.save('token', token, {
-            path: '/',
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
-            domain: ENV.PRODUCTION ? '.gemsa-server.xyz' : 'localhost'
-          });
-
-          window.location.reload();
-        } catch (e) {
-          e.graphQLErrors.map(({ message }) =>
-            toast(message, 'error', { duration: 3000, closeable: true })
-          );
-
+        if (errors) {
+          toast(errors[0].message, 'error', { duration: 3000, closeable: true });
           this.setState({ loading: false });
+          return;
         }
+
+        window.location.reload();
       } else {
         toast(err, 'error', { duration: 3000, closeable: true });
         this.setState({ loading: false });

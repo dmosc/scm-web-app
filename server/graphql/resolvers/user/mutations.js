@@ -21,7 +21,7 @@ const userMutations = {
       throw new Error(e);
     }
   },
-  login: async (_, args) => {
+  login: async (_, args, { res, req }) => {
     try {
       const user = await User.findOne({
         $or: [
@@ -36,6 +36,13 @@ const userMutations = {
 
       const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
         expiresIn: 86400
+      });
+
+      const host = req.headers['x-forwarded-host'];
+
+      res.cookie('token', token, {
+        maxAge: 86400 * 1000,
+        domain: host ? host.split(':')[0] : undefined
       });
 
       return token;
