@@ -28,7 +28,7 @@ class Login extends Component {
 
           cookie.save('token', token, {
             path: '/',
-            expires: new Date().setDate(Date.now() + 1000 * 60 * 60 * 24 * 14),
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
             domain: ENV.PRODUCTION ? '.gemsa-server.xyz' : 'localhost'
           });
 
