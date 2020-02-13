@@ -37,9 +37,11 @@ const ticketQueries = {
         limit: limit || 100,
         offset: offset || 0,
         where: {
+          createdAt: {
+            [Op.between]: [start || '1970-01-01T00:00:00.000Z', end || '2100-12-31T00:00:00.000Z']
+          },
           [Op.or]: [
             { createdAt: date },
-            { createdAt: { [Op.between]: [start, end] } },
             { folio: { [Op.like]: search || '%' } },
             { driver: { [Op.like]: search || '%' } },
             { client: { [Op.like]: search || '%' } },
