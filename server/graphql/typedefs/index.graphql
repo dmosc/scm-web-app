@@ -30,6 +30,7 @@ type Query {
   tickets(filters: TicketFilters!): [Ticket!]!
   activeTickets(filters: TicketFilters!): [Ticket!]!
   archivedTickets(filters: TicketFilters!): [ArchiveTicket!]!
+  archivedTicketsReport(filters: TicketFilters!): String!
   # Truck
   truck(id: ID, plates: String): Truck
   trucks(filters: TruckFilters!): [Truck!]!
@@ -83,6 +84,7 @@ type Mutation {
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
+
 }
 
 type Subscription {

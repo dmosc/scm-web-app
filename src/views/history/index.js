@@ -211,6 +211,7 @@ const History = ({ client }) => {
               <Title
                 style={{ margin: 'auto 10px' }}
                 level={3}
+                filters={filters}
                 handleFilterChange={handleFilterChange}
                 handleDateFilterChange={handleDateFilterChange}
               />
