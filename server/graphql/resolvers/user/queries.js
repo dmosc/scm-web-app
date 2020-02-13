@@ -19,7 +19,8 @@ const userQueries = {
         { username: { $in: [new RegExp(search, 'i')] } },
         { firstName: { $in: [new RegExp(search, 'i')] } },
         { lastName: { $in: [new RegExp(search, 'i')] } },
-        { email: { $in: [new RegExp(search, 'i')] } }
+        { email: { $in: [new RegExp(search, 'i')] } },
+        { role: { $in: [new RegExp(search, 'i')] } }
       ]
     }).limit(limit || 10);
 

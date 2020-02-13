@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const LoadingBarContainer = styled.div`
-  margin: 0;
+  margin: 6px;
   padding: 0;
   width: 7vw;
   height: 1vh;

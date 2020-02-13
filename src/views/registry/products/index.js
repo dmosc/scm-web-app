@@ -56,7 +56,7 @@ const Products = ({ client }) => {
       render: price => <Tag color="blue">${price} MXN</Tag>
     },
     {
-      title: 'Action',
+      title: 'Acciones',
       key: 'action',
       align: 'right',
       render: row => (

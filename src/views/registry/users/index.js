@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { withApollo } from 'react-apollo';
+import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { withApollo } from 'react-apollo';
 import { Table, Button, Form } from 'antd';
 import { GET_USERS } from './graphql/queries';
 import { TableContainer, Card } from './elements';
@@ -15,6 +16,7 @@ const Users = ({ client }) => {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [isNewUserModalOpen, toggleNewUserModal] = useState(false);
+  const debouncedFilters = useDebounce(filters, 1000);
 
   const NewUserForm = Form.create({ name: 'user' })(NewForm);
   const UserEditForm = Form.create({ name: 'userEdit' })(EditForm);
@@ -25,9 +27,7 @@ const Users = ({ client }) => {
         data: { users: usersToSet }
       } = await client.query({
         query: GET_USERS,
-        variables: {
-          filters
-        }
+        variables: { filters: debouncedFilters }
       });
 
       if (!usersToSet) throw new Error('No users found');
@@ -37,7 +37,7 @@ const Users = ({ client }) => {
     };
 
     getUsers();
-  }, [client, filters]);
+  }, [debouncedFilters, client]);
 
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
@@ -57,17 +57,17 @@ const Users = ({ client }) => {
 
   const columns = [
     {
-      title: 'Username',
+      title: 'Nombre de usuario',
       dataIndex: 'username',
       key: 'username'
     },
     {
-      title: 'Name',
+      title: 'Nombres',
       dataIndex: 'firstName',
       key: 'firstName'
     },
     {
-      title: 'Last name',
+      title: 'Apellidos',
       dataIndex: 'lastName',
       key: 'lastName'
     },
@@ -77,16 +77,16 @@ const Users = ({ client }) => {
       key: 'email'
     },
     {
-      title: 'Role',
+      title: 'Rol',
       dataIndex: 'role',
       key: 'role'
     },
     {
-      title: 'Action',
+      title: 'Acciones',
       key: 'action',
       align: 'right',
       render: row => (
-        <Button onClick={() => setCurrentUser(row)} type="default" icon="edit" size="small" />
+        <Button onClick={() => setCurrentUser(row)} type="default" icon="edit" size="small"/>
       )
     }
   ];

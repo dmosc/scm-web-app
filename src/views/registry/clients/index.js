@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { withApollo } from 'react-apollo';
+import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import { Form, Table, notification, Button, Row, Modal } from 'antd';
-import { withApollo } from 'react-apollo';
 import shortid from 'shortid';
 import Title from './components/title';
 import { GET_CLIENTS } from './graphql/queries';
@@ -18,6 +19,7 @@ const Clients = ({ client }) => {
   const [filters, setFilters] = useState({ search: '' });
   const [currentClient, setCurrentClient] = useState(null);
   const [isNewClientModalOpen, toggleNewClientModal] = useState(false);
+  const debouncedFilters = useDebounce(filters, 1000);
 
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
@@ -34,7 +36,7 @@ const Clients = ({ client }) => {
         setLoading(true);
         const {
           data: { clients: clientsToSet }
-        } = await client.query({ query: GET_CLIENTS, variables: { filters } });
+        } = await client.query({ query: GET_CLIENTS, variables: { filters: debouncedFilters } });
 
         setClients(clientsToSet);
         setLoading(false);
@@ -46,7 +48,7 @@ const Clients = ({ client }) => {
     };
 
     getData();
-  }, [filters, client]);
+  }, [debouncedFilters, client]);
 
   const onClientEdit = clientToEdit => {
     const oldClients = [...clients];
@@ -106,7 +108,7 @@ const Clients = ({ client }) => {
       key: 'cellphone'
     },
     {
-      title: 'Action',
+      title: 'Acciones',
       key: 'action',
       align: 'right',
       render: row => (
