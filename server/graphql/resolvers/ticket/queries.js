@@ -31,28 +31,43 @@ const ticketQueries = {
     else return activeTickets;
   }),
   archivedTickets: authenticated(
-    async (_, { filters: { limit, offset, search: oldSearch, start, end, date } }) => {
+    async (
+      _,
+      { filters: { limit, offset, search: oldSearch, start, end, date, type, product } }
+    ) => {
       const search = `%${oldSearch}%`;
+
+      const where = {
+        createdAt: {
+          [Op.between]: [start || '1970-01-01T00:00:00.000Z', end || '2100-12-31T00:00:00.000Z']
+        },
+        [Op.or]: [
+          { createdAt: date },
+          { folio: { [Op.like]: search || '%' } },
+          { driver: { [Op.like]: search || '%' } },
+          { client: { [Op.like]: search || '%' } },
+          { businessName: { [Op.like]: search || '%' } },
+          { address: { [Op.like]: search || '%' } },
+          { rfc: { [Op.like]: search || '%' } },
+          { plates: { [Op.like]: search || '%' } },
+          { product: { [Op.like]: search || '%' } }
+        ]
+      };
+
+      if (type === 'BILL') {
+        where.tax = { [Op.ne]: 0 };
+      } else if (type === 'REMISSION') {
+        where.tax = { [Op.eq]: 0 };
+      }
+
+      if (product) {
+        where.product = product;
+      }
 
       const archivedTickets = await ArchiveTicket.findAll({
         limit: limit || 100,
         offset: offset || 0,
-        where: {
-          createdAt: {
-            [Op.between]: [start || '1970-01-01T00:00:00.000Z', end || '2100-12-31T00:00:00.000Z']
-          },
-          [Op.or]: [
-            { createdAt: date },
-            { folio: { [Op.like]: search || '%' } },
-            { driver: { [Op.like]: search || '%' } },
-            { client: { [Op.like]: search || '%' } },
-            { businessName: { [Op.like]: search || '%' } },
-            { address: { [Op.like]: search || '%' } },
-            { rfc: { [Op.like]: search || '%' } },
-            { plates: { [Op.like]: search || '%' } },
-            { product: { [Op.like]: search || '%' } }
-          ]
-        }
+        where
       });
 
       if (!archivedTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
@@ -60,7 +75,10 @@ const ticketQueries = {
     }
   ),
   archivedTicketsReport: authenticated(
-    async (_, { filters: { limit, offset, search: oldSearch, start, end, date } }) => {
+    async (
+      _,
+      { filters: { limit, offset, search: oldSearch, start, end, date, type, product } }
+    ) => {
       const search = `%${oldSearch}%`;
 
       const attributes = [
@@ -139,26 +157,38 @@ const ticketQueries = {
         }
       ];
 
+      const where = {
+        createdAt: {
+          [Op.between]: [start || '1970-01-01T00:00:00.000Z', end || '2100-12-31T00:00:00.000Z']
+        },
+        [Op.or]: [
+          { createdAt: date },
+          { folio: { [Op.like]: search || '%' } },
+          { driver: { [Op.like]: search || '%' } },
+          { client: { [Op.like]: search || '%' } },
+          { businessName: { [Op.like]: search || '%' } },
+          { address: { [Op.like]: search || '%' } },
+          { rfc: { [Op.like]: search || '%' } },
+          { plates: { [Op.like]: search || '%' } },
+          { product: { [Op.like]: search || '%' } }
+        ]
+      };
+
+      if (type === 'BILL') {
+        where.tax = { [Op.ne]: 0 };
+      } else if (type === 'REMISSION') {
+        where.tax = { [Op.eq]: 0 };
+      }
+
+      if (product) {
+        where.product = product;
+      }
+
       const archivedTickets = await ArchiveTicket.findAll({
         attributes: attributes.map(({ key }) => key),
         limit: limit || 100,
         offset: offset || 0,
-        where: {
-          createdAt: {
-            [Op.between]: [start || '1970-01-01T00:00:00.000Z', end || '2100-12-31T00:00:00.000Z']
-          },
-          [Op.or]: [
-            { createdAt: date },
-            { folio: { [Op.like]: search || '%' } },
-            { driver: { [Op.like]: search || '%' } },
-            { client: { [Op.like]: search || '%' } },
-            { businessName: { [Op.like]: search || '%' } },
-            { address: { [Op.like]: search || '%' } },
-            { rfc: { [Op.like]: search || '%' } },
-            { plates: { [Op.like]: search || '%' } },
-            { product: { [Op.like]: search || '%' } }
-          ]
-        }
+        where
       });
 
       const workbook = new ExcelJS.Workbook();

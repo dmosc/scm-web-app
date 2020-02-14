@@ -10,12 +10,21 @@ import { HistoryContainer, TableContainer, Card } from './elements';
 import { GET_HISTORY_TICKETS } from './graphql/queries';
 
 const History = ({ client }) => {
-  const [filters, setFilters] = useState({ search: '', start: null, end: null, date: null });
+  const [filters, setFilters] = useState({
+    search: '',
+    start: null,
+    end: null,
+    date: null,
+    type: null,
+    product: ''
+  });
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
   const debouncedFilters = useDebounce(filters, 1000);
 
   const handleFilterChange = (key, value) => {
+    // eslint-disable-next-line no-param-reassign
+    if (key === 'type' && value === '') value = null;
     const filtersToSet = { ...filters, [key]: value };
 
     setFilters(filtersToSet);

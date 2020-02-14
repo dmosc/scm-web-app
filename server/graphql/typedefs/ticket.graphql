@@ -75,3 +75,19 @@ input TicketFilters {
   end: Date
   date: Date
 }
+
+input ArchivedTicketFilters {
+  limit: Int
+  offset: Int
+  search: String
+  start: Date
+  end: Date
+  date: Date
+  type: ArchivedTicketType
+  product: String
+}
+
+enum ArchivedTicketType {
+  BILL
+  REMISSION
+}
