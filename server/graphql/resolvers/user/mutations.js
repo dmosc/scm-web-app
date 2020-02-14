@@ -21,7 +21,7 @@ const userMutations = {
       throw new Error(e);
     }
   },
-  login: async (_, args, { res, req }) => {
+  login: async (_, args) => {
     try {
       const user = await User.findOne({
         $or: [

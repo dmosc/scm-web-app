@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import cookie from 'cookie';
 import { JWT_SECRET } from 'config';
 import { PubSub } from 'apollo-server';
 
@@ -15,7 +14,8 @@ const setContext = ({ req = {}, res, connection }) => {
   if (connection) {
     token = connection.context.token;
   } else {
-    ({ token } = cookie.parse(req.headers.cookie || ''));
+    const { authentication } = req.headers;
+    if (authentication) [, token] = authentication.split('Bearer ');
   }
 
   // Only set userRequesting payload is token is present
