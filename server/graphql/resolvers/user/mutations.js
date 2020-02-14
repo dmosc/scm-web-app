@@ -38,13 +38,6 @@ const userMutations = {
         expiresIn: 86400
       });
 
-      const host = req.headers['x-forwarded-host'];
-
-      res.cookie('token', token, {
-        maxAge: 86400 * 1000,
-        domain: host ? host.split(':')[0] : undefined
-      });
-
       return token;
     } catch (err) {
       throw new AuthenticationError(err);

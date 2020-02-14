@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withApollo } from 'react-apollo';
+import cookie from 'react-cookies';
 import toast from 'toast-me';
 import { Form, Icon, Input, Button } from 'antd';
 import { USER_LOGIN } from './graphql/mutations';
@@ -16,7 +17,7 @@ class Login extends Component {
     e.preventDefault();
     form.validateFields(async (err, { username, password }) => {
       if (!err) {
-        const { errors } = await client.mutate({
+        const { data, errors } = await client.mutate({
           mutation: USER_LOGIN,
           variables: { user: { usernameOrEmail: username, password } }
         });
@@ -26,6 +27,11 @@ class Login extends Component {
           this.setState({ loading: false });
           return;
         }
+
+        cookie.save('token', data.login, {
+          path: '/',
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
+        });
 
         window.location.reload();
       } else {
