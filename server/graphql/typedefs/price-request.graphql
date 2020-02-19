@@ -38,6 +38,10 @@ input PriceRequestFilters {
   requester: ID
   reviewedBy: ID
   status: PriceRequestStatus
+  creationStart: Date
+  creationEnd: Date
+  reviewedStart: Date
+  reviewedEnd: Date
 }
 
 # Others

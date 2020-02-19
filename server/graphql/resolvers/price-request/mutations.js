@@ -33,19 +33,22 @@ const priceRequestMutations = {
 
       // If status is edited, save who has changed the status and apply changes
       newPriceRequest.reviewedBy = userRequesting.id;
+      newPriceRequest.reviewedAt = Date.now();
 
-      // Update prices on client
-      const clientToUpdate = await Client.findOne({ _id: priceRequest.client });
+      // Only apply prices to client if accepted
+      if (newPriceRequest.status === 'ACCEPTED') {
+        const clientToUpdate = await Client.findOne({ _id: priceRequest.client });
 
-      const newPrices = priceRequest.prices.reduce(
-        (acc, { rock, priceRequested }) => {
-          acc[rock.name] = priceRequested;
-          return acc;
-        },
-        { ...clientToUpdate.prices }
-      );
+        const newPrices = priceRequest.prices.reduce(
+          (acc, { rock, priceRequested }) => {
+            acc[rock.name] = priceRequested;
+            return acc;
+          },
+          { ...clientToUpdate.prices }
+        );
 
-      clientToUpdate.prices = newPrices;
+        clientToUpdate.prices = newPrices;
+      }
     }
 
     return PriceRequest.findOneAndUpdate(

@@ -17,6 +17,7 @@ const Price = new Schema({
 const PriceRequest = new Schema({
   requester: { type: Schema.ObjectId, ref: 'User', required: true },
   client: { type: Schema.ObjectId, ref: 'Client', required: true },
+  createdAt: { type: Date, default: Date.now },
   prices: {
     type: [Price],
     validate: {
@@ -25,6 +26,7 @@ const PriceRequest = new Schema({
     }
   },
   reviewedBy: { type: Schema.ObjectId, ref: 'User' },
+  reviewedAt: { type: Date },
   status: {
     type: String,
     enum: ['PENDING', 'REJECTED', 'ACCEPTED'],
