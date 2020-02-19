@@ -7,6 +7,7 @@
 # import * from "post.graphql"
 # import * from "message.graphql"
 # import * from "turn.graphql"
+# import * from "price-request.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -48,6 +49,9 @@ type Query {
   turns(filters: TurnFilters!): [Turn!]!
   turnActive: Turn
   turnSummary: TurnSummary! @auth(roles: [ADMIN, CASHIER])
+  # Price request
+  priceRequest(id: ID!): PriceRequest
+  priceRequests(filters: PriceRequestFilters): [PriceRequest!]!
 }
 
 type Mutation {
@@ -81,6 +85,9 @@ type Mutation {
   turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER])
   turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER])
   turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER])
+  # Price Request
+  priceRequest(priceRequest: PriceRequestInput!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT])
+  priceRequestEdit(priceRequest: PriceRequestEditInput!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

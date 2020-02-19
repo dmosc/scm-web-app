@@ -1,0 +1,48 @@
+# Types
+type PriceRequest {
+  id: ID!
+  requester: Client!
+  prices: [PriceRequestElement]!
+  reviewedBy: User
+  status: PriceRequestStatus!
+}
+
+type PriceRequestElement {
+  rock: Rock!
+  priceRequested: Float!
+}
+
+# Inputs
+input PriceRequestInput {
+  requester: ID
+  prices: [PriceRequestElementInput]
+}
+
+input PriceRequestElementInput {
+  rock: ID
+  priceRequested: Float
+}
+
+input PriceRequestEditInput {
+  prices: [PriceRequestElementInput]
+  status: PriceRequestStatus
+}
+
+input PriceRequestElementInput {
+  rock: ID!
+  priceRequested: Float!
+}
+
+input PriceRequestFilters {
+  client: ID
+  requester: ID
+  reviewedBy: ID
+  status: PriceRequestStatus
+}
+
+# Others
+enum PriceRequestStatus {
+  PENDING
+  REJECTED
+  ACCEPTED
+}
