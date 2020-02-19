@@ -51,11 +51,14 @@ const priceRequestMutations = {
       }
     }
 
-    return PriceRequest.findOneAndUpdate(
-      { _id: args.priceRequest.id },
-      { ...args.newPriceRequest },
-      { new: true }
-    );
+    Object.keys(newPriceRequest).forEach(field => {
+      priceRequest[field] = newPriceRequest[field];
+    });
+
+    // MUST USE .save() OPERATION TO RUN
+    // MODEL VALIDATIONS CORRECTLY. PLEASE AVOID
+    // findOneAndUpdate or similars
+    return priceRequest.save();
   }
 };
 

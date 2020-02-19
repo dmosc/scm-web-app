@@ -8,7 +8,10 @@ const Price = new Schema({
     type: Number,
     required: true,
     validate: {
-      validator: price => price > 0,
+      // WATCH OUT: Valiadtors will run on .save() operations
+      validator: function validator(price) {
+        return price > 0;
+      },
       message: 'Price requested must be greater than 0'
     }
   }
@@ -21,7 +24,10 @@ const PriceRequest = new Schema({
   prices: {
     type: [Price],
     validate: {
-      validator: prices => prices.length > 0,
+      // WATCH OUT: Valiadtors will run on .save() operations
+      validator: function validator(prices) {
+        return prices.length > 0;
+      },
       message: 'Minimum prices requested must be 1'
     }
   },
