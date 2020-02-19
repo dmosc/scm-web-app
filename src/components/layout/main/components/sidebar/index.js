@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Layout as Layer, Menu, Icon } from 'antd';
+import { Layout as Layer, Icon } from 'antd';
 import { withRouter, Link } from 'react-router-dom';
 import { useAuth } from 'components/providers/withAuth';
+import { Menu } from './elements';
 
-const { Item, SubMenu } = Menu;
+const { Item, SubMenu, ItemGroup } = Menu;
 const { Sider } = Layer;
 
 const Sidebar = ({ history, collapsed, onCollapse }) => {
-  const { isAdmin, isCashier, isGuard } = useAuth();
+  const { isAdmin, isCashier, isGuard, isAccountant } = useAuth();
 
   return (
     <Sider theme="light" collapsible collapsed={collapsed} onCollapse={onCollapse}>
@@ -51,40 +52,56 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
               </span>
             }
           >
-            <Item key="registros/clientes">
-              <Link to="/registros/clientes">
-                <Icon type="usergroup-add" />
-                Clientes
-              </Link>
-            </Item>
-            <Item key="registros/camiones">
-              <Link to="/registros/camiones">
-                <Icon type="car" />
-                Camiones
-              </Link>
-            </Item>
-            {isAdmin && (
-              <Item key="registros/usuarios">
-                <Link to="/registros/usuarios">
-                  <Icon type="user-add" />
-                  Usuarios
+            <ItemGroup title="Clientes">
+              <Item key="registros/clientes">
+                <Link to="/registros/clientes">
+                  <Icon type="usergroup-add" />
+                  Clientes
                 </Link>
               </Item>
+              {(isAdmin || isAccountant) && (
+                <Item key="registros/clients/solicitudes-de-precio">
+                  <Link to="/registros/clients/solicitudes-de-precio">
+                    <Icon type="form" />
+                    Solicitudes de precios
+                  </Link>
+                </Item>
+              )}
+            </ItemGroup>
+            <ItemGroup title="Camiones">
+              <Item key="registros/camiones">
+                <Link to="/registros/camiones">
+                  <Icon type="car" />
+                  Camiones
+                </Link>
+              </Item>
+            </ItemGroup>
+            {isAdmin && (
+              <ItemGroup title="Usuarios">
+                <Item key="registros/usuarios">
+                  <Link to="/registros/usuarios">
+                    <Icon type="user-add" />
+                    Usuarios
+                  </Link>
+                </Item>
+              </ItemGroup>
             )}
             {isAdmin && (
-              <Item key="registros/productos">
-                <Link to="/registros/productos">
-                  <Icon type="star"/>
-                  Productos
-                </Link>
-              </Item>
+              <ItemGroup title="Productos">
+                <Item key="registros/productos">
+                  <Link to="/registros/productos">
+                    <Icon type="star" />
+                    Productos
+                  </Link>
+                </Item>
+              </ItemGroup>
             )}
           </SubMenu>
         )}
         {isAdmin && (
           <Item key="historial">
             <Link to="/historial">
-              <Icon type="history"/>
+              <Icon type="history" />
               <span>Historial</span>
             </Link>
           </Item>

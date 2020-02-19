@@ -17,7 +17,7 @@ const NavBar = ({ history, location }) => {
   const { user } = useAuth();
 
   const format = pathname => {
-    const title = pathname.substring(pathname.lastIndexOf('/') + 1);
+    const title = pathname.substring(pathname.lastIndexOf('/') + 1).replace('-', ' ');
     return title.charAt(0).toUpperCase() + title.slice(1);
   };
 
