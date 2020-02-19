@@ -10,7 +10,8 @@ import {
   Select,
   Typography,
   Drawer,
-  notification
+  notification,
+  Modal
 } from 'antd';
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
@@ -23,10 +24,12 @@ const { Text } = Typography;
 const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, setClients }) => {
   const [publicPrices, setPublicPrices] = useState({});
   const [prices, setPrices] = useState({});
+  const [floorPrices, setFloorPrices] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPriceModal, togglePriceModal] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(null);
   const [currentPriceTotal, setCurrentPriceTotal] = useState(0);
+  const [currentFloorPriceTotal, setCurrentFloorPriceTotal] = useState(0);
   const [parsedPrices, setParsedPrices] = useState({});
 
   useEffect(() => {
@@ -35,11 +38,15 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         data: { rocks: products }
       } = await client.query({ query: GET_PRODUCTS, variables: { filters: {} } });
       const publicPricesToSet = {};
+      const floorPricesToSet = {};
 
-      products.forEach(({ name, price }) => {
+      products.forEach(({ name, price, floorPrice }) => {
         publicPricesToSet[name] = price;
+        floorPricesToSet[name] = floorPrice;
       });
+
       setPublicPrices(publicPricesToSet);
+      setFloorPrices(floorPricesToSet);
     };
 
     getPublicPrices();
@@ -121,6 +128,16 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
   const onPriceUpdate = () => {
     const pricesToSet = { ...prices, [currentPrice]: currentPriceTotal };
 
+    if (currentPriceTotal < currentFloorPriceTotal) {
+      Modal.error({
+        title: 'Precio no permitido',
+        content: 'No puedes asignar un precio menor al precio suelo'
+      });
+      delete pricesToSet[currentPrice];
+    } else {
+      pricesToSet[currentPrice] = currentPriceTotal;
+    }
+
     setCurrentPrice(null);
     setCurrentPriceTotal(0);
     setPrices(pricesToSet);
@@ -134,9 +151,11 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
     setPrices(pricesToSet);
     setCurrentPrice(null);
     setCurrentPriceTotal(0);
+    setCurrentFloorPriceTotal(0);
   };
 
   const handleSetCurrentPrice = currentPriceToSet => {
+    setCurrentFloorPriceTotal(floorPrices[currentPriceToSet]);
     setCurrentPriceTotal(publicPrices[currentPriceToSet]);
     setCurrentPrice(currentPriceToSet);
     togglePriceModal(true);
@@ -261,6 +280,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
               placeholder="Precios especiales"
               mode="multiple"
               tokenSeparators={[',']}
+              value={Object.keys(prices).filter(price => prices[price])}
               onSelect={handleSetCurrentPrice}
               onDeselect={onPriceDeselect}
             >

@@ -4,7 +4,28 @@ import softDelete from 'mongoose-delete';
 
 const Rock = new Schema({
   name: { type: String, required: true, index: { unique: true } },
-  price: { type: Number, required: true },
+  price: {
+    type: Number,
+    required: true,
+    validate: {
+      // WATCH OUT: Valiadtors will run on .save() operations
+      validator: function validator(price) {
+        return price >= this.floorPrice;
+      },
+      message: "Price can't be less than floor price"
+    }
+  },
+  floorPrice: {
+    type: Number,
+    required: true,
+    validate: {
+      // WATCH OUT: Valiadtors will run on .save() operations
+      validator: function validator(floorPrice) {
+        return floorPrice <= this.price;
+      },
+      message: "Floor price can't be less than price"
+    }
+  },
   color: { type: String, required: true, index: { unique: true } }
 });
 

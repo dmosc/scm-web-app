@@ -3,6 +3,7 @@ type Rock {
   id: ID!
   name: String!
   price: Float!
+  floorPrice: Float!
   color: String!
 }
 
@@ -10,6 +11,7 @@ type Rock {
 input RockInput {
   name: String!
   price: Float!
+  floorPrice: Float!
   color: String!
 }
 
@@ -17,6 +19,7 @@ input RockEditInput {
   id: ID!
   name: String
   price: Float
+  floorPrice: Float
   color: String
 }
 

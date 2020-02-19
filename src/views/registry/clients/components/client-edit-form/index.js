@@ -10,7 +10,8 @@ import {
   Button,
   Icon,
   Typography,
-  notification
+  notification,
+  Modal
 } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
@@ -26,7 +27,9 @@ class EditForm extends Component {
     showPriceModal: false,
     prices: {},
     publicPrices: {},
+    floorPrices: {},
     currentPrice: null,
+    currentFloorPriceTotal: 0,
     currentPriceTotal: 0
   };
 
@@ -39,11 +42,13 @@ class EditForm extends Component {
 
     const prices = { ...currentClient.prices };
     const publicPrices = {};
+    const floorPrices = {};
 
-    products.forEach(({ name, price }) => {
+    products.forEach(({ name, price, floorPrice }) => {
       publicPrices[name] = price;
+      floorPrices[name] = floorPrice;
     });
-    this.setState({ prices, publicPrices });
+    this.setState({ prices, publicPrices, floorPrices });
   };
 
   handleSubmit = e => {
@@ -118,19 +123,42 @@ class EditForm extends Component {
   };
 
   setCurrentPrice = currentPrice => {
-    const { publicPrices } = this.state;
+    const { publicPrices, floorPrices } = this.state;
 
     this.setState(
-      { currentPrice, currentPriceTotal: publicPrices[currentPrice] },
+      {
+        currentPrice,
+        currentPriceTotal: publicPrices[currentPrice],
+        currentFloorPriceTotal: floorPrices[currentPrice]
+      },
       this.togglePriceModal()
     );
   };
 
   onPriceUpdate = () => {
-    const { prices: oldPrices, currentPrice, currentPriceTotal } = this.state;
-    const prices = { ...oldPrices, [currentPrice]: currentPriceTotal };
+    const {
+      prices: oldPrices,
+      currentPrice,
+      currentPriceTotal,
+      currentFloorPriceTotal
+    } = this.state;
 
-    this.setState({ prices, currentPrice: null, currentPriceTotal: 0 }, this.togglePriceModal());
+    const prices = { ...oldPrices };
+
+    if (currentPriceTotal < currentFloorPriceTotal) {
+      Modal.error({
+        title: 'Precio no permitido',
+        content: 'No puedes asignar un precio menor al precio suelo'
+      });
+      delete prices[currentPrice];
+    } else {
+      prices[currentPrice] = currentPriceTotal;
+    }
+
+    this.setState(
+      { prices, currentPrice: null, currentPriceTotal: 0, currentFloorPriceTotal: 0 },
+      this.togglePriceModal()
+    );
   };
 
   onPriceDeselect = price => {
@@ -138,7 +166,7 @@ class EditForm extends Component {
     const prices = { ...oldPrices };
 
     delete prices[price];
-    this.setState({ prices, currentPrice: null, currentPriceTotal: 0 });
+    this.setState({ prices, currentPrice: null, currentPriceTotal: 0, currentFloorPriceTotal: 0 });
   };
 
   togglePriceModal = () => {
@@ -270,6 +298,7 @@ class EditForm extends Component {
                 placeholder="Precios especiales"
                 mode="multiple"
                 tokenSeparators={[',']}
+                value={Object.keys(prices).filter(price => prices[price])}
                 onSelect={this.setCurrentPrice}
                 onDeselect={this.onPriceDeselect}
               >

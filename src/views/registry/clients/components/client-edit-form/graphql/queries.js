@@ -5,6 +5,7 @@ const GET_PRODUCTS = gql`
     rocks(filters: $filters) {
       name
       price
+      floorPrice
     }
   }
 `;
