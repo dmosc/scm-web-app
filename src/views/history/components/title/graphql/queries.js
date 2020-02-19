@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost';
 
 const GET_REPORT = gql`
-  query archivedTicketsReport($filters: ArchivedTicketFilters!) {
-    archivedTicketsReport(filters: $filters)
+  query archivedTicketsXLS($filters: ArchivedTicketFilters!) {
+    archivedTicketsXLS(filters: $filters)
   }
 `;
 

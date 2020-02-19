@@ -31,7 +31,7 @@ type Query {
   tickets(filters: TicketFilters!): [Ticket!]!
   activeTickets(filters: TicketFilters!): [Ticket!]!
   archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
-  archivedTicketsReport(filters: ArchivedTicketFilters!): String!
+  archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
   # Truck
   truck(id: ID, plates: String): Truck
   trucks(filters: TruckFilters!): [Truck!]!

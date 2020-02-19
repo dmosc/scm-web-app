@@ -74,7 +74,7 @@ const ticketQueries = {
       else return archivedTickets;
     }
   ),
-  archivedTicketsReport: authenticated(
+  archivedTicketsXLS: authenticated(
     async (
       _,
       { filters: { limit, offset, search: oldSearch, start, end, date, type, product } }
