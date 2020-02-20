@@ -81,7 +81,9 @@ const App = ({
       {!token && <Redirect from={`${pathname}`} to="/auth" />}
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
-          {(isAdmin || isCashier) && <Route path="/dashboard" component={Dashboard} />}
+          {(isAdmin || isCashier || isAccountant) && (
+            <Route path="/dashboard" component={Dashboard} />
+          )}
           {(isAdmin || isCashier) && <Route path="/boletas" component={Tickets} />}
           {(isAdmin || isCashier) && <Route path="/registros/clientes" component={Clients} />}
           {(isAdmin || isAccountant) && (

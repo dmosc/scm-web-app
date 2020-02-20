@@ -19,7 +19,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
         selectedKeys={history.location.pathname.toLowerCase()}
         mode="inline"
       >
-        {(isAdmin || isCashier) && (
+        {(isAdmin || isCashier || isAccountant) && (
           <Item key="dashboard">
             <Link to="/dashboard">
               <Icon type="dashboard" />
@@ -43,7 +43,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier) && (
+        {(isAdmin || isCashier || isAccountant) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
@@ -53,12 +53,14 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             }
           >
             <ItemGroup title="Clientes">
-              <Item key="registros/clientes">
-                <Link to="/registros/clientes">
-                  <Icon type="usergroup-add" />
-                  Clientes
-                </Link>
-              </Item>
+              {(isAdmin || isCashier) && (
+                <Item key="registros/clientes">
+                  <Link to="/registros/clientes">
+                    <Icon type="usergroup-add" />
+                    Clientes
+                  </Link>
+                </Item>
+              )}
               {(isAdmin || isAccountant) && (
                 <Item key="registros/clients/solicitudes-de-precio">
                   <Link to="/registros/clients/solicitudes-de-precio">
@@ -68,14 +70,16 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               )}
             </ItemGroup>
-            <ItemGroup title="Camiones">
-              <Item key="registros/camiones">
-                <Link to="/registros/camiones">
-                  <Icon type="car" />
-                  Camiones
-                </Link>
-              </Item>
-            </ItemGroup>
+            {(isAdmin || isCashier) && (
+              <ItemGroup title="Camiones">
+                <Item key="registros/camiones">
+                  <Link to="/registros/camiones">
+                    <Icon type="car" />
+                    Camiones
+                  </Link>
+                </Item>
+              </ItemGroup>
+            )}
             {isAdmin && (
               <ItemGroup title="Usuarios">
                 <Item key="registros/usuarios">
