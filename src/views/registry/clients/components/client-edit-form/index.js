@@ -29,7 +29,7 @@ class EditForm extends Component {
     publicPrices: {},
     floorPrices: {},
     currentPrice: null,
-    currentFloorPriceTotal: 0,
+    currentFloorPrice: 0,
     currentPriceTotal: 0
   };
 
@@ -129,7 +129,7 @@ class EditForm extends Component {
       {
         currentPrice,
         currentPriceTotal: publicPrices[currentPrice],
-        currentFloorPriceTotal: floorPrices[currentPrice]
+        currentFloorPrice: floorPrices[currentPrice]
       },
       this.togglePriceModal()
     );
@@ -140,15 +140,22 @@ class EditForm extends Component {
       prices: oldPrices,
       currentPrice,
       currentPriceTotal,
-      currentFloorPriceTotal
+      currentFloorPrice,
+      publicPrices
     } = this.state;
 
     const prices = { ...oldPrices };
 
-    if (currentPriceTotal < currentFloorPriceTotal) {
+    if (currentPriceTotal < currentFloorPrice) {
       Modal.error({
         title: 'Precio no permitido',
         content: 'No puedes asignar un precio menor al precio suelo'
+      });
+      delete prices[currentPrice];
+    } else if (currentPriceTotal > publicPrices[currentPrice]) {
+      Modal.error({
+        title: 'Precio no permitido',
+        content: 'No puedes asignar un precio mayor al precio al público'
       });
       delete prices[currentPrice];
     } else {
@@ -156,7 +163,7 @@ class EditForm extends Component {
     }
 
     this.setState(
-      { prices, currentPrice: null, currentPriceTotal: 0, currentFloorPriceTotal: 0 },
+      { prices, currentPrice: null, currentPriceTotal: 0, currentFloorPrice: 0 },
       this.togglePriceModal()
     );
   };
@@ -166,7 +173,7 @@ class EditForm extends Component {
     const prices = { ...oldPrices };
 
     delete prices[price];
-    this.setState({ prices, currentPrice: null, currentPriceTotal: 0, currentFloorPriceTotal: 0 });
+    this.setState({ prices, currentPrice: null, currentPriceTotal: 0, currentFloorPrice: 0 });
   };
 
   togglePriceModal = () => {
@@ -185,6 +192,7 @@ class EditForm extends Component {
       prices,
       currentPrice,
       currentPriceTotal,
+      currentFloorPrice,
       publicPrices
     } = this.state;
 
@@ -327,6 +335,8 @@ class EditForm extends Component {
           visible={showPriceModal}
           currentPrice={currentPrice}
           currentPriceTotal={currentPriceTotal}
+          currentFloorPrice={currentFloorPrice}
+          currentPublicPrice={publicPrices[currentPrice]}
           handleAttrChange={this.handleAttrChange}
           onPriceUpdate={this.onPriceUpdate}
           togglePriceModal={this.togglePriceModal}

@@ -29,7 +29,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
   const [showPriceModal, togglePriceModal] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(null);
   const [currentPriceTotal, setCurrentPriceTotal] = useState(0);
-  const [currentFloorPriceTotal, setCurrentFloorPriceTotal] = useState(0);
+  const [currentFloorPrice, setCurrentFloorPrice] = useState(0);
   const [parsedPrices, setParsedPrices] = useState({});
 
   useEffect(() => {
@@ -128,10 +128,16 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
   const onPriceUpdate = () => {
     const pricesToSet = { ...prices, [currentPrice]: currentPriceTotal };
 
-    if (currentPriceTotal < currentFloorPriceTotal) {
+    if (currentPriceTotal < currentFloorPrice) {
       Modal.error({
         title: 'Precio no permitido',
         content: 'No puedes asignar un precio menor al precio suelo'
+      });
+      delete pricesToSet[currentPrice];
+    } else if (currentPriceTotal > publicPrices[currentPrice]) {
+      Modal.error({
+        title: 'Precio no permitido',
+        content: 'No puedes asignar un precio mayor al precio al público'
       });
       delete pricesToSet[currentPrice];
     } else {
@@ -151,11 +157,11 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
     setPrices(pricesToSet);
     setCurrentPrice(null);
     setCurrentPriceTotal(0);
-    setCurrentFloorPriceTotal(0);
+    setCurrentFloorPrice(0);
   };
 
   const handleSetCurrentPrice = currentPriceToSet => {
-    setCurrentFloorPriceTotal(floorPrices[currentPriceToSet]);
+    setCurrentFloorPrice(floorPrices[currentPriceToSet]);
     setCurrentPriceTotal(publicPrices[currentPriceToSet]);
     setCurrentPrice(currentPriceToSet);
     togglePriceModal(true);
@@ -309,6 +315,8 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         visible={showPriceModal}
         currentPrice={currentPrice}
         currentPriceTotal={currentPriceTotal}
+        currentFloorPrice={currentFloorPrice}
+        currentPublicPrice={publicPrices[currentPrice]}
         setCurrentPriceTotal={setCurrentPriceTotal}
         onPriceUpdate={onPriceUpdate}
         togglePriceModal={togglePriceModal}
