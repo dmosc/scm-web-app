@@ -29,29 +29,29 @@ const truckMutations = {
   }),
   truckEdit: authenticated(async (_, args) => {
     try {
-      const oldTruck = await Truck.findOneAndUpdate(
-        { _id: args.truck.id },
-        { ...args.truck },
-        { new: false }
-      );
+      const newTruck = { ...args.truck };
+      const { id } = newTruck;
 
-      const truck = await Truck.findById(oldTruck.id).populate('client');
+      newTruck.plates = newTruck.plates ? newTruck.plates.toUpperCase() : undefined;
+      newTruck.brand = newTruck.brand ? newTruck.brand.toUpperCase() : undefined;
+      newTruck.model = newTruck.model ? newTruck.model.toUpperCase() : undefined;
+      newTruck.weight = newTruck.weight ? newTruck.weight.toFixed(2) : undefined;
+      newTruck.drivers = newTruck.drivers
+        ? newTruck.drivers.map(driver => driver.toUpperCase())
+        : undefined;
 
-      truck.plates = truck.plates.toUpperCase();
-      truck.brand = truck.brand.toUpperCase();
-      truck.model = truck.model.toUpperCase();
-      truck.weight = truck.weight.toFixed(2);
-      truck.drivers = truck.drivers.map(driver => driver.toUpperCase());
+      const operations = [
+        Truck.findOneAndUpdate({ _id: args.truck.id }, { ...newTruck }, { new: true }).populate(
+          'client'
+        )
+      ];
 
-      const oldClient = await Client.findById(oldTruck.client);
-      const newClient = await Client.findById(truck.client);
+      if (newTruck.client) {
+        operations.push(Client.findOne({ trucks: id }, { $pull: { trucks: id } }));
+        operations.push(Client.findOne({ _id: newTruck.client }, { $push: { trucks: id } }));
+      }
 
-      oldClient.trucks.pull({ _id: truck.id });
-      newClient.trucks.push({ _id: truck.id });
-
-      await oldClient.save();
-      await newClient.save();
-      await truck.save();
+      const [truck] = await Promise.all(operations);
 
       return truck;
     } catch (e) {

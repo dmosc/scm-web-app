@@ -75,49 +75,40 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, credit }
       ) => {
         if (!err) {
-          try {
-            const {
-              data: { client: cli }
-            } = await client.mutate({
-              mutation: REGISTER_CLIENT,
-              variables: {
-                client: {
-                  firstName,
-                  lastName,
-                  email,
-                  businessName,
-                  rfc,
-                  CFDIuse,
-                  cellphone,
-                  address,
-                  prices,
-                  credit
-                }
+          const {
+            data: { client: cli }
+          } = await client.mutate({
+            mutation: REGISTER_CLIENT,
+            variables: {
+              client: {
+                firstName,
+                lastName,
+                email,
+                businessName,
+                rfc,
+                CFDIuse,
+                cellphone,
+                address,
+                prices,
+                credit
               }
-            });
+            }
+          });
 
-            const clientsToSet = [cli, ...oldClients];
-            setLoading(false);
-            setClients(clientsToSet);
-            setCurrentPrice(null);
-            setCurrentPriceTotal(0);
-            setPrices({});
+          const clientsToSet = [cli, ...oldClients];
+          setLoading(false);
+          setClients(clientsToSet);
+          setCurrentPrice(null);
+          setCurrentPriceTotal(0);
+          setPrices({});
 
-            notification.open({
-              message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
-            });
+          notification.open({
+            message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
+          });
 
-            toggleNewClientModal(false);
+          toggleNewClientModal(false);
 
-            form.resetFields();
-          } catch (error) {
-            error.graphQLErrors.map(({ message }) =>
-              notification.open({
-                message
-              })
-            );
-            setLoading(false);
-          }
+          form.resetFields();
         } else {
           setLoading(false);
         }

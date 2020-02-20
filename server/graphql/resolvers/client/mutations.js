@@ -13,12 +13,8 @@ const clientMutations = {
     client.address = client.address.toUpperCase().trim();
     client.email = client.email.toLowerCase().trim();
 
-    try {
-      await client.save();
-      return client;
-    } catch (e) {
-      return e;
-    }
+    await client.save();
+    return client;
   }),
   clientEdit: authenticated(async (_, args) => {
     try {
