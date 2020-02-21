@@ -110,7 +110,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier || isGuard) && (
+        {(isAdmin || isCashier || isGuard || isAccountant) && (
           <Item key="mensajes">
             <Link to="/mensajes">
               <Icon type="message" />

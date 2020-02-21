@@ -1,14 +1,18 @@
 import { PriceRequest, Client } from '../../../mongo-db/models';
 
 const priceRequestMutations = {
-  priceRequest: async (_, args) => {
-    const priceRequest = new PriceRequest(args.priceRequest);
+  priceRequest: async (_, args, { req: { userRequesting } }) => {
+    const priceRequest = new PriceRequest({ ...args.priceRequest, requester: userRequesting.id });
 
     await priceRequest.save();
 
-    return priceRequest;
+    return PriceRequest.findOne({ _id: priceRequest.id })
+      .populate('client')
+      .populate('requester')
+      .populate('prices.rock')
+      .populate('reviewedBy');
   },
-  priceRequestEdit: async (_, args, { userRequesting }) => {
+  priceRequestEdit: async (_, args, { req: { userRequesting } }) => {
     const priceRequest = await PriceRequest.findOne({ _id: args.priceRequest.id }).populate(
       'prices.rock'
     );
@@ -48,6 +52,11 @@ const priceRequestMutations = {
         );
 
         clientToUpdate.prices = newPrices;
+
+        await Client.findOneAndUpdate(
+          { _id: priceRequest.client },
+          { $set: { prices: newPrices } }
+        );
       }
     }
 

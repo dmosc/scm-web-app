@@ -51,7 +51,7 @@ type Query {
   turnSummary: TurnSummary! @auth(roles: [ADMIN, CASHIER])
   # Price request
   priceRequest(id: ID!): PriceRequest
-  priceRequests(filters: PriceRequestFilters): [PriceRequest!]!
+  priceRequests(filters: PriceRequestFilters!): [PriceRequest!]!
 }
 
 type Mutation {
@@ -98,7 +98,7 @@ type Subscription {
   newTicket: Ticket! @auth(roles: [ADMIN, CASHIER])
   ticketUpdate: Ticket! @auth(roles: [ADMIN, CASHIER])
   activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, GUARD])
-  newPost: Post! @auth(roles: [ADMIN, CASHIER])
-  newMessage: Message! @auth(roles: [ADMIN, CASHIER])
+  newPost: Post! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT])
+  newMessage: Message! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT])
   turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER])
 }

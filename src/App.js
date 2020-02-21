@@ -93,7 +93,9 @@ const App = ({
           {isAdmin && <Route path="/registros/productos" component={Products} />}
           {isAdmin && <Route path="/registros/usuarios" component={Users} />}
           {isAdmin && <Route path="/historial" component={History} />}
-          {(isAdmin || isCashier || isGuard) && <Route path="/mensajes" component={Messages} />}
+          {(isAdmin || isCashier || isGuard || isAccountant) && (
+            <Route path="/mensajes" component={Messages} />
+          )}
           {(isAdmin || isGuard) && <Route path="/accesos" component={Access} />}
           {isGuard && <Redirect to="/accesos" />}
           {!isGuard && <Redirect to="/dashboard" />}

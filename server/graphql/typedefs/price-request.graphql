@@ -1,9 +1,12 @@
 # Types
 type PriceRequest {
   id: ID!
-  requester: Client!
-  prices: [PriceRequestElement]!
+  requester: User!
+  client: Client!
+  createdAt: Date!
   reviewedBy: User
+  reviewedAt: Date
+  prices: [PriceRequestElement]!
   status: PriceRequestStatus!
 }
 
@@ -14,16 +17,12 @@ type PriceRequestElement {
 
 # Inputs
 input PriceRequestInput {
-  requester: ID
-  prices: [PriceRequestElementInput]
-}
-
-input PriceRequestElementInput {
-  rock: ID
-  priceRequested: Float
+  client: ID!
+  prices: [PriceRequestElementInput!]!
 }
 
 input PriceRequestEditInput {
+  id: ID!
   prices: [PriceRequestElementInput]
   status: PriceRequestStatus
 }

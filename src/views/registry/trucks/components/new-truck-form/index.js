@@ -200,7 +200,7 @@ const NewClientForm = ({ form, visible, toggleNewTruckModal, client, trucks, set
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" icon="save" loading={loading}>
-            {(loading && 'Espere..') || 'Guardar'}
+            {(loading && 'Espere...') || 'Guardar'}
           </Button>
         </Form.Item>
       </Form>

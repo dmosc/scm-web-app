@@ -8,7 +8,7 @@ const Price = new Schema({
     type: Number,
     required: true,
     validate: {
-      // WATCH OUT: Valiadtors will run on .save() operations
+      // WATCH OUT: Validators will run on .save() operations
       validator: function validator(price) {
         return price > 0;
       },
@@ -24,7 +24,7 @@ const PriceRequest = new Schema({
   prices: {
     type: [Price],
     validate: {
-      // WATCH OUT: Valiadtors will run on .save() operations
+      // WATCH OUT: Validators will run on .save() operations
       validator: function validator(prices) {
         return prices.length > 0;
       },
