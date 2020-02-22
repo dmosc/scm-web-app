@@ -55,41 +55,38 @@ const NewClientForm = ({ form, visible, toggleNewTruckModal, client, trucks, set
 
     form.validateFields(async (err, { plates, brand, model, weight, client: cli, drivers }) => {
       if (!err) {
-        try {
-          const {
-            data: { truck }
-          } = await client.mutate({
-            mutation: REGISTER_TRUCK,
-            variables: {
-              truck: {
-                plates,
-                brand,
-                model,
-                weight,
-                client: cli.substring(cli.indexOf(':') + 1),
-                drivers
-              }
+        const { data, errors } = await client.mutate({
+          mutation: REGISTER_TRUCK,
+          variables: {
+            truck: {
+              plates,
+              brand,
+              model,
+              weight,
+              client: cli.substring(cli.indexOf(':') + 1),
+              drivers
             }
-          });
+          }
+        });
 
-          const trucksToSet = [truck, ...trucks];
-          setTrucks(trucksToSet);
-          setLoading(false);
-
+        if (errors) {
           notification.open({
-            message: `Camión ${truck.plates} ha sido registrado exitosamente!`
+            message: errors[0].message
           });
-
-          form.resetFields();
-          toggleNewTruckModal(false);
-        } catch (error) {
-          error.graphQLErrors.map(({ message }) =>
-            notification.open({
-              message
-            })
-          );
           setLoading(false);
+          return;
         }
+
+        const trucksToSet = [data.truck, ...trucks];
+        setTrucks(trucksToSet);
+        setLoading(false);
+
+        notification.open({
+          message: `Camión ${data.truck.plates} ha sido registrado exitosamente!`
+        });
+
+        form.resetFields();
+        toggleNewTruckModal(false);
       } else {
         setLoading(false);
       }
@@ -203,7 +200,7 @@ const NewClientForm = ({ form, visible, toggleNewTruckModal, client, trucks, set
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" icon="save" loading={loading}>
-            {(loading && 'Espere..') || 'Guardar'}
+            {(loading && 'Espere...') || 'Guardar'}
           </Button>
         </Form.Item>
       </Form>

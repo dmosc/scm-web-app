@@ -7,19 +7,15 @@ import { JWT_SECRET } from '../../../config';
 
 const userMutations = {
   user: async (_, args) => {
-    try {
-      const user = new User({ ...args.user });
+    const user = new User({ ...args.user });
 
-      user.password = hash(args.user.password, 10);
-      user.username = args.user.username.toLowerCase().trim();
-      user.email = args.user.email.toLowerCase().trim();
+    user.password = hash(args.user.password, 10);
+    user.username = args.user.username.toLowerCase().trim();
+    user.email = args.user.email.toLowerCase().trim();
 
-      await user.save();
+    await user.save();
 
-      return user;
-    } catch (e) {
-      throw new Error(e);
-    }
+    return user;
   },
   login: async (_, args) => {
     try {
@@ -43,13 +39,9 @@ const userMutations = {
       throw new AuthenticationError(err);
     }
   },
-  userEdit: authenticated(async (_, args) => {
-    try {
-      return await User.findOneAndUpdate({ _id: args.user.id }, { ...args.user }, { new: true });
-    } catch (e) {
-      return e;
-    }
-  })
+  userEdit: authenticated(async (_, args) =>
+    User.findOneAndUpdate({ _id: args.user.id }, { ...args.user }, { new: true })
+  )
 };
 
 export default userMutations;

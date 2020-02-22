@@ -28,39 +28,30 @@ class EditForm extends Component {
       async (err, { username, email, firstName, lastName, password: newPassword, role }) => {
         const password = newPassword ? hash(newPassword, 10) : currentPassword;
         if (!err) {
-          try {
-            const {
-              data: { userEdit: user }
-            } = await client.mutate({
-              mutation: EDIT_USER,
-              variables: {
-                user: {
-                  id,
-                  username,
-                  email,
-                  firstName,
-                  lastName,
-                  password,
-                  role
-                }
+          const {
+            data: { userEdit: user }
+          } = await client.mutate({
+            mutation: EDIT_USER,
+            variables: {
+              user: {
+                id,
+                username,
+                email,
+                firstName,
+                lastName,
+                password,
+                role
               }
-            });
+            }
+          });
 
-            notification.open({
-              message: `Usuario ${user.username} ha sido editado exitosamente!`
-            });
+          notification.open({
+            message: `Usuario ${user.username} ha sido editado exitosamente!`
+          });
 
-            onUserEdit(user);
-            setCurrentUser();
-            form.resetFields();
-          } catch (errors) {
-            errors.graphQLErrors.map(({ message }) =>
-              notification.open({
-                message
-              })
-            );
-            this.setState({ loading: false });
-          }
+          onUserEdit(user);
+          setCurrentUser();
+          form.resetFields();
         } else {
           this.setState({ loading: false });
         }

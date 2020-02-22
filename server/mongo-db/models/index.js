@@ -6,3 +6,4 @@ export { default as Truck } from './truck';
 export { default as Rock } from './rock';
 export { default as Folio } from './folio';
 export { default as Turn } from './turn';
+export { default as PriceRequest } from './price-request';

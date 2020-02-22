@@ -31,44 +31,34 @@ class TicketImageForm extends Component {
     form.validateFields(async err => {
       if (!err) {
         const { outTruckImage: image } = this.state;
-        try {
-          const {
-            data: { imageUpload: outTruckImage }
-          } = await client.mutate({
-            mutation: FILE_UPLOAD,
-            variables: { image, folderKey: 'trucks', id }
+        const {
+          data: { imageUpload: outTruckImage }
+        } = await client.mutate({
+          mutation: FILE_UPLOAD,
+          variables: { image, folderKey: 'trucks', id }
+        });
+
+        if (!outTruckImage) {
+          notification.error({
+            message: '¡No ha sido posible guardar la imagen correctamente!'
           });
 
-          if (!outTruckImage) {
-            notification.error({
-              message: '¡No ha sido posible guardar la imagen correctamente!'
-            });
-
-            throw new Error('No ha sido posible guardar la imagen!');
-          } else {
-            notification.success({
-              message: '¡La imagen ha sido subida exitosamente!'
-            });
-          }
-
-          await client.mutate({
-            mutation: TICKET_OUT_IMAGE_SUBMIT,
-            variables: {
-              ticket: { id: currentTicket.id, outTruckImage }
-            }
+          throw new Error('No ha sido posible guardar la imagen!');
+        } else {
+          notification.success({
+            message: '¡La imagen ha sido subida exitosamente!'
           });
-
-          form.resetFields();
-          setCurrent();
-        } catch (e) {
-          this.setState({ loading: false });
-          e.graphQLErrors.map(({ message }) =>
-            notification.error(message, 'error', {
-              duration: 3000,
-              closeable: true
-            })
-          );
         }
+
+        await client.mutate({
+          mutation: TICKET_OUT_IMAGE_SUBMIT,
+          variables: {
+            ticket: { id: currentTicket.id, outTruckImage }
+          }
+        });
+
+        form.resetFields();
+        setCurrent();
       } else {
         this.setState({ loading: false });
         notification('No se ha podido actualizar correctamente', 'error', {

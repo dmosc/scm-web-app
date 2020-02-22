@@ -15,34 +15,25 @@ const NewUserForm = ({ client, form, visible, toggleNewUserModal, users, setUser
     e.preventDefault();
     form.validateFields(async (err, { username, email, firstName, lastName, password, role }) => {
       if (!err) {
-        try {
-          const {
-            data: { user }
-          } = await client.mutate({
-            mutation: REGISTER_USER,
-            variables: {
-              user: { username, email, firstName, lastName, password, role }
-            }
-          });
+        const {
+          data: { user }
+        } = await client.mutate({
+          mutation: REGISTER_USER,
+          variables: {
+            user: { username, email, firstName, lastName, password, role }
+          }
+        });
 
-          const usersToSet = [user, ...users];
-          setLoading(false);
-          setUsers(usersToSet);
-          toggleNewUserModal(false);
+        const usersToSet = [user, ...users];
+        setLoading(false);
+        setUsers(usersToSet);
+        toggleNewUserModal(false);
 
-          notification.open({
-            message: `Usuario ${user.username} ha sido registrado exitosamente!`
-          });
+        notification.open({
+          message: `Usuario ${user.username} ha sido registrado exitosamente!`
+        });
 
-          form.resetFields();
-        } catch (errors) {
-          errors.graphQLErrors.map(({ message }) =>
-            notification.open({
-              message
-            })
-          );
-          setLoading(false);
-        }
+        form.resetFields();
       } else {
         setLoading(false);
       }

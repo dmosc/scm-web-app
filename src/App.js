@@ -26,6 +26,11 @@ const Clients = Loadable({
   loading: TopBarProgress
 });
 
+const PriceRequests = Loadable({
+  loader: () => import('./views/registry/price-requests'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "Trucks" */
 const Trucks = Loadable({
   loader: () => import('./views/registry/trucks'),
@@ -68,7 +73,7 @@ const App = ({
   }
 }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const { isAdmin, isGuard, isCashier, token, user } = useAuth();
+  const { isAdmin, isGuard, isCashier, isAccountant, token, user } = useAuth();
 
   return (
     <Switch>
@@ -76,14 +81,21 @@ const App = ({
       {!token && <Redirect from={`${pathname}`} to="/auth" />}
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
-          {(isAdmin || isCashier) && <Route path="/dashboard" component={Dashboard} />}
+          {(isAdmin || isCashier || isAccountant) && (
+            <Route path="/dashboard" component={Dashboard} />
+          )}
           {(isAdmin || isCashier) && <Route path="/boletas" component={Tickets} />}
           {(isAdmin || isCashier) && <Route path="/registros/clientes" component={Clients} />}
+          {(isAdmin || isAccountant) && (
+            <Route path="/registros/clients/solicitudes-de-precio" component={PriceRequests} />
+          )}
           {(isAdmin || isCashier) && <Route path="/registros/camiones" component={Trucks} />}
           {isAdmin && <Route path="/registros/productos" component={Products} />}
           {isAdmin && <Route path="/registros/usuarios" component={Users} />}
           {isAdmin && <Route path="/historial" component={History} />}
-          {(isAdmin || isCashier || isGuard) && <Route path="/mensajes" component={Messages} />}
+          {(isAdmin || isCashier || isGuard || isAccountant) && (
+            <Route path="/mensajes" component={Messages} />
+          )}
           {(isAdmin || isGuard) && <Route path="/accesos" component={Access} />}
           {isGuard && <Redirect to="/accesos" />}
           {!isGuard && <Redirect to="/dashboard" />}

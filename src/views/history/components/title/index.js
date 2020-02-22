@@ -18,14 +18,14 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
   const downloadReport = async () => {
     setLoading(true);
     const {
-      data: { archivedTicketsReport }
+      data: { archivedTicketsXLS }
     } = await client.query({
       query: GET_REPORT,
       variables: { filters }
     });
 
     const link = document.createElement('a');
-    link.href = encodeURI(archivedTicketsReport);
+    link.href = encodeURI(archivedTicketsXLS);
     link.download = `Tickets-Report-${new Date().toISOString()}.xlsx`;
     link.target = '_blank';
     document.body.appendChild(link);

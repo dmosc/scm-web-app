@@ -15,8 +15,7 @@ const link = split(
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,
-  uploadLink,
-  errorHandler
+  errorHandler.concat(uploadLink)
 );
 
 const client = new ApolloClient({

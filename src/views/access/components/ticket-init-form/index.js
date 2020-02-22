@@ -44,52 +44,46 @@ class TicketInit extends Component {
     this.setState({ loading: true });
 
     if (plates && inTruckImage && currentProduct) {
-      try {
-        const {
-          data: { truck }
-        } = await client.query({
-          query: GET_TRUCK,
-          variables: { plates }
-        });
+      const {
+        data: { truck }
+      } = await client.query({
+        query: GET_TRUCK,
+        variables: { plates }
+      });
 
-        if (!truck) throw new Error('Camión tiene que pasar a registrarse primero!');
+      if (!truck) throw new Error('Camión tiene que pasar a registrarse primero!');
 
-        const {
-          data: { ticketInit: ticket }
-        } = await client.mutate({
-          mutation: REGISTER_TICKET_INIT,
-          variables: {
-            ticket: {
-              plates,
-              product: currentProduct?.id,
-              inTruckImage,
-              folderKey: 'trucks',
-              id
-            }
+      const { data, errors } = await client.mutate({
+        mutation: REGISTER_TICKET_INIT,
+        variables: {
+          ticket: {
+            plates,
+            product: currentProduct?.id,
+            inTruckImage,
+            folderKey: 'trucks',
+            id
           }
-        });
-
-        this.setState({
-          loading: false,
-          plates: null,
-          inTruckImage: '/static/images/truck_image.png',
-          currentProduct: null
-        });
-
-        notification.open({
-          message: `Camión ${ticket.truck.plates} puede ingresar!`
-        });
-      } catch (e) {
-        if (e.graphQLErrors) {
-          e.graphQLErrors.map(({ message }) =>
-            notification.open({
-              message
-            })
-          );
         }
+      });
 
+      if (errors) {
+        notification.open({
+          message: errors[0].message
+        });
         this.setState({ loading: false });
+        return;
       }
+
+      this.setState({
+        loading: false,
+        plates: null,
+        inTruckImage: '/static/images/truck_image.png',
+        currentProduct: null
+      });
+
+      notification.open({
+        message: `Camión ${data.ticketInit.truck.plates} puede ingresar!`
+      });
     } else {
       notification.open({
         message: '¡Es necesario completar todos los datos!'

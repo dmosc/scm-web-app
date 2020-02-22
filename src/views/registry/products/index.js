@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { withApollo } from 'react-apollo';
-import { Form, Tag, Button, Table } from 'antd';
-import ProductForm from './components/product-form';
+import { Tag, Button, Table } from 'antd';
+import ProductEditForm from './components/product-edit-form';
 import { GET_ROCKS } from './graphql/queries';
 import { TableContainer, Card } from './elements';
 
@@ -12,8 +12,6 @@ const Products = ({ client }) => {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [products, setProducts] = useState([]);
   const [isEditModalOpen, toggleEditModal] = useState(false);
-
-  const ProductEditForm = Form.create({ name: 'product' })(ProductForm);
 
   useEffect(() => {
     const getRocks = async () => {
@@ -54,6 +52,12 @@ const Products = ({ client }) => {
       dataIndex: 'price',
       key: 'price',
       render: price => <Tag color="blue">${price} MXN</Tag>
+    },
+    {
+      title: 'Precio suelo',
+      dataIndex: 'floorPrice',
+      key: 'floorPrice',
+      render: floorPrice => <Tag color="orange">${floorPrice} MXN</Tag>
     },
     {
       title: 'Acciones',

@@ -2,3 +2,8 @@
 enum s3FolderKey {
   trucks
 }
+
+enum order {
+  asc
+  desc
+}

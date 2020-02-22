@@ -10,7 +10,8 @@ import {
   Select,
   Typography,
   Drawer,
-  notification
+  notification,
+  Modal
 } from 'antd';
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
@@ -23,10 +24,12 @@ const { Text } = Typography;
 const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, setClients }) => {
   const [publicPrices, setPublicPrices] = useState({});
   const [prices, setPrices] = useState({});
+  const [floorPrices, setFloorPrices] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPriceModal, togglePriceModal] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(null);
   const [currentPriceTotal, setCurrentPriceTotal] = useState(0);
+  const [currentFloorPrice, setCurrentFloorPrice] = useState(0);
   const [parsedPrices, setParsedPrices] = useState({});
 
   useEffect(() => {
@@ -35,11 +38,15 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         data: { rocks: products }
       } = await client.query({ query: GET_PRODUCTS, variables: { filters: {} } });
       const publicPricesToSet = {};
+      const floorPricesToSet = {};
 
-      products.forEach(({ name, price }) => {
+      products.forEach(({ name, price, floorPrice }) => {
         publicPricesToSet[name] = price;
+        floorPricesToSet[name] = floorPrice;
       });
+
       setPublicPrices(publicPricesToSet);
+      setFloorPrices(floorPricesToSet);
     };
 
     getPublicPrices();
@@ -68,49 +75,40 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, credit }
       ) => {
         if (!err) {
-          try {
-            const {
-              data: { client: cli }
-            } = await client.mutate({
-              mutation: REGISTER_CLIENT,
-              variables: {
-                client: {
-                  firstName,
-                  lastName,
-                  email,
-                  businessName,
-                  rfc,
-                  CFDIuse,
-                  cellphone,
-                  address,
-                  prices,
-                  credit
-                }
+          const {
+            data: { client: cli }
+          } = await client.mutate({
+            mutation: REGISTER_CLIENT,
+            variables: {
+              client: {
+                firstName,
+                lastName,
+                email,
+                businessName,
+                rfc,
+                CFDIuse,
+                cellphone,
+                address,
+                prices,
+                credit
               }
-            });
+            }
+          });
 
-            const clientsToSet = [cli, ...oldClients];
-            setLoading(false);
-            setClients(clientsToSet);
-            setCurrentPrice(null);
-            setCurrentPriceTotal(0);
-            setPrices({});
+          const clientsToSet = [cli, ...oldClients];
+          setLoading(false);
+          setClients(clientsToSet);
+          setCurrentPrice(null);
+          setCurrentPriceTotal(0);
+          setPrices({});
 
-            notification.open({
-              message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
-            });
+          notification.open({
+            message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
+          });
 
-            toggleNewClientModal(false);
+          toggleNewClientModal(false);
 
-            form.resetFields();
-          } catch (error) {
-            error.graphQLErrors.map(({ message }) =>
-              notification.open({
-                message
-              })
-            );
-            setLoading(false);
-          }
+          form.resetFields();
         } else {
           setLoading(false);
         }
@@ -120,6 +118,22 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
 
   const onPriceUpdate = () => {
     const pricesToSet = { ...prices, [currentPrice]: currentPriceTotal };
+
+    if (currentPriceTotal < currentFloorPrice) {
+      Modal.error({
+        title: 'Precio no permitido',
+        content: 'No puedes asignar un precio menor al precio suelo'
+      });
+      delete pricesToSet[currentPrice];
+    } else if (currentPriceTotal > publicPrices[currentPrice]) {
+      Modal.error({
+        title: 'Precio no permitido',
+        content: 'No puedes asignar un precio mayor al precio al público'
+      });
+      delete pricesToSet[currentPrice];
+    } else {
+      pricesToSet[currentPrice] = currentPriceTotal;
+    }
 
     setCurrentPrice(null);
     setCurrentPriceTotal(0);
@@ -134,9 +148,11 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
     setPrices(pricesToSet);
     setCurrentPrice(null);
     setCurrentPriceTotal(0);
+    setCurrentFloorPrice(0);
   };
 
   const handleSetCurrentPrice = currentPriceToSet => {
+    setCurrentFloorPrice(floorPrices[currentPriceToSet]);
     setCurrentPriceTotal(publicPrices[currentPriceToSet]);
     setCurrentPrice(currentPriceToSet);
     togglePriceModal(true);
@@ -261,6 +277,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
               placeholder="Precios especiales"
               mode="multiple"
               tokenSeparators={[',']}
+              value={Object.keys(prices).filter(price => prices[price])}
               onSelect={handleSetCurrentPrice}
               onDeselect={onPriceDeselect}
             >
@@ -289,6 +306,8 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         visible={showPriceModal}
         currentPrice={currentPrice}
         currentPriceTotal={currentPriceTotal}
+        currentFloorPrice={currentFloorPrice}
+        currentPublicPrice={publicPrices[currentPrice]}
         setCurrentPriceTotal={setCurrentPriceTotal}
         onPriceUpdate={onPriceUpdate}
         togglePriceModal={togglePriceModal}

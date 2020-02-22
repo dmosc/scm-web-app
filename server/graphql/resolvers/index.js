@@ -33,11 +33,15 @@ import postSubscriptions from './post/subscriptions';
 import messageMutations from './message/mutations';
 import messageQueries from './message/queries';
 import messageSubscriptions from './message/subscriptions';
-// Turn
 
+// Turn
 import turnMutations from './turn/mutations';
 import turnQueries from './turn/queries';
 import turnSubscriptions from './turn/subscriptions';
+
+// Price request
+import priceRequestMutations from './price-request/mutations';
+import priceRequestQueries from './price-request/queries';
 
 // AWS Stuff
 import uploaders from './aws/uploaders';
@@ -51,7 +55,8 @@ const resolvers = {
     ...rockQueries,
     ...postQueries,
     ...messageQueries,
-    ...turnQueries
+    ...turnQueries,
+    ...priceRequestQueries
   },
   Mutation: {
     ...userMutations,
@@ -63,6 +68,7 @@ const resolvers = {
     ...postMutations,
     ...messageMutations,
     ...turnMutations,
+    ...priceRequestMutations,
     ...uploaders // AWS
   },
   Subscription: {

@@ -14,17 +14,16 @@ const rockMutations = {
     }
   }),
   rockEdit: authenticated(async (_, args) => {
-    try {
-      const rock = await Rock.findOneAndUpdate(
-        { _id: args.rock.id },
-        { ...args.rock },
-        { new: true }
-      );
+    const rock = await Rock.findOne({ _id: args.rock.id });
 
-      return rock;
-    } catch (e) {
-      return e;
-    }
+    Object.keys(args.rock).forEach(field => {
+      rock[field] = args.rock[field];
+    });
+
+    // EDIT MUST USE .save() OPERATION TO RUN
+    // MODEL VALIDATIONS CORRECTLY. PLEASE AVOID
+    // findOneAndUpdate or similars
+    return rock.save();
   })
 };
 
