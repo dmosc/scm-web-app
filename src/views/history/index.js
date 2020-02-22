@@ -187,7 +187,7 @@ const History = ({ client }) => {
       title: 'Subtotal',
       dataIndex: 'subtotal',
       key: 'subtotal',
-      width: 100,
+      width: 120,
       fixed: 'right',
       render: subtotal => <Tag>{`$${subtotal.toFixed(2)}`}</Tag>
     },
@@ -195,7 +195,7 @@ const History = ({ client }) => {
       title: 'Impuesto',
       dataIndex: 'tax',
       key: 'tax',
-      width: 100,
+      width: 120,
       fixed: 'right',
       render: tax => <Tag>{`$${tax.toFixed(2)}`}</Tag>
     },
@@ -203,7 +203,7 @@ const History = ({ client }) => {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
-      width: 100,
+      width: 120,
       fixed: 'right',
       render: total => <Tag>{`$${total.toFixed(2)}`}</Tag>
     }

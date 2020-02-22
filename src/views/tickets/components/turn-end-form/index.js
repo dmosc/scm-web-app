@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withApollo } from 'react-apollo';
 import { Form, Drawer, Collapse, Button, Tag, Typography, Row, Icon, notification } from 'antd';
+import periods from 'utils/enums/periods';
 import { END_TURN } from './graphql/mutations';
 import { GET_TURN_SUMMARY } from './graphql/queries';
 import { CollapseContainer, Column, ColumnTitle } from './elements';
@@ -83,7 +84,7 @@ class TurnEndForm extends Component {
           <Title>{date.toLocaleTimeString()}</Title>
         </Form.Item>
         <Form.Item>
-          <Tag color="#faad14">{turnActive.period}</Tag>
+          <Tag color="#faad14">{periods[turnActive.period]}</Tag>
           <Button block icon="pie-chart" onClick={this.getSummary}>
             {(loading && 'Espere..') || 'Resumen'}
           </Button>

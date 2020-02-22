@@ -38,6 +38,8 @@ type Query {
   # Rock
   rock(id: ID!): Rock
   rocks(filters: RockFilters!): [Rock!]!
+  rockSalesReport(filters: RockSalesReportFilters!): RockSalesReport!
+  rockMonthSalesReport(filters: RockSalesReportFilters!): RockMonthSalesReport!
   # Post
   post(id: ID!): Post
   posts(filters: PostFilters!): [Post!]!
@@ -91,7 +93,6 @@ type Mutation {
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
-
 }
 
 type Subscription {

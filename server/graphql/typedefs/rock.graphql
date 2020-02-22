@@ -7,6 +7,34 @@ type Rock {
   color: String!
 }
 
+type RockSalesReport {
+  rocks: [RockSalesSummary!]!
+  total: Float!
+}
+
+type RockSalesSummary {
+  rock: Rock!
+  tickets: [Ticket!]!
+  total: Float!
+}
+
+type RockMonthSalesReport {
+  monthSummary: [RockMonthSalesSummary!]!
+}
+
+type RockMonthSalesSummary {
+  month: Month!
+  rocks: [RockMonthSummary!]!
+  total: Float!
+}
+
+type RockMonthSummary {
+  name: String!
+  price: Float!
+  color: String!
+  total: Float!
+}
+
 # Inputs
 input RockInput {
   name: String!
@@ -25,4 +53,11 @@ input RockEditInput {
 
 input RockFilters {
   limit: Int
+}
+
+input RockSalesReportFilters {
+  rocks: [ID]!
+  start: Date
+  end: Date
+  type: Boolean
 }

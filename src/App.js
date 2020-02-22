@@ -50,6 +50,12 @@ const Products = Loadable({
 });
 
 /* webpackChunkName: "History" */
+const Reports = Loadable({
+  loader: () => import('./views/reports'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "History" */
 const History = Loadable({
   loader: () => import('./views/history'),
   loading: TopBarProgress
@@ -82,23 +88,24 @@ const App = ({
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
           {(isAdmin || isCashier || isAccountant) && (
-            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/dashboard" component={Dashboard}/>
           )}
-          {(isAdmin || isCashier) && <Route path="/boletas" component={Tickets} />}
-          {(isAdmin || isCashier) && <Route path="/registros/clientes" component={Clients} />}
+          {(isAdmin || isCashier) && <Route path="/boletas" component={Tickets}/>}
+          {(isAdmin || isCashier) && <Route path="/registros/clientes" component={Clients}/>}
           {(isAdmin || isAccountant) && (
             <Route path="/registros/clients/solicitudes-de-precio" component={PriceRequests} />
           )}
-          {(isAdmin || isCashier) && <Route path="/registros/camiones" component={Trucks} />}
-          {isAdmin && <Route path="/registros/productos" component={Products} />}
-          {isAdmin && <Route path="/registros/usuarios" component={Users} />}
-          {isAdmin && <Route path="/historial" component={History} />}
+          {(isAdmin || isCashier) && <Route path="/registros/camiones" component={Trucks}/>}
+          {isAdmin && <Route path="/registros/productos" component={Products}/>}
+          {isAdmin && <Route path="/registros/usuarios" component={Users}/>}
+          {isAdmin && <Route path="/historial" component={History}/>}
+          {isAdmin && <Route path="/reportes" component={Reports}/>}
           {(isAdmin || isCashier || isGuard || isAccountant) && (
-            <Route path="/mensajes" component={Messages} />
+            <Route path="/mensajes" component={Messages}/>
           )}
-          {(isAdmin || isGuard) && <Route path="/accesos" component={Access} />}
-          {isGuard && <Redirect to="/accesos" />}
-          {!isGuard && <Redirect to="/dashboard" />}
+          {(isAdmin || isGuard) && <Route path="/accesos" component={Access}/>}
+          {isGuard && <Redirect to="/accesos"/>}
+          {!isGuard && <Redirect to="/dashboard"/>}
         </Switch>
       </Layout>
     </Switch>
