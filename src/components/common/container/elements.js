@@ -4,8 +4,8 @@ import { Layout as Layer } from 'antd';
 const { Content } = Layer;
 
 const ContentContainer = styled(Content)`
-  margin: 30px;
-  padding: 30px;
+  margin: ${props => props.margin ?? '30px'};
+  padding: ${props => props.padding ?? '30px'};
   border-radius: 5px;
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
   background-color: ${props => (props.background ? props.background : '#ffffff')};

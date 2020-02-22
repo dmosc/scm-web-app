@@ -61,9 +61,9 @@ class TurnInitForm extends Component {
         <Form.Item>
           {form.getFieldDecorator('period')(
             <Select showSearch placeholder="Tipo de periodo">
-              {periods.map(period => (
-                <Option key={period} value={period}>
-                  {`${period}`}
+              {Object.entries(periods).map(period => (
+                <Option key={period[0]} value={period[0]}>
+                  {`${period[1]}`}
                 </Option>
               ))}
             </Select>

@@ -103,6 +103,14 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
           </SubMenu>
         )}
         {isAdmin && (
+          <Item key="reportes">
+            <Link to="/reportes">
+              <Icon type="line-chart"/>
+              <span>Reportes</span>
+            </Link>
+          </Item>
+        )}
+        {isAdmin && (
           <Item key="historial">
             <Link to="/historial">
               <Icon type="history" />
@@ -113,8 +121,8 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
         {(isAdmin || isCashier || isGuard || isAccountant) && (
           <Item key="mensajes">
             <Link to="/mensajes">
-              <Icon type="message" />
-              <span>Mensages</span>
+              <Icon type="message"/>
+              <span>Mensajes</span>
             </Link>
           </Item>
         )}
