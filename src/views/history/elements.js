@@ -24,7 +24,7 @@ const Card = styled(CommonCard)`
   .ant-card {
     height: 100% !important;
   }
-  
+
   overflow: scroll;
 
   .ant-pagination {

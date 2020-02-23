@@ -93,7 +93,9 @@ const ticketMutations = {
 
     const client = await Client.findById(newTicket.client);
     const product = await Rock.findById(newTicket.product);
-    const truck = await Truck.findById(newTicket.truck);
+    const truck = await Truck.findOneAndUpdate({ _id: newTicket.truck }, {
+      $addToSet: { drivers: newTicket.driver.toUpperCase() }
+    }, { new: true });
 
     const folio = await Folio.findOneAndUpdate(
       { name: newTicket.bill ? 'A' : 'B' },
@@ -102,16 +104,11 @@ const ticketMutations = {
     ).select('name count');
 
     newTicket.folio = folio.name.toString() + folio.count.toString();
-
-    if (truck.drivers.every(driver => driver.toUpperCase() !== newTicket.driver))
-      truck.drivers.push(newTicket.driver);
-
     newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(2);
 
     const price = client.prices[product.name] ? client.prices[product.name] : product.price;
 
     newTicket.tax = newTicket.bill ? newTicket.totalWeight * price * TAX : 0;
-
     newTicket.totalPrice = (newTicket.totalWeight * price + newTicket.tax).toFixed(2);
 
     if ((newTicket.credit && credit) || (newTicket.credit && !credit))
@@ -129,7 +126,6 @@ const ticketMutations = {
 
       await newTicket.save();
       await client.save();
-      await truck.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
 
@@ -137,6 +133,7 @@ const ticketMutations = {
 
       return ticket;
     } catch (e) {
+      console.log(e);
       return new ApolloError(e);
     }
   })
