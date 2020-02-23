@@ -83,27 +83,27 @@ const App = ({
 
   return (
     <Switch>
-      {!token && <Route path="/auth" render={() => <Auth />} />}
-      {!token && <Redirect from={`${pathname}`} to="/auth" />}
+      {!token && <Route exact path="/auth" render={() => <Auth/>}/>}
+      {!token && <Redirect from={`${pathname}`} to="/auth"/>}
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
           {(isAdmin || isCashier || isAccountant) && (
-            <Route path="/dashboard" component={Dashboard}/>
+            <Route exact path="/dashboard" component={Dashboard}/>
           )}
-          {(isAdmin || isCashier) && <Route path="/boletas" component={Tickets}/>}
-          {(isAdmin || isCashier) && <Route path="/registros/clientes" component={Clients}/>}
+          {(isAdmin || isCashier) && <Route exact path="/boletas" component={Tickets}/>}
+          {(isAdmin || isCashier) && <Route exact path="/registros/clientes" component={Clients}/>}
           {(isAdmin || isAccountant) && (
-            <Route path="/registros/clients/solicitudes-de-precio" component={PriceRequests} />
+            <Route exact path="/registros/peticiones-clientes" component={PriceRequests}/>
           )}
-          {(isAdmin || isCashier) && <Route path="/registros/camiones" component={Trucks}/>}
-          {isAdmin && <Route path="/registros/productos" component={Products}/>}
-          {isAdmin && <Route path="/registros/usuarios" component={Users}/>}
-          {isAdmin && <Route path="/historial" component={History}/>}
-          {isAdmin && <Route path="/reportes" component={Reports}/>}
+          {(isAdmin || isCashier) && <Route exact path="/registros/camiones" component={Trucks}/>}
+          {isAdmin && <Route exact path="/registros/productos" component={Products}/>}
+          {isAdmin && <Route exact path="/registros/usuarios" component={Users}/>}
+          {isAdmin && <Route exact path="/historial" component={History}/>}
+          {isAdmin && <Route exact path="/reportes" component={Reports}/>}
           {(isAdmin || isCashier || isGuard || isAccountant) && (
-            <Route path="/mensajes" component={Messages}/>
+            <Route exact path="/mensajes" component={Messages}/>
           )}
-          {(isAdmin || isGuard) && <Route path="/accesos" component={Access}/>}
+          {(isAdmin || isGuard) && <Route exact path="/accesos" component={Access}/>}
           {isGuard && <Redirect to="/accesos"/>}
           {!isGuard && <Redirect to="/dashboard"/>}
         </Switch>

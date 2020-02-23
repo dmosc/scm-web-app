@@ -228,7 +228,8 @@ const ProductSales = ({ client, filters: globalFilters }) => {
                   <Tooltip/>
                   <Legend/>
                   {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
-                    <Line type="monotone" dataKey={name} stroke={color}/>
+                    <Line type="monotone" animationEasing="linear" strokeWidth={3} key={name} dataKey={name}
+                          stroke={color}/>
                   ))}
                 </LineChart>
               </ResponsiveContainer>

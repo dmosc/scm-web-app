@@ -89,7 +89,8 @@ type Mutation {
   turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER])
   # Price Request
   priceRequest(priceRequest: PriceRequestInput!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT])
-  priceRequestEdit(priceRequest: PriceRequestEditInput!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT])
+  priceRequestEdit(priceRequest: PriceRequestEditInput!): PriceRequest
+  @auth(roles: [ADMIN, ACCOUNTANT])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

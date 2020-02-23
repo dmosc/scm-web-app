@@ -93,9 +93,13 @@ const ticketMutations = {
 
     const client = await Client.findById(newTicket.client);
     const product = await Rock.findById(newTicket.product);
-    const truck = await Truck.findOneAndUpdate({ _id: newTicket.truck }, {
-      $addToSet: { drivers: newTicket.driver.toUpperCase() }
-    }, { new: true });
+    const truck = await Truck.findOneAndUpdate(
+      { _id: newTicket.truck },
+      {
+        $addToSet: { drivers: newTicket.driver.toUpperCase() }
+      },
+      { new: true }
+    );
 
     const folio = await Folio.findOneAndUpdate(
       { name: newTicket.bill ? 'A' : 'B' },

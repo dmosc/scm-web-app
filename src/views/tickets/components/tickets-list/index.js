@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { graphql } from '@apollo/react-hoc';
-import { Collapse } from 'antd';
+import { Collapse, Typography } from 'antd';
 import TicketPanel from './components/ticket-panel';
 import { LoadingBar, LoadingBarContainer } from './elements';
 import { GET_TICKETS } from '../../graphql/queries';
 import { ACTIVE_TICKETS, TICKET_UPDATE } from './graphql/subscriptions';
 
 const { Panel } = Collapse;
+const { Title } = Typography;
 
 class TicketList extends Component {
   componentDidMount = () => {
@@ -62,41 +63,41 @@ class TicketList extends Component {
   render() {
     const { turnActive, setCurrent, printTicket, loading, error, data, refetch } = this.props;
 
-    if (loading) return <div>Cargando boletas...</div>;
-    if (error) return <div>¡No se han podido cargar las boletas!</div>;
+    if (loading) return <Title level={4}>Cargando boletas...</Title>;
+    if (error) return <Title level={4}>¡No se han podido cargar las boletas!</Title>;
 
     const { tickets } = data;
 
-    return tickets?.length === 0 ? (
-      <div>No hay tickets disponibles</div>
+    const filteredTickets = tickets?.filter(ticket => !ticket.turn);
+
+    return filteredTickets?.length === 0 ? (
+      <Title level={4}>No hay tickets disponibles...</Title>
     ) : (
       <Collapse accordion>
-        {tickets
-          ?.filter(ticket => !ticket.turn)
-          .map(ticket => (
-            <Panel
-              disabled={!turnActive}
-              key={ticket.id}
-              header={`${ticket.truck.plates}`}
-              extra={
-                <LoadingBarContainer>
-                  <LoadingBar
-                    disabled={!turnActive}
-                    totalPrice={ticket.totalPrice}
-                    outTruckImage={ticket.outTruckImage}
-                  />
-                </LoadingBarContainer>
-              }
-            >
-              <TicketPanel
-                ticket={ticket}
-                turn={turnActive}
-                refetch={refetch}
-                setCurrent={setCurrent}
-                printTicket={printTicket}
-              />
-            </Panel>
-          ))}
+        {filteredTickets?.map(ticket => (
+          <Panel
+            disabled={!turnActive}
+            key={ticket.id}
+            header={`${ticket.truck.plates}`}
+            extra={
+              <LoadingBarContainer>
+                <LoadingBar
+                  disabled={!turnActive}
+                  totalPrice={ticket.totalPrice}
+                  outTruckImage={ticket.outTruckImage}
+                />
+              </LoadingBarContainer>
+            }
+          >
+            <TicketPanel
+              ticket={ticket}
+              turn={turnActive}
+              refetch={refetch}
+              setCurrent={setCurrent}
+              printTicket={printTicket}
+            />
+          </Panel>
+        ))}
       </Collapse>
     );
   }

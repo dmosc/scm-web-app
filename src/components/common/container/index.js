@@ -34,7 +34,7 @@ const Container = ({
 };
 
 Container.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.any.isRequired,
   title: PropTypes.string,
   background: PropTypes.string,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

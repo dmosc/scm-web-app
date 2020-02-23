@@ -62,10 +62,10 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               )}
               {(isAdmin || isAccountant) && (
-                <Item key="registros/clients/solicitudes-de-precio">
-                  <Link to="/registros/clients/solicitudes-de-precio">
-                    <Icon type="form" />
-                    Solicitudes de precios
+                <Item key="registros/peticiones-clientes">
+                  <Link to="/registros/peticiones-clientes">
+                    <Icon type="form"/>
+                    Peticiones
                   </Link>
                 </Item>
               )}
