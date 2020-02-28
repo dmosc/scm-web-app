@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { graphql } from '@apollo/react-hoc';
 import { List } from 'antd';
 import { ListContainer } from './elements';
@@ -61,6 +62,10 @@ class TrucksList extends Component {
     );
   }
 }
+
+TrucksList.propTypes = {
+  data: PropTypes.object.isRequired
+};
 
 export default graphql(GET_ACTIVE_TICKETS, { options: () => ({ variables: { filters: {} } }) })(
   TrucksList

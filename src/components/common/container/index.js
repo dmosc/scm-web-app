@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import { ContentContainer, TitleContainer } from './elements';
 
 const Container = ({
-                     children,
-                     title,
-                     background,
-                     width,
-                     height,
-                     margin,
-                     padding,
-                     display,
-                     direction,
-                     justify,
-                     align
-                   }) => {
+  children,
+  title,
+  background,
+  width,
+  height,
+  margin,
+  padding,
+  display,
+  direction,
+  justify,
+  align
+}) => {
   return (
     <ContentContainer
       background={background}

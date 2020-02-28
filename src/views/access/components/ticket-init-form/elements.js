@@ -1,5 +1,13 @@
 import styled from 'styled-components';
-import { Input } from 'antd';
+import { Input, List } from 'antd';
+
+const ProductList = styled(List)`
+  ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+  }
+`;
 
 const FormContainer = styled.div`
   overflow-y: scroll;
@@ -32,7 +40,7 @@ const ProductContainer = styled.div`
   width: 100%;
   height: fit-content;
   text-align: center;
-  padding: 5px;
+  padding: 10px 5px;
   border-radius: 5px;
   color: #ffffff;
   font-weight: 600;
@@ -52,4 +60,11 @@ const PlatesInput = styled(Input)`
   text-transform: uppercase;
 `;
 
-export { FormContainer, PreviewImageContainer, ImageContainer, ProductContainer, PlatesInput };
+export {
+  FormContainer,
+  PreviewImageContainer,
+  ImageContainer,
+  ProductContainer,
+  PlatesInput,
+  ProductList
+};

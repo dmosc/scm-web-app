@@ -25,7 +25,7 @@ const ContentContainer = styled(Content)`
   height: ${props => (props.height ? props.height : 'fit-content')}
   max-height: ${props => (props.height ? props.height : null)}
 
-  :hover {
+  &:hover {
     box-shadow: 0 0 3rem 0 rgba(136, 152, 170, 0.2);
   }
 `;

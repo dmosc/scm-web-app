@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import Webcam from 'react-webcam';
 import { Form, Row, Col, Button, Input, Icon, notification, List } from 'antd';
-import ListContainer from 'components/common/list';
-import { FormContainer, ImageContainer, PreviewImageContainer, ProductContainer } from './elements';
+import {
+  FormContainer,
+  ImageContainer,
+  PreviewImageContainer,
+  ProductContainer,
+  ProductList
+} from './elements';
 import { REGISTER_TICKET_INIT } from './graphql/mutations';
 import { GET_ROCKS, GET_TRUCK } from './graphql/queries';
 
@@ -177,30 +183,28 @@ class TicketInit extends Component {
                       prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
                       value={plates || ''}
                       placeholder="Placas"
-                      onChange={({ target: { value: plates } }) => this.setPlates(plates)}
+                      onChange={({ target: { value } }) => this.setPlates(value)}
                     />
                   </Form.Item>
                   <Form.Item label="Producto">
-                    <ListContainer height="53vh">
-                      <List
-                        size="small"
-                        dataSource={products}
-                        renderItem={product => (
-                          <List.Item>
-                            <ProductContainer
-                              color={
-                                product.id === currentProduct?.id || !currentProduct
-                                  ? product.color
-                                  : '#D9D9D9'
-                              }
-                              onClick={() => this.setCurrentProduct(product)}
-                            >
-                              {product.name}
-                            </ProductContainer>
-                          </List.Item>
-                        )}
-                      />
-                    </ListContainer>
+                    <ProductList
+                      size="small"
+                      dataSource={products}
+                      renderItem={product => (
+                        <List.Item>
+                          <ProductContainer
+                            color={
+                              product.id === currentProduct?.id || !currentProduct
+                                ? product.color
+                                : '#D9D9D9'
+                            }
+                            onClick={() => this.setCurrentProduct(product)}
+                          >
+                            {product.name}
+                          </ProductContainer>
+                        </List.Item>
+                      )}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -211,5 +215,10 @@ class TicketInit extends Component {
     );
   }
 }
+
+TicketInit.propTypes = {
+  client: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
+};
 
 export default withApollo(TicketInit);

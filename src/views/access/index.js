@@ -13,10 +13,10 @@ const Access = () => {
 
   return (
     <AccessContainer>
-      <Container title="Ingreso de camión" width="60%">
+      <Container title="Ingreso de camión" margin="20px" width="60%">
         <TicketInitForm user={user} />
       </Container>
-      <Container title="Camiones activos" width="40%">
+      <Container title="Camiones activos" margin="20px" width="40%">
         <TrucksList />
       </Container>
     </AccessContainer>
