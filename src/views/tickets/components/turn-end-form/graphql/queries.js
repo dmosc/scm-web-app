@@ -25,14 +25,14 @@ const GET_TURN_SUMMARY = gql`
                     totalPrice
                     credit
                     inTruckImage
-          outTruckImage
+                    outTruckImage
+                }
+            }
+            upfront
+            credit
+            total
         }
-      }
-      upfront
-      credit
-      total
     }
-  }
 `;
 
 export { GET_REPORT, GET_TURN_SUMMARY };

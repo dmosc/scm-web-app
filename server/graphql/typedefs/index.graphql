@@ -91,7 +91,7 @@ type Mutation {
   # Price Request
   priceRequest(priceRequest: PriceRequestInput!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT])
   priceRequestEdit(priceRequest: PriceRequestEditInput!): PriceRequest
-  @auth(roles: [ADMIN, ACCOUNTANT])
+    @auth(roles: [ADMIN, ACCOUNTANT])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

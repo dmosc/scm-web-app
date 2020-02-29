@@ -26,7 +26,9 @@ const turnMutations = {
   }),
   turnEnd: authenticated(async (_, args, { pubsub, req: { userRequesting } }) => {
     try {
-      const { turn: { id } } = args;
+      const {
+        turn: { id }
+      } = args;
       const end = new Date();
       const offset = end.getTimezoneOffset() / 60;
 
@@ -38,7 +40,9 @@ const turnMutations = {
 
       if (!turn) return new Error('¡No ha sido posible encontrar el turno!');
 
-      const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate('client truck product');
+      const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate(
+        'client truck product'
+      );
 
       const ticketsToCreate = [];
       const ticketsToDelete = [];
@@ -78,7 +82,10 @@ const turnMutations = {
         ticketsToDelete.push(oldTicket);
       }
 
-      const [ticketsCreated, ticketsDeleted] = await Promise.all([Promise.all(ticketsToCreate), Promise.all(ticketsToDelete)]);
+      const [ticketsCreated, ticketsDeleted] = await Promise.all([
+        Promise.all(ticketsToCreate),
+        Promise.all(ticketsToDelete)
+      ]);
 
       for (let i = 0; i < ticketsDeleted.length; i++)
         if (!ticketsDeleted[i]) ticketsToDestroy.push(ticketsCreated[i].destroy());
