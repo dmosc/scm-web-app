@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { withApollo } from 'react-apollo';
 import { Form, Drawer, Collapse, Button, Tag, Typography, Row, Icon, notification } from 'antd';
 import periods from 'utils/enums/periods';
-import { END_TURN } from './graphql/mutations';
-import { GET_TURN_SUMMARY } from './graphql/queries';
 import { CollapseContainer, Column, ColumnTitle } from './elements';
+import { END_TURN } from './graphql/mutations';
+import { GET_REPORT, GET_TURN_SUMMARY } from './graphql/queries';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
@@ -12,6 +12,7 @@ const { Panel } = Collapse;
 class TurnEndForm extends Component {
   state = {
     loading: false,
+    downloading: false,
     showSummary: false,
     summary: null,
     ticketCount: 0,
@@ -67,11 +68,37 @@ class TurnEndForm extends Component {
     });
   };
 
+  downloadReport = async () => {
+    const { turnActive, client } = this.props;
+    const { date } = this.state;
+    this.setState({ downloading: true });
+
+    const {
+      data: { turnSummaryXLS }
+    } = await client.query({ query: GET_REPORT });
+
+    const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
+
+    const link = document.createElement('a');
+    link.href = encodeURI(turnSummaryXLS);
+    link.download = `TURNO-${
+      periods[turnActive.period]
+    }-${start.toISOString()}-${date.toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    this.setState({ downloading: false });
+  };
+
   tick = () => this.setState({ date: new Date() });
 
   render() {
     const { turnActive } = this.props;
-    const { loading, showSummary, summary, ticketCount, date } = this.state;
+    const { loading, downloading, showSummary, summary, ticketCount, date } = this.state;
 
     const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
 
@@ -172,9 +199,19 @@ class TurnEndForm extends Component {
             </Row>
             <Row style={{ margin: 10 }} type="flex" justify="end" align="middle">
               <Button
+                type="primary"
+                icon="file-excel"
+                style={{ margin: '0px 5px' }}
+                loading={downloading}
+                onClick={this.downloadReport}
+              >
+                {(loading && 'Espere..') || 'Resumen'}
+              </Button>
+              <Button
                 type="danger"
                 htmlType="submit"
                 icon="stop"
+                style={{ margin: '0px 5px' }}
                 loading={loading}
                 onClick={this.handleSubmit}
               >

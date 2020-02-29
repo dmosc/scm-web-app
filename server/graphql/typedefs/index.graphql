@@ -51,6 +51,7 @@ type Query {
   turns(filters: TurnFilters!): [Turn!]!
   turnActive: Turn
   turnSummary: TurnSummary! @auth(roles: [ADMIN, CASHIER])
+  turnSummaryXLS: String! @auth(roles: [ADMIN, CASHIER])
   # Price request
   priceRequest(id: ID!): PriceRequest
   priceRequests(filters: PriceRequestFilters!): [PriceRequest!]!
