@@ -40,7 +40,7 @@ const ProductContainer = styled.div`
   width: 100%;
   height: fit-content;
   text-align: center;
-  padding: 10px 5px;
+  padding: 20px 10px;
   border-radius: 5px;
   color: #ffffff;
   font-weight: 600;
