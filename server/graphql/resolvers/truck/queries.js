@@ -1,5 +1,9 @@
+/* eslint-disable new-cap */
+import QRCode from 'qrcode';
+import aesjs from 'aes-js';
 import { Truck } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
+import { AES_SECRET } from '../../../config';
 
 const truckQueries = {
   truck: authenticated(async (_, args) => {
@@ -29,6 +33,37 @@ const truckQueries = {
     if (!trucks) throw new Error('¡No ha sido posible cargar los camiones!');
 
     return trucks;
+  }),
+  truckQRCode: authenticated(async (_, { id }) => {
+    const { plates } = await Truck.findOne({ _id: id });
+
+    const bufferedKey = Buffer.from(AES_SECRET);
+    const platesBytes = aesjs.utils.utf8.toBytes(plates);
+
+    const aesCtr = new aesjs.ModeOfOperation.ctr(bufferedKey);
+
+    const encryptedBytes = aesCtr.encrypt(platesBytes);
+    const encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+
+    // The \u0017 is an F10
+    // Frontend relies on this key to active the hidden input
+    // with the ciphered plates
+    const qr = await QRCode.toDataURL(`\u0017\u0017\u0017\u0017${encryptedHex}`, {
+      width: 1200,
+      version: 4
+    });
+
+    return qr;
+  }),
+  truckDecipherPlates: authenticated(async (_, { cipheredPlates }) => {
+    const bufferedKey = Buffer.from(AES_SECRET);
+    const aesCtr = new aesjs.ModeOfOperation.ctr(bufferedKey);
+
+    const encryptedBytes = aesjs.utils.hex.toBytes(cipheredPlates);
+    const decryptedBytes = aesCtr.decrypt(encryptedBytes);
+    const decipheredPlates = aesjs.utils.utf8.fromBytes(decryptedBytes);
+
+    return decipheredPlates;
   })
 };
 

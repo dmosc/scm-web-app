@@ -17,4 +17,10 @@ const GET_TRUCKS = gql`
   }
 `;
 
-export { GET_TRUCKS };
+const GET_ENCRYPTED_PLATES = gql`
+  query truckQRCode($id: ID) {
+    truckQRCode(id: $id)
+  }
+`;
+
+export { GET_TRUCKS, GET_ENCRYPTED_PLATES };

@@ -60,11 +60,19 @@ const PlatesInput = styled(Input)`
   text-transform: uppercase;
 `;
 
+const HiddenForm = styled.form`
+  position: fixed;
+  z-index: -100;
+  top: 0;
+  left: 0;
+`;
+
 export {
   FormContainer,
   PreviewImageContainer,
   ImageContainer,
   ProductContainer,
   PlatesInput,
-  ProductList
+  ProductList,
+  HiddenForm
 };
