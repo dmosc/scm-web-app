@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from 'config';
 import { PubSub } from 'apollo-server';
+import { JWT_SECRET } from '../../config';
 
 const pubsub = new PubSub();
 

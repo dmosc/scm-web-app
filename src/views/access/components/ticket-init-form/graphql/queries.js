@@ -19,4 +19,10 @@ const GET_TRUCK = gql`
   }
 `;
 
-export { GET_ROCKS, GET_TRUCK };
+const DECIPHER_PLATES = gql`
+  query truckDecipherPlates($cipheredPlates: String!) {
+    truckDecipherPlates(cipheredPlates: $cipheredPlates)
+  }
+`;
+
+export { GET_ROCKS, GET_TRUCK, DECIPHER_PLATES };

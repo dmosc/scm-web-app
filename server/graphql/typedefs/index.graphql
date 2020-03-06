@@ -34,6 +34,8 @@ type Query {
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
   # Truck
   truck(id: ID, plates: String): Truck
+  truckQRCode(id: ID): String!
+  truckDecipherPlates(cipheredPlates: String!): String!
   trucks(filters: TruckFilters!): [Truck!]!
   # Rock
   rock(id: ID!): Rock

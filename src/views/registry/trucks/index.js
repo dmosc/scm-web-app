@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import print from 'print-js';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Form, Table, notification, Button, Tag, Modal, Row } from 'antd';
-import { GET_TRUCKS } from './graphql/queries';
+import { GET_TRUCKS, GET_ENCRYPTED_PLATES } from './graphql/queries';
 import { DELETE_TRUCK } from './graphql/mutations';
 import { TableContainer, Card } from './elements';
 import Title from './components/title';
@@ -74,6 +75,22 @@ const Trucks = ({ client }) => {
     });
   };
 
+  const getTruckQRCode = async truck => {
+    const {
+      data: { truckQRCode }
+    } = await client.query({
+      query: GET_ENCRYPTED_PLATES,
+      variables: { id: truck.id }
+    });
+
+    print({
+      printable: truckQRCode,
+      type: 'image',
+      header: truck.plates,
+      imageStyle: 'width: 300px'
+    });
+  };
+
   const onTruckEdit = truck => {
     const oldTrucks = [...trucks];
 
@@ -134,6 +151,13 @@ const Trucks = ({ client }) => {
             onClick={() => setCurrentTruck(row)}
             type="default"
             icon="edit"
+            size="small"
+          />
+          <Button
+            style={{ marginRight: 5 }}
+            onClick={() => getTruckQRCode(row)}
+            type="default"
+            icon="qrcode"
             size="small"
           />
           <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small" />

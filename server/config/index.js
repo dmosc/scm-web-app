@@ -24,6 +24,7 @@ const { MONGO_DB_LOCAL_URI } = process.env;
 const { S3_BUCKET } = process.env;
 const { S3_REGION } = process.env;
 const { JWT_SECRET } = process.env;
+const { AES_SECRET } = process.env;
 
 export {
   ENV,
@@ -33,5 +34,6 @@ export {
   MONGO_DB_LOCAL_URI,
   S3_BUCKET,
   S3_REGION,
-  JWT_SECRET
+  JWT_SECRET,
+  AES_SECRET
 };
