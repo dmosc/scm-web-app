@@ -3,7 +3,7 @@ import { graphql } from '@apollo/react-hoc';
 import { Collapse, Typography } from 'antd';
 import TicketPanel from './components/ticket-panel';
 import { LoadingBar, LoadingBarContainer } from './elements';
-import { GET_TICKETS } from '../../graphql/queries';
+import { GET_TICKETS } from './graphql/queries';
 import { ACTIVE_TICKETS, TICKET_UPDATE } from './graphql/subscriptions';
 
 const { Panel } = Collapse;

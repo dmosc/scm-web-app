@@ -25,6 +25,7 @@ class TicketPanel extends Component {
 
   render() {
     const { ticket, setCurrent, printTicket } = this.props;
+    console.log(ticket);
 
     return (
       <>
@@ -63,7 +64,7 @@ class TicketPanel extends Component {
                 )}
               </td>
               <td>
-                {ticket.driver && (
+                {ticket.product && (
                   <>
                     <b>TIPO</b>
                     {`: ${ticket.product.name}`}
