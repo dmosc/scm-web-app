@@ -21,7 +21,7 @@ directive @auth(roles: [Role]) on FIELD_DEFINITION
 
 type Query {
   # User
-  user(id: ID!): User # @auth(roles: [ADMIN, COLLABORATOR, ARTISAN])
+  user(id: ID!): User
   users(filters: UserFilters!): [User!]!
   # Client
   client(id: ID!): Client
