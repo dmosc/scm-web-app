@@ -13,6 +13,7 @@ const Ticket = new Schema({
   totalPrice: { type: Number, required: false },
   credit: { type: Boolean, required: false },
   date: { type: Date, required: false, default: Date.now },
+  load: { type: Date, required: false },
   inTruckImage: { type: String, required: false },
   outTruckImage: { type: String, required: false },
   bill: { type: Boolean, required: true, default: false },

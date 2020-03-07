@@ -9,7 +9,7 @@ const { Item, SubMenu, ItemGroup } = Menu;
 const { Sider } = Layer;
 
 const Sidebar = ({ history, collapsed, onCollapse }) => {
-  const { isAdmin, isCashier, isGuard, isAccountant } = useAuth();
+  const { isAdmin, isCashier, isLoader, isGuard, isAccountant } = useAuth();
 
   return (
     <Sider theme="light" collapsible collapsed={collapsed} onCollapse={onCollapse}>
@@ -32,6 +32,14 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             <Link to="/accesos">
               <Icon type="key" />
               <span>Accesos</span>
+            </Link>
+          </Item>
+        )}
+        {(isAdmin || isLoader) && (
+          <Item key="cargas">
+            <Link to="/cargas">
+              <Icon type="funnel-plot" />
+              <span>Cargas</span>
             </Link>
           </Item>
         )}
@@ -64,7 +72,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant) && (
                 <Item key="registros/peticiones-clientes">
                   <Link to="/registros/peticiones-clientes">
-                    <Icon type="form"/>
+                    <Icon type="form" />
                     Peticiones
                   </Link>
                 </Item>
@@ -105,7 +113,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
         {isAdmin && (
           <Item key="reportes">
             <Link to="/reportes">
-              <Icon type="line-chart"/>
+              <Icon type="line-chart" />
               <span>Reportes</span>
             </Link>
           </Item>
@@ -121,7 +129,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
         {(isAdmin || isCashier || isGuard || isAccountant) && (
           <Item key="mensajes">
             <Link to="/mensajes">
-              <Icon type="message"/>
+              <Icon type="message" />
               <span>Mensajes</span>
             </Link>
           </Item>

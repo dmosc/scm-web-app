@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost';
 
-const GET_ACTIVE_TICKETS = gql`
-  query activeTickets($filters: TicketFilters!) {
-    activeTickets(filters: $filters) {
+const GET_LOADED_TICKETS = gql`
+  query loadedTickets($filters: TicketFilters!) {
+    loadedTickets(filters: $filters) {
       id
       folio
       client {
@@ -12,10 +12,11 @@ const GET_ACTIVE_TICKETS = gql`
         plates
       }
       product {
+        id
         name
       }
     }
   }
 `;
 
-export { GET_ACTIVE_TICKETS };
+export { GET_LOADED_TICKETS };
