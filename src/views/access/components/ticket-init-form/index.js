@@ -34,7 +34,7 @@ const TicketInit = ({ client, user }) => {
     };
 
     const keyListener = event => {
-      if (event.keyCode === 121) {
+      if (event.keyCode === 123) {
         if (F10Counter === 3) {
           resetAndFocusHiddenInput();
         } else setF10Counter(F10Counter + 1);

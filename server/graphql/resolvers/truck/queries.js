@@ -45,10 +45,10 @@ const truckQueries = {
     const encryptedBytes = aesCtr.encrypt(platesBytes);
     const encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
 
-    // The \u0017 is an F10
+    // The \u0019 is an F12
     // Frontend relies on this key to active the hidden input
     // with the ciphered plates
-    const qr = await QRCode.toDataURL(`\u0017\u0017\u0017\u0017${encryptedHex}`, {
+    const qr = await QRCode.toDataURL(`\u0019\u0019\u0019\u0019${encryptedHex}`, {
       width: 1200,
       version: 4
     });
