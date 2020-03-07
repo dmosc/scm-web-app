@@ -16,6 +16,7 @@ enum Role {
   ADMIN
   CASHIER
   GUARD
+  LOADER
   ACCOUNTANT
   CLIENT
 }

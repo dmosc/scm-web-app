@@ -237,7 +237,9 @@ const ticketQueries = {
       firstRow.height = 20;
 
       const buffer = await workbook.xlsx.writeBuffer();
-      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString('base64')}`;
+      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+        'base64'
+      )}`;
     }
   )
 };

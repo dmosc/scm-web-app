@@ -1,3 +1,3 @@
-const roles = ['ADMIN', 'CASHIER', 'GUARD', 'ACCOUNTANT', 'CLIENT'];
+const roles = ['ADMIN', 'CASHIER', 'GUARD', 'LOADER', 'ACCOUNTANT', 'CLIENT'];
 
 export default roles;

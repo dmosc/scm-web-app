@@ -7,6 +7,12 @@ const ticketSubscriptions = {
   },
   activeTickets: {
     subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('ACTIVE_TICKETS')
+  },
+  notLoadedActiveTickets: {
+    subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NOT_LOADED_ACTIVE_TICKETS')
+  },
+  loadedTickets: {
+    subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('LOADED_TICKETS')
   }
 };
 
