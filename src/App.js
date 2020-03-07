@@ -73,39 +73,49 @@ const Access = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Load" */
+const Load = Loadable({
+  loader: () => import('./views/load'),
+  loading: TopBarProgress
+});
+
 const App = ({
   history: {
     location: { pathname }
   }
 }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const { isAdmin, isGuard, isCashier, isAccountant, token, user } = useAuth();
+  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, token, user } = useAuth();
+
+  if (isLoader && !collapsed) setCollapsed(true);
 
   return (
     <Switch>
-      {!token && <Route exact path="/auth" render={() => <Auth/>}/>}
-      {!token && <Redirect from={`${pathname}`} to="/auth"/>}
+      {!token && <Route exact path="/auth" render={() => <Auth />} />}
+      {!token && <Redirect from={`${pathname}`} to="/auth" />}
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
           {(isAdmin || isCashier || isAccountant) && (
-            <Route exact path="/dashboard" component={Dashboard}/>
+            <Route exact path="/dashboard" component={Dashboard} />
           )}
-          {(isAdmin || isCashier) && <Route exact path="/boletas" component={Tickets}/>}
-          {(isAdmin || isCashier) && <Route exact path="/registros/clientes" component={Clients}/>}
+          {(isAdmin || isCashier) && <Route exact path="/boletas" component={Tickets} />}
+          {(isAdmin || isCashier) && <Route exact path="/registros/clientes" component={Clients} />}
           {(isAdmin || isAccountant) && (
-            <Route exact path="/registros/peticiones-clientes" component={PriceRequests}/>
+            <Route exact path="/registros/peticiones-clientes" component={PriceRequests} />
           )}
-          {(isAdmin || isCashier) && <Route exact path="/registros/camiones" component={Trucks}/>}
-          {isAdmin && <Route exact path="/registros/productos" component={Products}/>}
-          {isAdmin && <Route exact path="/registros/usuarios" component={Users}/>}
-          {isAdmin && <Route exact path="/historial" component={History}/>}
-          {isAdmin && <Route exact path="/reportes" component={Reports}/>}
+          {(isAdmin || isCashier) && <Route exact path="/registros/camiones" component={Trucks} />}
+          {isAdmin && <Route exact path="/registros/productos" component={Products} />}
+          {isAdmin && <Route exact path="/registros/usuarios" component={Users} />}
+          {isAdmin && <Route exact path="/historial" component={History} />}
+          {isAdmin && <Route exact path="/reportes" component={Reports} />}
           {(isAdmin || isCashier || isGuard || isAccountant) && (
-            <Route exact path="/mensajes" component={Messages}/>
+            <Route exact path="/mensajes" component={Messages} />
           )}
-          {(isAdmin || isGuard) && <Route exact path="/accesos" component={Access}/>}
-          {isGuard && <Redirect to="/accesos"/>}
-          {!isGuard && <Redirect to="/dashboard"/>}
+          {(isAdmin || isGuard) && <Route exact path="/accesos" component={Access} />}
+          {(isAdmin || isLoader) && <Route exact path="/cargas" component={Load} />}
+          {isGuard && <Redirect to="/accesos" />}
+          {isLoader && <Redirect to="/cargas" />}
+          {!isGuard && <Redirect to="/dashboard" />}
         </Switch>
       </Layout>
     </Switch>
