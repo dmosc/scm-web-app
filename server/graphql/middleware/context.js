@@ -18,13 +18,12 @@ const setContext = ({ req = {}, res, connection }) => {
     if (authentication) [, token] = authentication.split('Bearer ');
   }
 
-  // Only set userRequesting payload is token is present
+  // Only set userRequesting payload if token is present
   // This way, non authenticated queries can work correctly
   // and the userRequesting.id will be present on every query
   // to use it in the .deleteBy({userRequesting.id})
   if (token) {
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.userRequesting = payload;
+    req.userRequesting = jwt.verify(token, JWT_SECRET);
   }
 
   return { req, res, pubsub };

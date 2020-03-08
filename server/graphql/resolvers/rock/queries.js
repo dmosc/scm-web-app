@@ -34,7 +34,7 @@ const ticketQueries = {
             totalPrice: { $exists: true },
             outTruckImage: { $exists: true },
             bill: { $in: type !== null ? [type] : [true, false] },
-            date: { $gte: start, $lte: end },
+            out: { $gte: start, $lte: end },
             product: {
               $in:
                 oldRocks.length > 0
@@ -97,7 +97,7 @@ const ticketQueries = {
             totalPrice: { $exists: true },
             outTruckImage: { $exists: true },
             bill: { $in: type !== null ? [type] : [true, false] },
-            date: { $gte: start, $lte: end },
+            out: { $gte: start, $lte: end },
             product: {
               $in:
                 oldRocks.length > 0
@@ -111,7 +111,7 @@ const ticketQueries = {
         { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
         {
           $group: {
-            _id: { $month: '$date' },
+            _id: { $month: '$out' },
             products: {
               $addToSet: { product: '$product', total: { $sum: '$totalPrice' } }
             },
