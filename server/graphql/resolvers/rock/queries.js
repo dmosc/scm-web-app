@@ -77,7 +77,7 @@ const ticketQueries = {
         tickets,
         total: parseInt(total.toFixed(2), 10)
       }));
-      const total = rocks.reduce((a, b) => a.total + b.total);
+      const total = rocks.reduce((total, rock) => total += rock.total, 0);
 
       return { rocks, total };
     }
