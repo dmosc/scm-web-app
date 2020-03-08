@@ -166,13 +166,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
                   }
                 ]
               })(
-                <Select
-                  mode="tags"
-                  maxTagCount={1}
-                  allowClear
-                  showSearch
-                  placeholder="Nombre(s) y apellidos del conductor"
-                >
+                <Select allowClear showSearch placeholder="Nombre(s) y apellidos del conductor">
                   {drivers.map(driver => (
                     <Option key={driver} value={driver}>
                       {driver}
