@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { Button, notification } from 'antd';
 import { Link, Credit } from './elements';
@@ -25,7 +26,6 @@ class TicketPanel extends Component {
 
   render() {
     const { ticket, setCurrent, printTicket } = this.props;
-    console.log(ticket);
 
     return (
       <>
@@ -194,5 +194,14 @@ class TicketPanel extends Component {
     );
   }
 }
+
+TicketPanel.propTypes = {
+  ticket: PropTypes.object.isRequired,
+  client: PropTypes.object.isRequired,
+  turn: PropTypes.object.isRequired,
+  refetch: PropTypes.func.isRequired,
+  setCurrent: PropTypes.func.isRequired,
+  printTicket: PropTypes.func.isRequired
+};
 
 export default withApollo(TicketPanel);
