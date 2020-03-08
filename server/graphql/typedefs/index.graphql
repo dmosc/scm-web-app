@@ -30,6 +30,8 @@ type Query {
   ticket(id: ID!): Ticket
   tickets(filters: TicketFilters!): [Ticket!]!
   activeTickets(filters: TicketFilters!): [Ticket!]!
+  notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]!
+  loadedTickets(filters: TicketFilters!): [Ticket!]!
   archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
   # Truck
@@ -70,8 +72,11 @@ type Mutation {
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
+  ticketEdit(ticket: TicketEditInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
   ticketInit(ticket: TicketInitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, GUARD])
   ticketProductLoad(ticket: TicketProductLoadInput!): Ticket! @auth(roles: [ADMIN, CASHIER, GUARD])
+  ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
   ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, GUARD])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
@@ -101,8 +106,10 @@ type Mutation {
 
 type Subscription {
   newTicket: Ticket! @auth(roles: [ADMIN, CASHIER])
-  ticketUpdate: Ticket! @auth(roles: [ADMIN, CASHIER])
-  activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, GUARD])
+  ticketUpdate: Ticket! @auth(roles: [ADMIN, CASHIER, LOADER])
+  activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
+  notLoadedActiveTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
+  loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
   newPost: Post! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT])
   newMessage: Message! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT])
   turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER])

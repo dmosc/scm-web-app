@@ -30,6 +30,22 @@ const ticketQueries = {
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return activeTickets;
   }),
+  notLoadedActiveTickets: authenticated(async (_, { filters: { limit } }) => {
+    const activeTickets = await Ticket.find({ turn: { $exists: false }, load: { $exists: false } })
+      .limit(limit || 50)
+      .populate('client truck product');
+
+    if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
+    else return activeTickets;
+  }),
+  loadedTickets: authenticated(async (_, { filters: { limit } }) => {
+    const loadedTickets = await Ticket.find({ turn: { $exists: false }, load: { $exists: true } })
+      .limit(limit || 50)
+      .populate('client truck product');
+
+    if (!loadedTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
+    else return loadedTickets;
+  }),
   archivedTickets: authenticated(
     async (
       _,
@@ -221,11 +237,9 @@ const ticketQueries = {
       firstRow.height = 20;
 
       const buffer = await workbook.xlsx.writeBuffer();
-      const report = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
         'base64'
       )}`;
-
-      return report;
     }
   )
 };

@@ -86,7 +86,7 @@ const Users = ({ client }) => {
       key: 'action',
       align: 'right',
       render: row => (
-        <Button onClick={() => setCurrentUser(row)} type="default" icon="edit" size="small"/>
+        <Button onClick={() => setCurrentUser(row)} type="default" icon="edit" size="small" />
       )
     }
   ];

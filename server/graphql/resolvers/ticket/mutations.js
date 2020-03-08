@@ -18,7 +18,33 @@ const ticketMutations = {
       return new ApolloError(e);
     }
   }),
-  ticketInit: authenticated(async (_, args, { pubsub }) => {
+  ticketEdit: authenticated(async (_, args, { pubsub }) => {
+    const { ticket } = args;
+
+    try {
+      const newTicket = await Ticket.findByIdAndUpdate(
+        ticket.ticket,
+        { ...ticket },
+        { new: true }
+      ).populate('client truck product');
+      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
+        'client truck product'
+      );
+      const loadedTickets = await Ticket.find({
+        turn: { $exists: false },
+        load: { $exists: true }
+      }).populate('client truck product');
+
+      pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
+      pubsub.publish('ACTIVE_TICKETS', { activeTickets });
+      pubsub.publish('LOADED_TICKETS', { loadedTickets });
+
+      return newTicket;
+    } catch (e) {
+      return new ApolloError(e);
+    }
+  }),
+  ticketInit: authenticated(async (_, args, { req: { userRequesting }, pubsub }) => {
     const transaction = new Transaction();
     const { plates, product: productId, inTruckImage: image, folderKey, id } = args.ticket;
     const newTicket = new Ticket({ ...args.ticket });
@@ -38,6 +64,7 @@ const ticketMutations = {
       newTicket.client = client.id;
       newTicket.truck = truck.id;
       newTicket.product = product.id;
+      newTicket.usersInvolved.guard = userRequesting.id;
 
       transaction.insert('Ticket', newTicket);
       await transaction.run();
@@ -50,8 +77,13 @@ const ticketMutations = {
       const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
         'client truck product'
       );
+      const notLoadedActiveTickets = await Ticket.find({
+        turn: { $exists: false },
+        load: { $exists: false }
+      }).populate('client truck product');
 
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
+      pubsub.publish('NOT_LOADED_ACTIVE_TICKETS', { notLoadedActiveTickets });
 
       return ticket;
     } catch (e) {
@@ -80,6 +112,35 @@ const ticketMutations = {
       return new ApolloError(e);
     }
   }),
+  ticketProductLoadSetDate: authenticated(async (_, args, { req: { userRequesting }, pubsub }) => {
+    const { ticket } = args;
+
+    try {
+      const newTicket = await Ticket.findByIdAndUpdate(
+        ticket.ticket,
+        { load: Date.now(), 'usersInvolved.loader': userRequesting.id },
+        { new: true }
+      ).populate('client truck product');
+
+      const loadedTickets = await Ticket.find({
+        turn: { $exists: false },
+        load: { $exists: true }
+      }).populate('client truck product');
+
+      const notLoadedActiveTickets = await Ticket.find({
+        turn: { $exists: false },
+        load: { $exists: false }
+      }).populate('client truck product');
+
+      pubsub.publish('TICKET_UPDATE', { ticketUpdate: newTicket });
+      pubsub.publish('LOADED_TICKETS', { loadedTickets });
+      pubsub.publish('NOT_LOADED_ACTIVE_TICKETS', { notLoadedActiveTickets });
+
+      return newTicket;
+    } catch (e) {
+      return new ApolloError(e);
+    }
+  }),
   ticketSubmit: authenticated(async (_, args, { pubsub }) => {
     const { id, driver, weight, credit, bill } = args.ticket;
 
@@ -93,6 +154,13 @@ const ticketMutations = {
 
     const client = await Client.findById(newTicket.client);
     const product = await Rock.findById(newTicket.product);
+    await Truck.findOneAndUpdate(
+      { _id: newTicket.truck },
+      {
+        $addToSet: { drivers: newTicket.driver.toUpperCase() }
+      },
+      { new: true }
+    );
 
     const folio = await Folio.findOneAndUpdate(
       { name: newTicket.bill ? 'A' : 'B' },

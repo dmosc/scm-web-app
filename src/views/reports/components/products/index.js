@@ -217,16 +217,16 @@ const ProductSales = ({ client, filters: globalFilters }) => {
               ))}
             </Select>
           </FiltersContainer>
-          {loading && <Icon type="loading"/>}
+          {loading && <Icon type="loading" />}
           {productSalesReport?.rocks?.length > 0 && !loading && (
             <div style={{ padding: 20 }}>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={productMonthSalesReport}>
-                  <XAxis dataKey="name"/>
-                  <YAxis padding={{ left: 0, right: 0 }}/>
-                  <CartesianGrid strokeDasharray="3 3"/>
-                  <Tooltip/>
-                  <Legend/>
+                  <XAxis dataKey="name" />
+                  <YAxis padding={{ left: 0, right: 0 }} />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Tooltip />
+                  <Legend />
                   {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
                     <Line
                       type="monotone"
@@ -256,11 +256,11 @@ const ProductSales = ({ client, filters: globalFilters }) => {
                     label={true}
                   >
                     {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
-                      <Cell key={name} fill={color}/>
+                      <Cell key={name} fill={color} />
                     ))}
                   </Pie>
-                  <Tooltip/>
-                  <Legend/>
+                  <Tooltip />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>

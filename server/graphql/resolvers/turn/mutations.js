@@ -99,7 +99,7 @@ const turnMutations = {
       return e;
     }
   }),
-  turnAddTicket: authenticated(async (_, args, { pubsub }) => {
+  turnAddTicket: authenticated(async (_, args, { req: { userRequesting }, pubsub }) => {
     const ticket = await Ticket.findById(args.turn.ticket);
 
     if (!ticket) throw new Error('!No ha sido posible encontrar el ticket!');
@@ -113,6 +113,8 @@ const turnMutations = {
 
     turn.folios.push(ticket.folio);
     ticket.turn = turn.id;
+    ticket.out = Date.now();
+    ticket.usersInvolved.cashier = userRequesting.id;
 
     try {
       await ticket.save();
@@ -121,8 +123,13 @@ const turnMutations = {
       const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
         'client truck product'
       );
+      const loadedTickets = await Ticket.find({
+        turn: { $exists: false },
+        load: { $exists: true }
+      }).populate('client truck product');
 
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
+      pubsub.publish('LOADED_TICKETS', { loadedTickets });
       pubsub.publish('TURN_UPDATE', { turnUpdate: turn });
 
       return turn;

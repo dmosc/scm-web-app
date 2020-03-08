@@ -11,7 +11,9 @@ type Ticket {
   totalWeight: Float
   totalPrice: Float
   credit: Boolean
-  date: Date
+  in: Date
+  out: Date
+  load: Date
   inTruckImage: String
   outTruckImage: String
   bill: Boolean!
@@ -44,6 +46,27 @@ type ArchiveTicket {
 input TicketInput {
   plates: String!
   product: ID!
+}
+
+input TicketEditInput {
+  ticket: ID!
+  folio: String
+  driver: String
+  client: ID
+  truck: ID
+  product: ID
+  tax: Float
+  weight: Float
+  totalWeight: Float
+  totalPrice: Float
+  credit: Boolean
+  in: Date
+  out: Date
+  load: Date
+  inTruckImage: String
+  outTruckImage: String
+  bill: Boolean
+  turn: ID
 }
 
 input TicketInitInput {

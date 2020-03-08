@@ -34,7 +34,7 @@ const ticketQueries = {
             totalPrice: { $exists: true },
             outTruckImage: { $exists: true },
             bill: { $in: type !== null ? [type] : [true, false] },
-            date: { $gte: start, $lte: end },
+            out: { $gte: start, $lte: end },
             product: {
               $in:
                 oldRocks.length > 0
@@ -77,7 +77,7 @@ const ticketQueries = {
         tickets,
         total: parseInt(total.toFixed(2), 10)
       }));
-      const total = rocks.reduce((total, rock) => (total += rock.total), 0);
+      const total = rocks.reduce((total, rock) => total += rock.total, 0);
 
       return { rocks, total };
     }
@@ -97,7 +97,7 @@ const ticketQueries = {
             totalPrice: { $exists: true },
             outTruckImage: { $exists: true },
             bill: { $in: type !== null ? [type] : [true, false] },
-            date: { $gte: start, $lte: end },
+            out: { $gte: start, $lte: end },
             product: {
               $in:
                 oldRocks.length > 0
@@ -111,7 +111,7 @@ const ticketQueries = {
         { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
         {
           $group: {
-            _id: { $month: '$date' },
+            _id: { $month: '$out' },
             products: {
               $addToSet: { product: '$product', total: { $sum: '$totalPrice' } }
             },

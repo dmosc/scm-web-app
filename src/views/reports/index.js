@@ -16,20 +16,20 @@ const reports = {
     <>
       <Container display="flex">
         <Title>Sección en construcción...</Title>
-        <img src="static/images/section_under_construction.png" alt="Sección en construcción"/>
+        <img src="static/images/section_under_construction.png" alt="Sección en construcción" />
       </Container>
     </>
   ),
   products: filters => (
     <>
-      <ProductSales filters={filters}/>
+      <ProductSales filters={filters} />
     </>
   ),
   tickets: () => (
     <>
       <Container display="flex">
         <Title>Sección en construcción...</Title>
-        <img src="static/images/section_under_construction.png" alt="Sección en construcción"/>
+        <img src="static/images/section_under_construction.png" alt="Sección en construcción" />
       </Container>
     </>
   ),
@@ -37,7 +37,7 @@ const reports = {
     <>
       <Container display="flex">
         <Title>Sección en construcción...</Title>
-        <img src="static/images/section_under_construction.png" alt="Sección en construcción"/>
+        <img src="static/images/section_under_construction.png" alt="Sección en construcción" />
       </Container>
     </>
   ),
@@ -45,7 +45,7 @@ const reports = {
     <>
       <Container display="flex">
         <Title>Sección en construcción...</Title>
-        <img src="static/images/section_under_construction.png" alt="Sección en construcción"/>
+        <img src="static/images/section_under_construction.png" alt="Sección en construcción" />
       </Container>
     </>
   ),
@@ -53,7 +53,7 @@ const reports = {
     <>
       <Container display="flex">
         <Title>Sección en construcción...</Title>
-        <img src="static/images/section_under_construction.png" alt="Sección en construcción"/>
+        <img src="static/images/section_under_construction.png" alt="Sección en construcción" />
       </Container>
     </>
   )
