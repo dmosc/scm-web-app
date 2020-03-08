@@ -1,6 +1,6 @@
+import ExcelJS from 'exceljs';
 import { Ticket, Turn } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
-import ExcelJS from 'exceljs';
 
 const turnQueries = {
   turn: authenticated(async (_, args) => {
@@ -108,7 +108,7 @@ const turnQueries = {
           tickets: {
             $push: {
               folio: '$folio',
-              date: '$date',
+              out: '$out',
               truck: '$truck',
               driver: '$driver',
               product: '$product',
@@ -203,7 +203,7 @@ const turnQueries = {
       tickets.forEach(ticket => {
         const ticketRow = {
           folio: ticket.folio,
-          date: ticket.date,
+          date: ticket.out,
           plates: ticket.truck[0].plates,
           brand: ticket.truck[0].brand,
           model: ticket.truck[0].model,
