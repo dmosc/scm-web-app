@@ -12,7 +12,7 @@ type Client {
   cellphone: [String!]!
   address: String!
   zipcode: String
-  prices: Prices!
+  prices: [Price]!
   credit: Float!
 }
 
@@ -22,16 +22,9 @@ type ClientTurnSummary {
   tickets: [Ticket!]!
 }
 
-type Prices {
-  A4B: Float
-  A4D: Float
-  A5: Float
-  BASE: Float
-  CNC: Float
-  G2: Float
-  MIX: Float
-  SUBBASE: Float
-  SELLO: Float
+type Price {
+  rock: Rock!
+  price: Float!
 }
 
 # Inputs
@@ -46,11 +39,10 @@ input ClientInput {
   cellphone: [String!]!
   address: String!
   zipcode: String
-  prices: PricesInput
+  prices: [PriceInput!]!
   credit: Float!
 }
 
-# Inputs
 input ClientEditInput {
   id: ID!
   firstName: String
@@ -63,21 +55,13 @@ input ClientEditInput {
   cellphone: [String]
   address: String
   zipcode: String
-  prices: PricesInput
+  prices: [PriceInput!]!
   credit: Float
 }
 
-input PricesInput {
-  A4B: Float
-  A4D: Float
-  A5: Float
-  BASE: Float
-  CNC: Float
-  G2: Float
-  G112: Float
-  MIX: Float
-  SUBBASE: Float
-  SELLO: Float
+input PriceInput {
+  rock: ID!
+  price: Float!
 }
 
 input ClientFilters {

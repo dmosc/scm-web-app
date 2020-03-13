@@ -48,7 +48,7 @@ const priceRequestMutations = {
             acc[rock.name] = priceRequested;
             return acc;
           },
-          { ...clientToUpdate.prices }
+          [...clientToUpdate.prices]
         );
 
         clientToUpdate.prices = newPrices;
