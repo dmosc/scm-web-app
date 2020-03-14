@@ -108,19 +108,40 @@ const turnQueries = {
           tickets: {
             $push: {
               folio: '$folio',
-              out: '$out',
               truck: '$truck',
-              driver: '$driver',
+              out: {
+                $dateToString: {
+                  date: '$out',
+                  format: '%Y-%m-%d %H:%M:%S',
+                  timezone: 'America/Monterrey'
+                }
+              },
               product: '$product',
-              tax: '$tax',
-              weight: '$weight',
               totalWeight: '$totalWeight',
-              totalPrice: '$totalPrice'
+              tax: '$tax',
+              subtotal: { $subtract: ['$totalPrice', '$tax'] },
+              totalPrice: '$totalPrice',
+              credit: '$credit',
+              bill: '$bill'
             }
-          }
+          },
+          totalWeight: { $sum: '$totalWeight' },
+          subtotal: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+          tax: { $sum: '$tax' },
+          totalPrice: { $sum: '$totalPrice' }
         }
       },
-      { $project: { _id: 0, client: '$_id', tickets: '$tickets' } }
+      {
+        $project: {
+          _id: 0,
+          client: '$_id',
+          tickets: '$tickets',
+          totalWeight: '$totalWeight',
+          subtotal: '$subtotal',
+          tax: '$tax',
+          totalPrice: '$totalPrice'
+        }
+      }
     ]);
 
     const attributes = [
@@ -129,44 +150,32 @@ const turnQueries = {
         key: 'businessName'
       },
       {
+        header: 'RFC',
+        key: 'rfc'
+      },
+      {
         header: 'Folio',
         key: 'folio'
       },
       {
         header: 'Fecha',
-        key: 'date'
+        key: 'out'
       },
       {
         header: 'Placas',
         key: 'plates'
       },
       {
-        header: 'Marca',
-        key: 'brand'
-      },
-      {
-        header: 'Modelo',
-        key: 'model'
-      },
-      {
-        header: 'Conductor',
-        key: 'driver'
-      },
-      {
         header: 'Producto',
         key: 'product'
       },
       {
-        header: 'Peso del camión',
-        key: 'truckWeight'
-      },
-      {
-        header: 'Peso bruto',
-        key: 'weight'
-      },
-      {
         header: 'Peso neto',
         key: 'totalWeight'
+      },
+      {
+        header: 'Subtotal',
+        key: 'subtotal'
       },
       {
         header: 'Impuesto',
@@ -175,6 +184,14 @@ const turnQueries = {
       {
         header: 'Total',
         key: 'totalPrice'
+      },
+      {
+        header: 'Tipo de pago',
+        key: 'credit'
+      },
+      {
+        header: 'Tipo de boleta',
+        key: 'bill'
       }
     ];
 
@@ -188,14 +205,17 @@ const turnQueries = {
     workbook.modified = new Date();
     workbook.lastPrinted = new Date();
 
-    const worksheet = workbook.addWorksheet('Boletas');
+    const worksheet = workbook.addWorksheet('Boletas', {
+      pageSetup: { fitToPage: true, orientation: 'landscape' }
+    });
     worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
 
     worksheet.columns = attributes;
 
-    clients.forEach(({ client, tickets }) => {
+    clients.forEach(({ client, tickets, totalWeight, subtotal, tax, totalPrice }) => {
       const clientInfoRow = {
-        businessName: client[0].businessName
+        businessName: client[0].businessName,
+        rfc: client[0].rfc
       };
 
       worksheet.addRow(clientInfoRow);
@@ -203,20 +223,34 @@ const turnQueries = {
       tickets.forEach(ticket => {
         const ticketRow = {
           folio: ticket.folio,
-          date: ticket.out,
+          out: ticket.out,
           plates: ticket.truck[0].plates,
-          brand: ticket.truck[0].brand,
-          model: ticket.truck[0].model,
-          driver: ticket.driver,
           product: ticket.product[0].name,
-          truckWeight: ticket.truck[0].weight,
-          weight: ticket.weight,
           totalWeight: ticket.totalWeight,
+          subtotal: ticket.subtotal,
           tax: ticket.tax,
-          totalPrice: ticket.totalPrice
+          totalPrice: ticket.totalPrice,
+          credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
+          bill: ticket.bill ? 'FACTURA' : 'REMISIÓN'
         };
 
         worksheet.addRow(ticketRow);
+      });
+
+      const resultsRow = {
+        businessName: 'Total',
+        totalWeight: `${totalWeight} tons`,
+        subtotal: `$${subtotal}`,
+        tax: `$${tax}`,
+        totalPrice: `$${totalPrice}`
+      };
+
+      worksheet.addRow(resultsRow);
+      Object.keys(resultsRow).forEach(key => {
+        worksheet.lastRow.getCell(key).border = {
+          top: { style: 'medium' },
+          bottom: { style: 'medium' }
+        };
       });
 
       worksheet.addRow({});
