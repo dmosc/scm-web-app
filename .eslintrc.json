@@ -10,7 +10,8 @@
     "FormData": true,
     "FileReader": true,
     "Blob": true,
-    "navigator": true
+    "navigator": true,
+    "isNaN": true
   },
   "parserOptions": {
     "ecmaFeatures": {
@@ -54,7 +55,7 @@
     ],
     "no-unneeded-ternary": [0],
     "react/jsx-boolean-value": [0],
-    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-console": ["error", { "allow": ["warn", "error", "info"] }],
     "no-plusplus": [0],
     "import/no-unresolved": [0],
     "react/forbid-prop-types": "off",

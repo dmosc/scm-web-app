@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
-import { GET_PRODUCTS } from './graphql/queries';
+import { GET_ROCKS } from './graphql/queries';
 import { EDIT_CLIENT } from './graphql/mutations';
 
 const { Option } = Select;
@@ -25,30 +25,22 @@ class EditForm extends Component {
   state = {
     loading: false,
     showPriceModal: false,
-    prices: {},
-    publicPrices: {},
-    floorPrices: {},
+    prices: [],
     currentPrice: null,
-    currentFloorPrice: 0,
-    currentPriceTotal: 0
+    currentPriceTotal: 0,
+    rocks: []
   };
 
   componentDidMount = async () => {
     const { currentClient, client } = this.props;
 
     const {
-      data: { rocks: products }
-    } = await client.query({ query: GET_PRODUCTS, variables: { filters: {} } });
+      data: { rocks }
+    } = await client.query({ query: GET_ROCKS, variables: { filters: {} } });
 
-    const prices = { ...currentClient.prices };
-    const publicPrices = {};
-    const floorPrices = {};
+    const prices = [...currentClient.prices];
 
-    products.forEach(({ name, price, floorPrice }) => {
-      publicPrices[name] = price;
-      floorPrices[name] = floorPrice;
-    });
-    this.setState({ prices, publicPrices, floorPrices });
+    this.setState({ prices, rocks });
   };
 
   handleSubmit = e => {
@@ -61,10 +53,7 @@ class EditForm extends Component {
     } = this.props;
     const { prices: oldPrices } = this.state;
 
-    const prices = { ...oldPrices };
-
-    // Remove all null prices
-    Object.keys(prices).forEach(key => prices[key] == null && delete prices[key]);
+    const prices = oldPrices.map(({ rock, price }) => ({ rock: rock.id, price }));
 
     this.setState({ loading: true });
     e.preventDefault();
@@ -123,57 +112,59 @@ class EditForm extends Component {
   };
 
   setCurrentPrice = currentPrice => {
-    const { publicPrices, floorPrices } = this.state;
+    const { rocks } = this.state;
 
     this.setState(
       {
         currentPrice,
-        currentPriceTotal: publicPrices[currentPrice],
-        currentFloorPrice: floorPrices[currentPrice]
+        currentPriceTotal: rocks[currentPrice].price
       },
       this.togglePriceModal()
     );
   };
 
   onPriceUpdate = () => {
-    const {
-      prices: oldPrices,
-      currentPrice,
-      currentPriceTotal,
-      currentFloorPrice,
-      publicPrices
-    } = this.state;
+    const { prices: oldPrices, currentPrice, currentPriceTotal, rocks } = this.state;
 
-    const prices = { ...oldPrices };
+    let prices = [
+      ...oldPrices,
+      {
+        rock: {
+          id: rocks[currentPrice].id,
+          name: rocks[currentPrice].name,
+          price: rocks[currentPrice].price,
+          floorPrice: rocks[currentPrice].floorPrice
+        },
+        price: currentPriceTotal
+      }
+    ];
 
-    if (currentPriceTotal < currentFloorPrice) {
+    if (currentPriceTotal < rocks[currentPrice].floorPrice) {
       Modal.error({
         title: 'Precio no permitido',
         content: 'No puedes asignar un precio menor al precio suelo'
       });
-      delete prices[currentPrice];
-    } else if (currentPriceTotal > publicPrices[currentPrice]) {
+      prices = oldPrices;
+    } else if (currentPriceTotal > rocks[currentPrice].price) {
       Modal.error({
         title: 'Precio no permitido',
         content: 'No puedes asignar un precio mayor al precio al público'
       });
-      delete prices[currentPrice];
-    } else {
-      prices[currentPrice] = currentPriceTotal;
+      prices = oldPrices;
     }
 
-    this.setState(
-      { prices, currentPrice: null, currentPriceTotal: 0, currentFloorPrice: 0 },
-      this.togglePriceModal()
-    );
+    this.setState({ prices, currentPrice: null, currentPriceTotal: 0 }, this.togglePriceModal());
   };
 
-  onPriceDeselect = price => {
+  onPriceDeselect = priceName => {
     const { prices: oldPrices } = this.state;
-    const prices = { ...oldPrices };
+    const prices = [];
 
-    delete prices[price];
-    this.setState({ prices, currentPrice: null, currentPriceTotal: 0, currentFloorPrice: 0 });
+    oldPrices.forEach(price => {
+      if (price.rock.name !== priceName) prices.push(price);
+    });
+
+    this.setState({ prices, currentPrice: null, currentPriceTotal: 0 });
   };
 
   togglePriceModal = () => {
@@ -186,21 +177,11 @@ class EditForm extends Component {
 
   render() {
     const { form, currentClient } = this.props;
-    const {
-      loading,
-      showPriceModal,
-      prices,
-      currentPrice,
-      currentPriceTotal,
-      currentFloorPrice,
-      publicPrices
-    } = this.state;
+    const { loading, showPriceModal, prices, currentPrice, currentPriceTotal, rocks } = this.state;
 
     delete currentClient.prices.__typename;
 
-    const parsedPrices = Object.keys(prices)
-      .map(product => `${product}:${prices[product]}`)
-      .filter(price => price.indexOf('null') === -1);
+    const parsedPrices = prices.map(({ rock, price }) => `${rock.name}:${price}`);
 
     return (
       <Drawer
@@ -298,27 +279,24 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item label="Precios especiales">
-            {prices && (
-              <Select
-                defaultValue={Object.keys(currentClient.prices).filter(
-                  price => currentClient.prices[price]
-                )}
-                placeholder="Precios especiales"
-                mode="multiple"
-                tokenSeparators={[',']}
-                value={Object.keys(prices).filter(price => prices[price])}
-                onSelect={this.setCurrentPrice}
-                onDeselect={this.onPriceDeselect}
-              >
-                {Object.keys(publicPrices)
-                  .filter(price => !prices[price])
-                  .map(product => (
-                    <Option key={product} value={product}>
-                      {product}
-                    </Option>
-                  ))}
-              </Select>
-            )}
+            <Select
+              placeholder="Precios especiales"
+              mode="multiple"
+              tokenSeparators={[',']}
+              value={prices.map(({ rock: { name } }) => name)}
+              onSelect={this.setCurrentPrice}
+              onDeselect={this.onPriceDeselect}
+            >
+              {rocks.map(({ id, name }, idx) => (
+                <Option
+                  disabled={prices.some(({ rock: { id: rockId } }) => id === rockId)}
+                  key={id}
+                  value={idx}
+                >
+                  {name}
+                </Option>
+              ))}
+            </Select>
             <Text disabled>
               {parsedPrices.length > 0
                 ? parsedPrices.join(', ')
@@ -331,16 +309,18 @@ class EditForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-        <PriceEditModal
-          visible={showPriceModal}
-          currentPrice={currentPrice}
-          currentPriceTotal={currentPriceTotal}
-          currentFloorPrice={currentFloorPrice}
-          currentPublicPrice={publicPrices[currentPrice]}
-          handleAttrChange={this.handleAttrChange}
-          onPriceUpdate={this.onPriceUpdate}
-          togglePriceModal={this.togglePriceModal}
-        />
+        {currentPrice && (
+          <PriceEditModal
+            visible={showPriceModal}
+            currentPrice={currentPrice}
+            currentPriceTotal={currentPriceTotal}
+            currentFloorPrice={rocks[currentPrice].floorPrice}
+            currentPublicPrice={rocks[currentPrice].price}
+            handleAttrChange={this.handleAttrChange}
+            onPriceUpdate={this.onPriceUpdate}
+            togglePriceModal={this.togglePriceModal}
+          />
+        )}
       </Drawer>
     );
   }

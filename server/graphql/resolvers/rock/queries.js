@@ -14,7 +14,7 @@ const ticketQueries = {
     return rock;
   }),
   rocks: authenticated(async (_, { filters: { limit } }) => {
-    const rocks = await Rock.find({}).limit(limit || 10);
+    const rocks = await Rock.find({}).limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!rocks) throw new ApolloError('¡No ha sido posible cargar los productos!');
     else return rocks;
@@ -77,7 +77,7 @@ const ticketQueries = {
         tickets,
         total: parseInt(total.toFixed(2), 10)
       }));
-      const total = rocks.reduce((total, rock) => total += rock.total, 0);
+      const total = rocks.reduce((total, rock) => (total += rock.total), 0);
 
       return { rocks, total };
     }

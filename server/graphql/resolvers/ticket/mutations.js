@@ -27,9 +27,9 @@ const ticketMutations = {
         { ...ticket },
         { new: true }
       ).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
-        'client truck product'
-      );
+      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const loadedTickets = await Ticket.find({
         turn: { $exists: false },
         load: { $exists: true }
@@ -74,9 +74,9 @@ const ticketMutations = {
       await newTicket.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
-        'client truck product'
-      );
+      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const notLoadedActiveTickets = await Ticket.find({
         turn: { $exists: false },
         load: { $exists: false }
@@ -152,7 +152,7 @@ const ticketMutations = {
 
     if (!newTicket) throw new Error('¡No ha sido posible encontrar el ticket!');
 
-    const client = await Client.findById(newTicket.client);
+    const client = await Client.findById(newTicket.client).populate('prices.rock');
     const product = await Rock.findById(newTicket.product);
     await Truck.findOneAndUpdate(
       { _id: newTicket.truck },
@@ -171,7 +171,8 @@ const ticketMutations = {
     newTicket.folio = folio.name.toString() + folio.count.toString();
     newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(2);
 
-    const price = client.prices[product.name] ? client.prices[product.name] : product.price;
+    const specialPrice = client.prices.find(({ rock }) => rock.name === product.name);
+    const price = specialPrice ? specialPrice : product.price;
 
     newTicket.tax = newTicket.bill ? newTicket.totalWeight * price * TAX : 0;
     newTicket.totalPrice = (newTicket.totalWeight * price + newTicket.tax).toFixed(2);

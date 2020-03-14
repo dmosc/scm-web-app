@@ -27,7 +27,7 @@ const truckQueries = {
         { drivers: { $in: [new RegExp(search, 'i')] } }
       ]
     })
-      .limit(limit || 50)
+      .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client');
 
     if (!trucks) throw new Error('¡No ha sido posible cargar los camiones!');

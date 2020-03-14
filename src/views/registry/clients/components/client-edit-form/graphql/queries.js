@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 
-const GET_PRODUCTS = gql`
+const GET_ROCKS = gql`
   query rocks($filters: RockFilters!) {
     rocks(filters: $filters) {
       id
@@ -10,5 +10,4 @@ const GET_PRODUCTS = gql`
     }
   }
 `;
-
-export { GET_PRODUCTS };
+export { GET_ROCKS };

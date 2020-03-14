@@ -17,15 +17,11 @@ const ACTIVE_TICKETS = gql`
         rfc
         credit
         prices {
-          A4B
-          A4D
-          A5
-          BASE
-          CNC
-          G2
-          MIX
-          SUBBASE
-          SELLO
+          rock {
+            id
+            name
+          }
+          price
         }
       }
       truck {
@@ -66,15 +62,11 @@ const TICKET_UPDATE = gql`
         credit
         zipcode
         prices {
-          A4B
-          A4D
-          A5
-          BASE
-          CNC
-          G2
-          MIX
-          SUBBASE
-          SELLO
+          rock {
+            id
+            name
+          }
+          price
         }
       }
       truck {

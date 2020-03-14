@@ -16,46 +16,34 @@ import {
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
 import { REGISTER_CLIENT } from './graphql/mutations';
-import { GET_PRODUCTS } from './graphql/queries';
+import { GET_ROCKS } from './graphql/queries';
 
 const { Option } = Select;
 const { Text } = Typography;
 
 const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, setClients }) => {
-  const [publicPrices, setPublicPrices] = useState({});
-  const [prices, setPrices] = useState({});
-  const [floorPrices, setFloorPrices] = useState({});
+  const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showPriceModal, togglePriceModal] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(null);
   const [currentPriceTotal, setCurrentPriceTotal] = useState(0);
-  const [currentFloorPrice, setCurrentFloorPrice] = useState(0);
   const [parsedPrices, setParsedPrices] = useState({});
+  const [rocks, setRocks] = useState([]);
 
   useEffect(() => {
     const getPublicPrices = async () => {
       const {
-        data: { rocks: products }
-      } = await client.query({ query: GET_PRODUCTS, variables: { filters: {} } });
-      const publicPricesToSet = {};
-      const floorPricesToSet = {};
+        data: { rocks: rocksToSet }
+      } = await client.query({ query: GET_ROCKS, variables: { filters: {} } });
 
-      products.forEach(({ name, price, floorPrice }) => {
-        publicPricesToSet[name] = price;
-        floorPricesToSet[name] = floorPrice;
-      });
-
-      setPublicPrices(publicPricesToSet);
-      setFloorPrices(floorPricesToSet);
+      setRocks(rocksToSet);
     };
 
     getPublicPrices();
   }, [client]);
 
   useEffect(() => {
-    const parsedPricesToSet = Object.keys(prices)
-      .map(product => `${product}:${prices[product]}`)
-      .filter(price => price.indexOf('null') === -1);
+    const parsedPricesToSet = prices.map(({ rock: { name }, price }) => `${name}:${price}`);
 
     setParsedPrices(parsedPricesToSet);
   }, [prices]);
@@ -63,10 +51,9 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
   const handleSubmit = e => {
     e.preventDefault();
     const oldClients = [...clients];
-    const oldPrices = { ...prices };
+    const oldPrices = [...prices];
 
-    // Remove all null prices
-    Object.keys(oldPrices).forEach(key => oldPrices[key] == null && delete oldPrices[key]);
+    const newPrices = oldPrices.map(({ rock, price }) => ({ rock: rock.id, price }));
 
     setLoading(true);
     form.validateFields(
@@ -89,7 +76,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
                 CFDIuse,
                 cellphone,
                 address,
-                prices,
+                prices: newPrices,
                 credit
               }
             }
@@ -100,7 +87,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           setClients(clientsToSet);
           setCurrentPrice(null);
           setCurrentPriceTotal(0);
-          setPrices({});
+          setPrices([]);
 
           notification.open({
             message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
@@ -117,22 +104,29 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
   };
 
   const onPriceUpdate = () => {
-    const pricesToSet = { ...prices, [currentPrice]: currentPriceTotal };
+    let pricesToSet = [
+      ...prices,
+      {
+        rock: {
+          id: rocks[currentPrice].id,
+          name: rocks[currentPrice].name
+        },
+        price: currentPriceTotal
+      }
+    ];
 
-    if (currentPriceTotal < currentFloorPrice) {
+    if (currentPriceTotal < rocks[currentPrice].floorPrice) {
       Modal.error({
         title: 'Precio no permitido',
         content: 'No puedes asignar un precio menor al precio suelo'
       });
-      delete pricesToSet[currentPrice];
-    } else if (currentPriceTotal > publicPrices[currentPrice]) {
+      pricesToSet = prices;
+    } else if (currentPriceTotal > rocks[currentPrice].price) {
       Modal.error({
         title: 'Precio no permitido',
         content: 'No puedes asignar un precio mayor al precio al público'
       });
-      delete pricesToSet[currentPrice];
-    } else {
-      pricesToSet[currentPrice] = currentPriceTotal;
+      pricesToSet = prices;
     }
 
     setCurrentPrice(null);
@@ -141,20 +135,22 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
     togglePriceModal(false);
   };
 
-  const onPriceDeselect = price => {
-    const pricesToSet = { ...prices };
+  const onPriceDeselect = priceName => {
+    const oldPrices = [...prices];
+    const pricesToSet = [];
 
-    delete pricesToSet[price];
+    oldPrices.forEach(price => {
+      if (price.rock.name !== priceName) pricesToSet.push(price);
+    });
+
     setPrices(pricesToSet);
-    setCurrentPrice(null);
     setCurrentPriceTotal(0);
-    setCurrentFloorPrice(0);
+    setCurrentPrice(null);
   };
 
   const handleSetCurrentPrice = currentPriceToSet => {
-    setCurrentFloorPrice(floorPrices[currentPriceToSet]);
-    setCurrentPriceTotal(publicPrices[currentPriceToSet]);
     setCurrentPrice(currentPriceToSet);
+    setCurrentPriceTotal(rocks[currentPriceToSet].price);
     togglePriceModal(true);
   };
 
@@ -271,25 +267,24 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item label="Precios especiales">
-          {prices && (
-            <Select
-              defaultValue={Object.keys(prices).filter(price => prices[price])}
-              placeholder="Precios especiales"
-              mode="multiple"
-              tokenSeparators={[',']}
-              value={Object.keys(prices).filter(price => prices[price])}
-              onSelect={handleSetCurrentPrice}
-              onDeselect={onPriceDeselect}
-            >
-              {Object.keys(publicPrices)
-                .filter(price => !prices[price])
-                .map(product => (
-                  <Option key={product} value={product}>
-                    {product}
-                  </Option>
-                ))}
-            </Select>
-          )}
+          <Select
+            placeholder="Precios especiales"
+            mode="multiple"
+            tokenSeparators={[',']}
+            value={prices.map(({ rock: { name } }) => name)}
+            onSelect={handleSetCurrentPrice}
+            onDeselect={onPriceDeselect}
+          >
+            {rocks.map(({ id, name }, idx) => (
+              <Option
+                disabled={prices.some(({ rock: { id: rockId } }) => id === rockId)}
+                key={id}
+                value={idx}
+              >
+                {name}
+              </Option>
+            ))}
+          </Select>
           <Text disabled>
             {parsedPrices.length > 0
               ? parsedPrices.join(', ')
@@ -302,16 +297,18 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           </Button>
         </Form.Item>
       </Form>
-      <PriceEditModal
-        visible={showPriceModal}
-        currentPrice={currentPrice}
-        currentPriceTotal={currentPriceTotal}
-        currentFloorPrice={currentFloorPrice}
-        currentPublicPrice={publicPrices[currentPrice]}
-        setCurrentPriceTotal={setCurrentPriceTotal}
-        onPriceUpdate={onPriceUpdate}
-        togglePriceModal={togglePriceModal}
-      />
+      {currentPrice && (
+        <PriceEditModal
+          visible={showPriceModal}
+          currentPrice={currentPrice}
+          currentPriceTotal={currentPriceTotal}
+          currentFloorPrice={rocks[currentPrice].floorPrice}
+          currentPublicPrice={rocks[currentPrice].price}
+          setCurrentPriceTotal={setCurrentPriceTotal}
+          onPriceUpdate={onPriceUpdate}
+          togglePriceModal={togglePriceModal}
+        />
+      )}
     </Drawer>
   );
 };

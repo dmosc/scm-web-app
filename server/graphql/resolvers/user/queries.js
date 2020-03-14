@@ -22,7 +22,7 @@ const userQueries = {
         { email: { $in: [new RegExp(search, 'i')] } },
         { role: { $in: [new RegExp(search, 'i')] } }
       ]
-    }).limit(limit || 10);
+    }).limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!users) throw new ApolloError('¡Ha habido un error cargando los usuarios!');
     else return users;

@@ -13,7 +13,7 @@ const turnQueries = {
   }),
   turns: authenticated(async (_, { filters: { limit } }) => {
     const turns = await Turn.find({})
-      .limit(limit || 50)
+      .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('user');
 
     if (!turns) throw new Error('¡Ha habido un error cargando los turnos!');

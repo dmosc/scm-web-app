@@ -14,15 +14,11 @@ const REGISTER_CLIENT = gql`
       cellphone
       address
       prices {
-        A4B
-        A4D
-        A5
-        BASE
-        CNC
-        G2
-        MIX
-        SUBBASE
-        SELLO
+        rock {
+          id
+          name
+        }
+        price
       }
       credit
     }
