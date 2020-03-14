@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import print from 'print-js';
+import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { Form, Table, notification, Button, Tag, Modal, Row } from 'antd';
-import { GET_TRUCKS, GET_ENCRYPTED_PLATES } from './graphql/queries';
+import { Button, Form, Modal, notification, Row, Table, Tag } from 'antd';
+import { GET_ENCRYPTED_PLATES, GET_TRUCKS } from './graphql/queries';
 import { DELETE_TRUCK } from './graphql/mutations';
-import { TableContainer, Card } from './elements';
+import { Card, TableContainer } from './elements';
 import Title from './components/title';
 import EditForm from './components/truck-edit-form';
 import NewForm from './components/new-truck-form';
@@ -83,12 +82,10 @@ const Trucks = ({ client }) => {
       variables: { id: truck.id }
     });
 
-    print({
-      printable: truckQRCode,
-      type: 'image',
-      header: truck.plates,
-      imageStyle: 'width: 300px'
-    });
+    const link = document.createElement('a');
+    link.href = truckQRCode;
+    link.download = `${truck.plates}-QR`;
+    link.dispatchEvent(new MouseEvent('click'));
   };
 
   const onTruckEdit = truck => {
