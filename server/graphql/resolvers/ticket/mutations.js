@@ -27,9 +27,9 @@ const ticketMutations = {
         { ...ticket },
         { new: true }
       ).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
-        'client truck product'
-      );
+      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const loadedTickets = await Ticket.find({
         turn: { $exists: false },
         load: { $exists: true }
@@ -74,9 +74,9 @@ const ticketMutations = {
       await newTicket.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } }).populate(
-        'client truck product'
-      );
+      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const notLoadedActiveTickets = await Ticket.find({
         turn: { $exists: false },
         load: { $exists: false }

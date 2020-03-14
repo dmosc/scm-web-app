@@ -43,15 +43,26 @@ const priceRequestMutations = {
       if (newPriceRequest.status === 'ACCEPTED') {
         const clientToUpdate = await Client.findOne({ _id: priceRequest.client });
 
-        const newPrices = priceRequest.prices.reduce(
-          (acc, { rock, priceRequested }) => {
-            acc[rock.name] = priceRequested;
-            return acc;
-          },
-          [...clientToUpdate.prices]
-        );
+        const mappedPriceRequests = {};
+        priceRequest.prices.forEach(({ rock, priceRequested: price }) => {
+          mappedPriceRequests[rock] = {
+            rock,
+            price
+          };
+        });
 
-        clientToUpdate.prices = newPrices;
+        const newPrices = clientToUpdate.prices.map(price => {
+          if (mappedPriceRequests[price.rock] && !mappedPriceRequests[price.rock].added) {
+            mappedPriceRequests[price.rock].added = true;
+            return mappedPriceRequests[price.rock];
+          }
+
+          return price;
+        });
+
+        Object.keys(mappedPriceRequests).forEach(key => {
+          if (!mappedPriceRequests[key].added) newPrices.push(mappedPriceRequests[key]);
+        });
 
         await Client.findOneAndUpdate(
           { _id: priceRequest.client },

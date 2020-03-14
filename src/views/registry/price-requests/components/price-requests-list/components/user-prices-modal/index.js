@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { Modal, Table, Tag } from 'antd';
@@ -33,22 +34,16 @@ const UserPricesModal = ({ toggleUserPricesModal, userId, client: apollo, visibl
   const columns = [
     {
       title: 'Producto',
-      dataIndex: 'rock',
-      key: 'rock'
+      dataIndex: 'rock.name',
+      key: 'rock.name'
     },
     {
       title: 'Precio',
       dataIndex: 'price',
-      key: 'rpice',
+      key: 'price',
       render: price => <Tag color="blue">${price} MXN</Tag>
     }
   ];
-
-  const data = client.prices
-    ? Object.keys(client.prices)
-        .filter(rock => client.prices[rock])
-        .map(rock => ({ rock, price: client.prices[rock], key: rock }))
-    : [];
 
   return (
     <Modal
@@ -58,7 +53,11 @@ const UserPricesModal = ({ toggleUserPricesModal, userId, client: apollo, visibl
       loading={loading}
       onCancel={() => toggleUserPricesModal(false)}
     >
-      <Table pagination={false} columns={columns} dataSource={data} />
+      <Table
+        pagination={false}
+        columns={columns}
+        dataSource={client.prices?.map(price => ({ ...price, key: shortid.generate() }))}
+      />
     </Modal>
   );
 };

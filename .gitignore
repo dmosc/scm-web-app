@@ -5,8 +5,14 @@
 /.pnp
 .pnp.js
 
+# migrations
+/server/mongo-db/scripts/.migrate
+
 # testing
 /coverage
+
+# mongo
+/dump
 
 # production
 /build
@@ -22,5 +28,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-/dump

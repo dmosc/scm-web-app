@@ -4,7 +4,9 @@ import authenticated from '../../middleware/authenticated';
 const clientQueries = {
   client: authenticated(async (_, args) => {
     const { id } = args;
-    const client = await Client.findOne({ _id: id, deleted: false }).populate('trucks');
+    const client = await Client.findOne({ _id: id, deleted: false })
+      .populate('trucks')
+      .populate('prices.rock');
 
     if (!client) throw new Error('¡El cliente no existe!');
 
@@ -21,8 +23,9 @@ const clientQueries = {
         { phone: { $in: [new RegExp(search, 'i')] } }
       ]
     })
-      .limit(limit || 50)
-      .populate('trucks');
+      .populate('trucks')
+      .populate('prices.rock')
+      .limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
 

@@ -16,15 +16,16 @@ const ticketQueries = {
   }),
   tickets: authenticated(async (_, { filters: { limit } }) => {
     const tickets = await Ticket.find({})
-      .limit(limit || 50)
-      .populate('client truck product turn');
+      .limit(limit || Number.MAX_SAFE_INTEGER)
+      .populate('truck product turn')
+      .populate({ path: 'client', populate: { path: 'prices.rock' } });
 
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
   }),
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({ turn: { $exists: false } })
-      .limit(limit || 50)
+      .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client truck product');
 
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
@@ -32,7 +33,7 @@ const ticketQueries = {
   }),
   notLoadedActiveTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({ turn: { $exists: false }, load: { $exists: false } })
-      .limit(limit || 50)
+      .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client truck product');
 
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
@@ -40,7 +41,7 @@ const ticketQueries = {
   }),
   loadedTickets: authenticated(async (_, { filters: { limit } }) => {
     const loadedTickets = await Ticket.find({ turn: { $exists: false }, load: { $exists: true } })
-      .limit(limit || 50)
+      .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client truck product');
 
     if (!loadedTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
@@ -81,7 +82,7 @@ const ticketQueries = {
       }
 
       const archivedTickets = await ArchiveTicket.findAll({
-        limit: limit || 100,
+        limit: limit || Number.MAX_SAFE_INTEGER,
         offset: offset || 0,
         where
       });
@@ -202,7 +203,7 @@ const ticketQueries = {
 
       const archivedTickets = await ArchiveTicket.findAll({
         attributes: attributes.map(({ key }) => key),
-        limit: limit || 100,
+        limit: limit || Number.MAX_SAFE_INTEGER,
         offset: offset || 0,
         where
       });
