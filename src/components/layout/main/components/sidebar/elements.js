@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Menu as CommonMenu } from 'antd';
+import { Menu as CommonMenu, Layout } from 'antd';
 
 const Menu = styled(CommonMenu)`
   .ant-menu-item-group-list .ant-menu-item {
@@ -7,4 +7,9 @@ const Menu = styled(CommonMenu)`
   }
 `;
 
-export { Menu };
+const Sider = styled(Layout.Sider)`
+  max-height: 100vh;
+  overflow: scroll;
+`;
+
+export { Menu, Sider };

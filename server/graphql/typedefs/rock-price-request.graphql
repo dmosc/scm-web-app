@@ -1,0 +1,41 @@
+# Types
+type RockPriceRequest {
+  id: ID!
+  requester: User!
+  createdAt: Date!
+  rock: Rock!
+  priceRequested: Float!
+  reviewedBy: User
+  reviewedAt: Date
+  status: RockPriceRequestStatus!
+}
+
+# Inputs
+input RockPriceRequestInput {
+  client: ID!
+  priceRequested: Float!
+}
+
+input RockPriceRequestEditInput {
+  id: ID!
+  priceRequested: Float!
+  status: RockPriceRequestStatus
+}
+
+input RockPriceRequestFilters {
+  client: ID
+  requester: ID
+  reviewedBy: ID
+  status: RockPriceRequestStatus
+  creationStart: Date
+  creationEnd: Date
+  reviewedStart: Date
+  reviewedEnd: Date
+}
+
+# Others
+enum RockPriceRequestStatus {
+  PENDING
+  REJECTED
+  ACCEPTED
+}

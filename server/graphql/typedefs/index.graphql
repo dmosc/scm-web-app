@@ -8,6 +8,7 @@
 # import * from "message.graphql"
 # import * from "turn.graphql"
 # import * from "price-request.graphql"
+# import * from "rock-price-request.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -59,6 +60,9 @@ type Query {
   # Price request
   priceRequest(id: ID!): PriceRequest
   priceRequests(filters: PriceRequestFilters!): [PriceRequest!]!
+  # Product price request
+  rockPriceRequest(id: ID!): RockPriceRequest
+  rockPriceRequests(filters: RockPriceRequestFilters!): [RockPriceRequest!]!
 }
 
 type Mutation {
@@ -84,7 +88,7 @@ type Mutation {
   truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
-  rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN, CASHIER])
+  rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN])
   # Folio
   folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
   # Post
@@ -99,6 +103,11 @@ type Mutation {
   priceRequest(priceRequest: PriceRequestInput!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT])
   priceRequestEdit(priceRequest: PriceRequestEditInput!): PriceRequest
     @auth(roles: [ADMIN, ACCOUNTANT])
+  # Rock price request
+  rockPriceRequest(rockPriceRequest: RockPriceRequestInput!): RockPriceRequest
+    @auth(roles: [CASHIER])
+  rockPriceRequestEdit(rockPriceRequest: RockPriceRequestEditInput!): RockPriceRequest
+    @auth(roles: [CASHIER])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

@@ -10,7 +10,7 @@ import { GET_PRICE_REQUESTS } from './graphql/queries';
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
-const PriceRequests = ({ client }) => {
+const ClientPriceRequests = ({ client }) => {
   const [isRequestModalOpen, toggleNewRequestModal] = useState(false);
   const [priceRequests, setPriceRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,8 +82,8 @@ const PriceRequests = ({ client }) => {
   );
 };
 
-PriceRequests.propTypes = {
+ClientPriceRequests.propTypes = {
   client: PropTypes.object.isRequired
 };
 
-export default withApollo(PriceRequests);
+export default withApollo(ClientPriceRequests);
