@@ -26,9 +26,8 @@ const rockPriceRequests = {
     delete query.reviewedEnd;
 
     return RockPriceRequest.find(query)
-      .populate('client')
       .populate('requester')
-      .populate('prices.rock')
+      .populate('rock')
       .populate('reviewedBy');
   })
 };

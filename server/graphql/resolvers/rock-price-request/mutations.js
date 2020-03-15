@@ -2,13 +2,13 @@ import { RockPriceRequest, Rock } from '../../../mongo-db/models';
 
 const rockPriceRequestMutations = {
   rockPriceRequest: async (_, args, { req: { userRequesting } }) => {
-    if (!args.priceRequest.priceRequested && !args.priceRequest.floorPriceRequested)
+    if (args.rockPriceRequest.priceRequested < args.rockPriceRequest.floorPriceRequested)
       throw new Error(
-        'You should provide at least one price requested, can be general price or floor price'
+        'General price requested should be greater or equal than floor price requested'
       );
 
     const priceRequest = new RockPriceRequest({
-      ...args.priceRequest,
+      ...args.rockPriceRequest,
       requester: userRequesting.id
     });
 
@@ -17,9 +17,7 @@ const rockPriceRequestMutations = {
     return RockPriceRequest.findOne({ _id: priceRequest.id });
   },
   rockPriceRequestEdit: async (_, args, { req: { userRequesting } }) => {
-    const priceRequest = await RockPriceRequest.findOne({ _id: args.priceRequest.id }).populate(
-      'rock'
-    );
+    const priceRequest = await RockPriceRequest.findOne({ _id: args.rockPriceRequest.id });
 
     // Only PENDING requests can change status
     // Once it was ACCEPTED or REJECTED, its lifecycle ends
@@ -32,7 +30,16 @@ const rockPriceRequestMutations = {
     if (userRequesting.role !== 'ADMIN' && userRequesting.id !== priceRequest.requester)
       throw new Error('You can only edit your own created price requests');
 
-    const newPriceRequest = { ...args.priceRequest };
+    const newPriceRequest = {
+      priceRequested: priceRequest.priceRequested,
+      floorPriceRequested: priceRequest.floorPriceRequested,
+      ...args.rockPriceRequest
+    };
+
+    // It's needed to validate if the price requested is greater
+    // than the floorPrice requested to avoid inconsistencies
+    if (newPriceRequest.priceRequested < newPriceRequest.floorPriceRequested)
+      throw new Error('Price requested should be greater or equal than the requested floor price');
 
     // Having an edit status means that it will be ACCEPTED or REJECTED
     if (newPriceRequest.status) {
@@ -47,10 +54,9 @@ const rockPriceRequestMutations = {
       if (newPriceRequest.status === 'ACCEPTED') {
         const rockToUpdate = await Rock.findOne({ _id: priceRequest.rock });
 
-        if (priceRequest.priceRequested) rockToUpdate.price = priceRequest.priceRequested;
+        rockToUpdate.price = priceRequest.priceRequested;
 
-        if (priceRequest.floorPriceRequested)
-          rockToUpdate.floorPrice = priceRequest.floorPriceRequested;
+        rockToUpdate.floorPrice = priceRequest.floorPriceRequested;
 
         await rockToUpdate.save();
       }
