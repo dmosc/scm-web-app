@@ -105,9 +105,9 @@ type Mutation {
     @auth(roles: [ADMIN, ACCOUNTANT])
   # Rock price request
   rockPriceRequest(rockPriceRequest: RockPriceRequestInput!): RockPriceRequest
-    @auth(roles: [CASHIER])
+    @auth(roles: [ADMIN, ACCOUNTANT])
   rockPriceRequestEdit(rockPriceRequest: RockPriceRequestEditInput!): RockPriceRequest
-    @auth(roles: [CASHIER])
+    @auth(roles: [ADMIN, ACCOUNTANT])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

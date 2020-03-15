@@ -97,22 +97,24 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               </ItemGroup>
             )}
-            {(isAdmin || isCashier) && (
-              <ItemGroup title="Productos">
+            <ItemGroup title="Productos">
+              {(isAdmin || isCashier || isAccountant) && (
                 <Item key="registros/productos">
                   <Link to="/registros/productos">
                     <Icon type="star" />
                     Productos
                   </Link>
                 </Item>
+              )}
+              {(isAdmin || isAccountant) && (
                 <Item key="registros/peticiones-productos">
                   <Link to="/registros/peticiones-productos">
                     <Icon type="form" />
                     Peticiones
                   </Link>
                 </Item>
-              </ItemGroup>
-            )}
+              )}
+            </ItemGroup>
           </SubMenu>
         )}
         {isAdmin && (

@@ -111,10 +111,10 @@ const App = ({
             <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests} />
           )}
           {(isAdmin || isCashier) && <Route exact path="/registros/camiones" component={Trucks} />}
-          {(isAdmin || isCashier) && (
+          {(isAdmin || isCashier || isAccountant) && (
             <Route exact path="/registros/productos" component={Products} />
           )}
-          {(isAdmin || isCashier) && (
+          {(isAdmin || isAccountant) && (
             <Route exact path="/registros/peticiones-productos" component={ProductPriceRequests} />
           )}
           {isAdmin && <Route exact path="/registros/usuarios" component={Users} />}

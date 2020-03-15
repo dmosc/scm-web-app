@@ -23,7 +23,7 @@ const rockPriceRequestMutations = {
         `This price request was previously ${priceRequest.status}. It can't be edited`
       );
 
-    // Not admins can only edit their own requests, and ADMIN can edit any request.
+    // ACCOUNTANT can only edit their own requests, and ADMIN can edit any request.
     if (userRequesting.role !== 'ADMIN' && userRequesting.id !== priceRequest.requester)
       throw new Error('You can only edit your own created price requests');
 
