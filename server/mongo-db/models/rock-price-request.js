@@ -4,7 +4,7 @@ import softDelete from 'mongoose-delete';
 const RockPriceRequest = new Schema({
   requester: { type: Schema.ObjectId, ref: 'User', required: true },
   createdAt: { type: Date, default: Date.now },
-  rock: { type: Schema.ObjectId, ref: 'Rock' },
+  rock: { type: Schema.ObjectId, ref: 'Rock', required: true },
   priceRequested: {
     type: Number,
     required: true,

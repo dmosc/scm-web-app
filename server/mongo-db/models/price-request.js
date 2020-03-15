@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import softDelete from 'mongoose-delete';
 
 const Price = new Schema({
-  rock: { type: Schema.ObjectId, ref: 'Rock' },
+  rock: { type: Schema.ObjectId, ref: 'Rock', required: true },
   priceRequested: {
     type: Number,
     required: true,

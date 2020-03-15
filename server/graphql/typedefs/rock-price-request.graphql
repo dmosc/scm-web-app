@@ -12,7 +12,7 @@ type RockPriceRequest {
 
 # Inputs
 input RockPriceRequestInput {
-  client: ID!
+  rock: ID!
   priceRequested: Float!
 }
 
@@ -23,7 +23,7 @@ input RockPriceRequestEditInput {
 }
 
 input RockPriceRequestFilters {
-  client: ID
+  rock: ID
   requester: ID
   reviewedBy: ID
   status: RockPriceRequestStatus
