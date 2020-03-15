@@ -2,6 +2,11 @@ import { RockPriceRequest, Rock } from '../../../mongo-db/models';
 
 const rockPriceRequestMutations = {
   rockPriceRequest: async (_, args, { req: { userRequesting } }) => {
+    if (!args.priceRequest.priceRequested && !args.priceRequest.floorPriceRequested)
+      throw new Error(
+        'You should provide at least one price requested, can be general price or floor price'
+      );
+
     const priceRequest = new RockPriceRequest({
       ...args.priceRequest,
       requester: userRequesting.id
@@ -42,7 +47,10 @@ const rockPriceRequestMutations = {
       if (newPriceRequest.status === 'ACCEPTED') {
         const rockToUpdate = await Rock.findOne({ _id: priceRequest.rock });
 
-        rockToUpdate.price = priceRequest.priceRequested;
+        if (priceRequest.priceRequested) rockToUpdate.price = priceRequest.priceRequested;
+
+        if (priceRequest.floorPriceRequested)
+          rockToUpdate.floorPrice = priceRequest.floorPriceRequested;
 
         await rockToUpdate.save();
       }

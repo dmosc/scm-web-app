@@ -7,7 +7,16 @@ const RockPriceRequest = new Schema({
   rock: { type: Schema.ObjectId, ref: 'Rock', required: true },
   priceRequested: {
     type: Number,
-    required: true,
+    validate: {
+      // WATCH OUT: Validators will run on .save() operations
+      validator: function validator(price) {
+        return price > 0;
+      },
+      message: 'Price requested must be greater than 0'
+    }
+  },
+  floorPriceRequested: {
+    type: Number,
     validate: {
       // WATCH OUT: Validators will run on .save() operations
       validator: function validator(price) {

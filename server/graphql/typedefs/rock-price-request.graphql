@@ -4,7 +4,8 @@ type RockPriceRequest {
   requester: User!
   createdAt: Date!
   rock: Rock!
-  priceRequested: Float!
+  priceRequested: Float
+  floorPriceRequested: Float
   reviewedBy: User
   reviewedAt: Date
   status: RockPriceRequestStatus!
@@ -13,12 +14,14 @@ type RockPriceRequest {
 # Inputs
 input RockPriceRequestInput {
   rock: ID!
-  priceRequested: Float!
+  priceRequested: Float
+  floorPriceRequested: Float
 }
 
 input RockPriceRequestEditInput {
   id: ID!
-  priceRequested: Float!
+  priceRequested: Float
+  floorPriceRequested: Float
   status: RockPriceRequestStatus
 }
 
