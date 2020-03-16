@@ -1,27 +1,57 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, notification } from 'antd';
-import { Link, Credit } from './elements';
-import { ADD_TICKET_TO_TURN } from './graphql/mutations';
+import { Button, message, Modal } from 'antd';
+import { Link, Credit, Actions } from './elements';
+import { ADD_TICKET_TO_TURN, DISABLE_TICKET } from './graphql/mutations';
+
+const { confirm } = Modal;
 
 class TicketPanel extends Component {
   addTicketToTurn = async ticket => {
     const {
       turn: { id },
-      refetch,
+      refetchTickets,
+      refetchTurn,
       client
     } = this.props;
 
     try {
       await client.mutate({ mutation: ADD_TICKET_TO_TURN, variables: { turn: { id, ticket } } });
 
-      refetch();
+      refetchTickets();
+      refetchTurn();
     } catch (e) {
-      notification.error({
-        message: e.toString()
-      });
+      message.error(e.toString());
     }
+  };
+
+  handleCancel = ticketId => {
+    const { client, refetchTickets } = this.props;
+
+    confirm({
+      title: '¿Quieres cancelar esta boleta?',
+      content:
+        'Tendrás 24 horas para recuperar la boleta en la sección de boletas canceladas, después de eso, se perderá completamente',
+      okText: 'Cancelar boleta',
+      cancelText: 'Regresar',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await client.mutate({
+            mutation: DISABLE_TICKET,
+            variables: { id: ticketId }
+          });
+
+          refetchTickets();
+
+          message.success('La boleta ha sido cancelada correctamente');
+        } catch (e) {
+          message.error('Ha habido un error confirmando el cambio del producto');
+        }
+      },
+      onCancel: () => {}
+    });
   };
 
   render() {
@@ -157,20 +187,26 @@ class TicketPanel extends Component {
             </tr>
           </tbody>
         </table>
-        <span id="skip">
-          <Button style={{ margin: 5 }} type="danger" onClick={() => setCurrent(ticket, 'image')}>
+        <Actions id="skip">
+          <Button
+            icon="camera"
+            size="small"
+            type="danger"
+            onClick={() => setCurrent(ticket, 'image')}
+          >
             Tomar foto
           </Button>
           <Button
-            style={{ margin: 5 }}
+            size="small"
             type="primary"
             disabled={!ticket.outTruckImage}
             onClick={() => setCurrent(ticket, 'submit')}
+            icon="money-collect"
           >
             Cobrar
           </Button>
           <Button
-            style={{ margin: 5 }}
+            size="small"
             onClick={() =>
               printTicket(
                 <TicketPanel ticket={ticket} setCurrent={setCurrent} printTicket={printTicket} />
@@ -178,18 +214,30 @@ class TicketPanel extends Component {
             }
             disabled={!ticket.totalPrice}
             type="primary"
+            icon="printer"
           >
             Imprimir
           </Button>
           <Button
-            style={{ margin: 5 }}
+            size="small"
             type="dashed"
             disabled={!ticket.totalPrice}
             onClick={() => this.addTicketToTurn(ticket.id)}
+            icon="plus"
           >
             Agregar a turno
           </Button>
-        </span>
+          <Button
+            style={{ marginLeft: 'auto' }}
+            size="small"
+            onClick={() => this.handleCancel(ticket.id)}
+            type="danger"
+            ghost
+            icon="close"
+          >
+            Cancelar
+          </Button>
+        </Actions>
       </>
     );
   }
@@ -199,7 +247,8 @@ TicketPanel.propTypes = {
   ticket: PropTypes.object.isRequired,
   client: PropTypes.object.isRequired,
   turn: PropTypes.object.isRequired,
-  refetch: PropTypes.func.isRequired,
+  refetchTickets: PropTypes.func.isRequired,
+  refetchTurn: PropTypes.func.isRequired,
   setCurrent: PropTypes.func.isRequired,
   printTicket: PropTypes.func.isRequired
 };

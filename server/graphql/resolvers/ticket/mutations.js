@@ -27,10 +27,11 @@ const ticketMutations = {
         { ...ticket },
         { new: true }
       ).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
         .populate('client truck product')
         .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const loadedTickets = await Ticket.find({
+        disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
       }).populate('client truck product');
@@ -51,7 +52,7 @@ const ticketMutations = {
 
     const ticketExists = await Ticket.aggregate([
       { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
-      { $match: { 'truck.plates': plates, turn: { $exists: false } } }
+      { $match: { 'truck.plates': plates, turn: { $exists: false }, disabled: false } }
     ]);
 
     if (ticketExists.length !== 0) throw new Error(`¡El camión ${plates} ya está activo!`);
@@ -74,10 +75,11 @@ const ticketMutations = {
       await newTicket.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
-      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
         .populate('client truck product')
         .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const notLoadedActiveTickets = await Ticket.find({
+        disabled: false,
         turn: { $exists: false },
         load: { $exists: false }
       }).populate('client truck product');
@@ -123,11 +125,13 @@ const ticketMutations = {
       ).populate('client truck product');
 
       const loadedTickets = await Ticket.find({
+        disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
       }).populate('client truck product');
 
       const notLoadedActiveTickets = await Ticket.find({
+        disabled: false,
         turn: { $exists: false },
         load: { $exists: false }
       }).populate('client truck product');
@@ -201,7 +205,42 @@ const ticketMutations = {
     } catch (e) {
       return new ApolloError(e);
     }
-  })
+  }),
+  ticketDisable: async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      await Ticket.disableById(id, userRequesting.id);
+      return true;
+    } catch (e) {
+      return e;
+    }
+  },
+  ticketEnable: async (_, { id }) => {
+    try {
+      const ticketToUpdate = await Ticket.findOne({ _id: id }).populate('truck');
+
+      const ticketExists = await Ticket.aggregate([
+        { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+        {
+          $match: {
+            'truck.plates': ticketToUpdate.truck.plates,
+            turn: { $exists: false },
+            disabled: false
+          }
+        }
+      ]);
+
+      if (ticketExists.length !== 0)
+        throw new Error(
+          '¡Hay un ticket activo con la misma placa! Para recuperar este necesitas retirar el otro'
+        );
+
+      await Ticket.enable({ _id: id });
+
+      return true;
+    } catch (e) {
+      return e;
+    }
+  }
 };
 
 export default ticketMutations;

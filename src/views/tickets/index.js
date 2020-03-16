@@ -131,7 +131,7 @@ class Tickets extends Component {
               turnActive={turnActive}
               setCurrent={this.setCurrent}
               printTicket={this.printTicket}
-              refetch={refetch}
+              refetchTurn={refetch}
             />
           )}
           {(currentTicket && currentForm === 'image' && (

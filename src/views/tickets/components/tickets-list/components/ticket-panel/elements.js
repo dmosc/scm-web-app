@@ -15,4 +15,14 @@ const Credit = styled.span`
   color: ${props => (props.credit > 0 ? '#52c41a' : '#f5222d')};
 `;
 
-export { Link, Credit };
+const Actions = styled.div`
+  display: flex;
+  padding-top: 10px;
+  border-top: 1px solid #ecedef;
+
+  button {
+    margin-right: 5px;
+  }
+`;
+
+export { Link, Credit, Actions };

@@ -1,14 +1,15 @@
 import { gql } from 'apollo-boost';
 
 const GET_TICKETS = gql`
-  query tickets($filters: TicketFilters!) {
-    tickets(filters: $filters) {
+  query activeTickets($filters: TicketFilters!) {
+    activeTickets(filters: $filters) {
       id
       folio
       driver
       credit
       bill
       client {
+        id
         firstName
         lastName
         businessName
@@ -30,6 +31,7 @@ const GET_TICKETS = gql`
         weight
       }
       product {
+        id
         name
         price
       }
