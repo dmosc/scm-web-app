@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useAuth } from 'components/providers/withAuth';
 import shortid from 'shortid';
 import { withApollo } from 'react-apollo';
 import { Tag, Button, Table } from 'antd';
@@ -8,6 +9,7 @@ import { GET_ROCKS } from './graphql/queries';
 import { TableContainer, Card } from './elements';
 
 const Products = ({ client }) => {
+  const { isAdmin } = useAuth();
   const [currentProduct, setCurrentProduct] = useState({});
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [products, setProducts] = useState([]);
@@ -58,8 +60,11 @@ const Products = ({ client }) => {
       dataIndex: 'floorPrice',
       key: 'floorPrice',
       render: floorPrice => <Tag color="orange">${floorPrice} MXN</Tag>
-    },
-    {
+    }
+  ];
+
+  if (isAdmin) {
+    columns.push({
       title: 'Acciones',
       key: 'action',
       align: 'right',
@@ -71,8 +76,8 @@ const Products = ({ client }) => {
           size="small"
         />
       )
-    }
-  ];
+    });
+  }
 
   return (
     <TableContainer>

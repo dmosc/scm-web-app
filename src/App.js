@@ -26,8 +26,9 @@ const Clients = Loadable({
   loading: TopBarProgress
 });
 
-const PriceRequests = Loadable({
-  loader: () => import('./views/registry/price-requests'),
+/* webpackChunkName: "ClientPriceRequests" */
+const ClientPriceRequests = Loadable({
+  loader: () => import('./views/registry/clients-price-requests'),
   loading: TopBarProgress
 });
 
@@ -46,6 +47,12 @@ const Users = Loadable({
 /* webpackChunkName: "Products" */
 const Products = Loadable({
   loader: () => import('./views/registry/products'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "ProductPriceRequests" */
+const ProductPriceRequests = Loadable({
+  loader: () => import('./views/registry/products-price-requests'),
   loading: TopBarProgress
 });
 
@@ -101,10 +108,15 @@ const App = ({
           {(isAdmin || isCashier) && <Route exact path="/boletas" component={Tickets} />}
           {(isAdmin || isCashier) && <Route exact path="/registros/clientes" component={Clients} />}
           {(isAdmin || isAccountant) && (
-            <Route exact path="/registros/peticiones-clientes" component={PriceRequests} />
+            <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests} />
           )}
           {(isAdmin || isCashier) && <Route exact path="/registros/camiones" component={Trucks} />}
-          {isAdmin && <Route exact path="/registros/productos" component={Products} />}
+          {(isAdmin || isCashier || isAccountant) && (
+            <Route exact path="/registros/productos" component={Products} />
+          )}
+          {(isAdmin || isAccountant) && (
+            <Route exact path="/registros/peticiones-productos" component={ProductPriceRequests} />
+          )}
           {isAdmin && <Route exact path="/registros/usuarios" component={Users} />}
           {isAdmin && <Route exact path="/historial" component={History} />}
           {isAdmin && <Route exact path="/reportes" component={Reports} />}

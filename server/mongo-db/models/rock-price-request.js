@@ -1,7 +1,9 @@
 import { Schema, model } from 'mongoose';
 import softDelete from 'mongoose-delete';
 
-const Price = new Schema({
+const RockPriceRequest = new Schema({
+  requester: { type: Schema.ObjectId, ref: 'User', required: true },
+  createdAt: { type: Date, default: Date.now },
   rock: { type: Schema.ObjectId, ref: 'Rock', required: true },
   priceRequested: {
     type: Number,
@@ -13,21 +15,16 @@ const Price = new Schema({
       },
       message: 'Price requested must be greater than 0'
     }
-  }
-});
-
-const PriceRequest = new Schema({
-  requester: { type: Schema.ObjectId, ref: 'User', required: true },
-  client: { type: Schema.ObjectId, ref: 'Client', required: true },
-  createdAt: { type: Date, default: Date.now },
-  prices: {
-    type: [Price],
+  },
+  floorPriceRequested: {
+    type: Number,
+    required: true,
     validate: {
       // WATCH OUT: Validators will run on .save() operations
-      validator: function validator(prices) {
-        return prices.length > 0;
+      validator: function validator(price) {
+        return price > 0;
       },
-      message: 'Minimum prices requested must be 1'
+      message: 'Price requested must be greater than 0'
     }
   },
   reviewedBy: { type: Schema.ObjectId, ref: 'User' },
@@ -40,6 +37,6 @@ const PriceRequest = new Schema({
   }
 });
 
-PriceRequest.plugin(softDelete, { deletedAt: true });
+RockPriceRequest.plugin(softDelete, { deletedAt: true });
 
-export default model('PriceRequest', PriceRequest);
+export default model('RockPriceRequest', RockPriceRequest);

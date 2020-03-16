@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Layout as Layer, Icon } from 'antd';
+import { Icon } from 'antd';
 import { withRouter, Link } from 'react-router-dom';
 import { useAuth } from 'components/providers/withAuth';
-import { Menu } from './elements';
+import { Menu, Sider } from './elements';
 
 const { Item, SubMenu, ItemGroup } = Menu;
-const { Sider } = Layer;
 
 const Sidebar = ({ history, collapsed, onCollapse }) => {
   const { isAdmin, isCashier, isLoader, isGuard, isAccountant } = useAuth();
@@ -98,16 +97,24 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               </ItemGroup>
             )}
-            {isAdmin && (
-              <ItemGroup title="Productos">
+            <ItemGroup title="Productos">
+              {(isAdmin || isCashier || isAccountant) && (
                 <Item key="registros/productos">
                   <Link to="/registros/productos">
                     <Icon type="star" />
                     Productos
                   </Link>
                 </Item>
-              </ItemGroup>
-            )}
+              )}
+              {(isAdmin || isAccountant) && (
+                <Item key="registros/peticiones-productos">
+                  <Link to="/registros/peticiones-productos">
+                    <Icon type="form" />
+                    Peticiones
+                  </Link>
+                </Item>
+              )}
+            </ItemGroup>
           </SubMenu>
         )}
         {isAdmin && (
