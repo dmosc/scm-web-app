@@ -120,10 +120,11 @@ const turnMutations = {
       await ticket.save();
       await turn.save();
 
-      const activeTickets = await Ticket.find({ turn: { $exists: false } })
+      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
         .populate('client truck product')
         .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const loadedTickets = await Ticket.find({
+        disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
       }).populate('client truck product');

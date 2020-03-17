@@ -19,13 +19,19 @@ const LoadingBar = styled.div`
       ? '7vw'
       : props.outTruckImage || props.totalPrice
       ? '5vw'
-      : '3vw'}
+      : '3vw'};
   background-color: ${props => (props.disabled ? 'lightGrey' : 'green')};
   border-radius: 5px;
-  
+
   -webkit-transition: width 1000ms ease;
   -ms-transition: width 1000ms ease;
   transition: width 1000ms ease;
 `;
 
-export { LoadingBarContainer, LoadingBar };
+const TitleContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export { LoadingBarContainer, LoadingBar, TitleContainer };

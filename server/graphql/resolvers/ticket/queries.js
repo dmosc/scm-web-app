@@ -15,24 +15,44 @@ const ticketQueries = {
     return ticket;
   }),
   tickets: authenticated(async (_, { filters: { limit } }) => {
-    const tickets = await Ticket.find({})
-      .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('truck product turn')
-      .populate({ path: 'client', populate: { path: 'prices.rock' } });
+    const tickets = await Ticket.find({}).limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
   }),
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
-    const activeTickets = await Ticket.find({ turn: { $exists: false } })
+    const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
       .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('client truck product');
+      .populate('client truck product turn')
+      .populate({ path: 'client', populate: { path: 'prices.rock' } });
 
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return activeTickets;
   }),
+  disabledTickets: authenticated(
+    async (
+      _,
+      { filters: { limit, start = '1970-01-01T00:00:00.000Z', end = '2100-12-31T00:00:00.000Z' } }
+    ) => {
+      const query = {
+        disabled: true,
+        disabledAt: { $gte: new Date(start), $lte: new Date(end) }
+      };
+
+      const disabledTickets = await Ticket.find(query)
+        .limit(limit || Number.MAX_SAFE_INTEGER)
+        .populate('client truck product');
+
+      if (!disabledTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
+      else return disabledTickets;
+    }
+  ),
   notLoadedActiveTickets: authenticated(async (_, { filters: { limit } }) => {
-    const activeTickets = await Ticket.find({ turn: { $exists: false }, load: { $exists: false } })
+    const activeTickets = await Ticket.find({
+      disabled: false,
+      turn: { $exists: false },
+      load: { $exists: false }
+    })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client truck product');
 
@@ -40,7 +60,11 @@ const ticketQueries = {
     else return activeTickets;
   }),
   loadedTickets: authenticated(async (_, { filters: { limit } }) => {
-    const loadedTickets = await Ticket.find({ turn: { $exists: false }, load: { $exists: true } })
+    const loadedTickets = await Ticket.find({
+      disabled: false,
+      turn: { $exists: false },
+      load: { $exists: true }
+    })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client truck product');
 

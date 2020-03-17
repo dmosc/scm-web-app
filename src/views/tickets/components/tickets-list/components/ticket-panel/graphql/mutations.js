@@ -12,4 +12,10 @@ const ADD_TICKET_TO_TURN = gql`
   }
 `;
 
-export { ADD_TICKET_TO_TURN };
+const DISABLE_TICKET = gql`
+  mutation ticketDisable($id: ID!) {
+    ticketDisable(id: $id)
+  }
+`;
+
+export { ADD_TICKET_TO_TURN, DISABLE_TICKET };

@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import softDelete from 'mongoose-delete';
+import disable from 'mongoose-disable';
 import User from './user';
 
 const Ticket = new Schema({
@@ -64,5 +65,6 @@ const Ticket = new Schema({
 });
 
 Ticket.plugin(softDelete, { deletedAt: true });
+Ticket.plugin(disable, { disabledAt: true });
 
 export default model('Ticket', Ticket);
