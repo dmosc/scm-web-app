@@ -88,9 +88,11 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
       const calculateTotal = () => {
         const TAX = 0.16;
 
-        const price = currentTicket.client.prices[currentTicket.product.name]
-          ? currentTicket.client.prices[currentTicket.product.name]
-          : currentTicket.product.price;
+        const specialPrice = currentTicket.client.prices.find(
+          ({ rock }) => rock.id === currentTicket.product.id
+        );
+
+        const price = specialPrice ? specialPrice.price : currentTicket.product.price;
 
         const totalWeight =
           currentTicket.totalWeight && weight === 0
