@@ -9,6 +9,7 @@ const ACTIVE_TICKETS = gql`
       credit
       bill
       client {
+        id
         firstName
         lastName
         businessName
@@ -30,6 +31,7 @@ const ACTIVE_TICKETS = gql`
         weight
       }
       product {
+        id
         name
         price
       }
@@ -54,6 +56,7 @@ const TICKET_UPDATE = gql`
       credit
       bill
       client {
+        id
         firstName
         lastName
         businessName
@@ -75,6 +78,7 @@ const TICKET_UPDATE = gql`
         weight
       }
       product {
+        id
         name
         price
       }

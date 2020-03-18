@@ -22,11 +22,9 @@ const ticketMutations = {
     const { ticket } = args;
 
     try {
-      const newTicket = await Ticket.findByIdAndUpdate(
-        ticket.ticket,
-        { ...ticket },
-        { new: true }
-      ).populate('client truck product');
+      const newTicket = await Ticket.findByIdAndUpdate(ticket.ticket, { ...ticket }, { new: true })
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
       const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
         .populate('client truck product')
         .populate({ path: 'client', populate: { path: 'prices.rock' } });
@@ -105,7 +103,9 @@ const ticketMutations = {
         { new: true }
       );
 
-      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+      const ticket = await Ticket.findById(newTicket.id)
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
 
@@ -122,7 +122,9 @@ const ticketMutations = {
         ticket.ticket,
         { load: Date.now(), 'usersInvolved.loader': userRequesting.id },
         { new: true }
-      ).populate('client truck product');
+      )
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
 
       const loadedTickets = await Ticket.find({
         disabled: false,
@@ -197,7 +199,9 @@ const ticketMutations = {
       await newTicket.save();
       await client.save();
 
-      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+      const ticket = await Ticket.findById(newTicket.id)
+        .populate('client truck product')
+        .populate({ path: 'client', populate: { path: 'prices.rock' } });
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
 
