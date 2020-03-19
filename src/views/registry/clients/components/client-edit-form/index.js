@@ -1,18 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import {
-  Drawer,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Button,
-  Icon,
-  Typography,
-  notification,
-  Modal
-} from 'antd';
+import { Button, Drawer, Form, Icon, Input, InputNumber, Modal, notification, Select, Typography } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
 import { GET_ROCKS } from './graphql/queries';
@@ -60,7 +49,26 @@ class EditForm extends Component {
     form.validateFields(
       async (
         err,
-        { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, credit }
+        {
+          firstName,
+          lastName,
+          email,
+          businessName,
+          rfc,
+          CFDIuse,
+          cellphone,
+          country,
+          state,
+          city,
+          suburb,
+          municipality,
+          street,
+          extNumber,
+          intNumber,
+          zipcode,
+          balance,
+          credit
+        }
       ) => {
         if (!err) {
           try {
@@ -78,8 +86,19 @@ class EditForm extends Component {
                   rfc,
                   CFDIuse,
                   cellphone,
-                  address,
+                  address: {
+                    country,
+                    state,
+                    city,
+                    suburb,
+                    municipality,
+                    street,
+                    extNumber,
+                    intNumber,
+                    zipcode
+                  },
                   prices,
+                  balance,
                   credit
                 }
               }
@@ -96,6 +115,7 @@ class EditForm extends Component {
             notification.open({
               message: 'Ha habido un error modificando la información'
             });
+
             this.setState({ loading: false });
           }
         } else {
@@ -256,23 +276,123 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('address', {
-              initialValue: currentClient.address,
-              rules: [{ required: true, message: 'Ingrese la dirección del cliente' }]
+            {form.getFieldDecorator('country', {
+              initialValue: currentClient?.address?.country,
+              rules: [{ required: true, message: 'Ingrese el país del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                placeholder="Dirección física"
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="País"
               />
             )}
           </Form.Item>
-          <Form.Item label="Crédito" style={{ color: 'rgba(0,0,0,.25)' }}>
+          <Form.Item>
+            {form.getFieldDecorator('state', {
+              initialValue: currentClient?.address?.state,
+              rules: [{ required: true, message: 'Ingrese el estado del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Estado"
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('municipality', {
+              initialValue: currentClient?.address?.municipality,
+              rules: [{ required: true, message: 'Ingrese el municipio del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Municipio"
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('city', {
+              initialValue: currentClient?.address?.city,
+              rules: [{ required: true, message: 'Ingrese la ciudad del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Ciudad"
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('suburb', {
+              initialValue: currentClient?.address?.suburb,
+              rules: [{ required: true, message: 'Ingrese la colonia del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Colonia"
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('street', {
+              initialValue: currentClient?.address?.street,
+              rules: [{ required: true, message: 'Ingrese la calle del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Calle"
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('extNumber', {
+              initialValue: currentClient?.address?.extNumber,
+              rules: [{ required: false, message: 'Ingrese número exterior del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Número ext."
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('intNumber', {
+              initialValue: currentClient?.address?.intNumber,
+              rules: [{ required: true, message: 'Ingrese número interior del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Número int."
+              />
+            )}
+          </Form.Item>
+          <Form.Item>
+            {form.getFieldDecorator('zipcode', {
+              initialValue: currentClient?.address?.zipcode,
+              rules: [{ required: true, message: 'Ingrese el código postal del cliente' }]
+            })(
+              <Input
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                placeholder="Código postal"
+              />
+            )}
+          </Form.Item>
+          <Form.Item label="Crédito actual" style={{ color: 'rgba(0,0,0,.25)' }}>
             {form.getFieldDecorator('credit', {
               initialValue: currentClient.credit ? currentClient.credit : 0
             })(
               <InputNumber
                 style={{ width: '100%' }}
                 placeholder="Crédito en MXN"
+                min={0}
+                step={0.1}
+              />
+            )}
+          </Form.Item>
+          <Form.Item label="Balance actual" style={{ color: 'rgba(0,0,0,.25)' }}>
+            {form.getFieldDecorator('balance', {
+              initialValue: currentClient.balance ? currentClient.balance : 0
+            })(
+              <InputNumber
+                style={{ width: '100%' }}
+                placeholder="Balance en MXN"
                 min={0}
                 step={0.1}
               />

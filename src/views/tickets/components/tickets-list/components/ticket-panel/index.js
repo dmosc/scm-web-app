@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { Button, message, Modal } from 'antd';
-import { Link, Credit, Actions } from './elements';
+import { Actions, Credit, Link } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET } from './graphql/mutations';
 
 const { confirm } = Modal;
@@ -105,7 +105,7 @@ class TicketPanel extends Component {
             <tr>
               <td>
                 <b>DIRECCIÓN</b>
-                {`: ${ticket.client.address}`}
+                {`: ${ticket.client.address?.street}`}
               </td>
               <td>
                 <b>PLACAS</b>
@@ -124,7 +124,7 @@ class TicketPanel extends Component {
             <tr>
               <td>
                 <b>CÓDIGO POSTAL</b>
-                {`: ${ticket.client.zipcode}`}
+                {`: ${ticket.client.address?.zipcode}`}
               </td>
               <td id="skip">
                 <Link
