@@ -1,5 +1,5 @@
 import migrate from 'migrate';
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import path from 'path';
 import { MONGO_DB_URI } from '../../config';
 
@@ -30,9 +30,11 @@ const run = async () => {
     await mongoose.connect(MONGO_DB_URI, {
       useNewUrlParser: true,
       useCreateIndex: true,
-      useFindAndModify: false
+      useFindAndModify: false,
+      useUnifiedTopology: true
     });
 
+    Schema.Types.String.checkRequired(v => v !== null);
     await migratePromise;
     mongoose.connection.close();
     console.info('Migrations run correctly');

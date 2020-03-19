@@ -10,8 +10,11 @@ const clientMutations = {
     client.businessName = client.businessName.toUpperCase().trim();
     client.username = client.businessName;
     client.rfc = client.rfc.toUpperCase().trim();
-    client.address = client.address.toUpperCase().trim();
     client.email = client.email.toLowerCase().trim();
+
+    Object.keys(client.address).forEach(key => {
+      client.address[key] = client.address[key].toUpperCase().trim();
+    });
 
     await client.save();
     return Client.findOne({ _id: client.id }).populate('prices.rock');

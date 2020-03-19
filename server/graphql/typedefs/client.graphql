@@ -1,6 +1,7 @@
 # Types
 type Client {
   id: ID!
+  uniqueId: Int!
   firstName: String
   lastName: String
   email: String
@@ -10,9 +11,9 @@ type Client {
   rfc: String!
   CFDIuse: CFDIuse!
   cellphone: [String!]!
-  address: String!
-  zipcode: String
+  address: Address!
   prices: [Price]!
+  balance: Float!
   credit: Float!
 }
 
@@ -20,6 +21,18 @@ type ClientTurnSummary {
   info: Client!
   count: Int!
   tickets: [Ticket!]!
+}
+
+type Address {
+  country: String!
+  state: String!
+  municipality: String!
+  city: String!
+  suburb: String!
+  street: String!
+  extNumber: String
+  intNumber: String!
+  zipcode: String!
 }
 
 type Price {
@@ -37,9 +50,9 @@ input ClientInput {
   rfc: String!
   CFDIuse: CFDIuse!
   cellphone: [String!]!
-  address: String!
-  zipcode: String
+  address: AddressInput!
   prices: [PriceInput!]!
+  balance: Float!
   credit: Float!
 }
 
@@ -53,10 +66,22 @@ input ClientEditInput {
   rfc: String
   CFDIuse: CFDIuse
   cellphone: [String]
-  address: String
-  zipcode: String
+  address: AddressInput
   prices: [PriceInput!]!
+  balance: Float!
   credit: Float
+}
+
+input AddressInput {
+  country: String!
+  state: String!
+  municipality: String!
+  city: String!
+  suburb: String!
+  street: String!
+  extNumber: String
+  intNumber: String!
+  zipcode: String!
 }
 
 input PriceInput {

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
-import { Form, Table, notification, Button, Row, Modal } from 'antd';
+import { Button, Form, Modal, notification, Row, Table, Tag } from 'antd';
 import shortid from 'shortid';
 import Title from './components/title';
 import { GET_CLIENTS } from './graphql/queries';
 import { DELETE_CLIENT } from './graphql/mutations';
-import { TableContainer, Card } from './elements';
+import { Card, TableContainer } from './elements';
 import EditForm from './components/client-edit-form';
 import NewForm from './components/new-client-form';
 
@@ -105,7 +105,8 @@ const Clients = ({ client }) => {
     {
       title: 'Celular',
       dataIndex: 'cellphone',
-      key: 'cellphone'
+      key: 'cellphone',
+      render: cellphone => cellphone.map(number => <Tag color="geekblue">{number}</Tag>)
     },
     {
       title: 'Acciones',
