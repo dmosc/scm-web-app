@@ -11,6 +11,7 @@ import {
   Row,
   Select,
   Tooltip,
+  message,
   Typography
 } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
@@ -25,6 +26,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
   const [loadedInitialData, setLoadedInitialData] = useState(false);
   const [weight, setWeight] = useState(0);
   const [total, setTotal] = useState(0);
+  const [specialPrice, setSpecialPrice] = useState();
   const [tax, setTax] = useState(0);
   const [bill, setBill] = useState(false);
   const [isSocket, setIsSocket] = useState();
@@ -80,6 +82,18 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
       setLoadedInitialData(true);
     };
 
+    const getSpecialPrice = async () => {
+      const {
+        data: { clientPriceByClient: specialPriceToset }
+      } = await client.query({
+        query: GET_SPECIAL_PRICE,
+        variables: { client: currentTicket.client.id, rock: currentTicket.product.id }
+      });
+
+      setSpecialPrice(specialPriceToset);
+    };
+
+    getSpecialPrice();
     getDrivers();
   }, [client, currentTicket]);
 
@@ -87,13 +101,6 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
     if (loadedInitialData) {
       const calculateTotal = async () => {
         const TAX = 0.16;
-
-        const {
-          data: { clientPriceByClient: specialPrice }
-        } = await client.query({
-          query: GET_SPECIAL_PRICE,
-          variables: { client: currentTicket.client.id, rock: currentTicket.product.id }
-        });
 
         const price = specialPrice ? specialPrice.price : currentTicket.product.price;
 
@@ -116,7 +123,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
       calculateTotal();
     }
-  }, [client, loadedInitialData, bill, currentTicket, tax, weight]);
+  }, [specialPrice, loadedInitialData, bill, currentTicket, tax, weight]);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -124,6 +131,16 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
     form.validateFields(async (err, { driver, weight: formWeight, credit, bill: formBill }) => {
       if (err) {
+        return;
+      }
+
+      if (typeof credit !== 'boolean') {
+        message.warning('Es necesario seleccionar contado o crédito');
+        return;
+      }
+
+      if (credit === true && currentTicket.client.credit < total) {
+        message.warning('El total excede el crédito disponible del cliente, selecciona contado');
         return;
       }
 
@@ -206,11 +223,17 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
           extra={isSocket ? 'Pesa conectada' : 'No se ha encontrado ninguna pesa. Ingresar manual'}
         >
           {form.getFieldDecorator('weight', {
-            initialValue: currentTicket.weight,
+            initialValue: currentTicket.weight || currentTicket.truck.weight,
             rules: [
               {
+                type: 'number',
                 required: true,
                 message: '¡Toneladas en báscula son requeridas!'
+              },
+              {
+                type: 'number',
+                min: Number(currentTicket.truck.weight),
+                message: 'El peso registrado es menor al peso original del camión'
               }
             ]
           })(

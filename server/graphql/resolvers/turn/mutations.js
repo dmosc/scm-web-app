@@ -1,4 +1,4 @@
-import { Ticket, Turn } from '../../../mongo-db/models';
+import { ClientPrice, Ticket, Turn } from '../../../mongo-db/models';
 import { Ticket as NewTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
 
@@ -49,24 +49,35 @@ const turnMutations = {
       const ticketsToDestroy = [];
 
       for (let i = 0; i < tickets.length; i++) {
-        const {
-          client: { prices },
-          product: { name: product, price }
-        } = tickets[i];
+        const { product } = tickets[i];
+
+        let price;
+        // eslint-disable-next-line no-await-in-loop
+        const specialPrice = await ClientPrice.find({
+          client: tickets[i].client,
+          rock: tickets[i].product
+        }).sort({
+          addedAt: 'descending'
+        });
+
+        if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product.price;
+        else price = specialPrice[0].price;
 
         const ticket = NewTicket.create({
           folio: tickets[i].folio,
           driver: tickets[i].driver,
           client: `${tickets[i].client.firstName} ${tickets[i].client.lastName}`,
           businessName: tickets[i].client.businessName,
-          address: Object.values(tickets[i].client.address).filter(value => typeof value === 'string').join(', '),
+          address: Object.values(tickets[i].client.address)
+            .filter(value => typeof value === 'string')
+            .join(', '),
           rfc: tickets[i].client.rfc,
           plates: tickets[i].truck.plates,
           truckWeight: tickets[i].truck.weight,
           totalWeight: tickets[i].weight,
           tons: tickets[i].totalWeight,
-          product: tickets[i].product.name,
-          price: prices[product] ? prices[product] : price,
+          product: product.name,
+          price,
           tax: tickets[i].tax,
           total: tickets[i].totalPrice,
           inTruckImage: tickets[i].inTruckImage,
@@ -96,6 +107,7 @@ const turnMutations = {
 
       return turn;
     } catch (e) {
+      console.log(e);
       return e;
     }
   }),
@@ -120,9 +132,10 @@ const turnMutations = {
       await ticket.save();
       await turn.save();
 
-      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      const activeTickets = await Ticket.find({
+        disabled: false,
+        turn: { $exists: false }
+      }).populate('client truck product');
       const loadedTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },

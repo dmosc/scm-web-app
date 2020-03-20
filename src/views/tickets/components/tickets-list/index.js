@@ -32,7 +32,7 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
     const unsubscribeToTicketUpdates = subscribeToMore({
       document: TICKET_UPDATE,
       updateQuery: (prev, { subscriptionData: { data: newData } }) => {
-        const { tickets: oldTickets } = prev;
+        const { activeTickets: oldTickets } = prev;
         const { ticketUpdate } = newData;
         if (!ticketUpdate) return prev;
 
@@ -58,10 +58,14 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
 
   const { activeTickets, refetch } = data;
 
-  return(
+  return (
     <>
       <TitleContainer>
-        {activeTickets?.length === 0 ? <Title level={4}>No hay tickets disponibles...</Title> : <Title level={4}>Lista de boletas</Title>}
+        {activeTickets?.length === 0 ? (
+          <Title level={4}>No hay tickets disponibles...</Title>
+        ) : (
+          <Title level={4}>Lista de boletas</Title>
+        )}
         <Dropdown
           overlay={
             <Menu>
@@ -74,35 +78,41 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
           </Button>
         </Dropdown>
       </TitleContainer>
-      {activeTickets?.length !== 0 && <Collapse accordion>
-        {activeTickets?.map(ticket => (
-          <Panel
-            disabled={!turnActive}
-            key={ticket.id}
-            header={`${ticket.truck.plates}`}
-            extra={
-              <LoadingBarContainer>
-                <LoadingBar
-                  disabled={!turnActive}
-                  totalPrice={ticket.totalPrice}
-                  outTruckImage={ticket.outTruckImage}
-                />
-              </LoadingBarContainer>
-            }
-          >
-            <TicketPanel
-              ticket={ticket}
-              turn={turnActive}
-              refetchTickets={refetch}
-              refetchTurn={refetchTurn}
-              setCurrent={setCurrent}
-              printTicket={printTicket}
-            />
-          </Panel>
-        ))}
-      </Collapse>}
+      {activeTickets?.length !== 0 && (
+        <Collapse accordion>
+          {activeTickets?.map(ticket => (
+            <Panel
+              disabled={!turnActive}
+              key={ticket.id}
+              header={`${ticket.truck.plates}`}
+              extra={
+                <LoadingBarContainer>
+                  <LoadingBar
+                    disabled={!turnActive}
+                    totalPrice={ticket.totalPrice}
+                    outTruckImage={ticket.outTruckImage}
+                  />
+                </LoadingBarContainer>
+              }
+            >
+              <TicketPanel
+                ticket={ticket}
+                turn={turnActive}
+                refetchTickets={refetch}
+                refetchTurn={refetchTurn}
+                setCurrent={setCurrent}
+                printTicket={printTicket}
+              />
+            </Panel>
+          ))}
+        </Collapse>
+      )}
       {isCancelDrawerOpen && (
-        <TicketsCanceled close={() => toggleCancelDrawer(false)} refetchTickets={refetch} refetchTurn={refetchTurn} />
+        <TicketsCanceled
+          close={() => toggleCancelDrawer(false)}
+          refetchTickets={refetch}
+          refetchTurn={refetchTurn}
+        />
       )}
     </>
   );

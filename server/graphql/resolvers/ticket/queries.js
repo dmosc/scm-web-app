@@ -23,8 +23,7 @@ const ticketQueries = {
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
       .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('client truck product turn')
-      .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      .populate('client truck product turn');
 
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return activeTickets;
