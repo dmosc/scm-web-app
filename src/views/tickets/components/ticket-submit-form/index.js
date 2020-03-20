@@ -2,9 +2,19 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
-import { Form, InputNumber, Modal, notification, Radio, Row, Select, Tooltip, Typography } from 'antd';
+import {
+  Form,
+  InputNumber,
+  Modal,
+  notification,
+  Radio,
+  Row,
+  Select,
+  Tooltip,
+  Typography
+} from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import { GET_TRUCK_DRIVERS } from './graphql/queries';
+import { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE } from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -75,12 +85,17 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
   useEffect(() => {
     if (loadedInitialData) {
-      const calculateTotal = () => {
+      const calculateTotal = async () => {
         const TAX = 0.16;
 
-        const price = currentTicket.client.prices[currentTicket.product.name]
-          ? currentTicket.client.prices[currentTicket.product.name]
-          : currentTicket.product.price;
+        const {
+          data: { clientPriceByClient: specialPrice }
+        } = await client.query({
+          query: GET_SPECIAL_PRICE,
+          variables: { client: currentTicket.client.id, rock: currentTicket.product.id }
+        });
+
+        const price = specialPrice ? specialPrice.price : currentTicket.product.price;
 
         const totalWeight =
           currentTicket.totalWeight && weight === 0
@@ -101,7 +116,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
       calculateTotal();
     }
-  }, [loadedInitialData, bill, currentTicket, tax, weight]);
+  }, [client, loadedInitialData, bill, currentTicket, tax, weight]);
 
   const handleSubmit = e => {
     e.preventDefault();

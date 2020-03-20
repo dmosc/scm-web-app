@@ -1,4 +1,4 @@
-import { PriceRequest, Client } from '../../../mongo-db/models';
+import { PriceRequest, Client, ClientPrice } from '../../../mongo-db/models';
 
 const priceRequestMutations = {
   priceRequest: async (_, args, { req: { userRequesting } }) => {
@@ -41,33 +41,14 @@ const priceRequestMutations = {
 
       // Only apply prices to client if accepted
       if (newPriceRequest.status === 'ACCEPTED') {
-        const clientToUpdate = await Client.findOne({ _id: priceRequest.client });
+        const { id: client } = await Client.findOne({ _id: priceRequest.client });
 
-        const mappedPriceRequests = {};
-        priceRequest.prices.forEach(({ rock, priceRequested: price }) => {
-          mappedPriceRequests[rock] = {
-            rock,
-            price
-          };
+        const newPrices = priceRequest.prices.map(({ rock, priceRequested: price }) => {
+          const newPrice = new ClientPrice({ client, rock, price, setBy: userRequesting.id });
+          return newPrice.save();
         });
 
-        const newPrices = clientToUpdate.prices.map(price => {
-          if (mappedPriceRequests[price.rock] && !mappedPriceRequests[price.rock].added) {
-            mappedPriceRequests[price.rock].added = true;
-            return mappedPriceRequests[price.rock];
-          }
-
-          return price;
-        });
-
-        Object.keys(mappedPriceRequests).forEach(key => {
-          if (!mappedPriceRequests[key].added) newPrices.push(mappedPriceRequests[key]);
-        });
-
-        await Client.findOneAndUpdate(
-          { _id: priceRequest.client },
-          { $set: { prices: newPrices } }
-        );
+        await Promise.all(newPrices);
       }
     }
 

@@ -23,13 +23,6 @@ const EDIT_CLIENT = gql`
         intNumber
         zipcode
       }
-      prices {
-        rock {
-          id
-          name
-        }
-        price
-      }
       credit
     }
   }

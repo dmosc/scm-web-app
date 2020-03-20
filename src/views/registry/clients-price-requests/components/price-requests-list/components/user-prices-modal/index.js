@@ -3,29 +3,28 @@ import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { Modal, Table, Tag } from 'antd';
-import { GET_CLIENT } from './graphql/queries';
+import { GET_SPECIAL_PRICES } from './graphql/queries';
 
 const UserPricesModal = ({ toggleUserPricesModal, userId, client: apollo, visible }) => {
-  const [client, setClient] = useState({});
+  const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!userId) {
-      setClient({});
+      setPrices([]);
       return;
     }
 
     const getUserPrices = async () => {
       const {
-        data: { client: clientToSet }
+        data: { clientPricesByClient: pricesToSet }
       } = await apollo.query({
-        query: GET_CLIENT,
-        variables: { id: userId }
+        query: GET_SPECIAL_PRICES,
+        variables: { client: userId }
       });
 
-      delete clientToSet.prices.__typename;
       setLoading(false);
-      setClient(clientToSet);
+      setPrices(pricesToSet);
     };
 
     getUserPrices();
@@ -56,7 +55,7 @@ const UserPricesModal = ({ toggleUserPricesModal, userId, client: apollo, visibl
       <Table
         pagination={false}
         columns={columns}
-        dataSource={client.prices?.map(price => ({ ...price, key: shortid.generate() }))}
+        dataSource={prices?.map(price => ({ ...price, key: shortid.generate() }))}
       />
     </Modal>
   );

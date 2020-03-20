@@ -23,13 +23,6 @@ const GET_CLIENTS = gql`
         intNumber
         zipcode
       }
-      prices {
-        rock {
-          id
-          name
-        }
-        price
-      }
       credit
     }
   }

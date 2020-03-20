@@ -26,13 +26,6 @@ const GET_TICKETS = gql`
         }
         rfc
         credit
-        prices {
-          rock {
-            id
-            name
-          }
-          price
-        }
       }
       truck {
         id

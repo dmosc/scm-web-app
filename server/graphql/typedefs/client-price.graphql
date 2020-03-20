@@ -1,0 +1,22 @@
+# Types
+type ClientPrice {
+  id: ID!
+  client: Client!
+  rock: Rock!
+  price: Float!
+  addedAt: Date!
+  setBy: User!
+  noSpecialPrice: Boolean!
+}
+
+# Input
+
+# NOTE: CLIENT PRICE SHOULD ONLY BE ADDED
+# THERE IS NO WAY YOU CAN EDIT, THIS WAY WE KEEP TRACK
+# OF EVERY SINGLE CHANGE ON CLIENT PRICES
+input ClientPriceInput {
+  client: ID!
+  rock: ID!
+  price: Float!
+  noSpecialPrice: Boolean
+}
