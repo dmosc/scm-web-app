@@ -1,6 +1,5 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
-import uniqueValidator from 'mongoose-unique-validator';
 
 const Truck = new Schema({
   plates: { type: String, required: true, unique: true },
@@ -11,7 +10,6 @@ const Truck = new Schema({
   drivers: [{ type: String, required: true, default: [] }]
 });
 
-Truck.plugin(uniqueValidator);
 Truck.plugin(softDelete, { deletedAt: true });
 
 export default model('Truck', Truck);

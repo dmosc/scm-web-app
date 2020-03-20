@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import {
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Button,
-  Select,
-  Typography,
-  Drawer,
-  notification,
-  Modal
-} from 'antd';
+import { Button, Drawer, Form, Icon, Input, InputNumber, Modal, notification, Select, Typography } from 'antd';
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import PriceEditModal from './components/price-edit-modal';
 import { REGISTER_CLIENT } from './graphql/mutations';
@@ -29,6 +18,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
   const [currentPriceTotal, setCurrentPriceTotal] = useState(0);
   const [parsedPrices, setParsedPrices] = useState({});
   const [rocks, setRocks] = useState([]);
+  const [address, setAddress] = useState({});
 
   useEffect(() => {
     const getPublicPrices = async () => {
@@ -59,7 +49,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
     form.validateFields(
       async (
         err,
-        { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, address, credit }
+        { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, balance, credit }
       ) => {
         if (!err) {
           const {
@@ -77,6 +67,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
                 cellphone,
                 address,
                 prices: newPrices,
+                balance,
                 credit
               }
             }
@@ -88,6 +79,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           setCurrentPrice(null);
           setCurrentPriceTotal(0);
           setPrices([]);
+          setAddress({});
 
           notification.open({
             message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
@@ -247,20 +239,83 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item>
-          {form.getFieldDecorator('address', {
-            rules: [{ required: true, message: 'Ingrese la dirección del cliente' }]
-          })(
-            <Input
-              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Dirección física"
-            />
-          )}
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="País"
+            onChange={({ target: { value } }) => setAddress({ ...address, country: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Estado"
+            onChange={({ target: { value } }) => setAddress({ ...address, state: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Municipio"
+            onChange={({ target: { value } }) => setAddress({ ...address, municipality: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Ciudad"
+            onChange={({ target: { value } }) => setAddress({ ...address, city: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Colonia"
+            onChange={({ target: { value } }) => setAddress({ ...address, suburb: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Calle"
+            onChange={({ target: { value } }) => setAddress({ ...address, street: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Número ext."
+            onChange={({ target: { value } }) => setAddress({ ...address, intNumber: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Número int."
+            onChange={({ target: { value } }) => setAddress({ ...address, extNumber: value })}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Input
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Código Postal"
+            onChange={({ target: { value } }) => setAddress({ ...address, zipcode: value })}
+          />
         </Form.Item>
         <Form.Item label="Crédito inicial" style={{ color: 'rgba(0,0,0,.25)' }}>
           {form.getFieldDecorator('credit', { initialValue: 0 })(
             <InputNumber
               style={{ width: '100%' }}
               placeholder="Crédito inicial en MXN"
+              min={0}
+              step={0.1}
+            />
+          )}
+        </Form.Item>
+        <Form.Item label="Balance inicial" style={{ color: 'rgba(0,0,0,.25)' }}>
+          {form.getFieldDecorator('balance', { initialValue: 0 })(
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="Balance inicial en MXN"
               min={0}
               step={0.1}
             />
@@ -297,7 +352,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           </Button>
         </Form.Item>
       </Form>
-      {currentPrice && (
+      {currentPrice !== null && (
         <PriceEditModal
           visible={showPriceModal}
           currentPrice={currentPrice}

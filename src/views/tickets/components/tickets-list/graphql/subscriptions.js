@@ -13,8 +13,17 @@ const ACTIVE_TICKETS = gql`
         firstName
         lastName
         businessName
-        address
-        zipcode
+        address {
+          country
+          state
+          municipality
+          city
+          suburb
+          street
+          extNumber
+          intNumber
+          zipcode
+        }
         rfc
         credit
         prices {
@@ -60,10 +69,19 @@ const TICKET_UPDATE = gql`
         firstName
         lastName
         businessName
-        address
+        address {
+          country
+          state
+          municipality
+          city
+          suburb
+          street
+          extNumber
+          intNumber
+          zipcode
+        }
         rfc
         credit
-        zipcode
         prices {
           rock {
             id

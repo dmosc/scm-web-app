@@ -13,8 +13,17 @@ const GET_TICKETS = gql`
         firstName
         lastName
         businessName
-        address
-        zipcode
+        address {
+          country
+          state
+          municipality
+          city
+          suburb
+          street
+          extNumber
+          intNumber
+          zipcode
+        }
         rfc
         credit
         prices {

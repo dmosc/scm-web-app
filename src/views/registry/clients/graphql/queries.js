@@ -12,7 +12,17 @@ const GET_CLIENTS = gql`
       rfc
       CFDIuse
       cellphone
-      address
+      address {
+        country
+        state
+        municipality
+        city
+        suburb
+        street
+        extNumber
+        intNumber
+        zipcode
+      }
       prices {
         rock {
           id

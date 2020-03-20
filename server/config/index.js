@@ -20,20 +20,9 @@ const AWS_CONFIG = {
 
 const { API_PORT } = process.env;
 const { MONGO_DB_URI } = process.env;
-const { MONGO_DB_LOCAL_URI } = process.env;
 const { S3_BUCKET } = process.env;
 const { S3_REGION } = process.env;
 const { JWT_SECRET } = process.env;
 const { AES_SECRET } = process.env;
 
-export {
-  ENV,
-  AWS_CONFIG,
-  API_PORT,
-  MONGO_DB_URI,
-  MONGO_DB_LOCAL_URI,
-  S3_BUCKET,
-  S3_REGION,
-  JWT_SECRET,
-  AES_SECRET
-};
+export { ENV, AWS_CONFIG, API_PORT, MONGO_DB_URI, S3_BUCKET, S3_REGION, JWT_SECRET, AES_SECRET };

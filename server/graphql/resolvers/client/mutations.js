@@ -4,14 +4,21 @@ import authenticated from '../../middleware/authenticated';
 const clientMutations = {
   client: authenticated(async (_, args) => {
     const client = new Client({ ...args.client });
+    const [{ uniqueId }] = await Client.find({})
+      .sort({ uniqueId: -1 })
+      .limit(1);
 
     client.firstName = client.firstName.toUpperCase().trim();
     client.lastName = client.lastName.toUpperCase().trim();
     client.businessName = client.businessName.toUpperCase().trim();
     client.username = client.businessName;
     client.rfc = client.rfc.toUpperCase().trim();
-    client.address = client.address.toUpperCase().trim();
     client.email = client.email.toLowerCase().trim();
+    client.uniqueId = uniqueId + 1;
+
+    Object.keys(client.address).forEach(key => {
+      client.address[key] = client.address[key].toUpperCase().trim();
+    });
 
     await client.save();
     return Client.findOne({ _id: client.id }).populate('prices.rock');

@@ -12,7 +12,17 @@ const REGISTER_CLIENT = gql`
       rfc
       CFDIuse
       cellphone
-      address
+      address {
+        country
+        state
+        municipality
+        city
+        suburb
+        street
+        extNumber
+        intNumber
+        zipcode
+      }
       prices {
         rock {
           id
