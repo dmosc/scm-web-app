@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from '@apollo/react-hoc';
-import { Collapse, Typography, Button, Menu, Dropdown, Icon } from 'antd';
+import { Button, Collapse, Dropdown, Icon, Menu, Typography } from 'antd';
 import TicketPanel from './components/ticket-panel';
 import TicketsCanceled from './components/tickets-canceled';
 import { LoadingBar, LoadingBarContainer, TitleContainer } from './elements';
@@ -58,12 +58,10 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
 
   const { activeTickets, refetch } = data;
 
-  return activeTickets?.length === 0 ? (
-    <Title level={4}>No hay tickets disponibles...</Title>
-  ) : (
+  return(
     <>
       <TitleContainer>
-        <Title level={4}>Lista de boletas</Title>
+        {activeTickets?.length === 0 ? <Title level={4}>No hay tickets disponibles...</Title> : <Title level={4}>Lista de boletas</Title>}
         <Dropdown
           overlay={
             <Menu>
@@ -76,7 +74,7 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
           </Button>
         </Dropdown>
       </TitleContainer>
-      <Collapse accordion>
+      {activeTickets?.length !== 0 && <Collapse accordion>
         {activeTickets?.map(ticket => (
           <Panel
             disabled={!turnActive}
@@ -102,23 +100,24 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
             />
           </Panel>
         ))}
-        {isCancelDrawerOpen && (
-          <TicketsCanceled close={() => toggleCancelDrawer(false)} refetchTickets={refetch} />
-        )}
-      </Collapse>
+      </Collapse>}
+      {isCancelDrawerOpen && (
+        <TicketsCanceled close={() => toggleCancelDrawer(false)} refetchTickets={refetch} refetchTurn={refetchTurn} />
+      )}
     </>
   );
 };
 
 TicketList.defaultProps = {
   loading: false,
-  error: false
+  error: false,
+  turnActive: null
 };
 
 TicketList.propTypes = {
   data: PropTypes.object.isRequired,
   refetchTurn: PropTypes.func.isRequired,
-  turnActive: PropTypes.object.isRequired,
+  turnActive: PropTypes.object,
   setCurrent: PropTypes.func.isRequired,
   printTicket: PropTypes.func.isRequired,
   loading: PropTypes.bool,

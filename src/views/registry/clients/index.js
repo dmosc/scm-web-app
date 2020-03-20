@@ -106,7 +106,12 @@ const Clients = ({ client }) => {
       title: 'Celular',
       dataIndex: 'cellphone',
       key: 'cellphone',
-      render: cellphone => cellphone.map(number => <Tag color="geekblue">{number}</Tag>)
+      render: cellphone =>
+        cellphone.map(number => (
+          <Tag color="geekblue" key={number}>
+            {number}
+          </Tag>
+        ))
     },
     {
       title: 'Acciones',

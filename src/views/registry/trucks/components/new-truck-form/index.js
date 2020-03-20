@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'debounce';
 import { withApollo } from 'react-apollo';
-import { Form, Icon, Input, InputNumber, Button, Select, Drawer, notification } from 'antd';
+import { Button, Drawer, Form, Icon, Input, InputNumber, notification, Select } from 'antd';
 import { REGISTER_TRUCK } from './graphql/mutations';
 import { GET_CLIENTS } from './graphql/queries';
 
@@ -95,7 +95,7 @@ const NewClientForm = ({ form, visible, toggleNewTruckModal, client, trucks, set
 
   return (
     <Drawer
-      title="Añade un nuevo cliente"
+      title="Añade un nuevo camión"
       visible={visible}
       onClose={() => toggleNewTruckModal(false)}
       width={600}

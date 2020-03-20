@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { Drawer, List, Typography, Button, message } from 'antd';
+import { Button, Drawer, List, message, Typography } from 'antd';
 import { withApollo } from 'react-apollo';
 import { GET_TICKETS_CANCELED } from './graphql/queries';
 import { ENABLE_TICKET } from './graphql/mutations';
@@ -9,7 +9,7 @@ import { Container } from './elements';
 
 const { Text } = Typography;
 
-const TicketsCanceled = ({ client, close, refetchTickets }) => {
+const TicketsCanceled = ({ client, close, refetchTickets, refetchTurn }) => {
   const [disabledTickets, setDisabledTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +43,7 @@ const TicketsCanceled = ({ client, close, refetchTickets }) => {
     } else {
       message.success('El ticket se ha recuperado correctamente');
       refetchTickets();
+      refetchTurn();
       close();
     }
   };

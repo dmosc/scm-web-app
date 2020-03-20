@@ -240,63 +240,63 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="País"
             onChange={({ target: { value } }) => setAddress({ ...address, country: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Estado"
             onChange={({ target: { value } }) => setAddress({ ...address, state: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Municipio"
             onChange={({ target: { value } }) => setAddress({ ...address, municipality: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Ciudad"
             onChange={({ target: { value } }) => setAddress({ ...address, city: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Colonia"
             onChange={({ target: { value } }) => setAddress({ ...address, suburb: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Calle"
             onChange={({ target: { value } }) => setAddress({ ...address, street: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Número ext."
             onChange={({ target: { value } }) => setAddress({ ...address, intNumber: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Número int."
             onChange={({ target: { value } }) => setAddress({ ...address, extNumber: value })}
           />
         </Form.Item>
         <Form.Item>
           <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="Código Postal"
             onChange={({ target: { value } }) => setAddress({ ...address, zipcode: value })}
           />
@@ -352,7 +352,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           </Button>
         </Form.Item>
       </Form>
-      {currentPrice && (
+      {currentPrice !== null && (
         <PriceEditModal
           visible={showPriceModal}
           currentPrice={currentPrice}

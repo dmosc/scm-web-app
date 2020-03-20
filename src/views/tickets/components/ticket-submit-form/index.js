@@ -1,18 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
-import {
-  Form,
-  Modal,
-  Row,
-  Select,
-  Radio,
-  InputNumber,
-  Tooltip,
-  Typography,
-  notification
-} from 'antd';
+import { Form, InputNumber, Modal, notification, Radio, Row, Select, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
 import { GET_TRUCK_DRIVERS } from './graphql/queries';
 
@@ -41,7 +31,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
           setIsSocket(true);
           socket.on('weight', data => {
             setIsStable(data[data.length - 1] === 'S');
-            const weightToSet = Number(data.substring(0, data.length - 1)) / 100;
+            const weightToSet = Number(data.substring(0, data.length - 1)) / 1000;
             setFieldsValue({
               weight: weightToSet
             });
