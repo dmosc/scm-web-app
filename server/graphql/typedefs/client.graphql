@@ -12,7 +12,6 @@ type Client {
   CFDIuse: CFDIuse!
   cellphone: [String!]!
   address: Address!
-  prices: [Price]!
   balance: Float!
   credit: Float!
 }
@@ -35,11 +34,6 @@ type Address {
   zipcode: String!
 }
 
-type Price {
-  rock: Rock!
-  price: Float!
-}
-
 # Inputs
 input ClientInput {
   firstName: String!
@@ -51,7 +45,6 @@ input ClientInput {
   CFDIuse: CFDIuse!
   cellphone: [String!]!
   address: AddressInput!
-  prices: [PriceInput!]!
   balance: Float!
   credit: Float!
 }
@@ -67,7 +60,6 @@ input ClientEditInput {
   CFDIuse: CFDIuse
   cellphone: [String]
   address: AddressInput
-  prices: [PriceInput!]!
   balance: Float!
   credit: Float
 }
@@ -82,11 +74,6 @@ input AddressInput {
   extNumber: String
   intNumber: String!
   zipcode: String!
-}
-
-input PriceInput {
-  rock: ID!
-  price: Float!
 }
 
 input ClientFilters {

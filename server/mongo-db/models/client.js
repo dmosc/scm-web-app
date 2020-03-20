@@ -3,11 +3,6 @@ import roles from '../enums/roles';
 import { User } from './index';
 import CFDIuse from '../enums/CFDIuse';
 
-const Price = new Schema({
-  rock: { type: Schema.Types.ObjectId, ref: 'Rock', required: true },
-  price: { type: Number, required: true }
-});
-
 const Client = User.discriminator(
   'Client',
   new Schema({
@@ -43,7 +38,6 @@ const Client = User.discriminator(
       intNumber: { type: String, required: true, default: '' },
       zipcode: { type: String, required: true, default: '' }
     },
-    prices: [{ type: Price, required: true, default: [] }],
     balance: { type: Number, required: true, default: 0 },
     credit: { type: Number, required: true, default: 0 }
   })
