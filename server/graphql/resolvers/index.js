@@ -8,6 +8,10 @@ import userMutations from './user/mutations';
 import clientQueries from './client/queries';
 import clientMutations from './client/mutations';
 
+// Client price
+import clientPriceQueries from './client-price/queries';
+import clientPriceMutations from './client-price/mutations';
+
 // Ticket
 import ticketQueries from './ticket/queries';
 import ticketMutations from './ticket/mutations';
@@ -54,6 +58,7 @@ const resolvers = {
   Query: {
     ...userQueries,
     ...clientQueries,
+    ...clientPriceQueries,
     ...ticketQueries,
     ...truckQueries,
     ...rockQueries,
@@ -66,6 +71,7 @@ const resolvers = {
   Mutation: {
     ...userMutations,
     ...clientMutations,
+    ...clientPriceMutations,
     ...ticketMutations,
     ...truckMutations,
     ...rockMutations,

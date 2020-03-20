@@ -1,13 +1,17 @@
 import { ClientPrice } from '../../../mongo-db/models';
 
 const clientPriceMutations = {
-  clientPrice: async (_, { clientPrice }, { req: { userRequesting } }) => {
-    const newClientPrice = new ClientPrice({
-      ...clientPrice,
-      setBy: userRequesting.id
+  clientPrices: async (_, { clientPrices }, { req: { userRequesting } }) => {
+    const pricesToSave = clientPrices.map(clientPrice => {
+      const newClientPrice = new ClientPrice({
+        ...clientPrice,
+        setBy: userRequesting.id
+      });
+
+      return newClientPrice.save();
     });
 
-    newClientPrice.save();
+    return Promise.all(pricesToSave);
   }
 };
 

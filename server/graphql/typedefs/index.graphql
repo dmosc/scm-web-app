@@ -80,7 +80,7 @@ type Mutation {
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, CASHIER])
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Client Price
-  clientPrice(clientPrice: ClientPriceInput!): ClientPrice @auth(roles: [ADMIN, CASHIER])
+  clientPrices(clientPrices: [ClientPriceInput!]!): [ClientPrice!]! @auth(roles: [ADMIN, CASHIER])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
   ticketEdit(ticket: TicketEditInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
