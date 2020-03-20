@@ -35,7 +35,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
                 rfc,
                 CFDIuse,
                 cellphone,
-                address,
+                address: Object.keys(address).length > 0 ? address : null,
                 balance,
                 credit
               }
@@ -124,9 +124,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item>
-          {form.getFieldDecorator('CFDIuse', {
-            rules: [{ required: true, message: 'Seleccione un uso de CFDI!' }]
-          })(
+          {form.getFieldDecorator('CFDIuse')(
             <Select placeholder="Uso de CFDI">
               {CFDIUseEnum.map(option => (
                 <Option key={option} value={option}>
@@ -137,14 +135,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item>
-          {form.getFieldDecorator('cellphone', {
-            rules: [
-              {
-                required: true,
-                message: 'Ingrese 1 o más números de contacto'
-              }
-            ]
-          })(
+          {form.getFieldDecorator('cellphone')(
             <Select
               placeholder="Números de contacto"
               mode="tags"

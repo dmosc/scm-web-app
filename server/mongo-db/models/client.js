@@ -24,7 +24,7 @@ const Client = User.discriminator(
     role: { type: String, enum: [...roles], required: true, default: 'CLIENT' },
     trucks: [{ type: Schema.ObjectId, ref: 'Truck', required: true, default: [] }],
     businessName: { type: String, required: true },
-    rfc: { type: String, required: true, default: '' },
+    rfc: { type: String, required: true, default: 'XAXX010101000' },
     CFDIuse: { type: String, enum: [...CFDIuse], default: 'NE' },
     cellphone: [{ type: String, required: true, default: [] }],
     address: {

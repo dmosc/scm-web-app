@@ -38,30 +38,30 @@ type Address {
 input ClientInput {
   firstName: String!
   lastName: String!
-  email: String!
+  email: String
   trucks: [ID!]
   businessName: String!
-  rfc: String!
-  CFDIuse: CFDIuse!
-  cellphone: [String!]!
-  address: AddressInput!
+  rfc: String
+  CFDIuse: CFDIuse
+  cellphone: [String!]
+  address: AddressInput
   balance: Float!
   credit: Float!
 }
 
 input ClientEditInput {
   id: ID!
-  firstName: String
-  lastName: String
+  firstName: String!
+  lastName: String!
   email: String
-  trucks: [ID]
-  businessName: String
+  trucks: [ID!]
+  businessName: String!
   rfc: String
   CFDIuse: CFDIuse
-  cellphone: [String]
+  cellphone: [String!]
   address: AddressInput
   balance: Float!
-  credit: Float
+  credit: Float!
 }
 
 input AddressInput {

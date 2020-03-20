@@ -156,10 +156,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('CFDIuse', {
-              initialValue: currentClient.CFDIuse,
-              rules: [{ required: true, message: 'Seleccione un uso de CFDI!' }]
-            })(
+            {form.getFieldDecorator('CFDIuse', { initialValue: currentClient.CFDIuse })(
               <Select placeholder="Uso de CFDI">
                 {CFDIuseComponent.map(option => (
                   <Option key={option} value={option}>
@@ -180,10 +177,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('country', {
-              initialValue: currentClient?.address?.country,
-              rules: [{ required: true, message: 'Ingrese el país del cliente' }]
-            })(
+            {form.getFieldDecorator('country', { initialValue: currentClient?.address?.country })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="País"
@@ -191,10 +185,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('state', {
-              initialValue: currentClient?.address?.state,
-              rules: [{ required: true, message: 'Ingrese el estado del cliente' }]
-            })(
+            {form.getFieldDecorator('state', { initialValue: currentClient?.address?.state })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Estado"
@@ -202,10 +193,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('municipality', {
-              initialValue: currentClient?.address?.municipality,
-              rules: [{ required: true, message: 'Ingrese el municipio del cliente' }]
-            })(
+            {form.getFieldDecorator('municipality', { initialValue: currentClient?.address?.municipality })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Municipio"
@@ -213,10 +201,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('city', {
-              initialValue: currentClient?.address?.city,
-              rules: [{ required: true, message: 'Ingrese la ciudad del cliente' }]
-            })(
+            {form.getFieldDecorator('city', { initialValue: currentClient?.address?.city })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Ciudad"
@@ -224,10 +209,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('suburb', {
-              initialValue: currentClient?.address?.suburb,
-              rules: [{ required: true, message: 'Ingrese la colonia del cliente' }]
-            })(
+            {form.getFieldDecorator('suburb', { initialValue: currentClient?.address?.suburb })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Colonia"
@@ -235,10 +217,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('street', {
-              initialValue: currentClient?.address?.street,
-              rules: [{ required: true, message: 'Ingrese la calle del cliente' }]
-            })(
+            {form.getFieldDecorator('street', { initialValue: currentClient?.address?.street })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Calle"
@@ -246,10 +225,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('extNumber', {
-              initialValue: currentClient?.address?.extNumber,
-              rules: [{ required: false, message: 'Ingrese número exterior del cliente' }]
-            })(
+            {form.getFieldDecorator('extNumber', { initialValue: currentClient?.address?.extNumber })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Número ext."
@@ -257,10 +233,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('intNumber', {
-              initialValue: currentClient?.address?.intNumber,
-              rules: [{ required: true, message: 'Ingrese número interior del cliente' }]
-            })(
+            {form.getFieldDecorator('intNumber', { initialValue: currentClient?.address?.intNumber })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Número int."
@@ -268,10 +241,7 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('zipcode', {
-              initialValue: currentClient?.address?.zipcode,
-              rules: [{ required: true, message: 'Ingrese el código postal del cliente' }]
-            })(
+            {form.getFieldDecorator('zipcode', { initialValue: currentClient?.address?.zipcode })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Código postal"
