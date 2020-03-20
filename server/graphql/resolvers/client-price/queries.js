@@ -13,11 +13,11 @@ const clientPriceQueries = {
 
     const pricesPerRock = await Promise.all(pricesPerRockPromise);
 
-    // Filter not nulls
-    return pricesPerRock.filter(price => !!price);
+    // Filter not nulls and not noSpecialPrice flag
+    return pricesPerRock.filter(price => price && !price.noSpecialPrice);
   }),
   clientPriceByClient: authenticated(async (_, { client, rock }) =>
-    ClientPrice.findOne({ client, rock })
+    ClientPrice.findOne({ client, rock, noSpecialPrice: false })
   )
 };
 

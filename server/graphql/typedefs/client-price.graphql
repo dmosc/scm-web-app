@@ -6,6 +6,7 @@ type ClientPrice {
   price: Float!
   addedAt: Date!
   setBy: User!
+  noSpecialPrice: Boolean!
 }
 
 # Input
@@ -17,4 +18,5 @@ input ClientPriceInput {
   client: ID!
   rock: ID!
   price: Float!
+  noSpecialPrice: Boolean
 }
