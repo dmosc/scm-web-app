@@ -59,7 +59,9 @@ const turnMutations = {
           driver: tickets[i].driver,
           client: `${tickets[i].client.firstName} ${tickets[i].client.lastName}`,
           businessName: tickets[i].client.businessName,
-          address: Object.values(tickets[i].client.address).filter(value => typeof value === 'string').join(', '),
+          address: Object.values(tickets[i].client.address)
+            .filter(value => typeof value === 'string')
+            .join(', '),
           rfc: tickets[i].client.rfc,
           plates: tickets[i].truck.plates,
           truckWeight: tickets[i].truck.weight,
@@ -120,9 +122,10 @@ const turnMutations = {
       await ticket.save();
       await turn.save();
 
-      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      const activeTickets = await Ticket.find({
+        disabled: false,
+        turn: { $exists: false }
+      }).populate('client truck product');
       const loadedTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },

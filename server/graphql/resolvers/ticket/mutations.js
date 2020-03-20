@@ -1,6 +1,6 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import { Client, Folio, Rock, Ticket, Truck } from '../../../mongo-db/models';
+import { Client, Folio, Rock, Ticket, Truck, ClientPrice } from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -22,12 +22,15 @@ const ticketMutations = {
     const { ticket } = args;
 
     try {
-      const newTicket = await Ticket.findByIdAndUpdate(ticket.ticket, { ...ticket }, { new: true })
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
-      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      const newTicket = await Ticket.findByIdAndUpdate(
+        ticket.ticket,
+        { ...ticket },
+        { new: true }
+      ).populate('client truck product');
+      const activeTickets = await Ticket.find({
+        disabled: false,
+        turn: { $exists: false }
+      }).populate('client truck product');
       const loadedTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },
@@ -73,9 +76,10 @@ const ticketMutations = {
       await newTicket.save();
 
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
-      const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      const activeTickets = await Ticket.find({
+        disabled: false,
+        turn: { $exists: false }
+      }).populate('client truck product');
       const notLoadedActiveTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },
@@ -103,9 +107,7 @@ const ticketMutations = {
         { new: true }
       );
 
-      const ticket = await Ticket.findById(newTicket.id)
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
 
@@ -122,9 +124,7 @@ const ticketMutations = {
         ticket.ticket,
         { load: Date.now(), 'usersInvolved.loader': userRequesting.id },
         { new: true }
-      )
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      ).populate('client truck product');
 
       const loadedTickets = await Ticket.find({
         disabled: false,
@@ -177,8 +177,16 @@ const ticketMutations = {
     newTicket.folio = folio.name.toString() + folio.count.toString();
     newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(2);
 
-    const specialPrice = client.prices.find(({ rock }) => rock.name === product.name);
-    const price = specialPrice ? specialPrice : product.price;
+    let price;
+    const specialPrice = await ClientPrice.find({
+      client: newTicket.client,
+      rock: newTicket.product
+    }).sort({
+      addedAt: 'descending'
+    });
+
+    if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product.price;
+    else price = specialPrice[0].price;
 
     newTicket.tax = newTicket.bill ? newTicket.totalWeight * price * TAX : 0;
     newTicket.totalPrice = (newTicket.totalWeight * price + newTicket.tax).toFixed(2);
@@ -199,9 +207,7 @@ const ticketMutations = {
       await newTicket.save();
       await client.save();
 
-      const ticket = await Ticket.findById(newTicket.id)
-        .populate('client truck product')
-        .populate({ path: 'client', populate: { path: 'prices.rock' } });
+      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
 
