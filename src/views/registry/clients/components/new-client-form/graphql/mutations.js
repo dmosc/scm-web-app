@@ -23,13 +23,6 @@ const REGISTER_CLIENT = gql`
         intNumber
         zipcode
       }
-      prices {
-        rock {
-          id
-          name
-        }
-        price
-      }
       credit
     }
   }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
-import { Button, Form, Modal, notification, Row, Table, Tag } from 'antd';
+import { Button, Form, Modal, notification, Row, Table, Tag, Tooltip } from 'antd';
 import shortid from 'shortid';
 import Title from './components/title';
 import { GET_CLIENTS } from './graphql/queries';
@@ -10,6 +10,7 @@ import { DELETE_CLIENT } from './graphql/mutations';
 import { Card, TableContainer } from './elements';
 import EditForm from './components/client-edit-form';
 import NewForm from './components/new-client-form';
+import SpecialPrices from './components/special-prices';
 
 const { confirm } = Modal;
 
@@ -18,6 +19,7 @@ const Clients = ({ client }) => {
   const [clients, setClients] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
   const [currentClient, setCurrentClient] = useState(null);
+  const [currentClientPrices, setCurrentClientPrices] = useState();
   const [isNewClientModalOpen, toggleNewClientModal] = useState(false);
   const debouncedFilters = useDebounce(filters, 1000);
 
@@ -119,14 +121,26 @@ const Clients = ({ client }) => {
       align: 'right',
       render: row => (
         <Row>
-          <Button
-            style={{ marginRight: 5 }}
-            onClick={() => setCurrentClient(row)}
-            type="default"
-            icon="edit"
-            size="small"
-          />
-          <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
+          <Tooltip placement="top" title="Editar">
+            <Button
+              style={{ marginRight: 5 }}
+              onClick={() => setCurrentClient(row)}
+              icon="edit"
+              size="small"
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Precios especiales">
+            <Button
+              onClick={() => setCurrentClientPrices(row)}
+              style={{ marginRight: 5 }}
+              type="primary"
+              icon="star"
+              size="small"
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Eliminar">
+            <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
+          </Tooltip>
         </Row>
       )
     }
@@ -150,6 +164,12 @@ const Clients = ({ client }) => {
           dataSource={clients.map(clientMapped => ({ ...clientMapped, key: shortid.generate() }))}
         />
       </Card>
+      {currentClientPrices && (
+        <SpecialPrices
+          close={() => setCurrentClientPrices(undefined)}
+          currentClient={currentClientPrices}
+        />
+      )}
       {currentClient && (
         <ClientEditForm
           onClientEdit={onClientEdit}

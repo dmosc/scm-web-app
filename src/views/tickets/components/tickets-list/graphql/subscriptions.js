@@ -26,13 +26,6 @@ const ACTIVE_TICKETS = gql`
         }
         rfc
         credit
-        prices {
-          rock {
-            id
-            name
-          }
-          price
-        }
       }
       truck {
         id
@@ -82,13 +75,6 @@ const TICKET_UPDATE = gql`
         }
         rfc
         credit
-        prices {
-          rock {
-            id
-            name
-          }
-          price
-        }
       }
       truck {
         id

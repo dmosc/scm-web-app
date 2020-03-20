@@ -1,35 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, Drawer, Form, Icon, Input, InputNumber, Modal, notification, Select, Typography } from 'antd';
+import { Button, Drawer, Form, Icon, Input, InputNumber, message, Select } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
-import PriceEditModal from './components/price-edit-modal';
-import { GET_ROCKS } from './graphql/queries';
 import { EDIT_CLIENT } from './graphql/mutations';
 
 const { Option } = Select;
-const { Text } = Typography;
 
 class EditForm extends Component {
   state = {
-    loading: false,
-    showPriceModal: false,
-    prices: [],
-    currentPrice: null,
-    currentPriceTotal: 0,
-    rocks: []
-  };
-
-  componentDidMount = async () => {
-    const { currentClient, client } = this.props;
-
-    const {
-      data: { rocks }
-    } = await client.query({ query: GET_ROCKS, variables: { filters: {} } });
-
-    const prices = [...currentClient.prices];
-
-    this.setState({ prices, rocks });
+    loading: false
   };
 
   handleSubmit = e => {
@@ -40,9 +20,6 @@ class EditForm extends Component {
       setCurrentClient,
       client
     } = this.props;
-    const { prices: oldPrices } = this.state;
-
-    const prices = oldPrices.map(({ rock, price }) => ({ rock: rock.id, price }));
 
     this.setState({ loading: true });
     e.preventDefault();
@@ -97,24 +74,19 @@ class EditForm extends Component {
                     intNumber,
                     zipcode
                   },
-                  prices,
                   balance,
                   credit
                 }
               }
             });
 
-            notification.open({
-              message: `Cliente ${cli.businessName} ha sido editado exitosamente!`
-            });
+            message.success(`Cliente ${cli.businessName} ha sido editado exitosamente!`);
 
             onClientEdit(cli);
             form.resetFields();
             setCurrentClient();
           } catch (error) {
-            notification.open({
-              message: 'Ha habido un error modificando la información'
-            });
+            message.error('Ha habido un error modificando la información');
 
             this.setState({ loading: false });
           }
@@ -131,77 +103,9 @@ class EditForm extends Component {
     setCurrentClient();
   };
 
-  setCurrentPrice = currentPrice => {
-    const { rocks } = this.state;
-
-    this.setState(
-      {
-        currentPrice,
-        currentPriceTotal: rocks[currentPrice].price
-      },
-      this.togglePriceModal()
-    );
-  };
-
-  onPriceUpdate = () => {
-    const { prices: oldPrices, currentPrice, currentPriceTotal, rocks } = this.state;
-
-    let prices = [
-      ...oldPrices,
-      {
-        rock: {
-          id: rocks[currentPrice].id,
-          name: rocks[currentPrice].name,
-          price: rocks[currentPrice].price,
-          floorPrice: rocks[currentPrice].floorPrice
-        },
-        price: currentPriceTotal
-      }
-    ];
-
-    if (currentPriceTotal < rocks[currentPrice].floorPrice) {
-      Modal.error({
-        title: 'Precio no permitido',
-        content: 'No puedes asignar un precio menor al precio suelo'
-      });
-      prices = oldPrices;
-    } else if (currentPriceTotal > rocks[currentPrice].price) {
-      Modal.error({
-        title: 'Precio no permitido',
-        content: 'No puedes asignar un precio mayor al precio al público'
-      });
-      prices = oldPrices;
-    }
-
-    this.setState({ prices, currentPrice: null, currentPriceTotal: 0 }, this.togglePriceModal());
-  };
-
-  onPriceDeselect = priceName => {
-    const { prices: oldPrices } = this.state;
-    const prices = [];
-
-    oldPrices.forEach(price => {
-      if (price.rock.name !== priceName) prices.push(price);
-    });
-
-    this.setState({ prices, currentPrice: null, currentPriceTotal: 0 });
-  };
-
-  togglePriceModal = () => {
-    const { showPriceModal } = this.state;
-
-    this.setState({ showPriceModal: !showPriceModal });
-  };
-
-  handleAttrChange = (key, val) => this.setState({ [key]: val });
-
   render() {
     const { form, currentClient } = this.props;
-    const { loading, showPriceModal, prices, currentPrice, currentPriceTotal, rocks } = this.state;
-
-    delete currentClient.prices.__typename;
-
-    const parsedPrices = prices.map(({ rock, price }) => `${rock.name}:${price}`);
+    const { loading } = this.state;
 
     return (
       <Drawer
@@ -398,49 +302,12 @@ class EditForm extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item label="Precios especiales">
-            <Select
-              placeholder="Precios especiales"
-              mode="multiple"
-              tokenSeparators={[',']}
-              value={prices.map(({ rock: { name } }) => name)}
-              onSelect={this.setCurrentPrice}
-              onDeselect={this.onPriceDeselect}
-            >
-              {rocks.map(({ id, name }, idx) => (
-                <Option
-                  disabled={prices.some(({ rock: { id: rockId } }) => id === rockId)}
-                  key={id}
-                  value={idx}
-                >
-                  {name}
-                </Option>
-              ))}
-            </Select>
-            <Text disabled>
-              {parsedPrices.length > 0
-                ? parsedPrices.join(', ')
-                : 'Ningún precio especial seleccionado'}
-            </Text>
-          </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" icon="save" loading={loading}>
               {(loading && 'Espere..') || 'Guardar'}
             </Button>
           </Form.Item>
         </Form>
-        {currentPrice !== null && (
-          <PriceEditModal
-            visible={showPriceModal}
-            currentPrice={currentPrice}
-            currentPriceTotal={currentPriceTotal}
-            currentFloorPrice={rocks[currentPrice].floorPrice}
-            currentPublicPrice={rocks[currentPrice].price}
-            handleAttrChange={this.handleAttrChange}
-            onPriceUpdate={this.onPriceUpdate}
-            togglePriceModal={this.togglePriceModal}
-          />
-        )}
       </Drawer>
     );
   }

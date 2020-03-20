@@ -44,7 +44,7 @@ const priceRequestMutations = {
         const { id: client } = await Client.findOne({ _id: priceRequest.client });
 
         const newPrices = priceRequest.prices.map(({ rock, priceRequested: price }) => {
-          const newPrice = new ClientPrice({ client, rock, price, setBy: userRequesting });
+          const newPrice = new ClientPrice({ client, rock, price, setBy: userRequesting.id });
           return newPrice.save();
         });
 

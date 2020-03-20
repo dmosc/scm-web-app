@@ -6,19 +6,39 @@ const clientPriceQueries = {
     // Get all rocks
     const rocks = await Rock.find();
 
-    // Return the most recent
-    const pricesPerRockPromise = rocks.map(
-      ({ id }) => ClientPrice.find({ rock: id, client }).sort({ addedAt: 'descending' })[0]
+    const pricesPerRockPromise = rocks.map(({ id }) =>
+      ClientPrice.find({ rock: id, client })
+        .populate('rock')
+        .sort({ addedAt: 'descending' })
     );
 
     const pricesPerRock = await Promise.all(pricesPerRockPromise);
 
-    // Filter not nulls and not noSpecialPrice flag
-    return pricesPerRock.filter(price => price && !price.noSpecialPrice);
+    const a = pricesPerRock
+      // First element will always be the most recent, which is considered the 'active'
+      .map(rockPrices => rockPrices[0])
+      // Filter not nulls and not noSpecialPrice flag
+      .filter(price => price && !price.noSpecialPrice);
+
+    return a;
   }),
-  clientPriceByClient: authenticated(async (_, { client, rock }) =>
-    ClientPrice.findOne({ client, rock, noSpecialPrice: false })
-  )
+  clientPriceByClient: authenticated(async (_, { client, rock }) => {
+    const clientPrices = await ClientPrice.find({ client, rock })
+      .populate('rock')
+      .sort({ addedAt: 'descending' });
+
+    if (!clientPrices[0] || clientPrices[0].noSpecialPrice) return null;
+    return clientPrices[0];
+  }),
+  clientPriceHistoryByClient: authenticated(async (_, { client, rock }) => {
+    const query = { client };
+
+    if (rock) query.rock = rock;
+
+    return ClientPrice.find(query)
+      .populate('rock setBy')
+      .sort({ addedAt: 'descending' });
+  })
 };
 
 export default clientPriceQueries;

@@ -1,19 +1,16 @@
 import { gql } from 'apollo-boost';
 
-const GET_CLIENT = gql`
-  query client($id: ID!) {
-    client(id: $id) {
+const GET_SPECIAL_PRICES = gql`
+  query clientPricesByClient($client: ID!) {
+    clientPricesByClient(client: $client) {
       id
-      businessName
-      prices {
-        rock {
-          id
-          name
-        }
-        price
+      rock {
+        id
+        name
       }
+      price
     }
   }
 `;
 
-export { GET_CLIENT };
+export { GET_SPECIAL_PRICES };
