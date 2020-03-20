@@ -59,7 +59,7 @@ const turnMutations = {
           driver: tickets[i].driver,
           client: `${tickets[i].client.firstName} ${tickets[i].client.lastName}`,
           businessName: tickets[i].client.businessName,
-          address: tickets[i].client.address,
+          address: Object.values(tickets[i].client.address).filter(value => typeof value === 'string').join(', '),
           rfc: tickets[i].client.rfc,
           plates: tickets[i].truck.plates,
           truckWeight: tickets[i].truck.weight,

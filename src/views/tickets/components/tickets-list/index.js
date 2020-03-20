@@ -58,12 +58,10 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
 
   const { activeTickets, refetch } = data;
 
-  return activeTickets?.length === 0 ? (
-    <Title level={4}>No hay tickets disponibles...</Title>
-  ) : (
+  return(
     <>
       <TitleContainer>
-        <Title level={4}>Lista de boletas</Title>
+        {activeTickets?.length === 0 ? <Title level={4}>No hay tickets disponibles...</Title> : <Title level={4}>Lista de boletas</Title>}
         <Dropdown
           overlay={
             <Menu>
@@ -76,7 +74,7 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
           </Button>
         </Dropdown>
       </TitleContainer>
-      <Collapse accordion>
+      {activeTickets?.length !== 0 && <Collapse accordion>
         {activeTickets?.map(ticket => (
           <Panel
             disabled={!turnActive}
@@ -102,10 +100,10 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
             />
           </Panel>
         ))}
-        {isCancelDrawerOpen && (
-          <TicketsCanceled close={() => toggleCancelDrawer(false)} refetchTickets={refetch} />
-        )}
-      </Collapse>
+      </Collapse>}
+      {isCancelDrawerOpen && (
+        <TicketsCanceled close={() => toggleCancelDrawer(false)} refetchTickets={refetch} refetchTurn={refetchTurn} />
+      )}
     </>
   );
 };
