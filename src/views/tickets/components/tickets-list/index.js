@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from '@apollo/react-hoc';
-import { Collapse, Typography, Button, Menu, Dropdown, Icon } from 'antd';
+import { Button, Collapse, Dropdown, Icon, Menu, Typography } from 'antd';
 import TicketPanel from './components/ticket-panel';
 import TicketsCanceled from './components/tickets-canceled';
 import { LoadingBar, LoadingBarContainer, TitleContainer } from './elements';
@@ -112,13 +112,14 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
 
 TicketList.defaultProps = {
   loading: false,
-  error: false
+  error: false,
+  turnActive: null
 };
 
 TicketList.propTypes = {
   data: PropTypes.object.isRequired,
   refetchTurn: PropTypes.func.isRequired,
-  turnActive: PropTypes.object.isRequired,
+  turnActive: PropTypes.object,
   setCurrent: PropTypes.func.isRequired,
   printTicket: PropTypes.func.isRequired,
   loading: PropTypes.bool,

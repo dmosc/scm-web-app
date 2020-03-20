@@ -281,7 +281,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese el país del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="País"
               />
             )}
@@ -292,7 +292,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese el estado del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Estado"
               />
             )}
@@ -303,7 +303,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese el municipio del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Municipio"
               />
             )}
@@ -314,7 +314,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese la ciudad del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Ciudad"
               />
             )}
@@ -325,7 +325,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese la colonia del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Colonia"
               />
             )}
@@ -336,7 +336,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese la calle del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Calle"
               />
             )}
@@ -347,7 +347,7 @@ class EditForm extends Component {
               rules: [{ required: false, message: 'Ingrese número exterior del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Número ext."
               />
             )}
@@ -358,7 +358,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese número interior del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Número int."
               />
             )}
@@ -369,7 +369,7 @@ class EditForm extends Component {
               rules: [{ required: true, message: 'Ingrese el código postal del cliente' }]
             })(
               <Input
-                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Código postal"
               />
             )}
@@ -429,7 +429,7 @@ class EditForm extends Component {
             </Button>
           </Form.Item>
         </Form>
-        {currentPrice && (
+        {currentPrice !== null && (
           <PriceEditModal
             visible={showPriceModal}
             currentPrice={currentPrice}
