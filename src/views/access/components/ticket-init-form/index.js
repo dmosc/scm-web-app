@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import Webcam from 'react-webcam';
-import { Form, Row, Col, Button, Input, Icon, notification, List } from 'antd';
+import { Form, Row, Col, Button, Input, Icon, notification, List, message } from 'antd';
 import {
   FormContainer,
   ImageContainer,
@@ -103,9 +103,19 @@ const TicketInit = ({ client, user }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setLoading(true);
+
+    if (!inTruckImage) {
+      message.error('Es necesaria la imagen del camión');
+      return;
+    }
+
+    if (!currentProduct) {
+      message.error('Es necesario seleccionar el producto');
+      return;
+    }
 
     if (plates && inTruckImage && currentProduct) {
+      setLoading(true);
       const {
         data: { truck }
       } = await client.query({
@@ -113,7 +123,11 @@ const TicketInit = ({ client, user }) => {
         variables: { plates }
       });
 
-      if (!truck) throw new Error('Camión tiene que pasar a registrarse primero!');
+      if (!truck) {
+        message.error('El camión no está identificado y tiene que pasar a registrarse primero');
+        setLoading(false);
+        return;
+      }
 
       const { data, errors } = await client.mutate({
         mutation: REGISTER_TICKET_INIT,
@@ -145,9 +159,7 @@ const TicketInit = ({ client, user }) => {
         message: `Camión ${data.ticketInit.truck.plates} puede ingresar!`
       });
     } else {
-      notification.open({
-        message: '¡Es necesario completar todos los datos!'
-      });
+      message.warning('¡Es necesario completar todos los datos!');
 
       setLoading(false);
     }
