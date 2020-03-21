@@ -65,15 +65,15 @@ input ClientEditInput {
 }
 
 input AddressInput {
-  country: String!
-  state: String!
-  municipality: String!
-  city: String!
-  suburb: String!
-  street: String!
+  country: String
+  state: String
+  municipality: String
+  city: String
+  suburb: String
+  street: String
   extNumber: String
-  intNumber: String!
-  zipcode: String!
+  intNumber: String
+  zipcode: String
 }
 
 input ClientFilters {

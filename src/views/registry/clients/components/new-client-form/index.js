@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, Drawer, Form, Icon, Input, InputNumber, notification, Select } from 'antd';
+import {
+  Button,
+  Drawer,
+  Form,
+  Icon,
+  Input,
+  InputNumber,
+  notification,
+  Select,
+  message
+} from 'antd';
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import { REGISTER_CLIENT } from './graphql/mutations';
 
@@ -23,7 +33,8 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
       ) => {
         if (!err) {
           const {
-            data: { client: cli }
+            data: { client: cli },
+            errors
           } = await client.mutate({
             mutation: REGISTER_CLIENT,
             variables: {
@@ -41,6 +52,12 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
               }
             }
           });
+
+          if (errors) {
+            message.error(errors[0].message);
+            setLoading(false);
+            return;
+          }
 
           const clientsToSet = [cli, ...oldClients];
           setLoading(false);
@@ -108,7 +125,14 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item>
-          {form.getFieldDecorator('businessName')(
+          {form.getFieldDecorator('businessName', {
+            rules: [
+              {
+                required: true,
+                message: 'Nombre del negocio es requerido!'
+              }
+            ]
+          })(
             <Input
               prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Razón social"

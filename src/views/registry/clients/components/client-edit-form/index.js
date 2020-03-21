@@ -116,7 +116,15 @@ class EditForm extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item>
-            {form.getFieldDecorator('firstName', { initialValue: currentClient.firstName })(
+            {form.getFieldDecorator('firstName', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Nombre(s) del vendedor es requerido!'
+                }
+              ],
+              initialValue: currentClient.firstName
+            })(
               <Input
                 prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Nombre(s)"
@@ -124,7 +132,15 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('lastName', { initialValue: currentClient.lastName })(
+            {form.getFieldDecorator('lastName', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Apellidos(s) del vendedor es requerido!'
+                }
+              ],
+              initialValue: currentClient.lastName
+            })(
               <Input
                 prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Apellidos"
@@ -140,7 +156,15 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('businessName', { initialValue: currentClient.businessName })(
+            {form.getFieldDecorator('businessName', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Nombre del negocio es requerido!'
+                }
+              ],
+              initialValue: currentClient.businessName
+            })(
               <Input
                 prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Razón social"
@@ -193,7 +217,9 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('municipality', { initialValue: currentClient?.address?.municipality })(
+            {form.getFieldDecorator('municipality', {
+              initialValue: currentClient?.address?.municipality
+            })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Municipio"
@@ -225,7 +251,9 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('extNumber', { initialValue: currentClient?.address?.extNumber })(
+            {form.getFieldDecorator('extNumber', {
+              initialValue: currentClient?.address?.extNumber
+            })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Número ext."
@@ -233,7 +261,9 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('intNumber', { initialValue: currentClient?.address?.intNumber })(
+            {form.getFieldDecorator('intNumber', {
+              initialValue: currentClient?.address?.intNumber
+            })(
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Número int."
