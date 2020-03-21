@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import sequelize from '../index';
-import rocks from '../enums/rocks';
 
 const Ticket = sequelize.define('Ticket', {
   folio: { type: Sequelize.STRING, unique: true, allowNull: false },
@@ -13,7 +12,7 @@ const Ticket = sequelize.define('Ticket', {
   truckWeight: { type: Sequelize.FLOAT, allowNull: false },
   totalWeight: { type: Sequelize.FLOAT, allowNull: false },
   tons: { type: Sequelize.FLOAT, allowNull: false },
-  product: { type: Sequelize.ENUM([...rocks]), allowNull: false },
+  product: { type: Sequelize.STRING, allowNull: false },
   price: { type: Sequelize.FLOAT, allowNull: false },
   tax: { type: Sequelize.FLOAT, defaultValue: 0, allowNull: false },
   total: { type: Sequelize.FLOAT, allowNull: false },
