@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
 import disable from 'mongoose-disable';
 import User from './user';
@@ -20,6 +20,7 @@ const Ticket = new Schema({
   inTruckImage: { type: String, required: false },
   outTruckImage: { type: String, required: false },
   bill: { type: Boolean, required: true, default: false },
+  isBilled: { type: Boolean, required: true, default: false },
   usersInvolved: {
     guard: {
       type: Schema.Types.ObjectId,

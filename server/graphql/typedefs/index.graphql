@@ -28,6 +28,7 @@ type Query {
   # Client
   client(id: ID!): Client
   clients(filters: ClientFilters!): [Client!]!
+  clientsPendingTicketsToBill: [ClientPendingBill!]!
   # Client Price
   clientPricesByClient(client: ID!): [ClientPrice!]!
   clientPriceByClient(client: ID!, rock: ID!): ClientPrice
@@ -39,6 +40,8 @@ type Query {
   disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
   notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]!
   loadedTickets(filters: TicketFilters!): [Ticket!]!
+  ticketsPendingToBill(client: ID!): [Ticket!]!
+  ticketsToBillSummary(tickets: [ID!]!): BillSummary!
   archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
   # Truck

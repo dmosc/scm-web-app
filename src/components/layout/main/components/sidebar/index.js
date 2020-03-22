@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
-import { withRouter, Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { useAuth } from 'components/providers/withAuth';
 import { Menu, Sider } from './elements';
 
@@ -138,6 +138,14 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             <Link to="/mensajes">
               <Icon type="message" />
               <span>Mensajes</span>
+            </Link>
+          </Item>
+        )}
+        {(isAdmin || isAccountant) && (
+          <Item key="facturas">
+            <Link to="/facturas">
+              <Icon type="file-text" />
+              <span>Facturas</span>
             </Link>
           </Item>
         )}

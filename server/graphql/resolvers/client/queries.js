@@ -1,4 +1,4 @@
-import { Client } from '../../../mongo-db/models';
+import { Client, Ticket } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const clientQueries = {
@@ -26,6 +26,41 @@ const clientQueries = {
       .populate('trucks')
       .populate('prices.rock')
       .limit(limit || Number.MAX_SAFE_INTEGER);
+
+    if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
+
+    return clients;
+  }),
+  clientsPendingTicketsToBill: authenticated(async () => {
+    const clients = await Ticket.aggregate([
+      {
+        $match: {
+          turn: { $exists: true },
+          totalPrice: { $exists: true },
+          outTruckImage: { $exists: true },
+          bill: true,
+          isBilled: false,
+          disabled: false
+        }
+      },
+      { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
+      {
+        $group: { _id: '$client', count: { $sum: 1 } }
+      },
+      { $project: { _id: 0, client: '$_id', count: '$count' } }
+    ]);
+
+    for (let i = 0; i < clients.length; i++) {
+      const client = {
+        client: clients[i].client[0],
+        count: clients[i].count
+      };
+
+      client.client.id = client.client._id;
+      delete client.client._id;
+
+      clients[i] = { ...client };
+    }
 
     if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
 
