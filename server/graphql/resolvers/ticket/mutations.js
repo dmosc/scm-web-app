@@ -1,6 +1,6 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import { Client, Folio, Rock, Ticket, Truck, ClientPrice } from '../../../mongo-db/models';
+import { Client, ClientPrice, Folio, Rock, Ticket, Truck } from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -8,7 +8,7 @@ const TAX = 0.16;
 
 const ticketMutations = {
   ticket: authenticated(async (_, args) => {
-    const ticket = new Ticket({ ...args.ticket }).populate('client truck product');
+    const ticket = new Ticket({ ...args.ticket });
 
     try {
       await ticket.save();

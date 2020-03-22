@@ -1,5 +1,10 @@
 import styled from 'styled-components';
 
+const ListContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const ContentList = styled.div`
   max-height: ${props => props.height ?? '20vh'};
 
@@ -16,4 +21,4 @@ const TitleList = styled.h1`
   font-weight: bold;
 `;
 
-export { ContentList, TitleList };
+export { ListContentContainer, ContentList, TitleList };

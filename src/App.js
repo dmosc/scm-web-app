@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import Loadable from 'react-loadable';
 import Layout from 'components/layout/main';
 import { useAuth } from 'components/providers/withAuth';
@@ -11,6 +11,18 @@ import './App.css';
 /* webpackChunkName: "Dashboard" */
 const Dashboard = Loadable({
   loader: () => import('./views/dashboard'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "Access" */
+const Access = Loadable({
+  loader: () => import('./views/access'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "Load" */
+const Load = Loadable({
+  loader: () => import('./views/load'),
   loading: TopBarProgress
 });
 
@@ -74,15 +86,9 @@ const Messages = Loadable({
   loading: TopBarProgress
 });
 
-/* webpackChunkName: "Access" */
-const Access = Loadable({
-  loader: () => import('./views/access'),
-  loading: TopBarProgress
-});
-
-/* webpackChunkName: "Load" */
-const Load = Loadable({
-  loader: () => import('./views/load'),
+/* webpackChunkName: "Bills" */
+const Bills = Loadable({
+  loader: () => import('./views/bills'),
   loading: TopBarProgress
 });
 
@@ -123,6 +129,7 @@ const App = ({
           {(isAdmin || isCashier || isGuard || isAccountant) && (
             <Route exact path="/mensajes" component={Messages} />
           )}
+          {(isAdmin || isAccountant) && <Route exact path="/facturas" component={Bills} />}
           {(isAdmin || isGuard) && <Route exact path="/accesos" component={Access} />}
           {(isAdmin || isLoader) && <Route exact path="/cargas" component={Load} />}
           {isGuard && <Redirect to="/accesos" />}

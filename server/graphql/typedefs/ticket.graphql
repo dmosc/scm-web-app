@@ -21,6 +21,18 @@ type Ticket {
   disabledAt: Date
 }
 
+type BillSummary {
+  products: [ProductSummary!]!
+  subtotal: Float!
+  tax: Float!
+  total: Float!
+}
+
+type ProductSummary {
+  product: Rock!
+  total: Float!
+}
+
 type ArchiveTicket {
   id: Int!
   folio: String!
