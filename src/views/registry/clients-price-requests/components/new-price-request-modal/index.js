@@ -18,6 +18,7 @@ const NewPriceRequestModal = ({ client, visible, toggleNewRequestModal, updateFa
   const [beneficiary, setBeneficiary] = useState();
   const [prices, setPrices] = useState([]);
   const [rocks, setRocks] = useState([]);
+  const [filteredRocks, setFilteredRocks] = useState([]);
   const [newPriceForm, setNewPriceForm] = useState({
     currentRockIndex: undefined,
     priceRequested: undefined
@@ -38,6 +39,13 @@ const NewPriceRequestModal = ({ client, visible, toggleNewRequestModal, updateFa
 
     getRocks();
   }, [client]);
+
+  useEffect(() => {
+    // Wicho, forgive me plz
+    const filteredRocksToSet = rocks.filter(({ id }) => !prices.some(({ rock }) => rock === id));
+
+    setFilteredRocks(filteredRocksToSet);
+  }, [rocks, prices]);
 
   useEffect(() => {
     const getClients = async () => {
@@ -85,8 +93,8 @@ const NewPriceRequestModal = ({ client, visible, toggleNewRequestModal, updateFa
     setPrices([
       ...prices,
       {
-        rock: rocks[currentRockIndex].id,
-        nameToDisplay: rocks[currentRockIndex].name,
+        rock: filteredRocks[currentRockIndex].id,
+        nameToDisplay: filteredRocks[currentRockIndex].name,
         priceRequested
       }
     ]);
@@ -169,15 +177,12 @@ const NewPriceRequestModal = ({ client, visible, toggleNewRequestModal, updateFa
           style={{ flexBasis: '60%', width: '100%', marginRight: 5 }}
           placeholder="Piedras disponibles"
         >
-          {/* Wicho, forgive me plz */}
-          {rocks
-            .filter(({ id }) => !prices.some(({ rock }) => rock === id))
-            .map(({ id, name, floorPrice }, index) => (
-              <Option style={{ display: 'flex' }} key={id} value={index}>
-                <Text style={{ marginRight: 'auto' }}>{name}</Text>
-                <Tag color="orange">Piso: ${floorPrice}MXN</Tag>
-              </Option>
-            ))}
+          {filteredRocks.map(({ id, name, floorPrice }, index) => (
+            <Option style={{ display: 'flex' }} key={id} value={index}>
+              <Text style={{ marginRight: 'auto' }}>{name}</Text>
+              <Tag color="orange">Piso: ${floorPrice}MXN</Tag>
+            </Option>
+          ))}
         </Select>
         <InputNumber
           required
