@@ -85,7 +85,7 @@ const NewPriceRequestModal = ({ client, visible, toggleNewRequestModal, updateFa
       return;
     }
 
-    if (priceRequested >= rocks[currentRockIndex].floorPrice) {
+    if (priceRequested >= filteredRocks[currentRockIndex].floorPrice) {
       message.info('Precios mayores a los precios piso no necesitan solicitud');
       return;
     }
