@@ -24,6 +24,7 @@ const REGISTER_CLIENT = gql`
         zipcode
       }
       credit
+      balance
     }
   }
 `;

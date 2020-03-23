@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Divider, Select, List, Typography, Tag, Button, Modal, InputNumber, message } from 'antd';
+import { Button, Divider, InputNumber, List, message, Modal, Select, Tag, Typography } from 'antd';
 import { NewPriceForm } from './elements';
 import { ADD_SPECIAL_PRICE } from './graphql/mutations';
-import { GET_SPECIAL_PRICES, GET_ROCKS } from './graphql/queries';
+import { GET_ROCKS, GET_SPECIAL_PRICES } from './graphql/queries';
 
 const { Option } = Select;
 const { Item } = List;
@@ -67,11 +67,6 @@ const EditSpecialPrices = ({ client, currentClient }) => {
 
     if (!price || !rock) {
       message.warning('Producto y precio son campos requeridos');
-      return;
-    }
-
-    if (price >= mappedRocks[rock].price) {
-      message.warning('El precio especial no puede ser mayor al precio general');
       return;
     }
 

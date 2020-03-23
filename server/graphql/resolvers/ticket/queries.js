@@ -1,6 +1,7 @@
 import { ApolloError } from 'apollo-server';
 import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
+import { Types } from 'mongoose';
 import { Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -69,6 +70,70 @@ const ticketQueries = {
 
     if (!loadedTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return loadedTickets;
+  }),
+  ticketsPendingToBill: authenticated(async (_, { client }) => {
+    const ticketsPendingToBill = await Ticket.find({
+      client,
+      turn: { $exists: true },
+      bill: true,
+      isBilled: false,
+      disabled: false
+    }).populate('client truck product');
+
+    if (!ticketsPendingToBill)
+      throw new ApolloError('¡Ha habido un error cargando las boletas por facturar del cliente!');
+    else return ticketsPendingToBill;
+  }),
+  ticketsToBillSummary: authenticated(async (_, { tickets: ticketIds }) => {
+    // const ticketsToBillSummary = await Ticket.find({ id: { $in: [...tickets] }, turn: { $exists: true }, bill: true, isBilled: false, disabled: false })
+    //   .populate('client truck product');
+
+    const productSummary = await Ticket.aggregate([
+      {
+        $match: {
+          _id: { $in: [...ticketIds.map(ticket => Types.ObjectId(ticket))] },
+          turn: { $exists: true },
+          bill: true,
+          isBilled: false,
+          disabled: false
+        }
+      },
+      { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
+      { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+      { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+      {
+        $group: {
+          _id: '$product',
+          subtotal: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+          tax: { $sum: '$tax' },
+          total: { $sum: '$totalPrice' }
+        }
+      },
+      { $project: { _id: 0, product: '$_id', subtotal: '$subtotal', tax: '$tax', total: '$total' } }
+    ]);
+
+    let subtotal = 0;
+    let tax = 0;
+    let total = 0;
+    const products = productSummary.map(
+      ({ product, subtotal: productSubtotal, tax: productTax, total: productTotal }) => {
+        subtotal += productSubtotal;
+        tax += productTax;
+        total += productTotal;
+
+        return { product: product[0], total: productTotal };
+      }
+    );
+
+    if (!productSummary)
+      throw new ApolloError('¡Ha habido un error cargando las boletas por facturar del cliente!');
+    else
+      return {
+        products,
+        subtotal: subtotal.toFixed(2),
+        tax: tax.toFixed(2),
+        total: total.toFixed(2)
+      };
   }),
   archivedTickets: authenticated(
     async (

@@ -16,6 +16,11 @@ type Client {
   credit: Float!
 }
 
+type ClientPendingBill {
+  client: Client!
+  count: Int!
+}
+
 type ClientTurnSummary {
   info: Client!
   count: Int!
