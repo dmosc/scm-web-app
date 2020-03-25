@@ -1,6 +1,7 @@
 # import * from "user.graphql"
 # import * from "client.graphql"
 # import * from "client-price.graphql"
+# import * from "client-credit-limit.graphql"
 # import * from "ticket.graphql"
 # import * from "truck.graphql"
 # import * from "rock.graphql"
@@ -37,6 +38,9 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientPriceHistoryByClient(client: ID!, rock: ID): [ClientPrice!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Client Credit Limit
+  clientCreditLimit(client: ID!): ClientCreditLimit
+  clientCreditLimitHistory(client: ID!): [ClientCreditLimit!]!
   # Ticket
   ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -106,6 +110,10 @@ type Mutation {
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER])
   # Client Price
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER])
+  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, CASHIER])
+  # Client Credit Limit
+  clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
+    @auth(roles: [ADMIN, CASHIER])
   # Ticket
   ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
   ticketEdit(ticket: TicketEditInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])

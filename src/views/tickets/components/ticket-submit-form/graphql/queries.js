@@ -18,4 +18,13 @@ const GET_SPECIAL_PRICE = gql`
   }
 `;
 
-export { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE };
+const GET_CREDIT_LIMIT = gql`
+  query clientCreditLimit($client: ID!) {
+    clientCreditLimit(client: $client) {
+      id
+      creditLimit
+    }
+  }
+`;
+
+export { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE, GET_CREDIT_LIMIT };

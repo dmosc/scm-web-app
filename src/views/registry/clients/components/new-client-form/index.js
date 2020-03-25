@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import {
-  Button,
-  Drawer,
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  notification,
-  Select,
-  message
-} from 'antd';
+import { Button, Drawer, Form, Icon, Input, Select, message } from 'antd';
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import { REGISTER_CLIENT } from './graphql/mutations';
 
@@ -27,10 +17,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
 
     setLoading(true);
     form.validateFields(
-      async (
-        err,
-        { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, balance, credit }
-      ) => {
+      async (err, { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone }) => {
         if (!err) {
           const {
             data: { client: cli },
@@ -46,9 +33,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
                 rfc,
                 CFDIuse,
                 cellphone,
-                address: Object.keys(address).length > 0 ? address : null,
-                balance,
-                credit
+                address: Object.keys(address).length > 0 ? address : null
               }
             }
           });
@@ -64,9 +49,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           setClients(clientsToSet);
           setAddress({});
 
-          notification.open({
-            message: `Cliente ${cli.businessName} ha sido registrado exitosamente!`
-          });
+          message.success(`Cliente ${cli.businessName} ha sido registrado exitosamente!`);
 
           toggleNewClientModal(false);
 
@@ -230,26 +213,6 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
             placeholder="Código Postal"
             onChange={({ target: { value } }) => setAddress({ ...address, zipcode: value })}
           />
-        </Form.Item>
-        <Form.Item label="Crédito inicial" style={{ color: 'rgba(0,0,0,.25)' }}>
-          {form.getFieldDecorator('credit', { initialValue: 0 })(
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="Crédito inicial en MXN"
-              min={0}
-              step={0.1}
-            />
-          )}
-        </Form.Item>
-        <Form.Item label="Balance inicial" style={{ color: 'rgba(0,0,0,.25)' }}>
-          {form.getFieldDecorator('balance', { initialValue: 0 })(
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="Balance inicial en MXN"
-              min={0}
-              step={0.1}
-            />
-          )}
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" icon="save" loading={loading}>

@@ -1,6 +1,14 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import { Client, ClientPrice, Folio, Rock, Ticket, Truck } from '../../../mongo-db/models';
+import {
+  Client,
+  ClientPrice,
+  ClientCreditLimit,
+  Folio,
+  Rock,
+  Ticket,
+  Truck
+} from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -192,16 +200,26 @@ const ticketMutations = {
     newTicket.totalPrice = (newTicket.totalWeight * price + newTicket.tax).toFixed(2);
 
     if ((newTicket.credit && credit) || (newTicket.credit && !credit))
-      // Return previous credit to client
-      client.credit = (client.credit + newTicket.totalPrice).toFixed(2);
+      // Recover previous balance from client
+      client.balance = (client.balance + newTicket.totalPrice).toFixed(2);
 
     newTicket.credit = credit;
 
     try {
       if (credit) {
-        if (client.credit < newTicket.totalPrice)
-          return new Error('¡El cliente no tiene suficientes créditos!');
-        client.credit = (client.credit - newTicket.totalPrice).toFixed(2);
+        const clientCreditLimit = await ClientCreditLimit({ client: client.id }).sort({
+          addedAt: 'descending'
+        });
+        const creditLimit = clientCreditLimit ? clientCreditLimit.creditLimit : 0;
+
+        const newClientBalance = (client.balance - newTicket.totalPrice).toFixed(2);
+
+        if (newClientBalance * -1 > creditLimit)
+          return new Error(
+            '¡Esta operación supera el límite de crédito del cliente en su balance!'
+          );
+
+        client.balance = (client.balance - newTicket.totalPrice).toFixed(2);
       }
 
       await newTicket.save();

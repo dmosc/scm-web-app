@@ -23,7 +23,6 @@ const REGISTER_CLIENT = gql`
         intNumber
         zipcode
       }
-      credit
       balance
     }
   }

@@ -38,8 +38,7 @@ const Client = User.discriminator(
       intNumber: { type: String, required: true, default: '' },
       zipcode: { type: String, required: true, default: '' }
     },
-    balance: { type: Number, required: true, default: 0 },
-    credit: { type: Number, required: true, default: 0 }
+    balance: { type: Number, required: true, default: 0 }
   })
 );
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, Drawer, Form, Icon, Input, InputNumber, message, Select } from 'antd';
+import { Button, Drawer, Form, Icon, Input, message, Select } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
 import { EDIT_CLIENT } from './graphql/mutations';
 
@@ -42,9 +42,7 @@ class EditForm extends Component {
           street,
           extNumber,
           intNumber,
-          zipcode,
-          balance,
-          credit
+          zipcode
         }
       ) => {
         if (!err) {
@@ -73,9 +71,7 @@ class EditForm extends Component {
                     extNumber,
                     intNumber,
                     zipcode
-                  },
-                  balance,
-                  credit
+                  }
                 }
               }
             });
@@ -275,30 +271,6 @@ class EditForm extends Component {
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Código postal"
-              />
-            )}
-          </Form.Item>
-          <Form.Item label="Crédito actual" style={{ color: 'rgba(0,0,0,.25)' }}>
-            {form.getFieldDecorator('credit', {
-              initialValue: currentClient.credit ? currentClient.credit : 0
-            })(
-              <InputNumber
-                style={{ width: '100%' }}
-                placeholder="Crédito en MXN"
-                min={0}
-                step={0.1}
-              />
-            )}
-          </Form.Item>
-          <Form.Item label="Balance actual" style={{ color: 'rgba(0,0,0,.25)' }}>
-            {form.getFieldDecorator('balance', {
-              initialValue: currentClient.balance ? currentClient.balance : 0
-            })(
-              <InputNumber
-                style={{ width: '100%' }}
-                placeholder="Balance en MXN"
-                min={0}
-                step={0.1}
               />
             )}
           </Form.Item>
