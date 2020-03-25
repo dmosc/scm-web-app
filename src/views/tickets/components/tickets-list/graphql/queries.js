@@ -25,7 +25,7 @@ const GET_TICKETS = gql`
           zipcode
         }
         rfc
-        credit
+        balance
       }
       truck {
         id

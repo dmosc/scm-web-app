@@ -2,20 +2,9 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
-import {
-  Form,
-  InputNumber,
-  Modal,
-  notification,
-  Radio,
-  Row,
-  Select,
-  Tooltip,
-  message,
-  Typography
-} from 'antd';
+import { Form, InputNumber, Modal, Radio, Row, Select, Tooltip, message, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE } from './graphql/queries';
+import { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE, GET_CREDIT_LIMIT } from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -27,6 +16,8 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
   const [weight, setWeight] = useState(0);
   const [total, setTotal] = useState(0);
   const [specialPrice, setSpecialPrice] = useState();
+  const [creditEnough, setCreditEnough] = useState(0);
+  const [creditLimit, setCreditLimit] = useState();
   const [tax, setTax] = useState(0);
   const [bill, setBill] = useState(false);
   const [isSocket, setIsSocket] = useState();
@@ -93,9 +84,26 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
       setSpecialPrice(specialPriceToset);
     };
 
+    const getClientCredit = async () => {
+      const {
+        data: { clientCreditLimit }
+      } = await client.query({
+        query: GET_CREDIT_LIMIT,
+        variables: { client: currentTicket.client.id }
+      });
+
+      setCreditLimit(clientCreditLimit?.creditLimit || 0);
+    };
+
+    getClientCredit();
     getSpecialPrice();
     getDrivers();
   }, [client, currentTicket]);
+
+  useEffect(() => {
+    const balanceAfterCreditTicket = currentTicket.client.balance - total;
+    setCreditEnough(balanceAfterCreditTicket <= creditLimit);
+  }, [total, currentTicket, creditLimit]);
 
   useEffect(() => {
     if (loadedInitialData) {
@@ -139,7 +147,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
         return;
       }
 
-      if (credit === true && currentTicket.client.credit < total) {
+      if (credit === true && !creditEnough) {
         message.warning('El total excede el crédito disponible del cliente, selecciona contado');
         return;
       }
@@ -154,13 +162,9 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
         form.resetFields();
         setCurrent();
-        notification.success({
-          message: '¡La información ha sido actualizada correctamente!'
-        });
+        message.success('¡La información ha sido actualizada correctamente!');
       } catch (error) {
-        notification.error({
-          message: '¡Ha habido un error modificando la información!'
-        });
+        message.error('¡Ha habido un error modificando la información!');
       }
     });
   };
@@ -272,7 +276,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
               <Radio.Button value={false}>CONTADO</Radio.Button>
               <Tooltip
                 title={
-                  currentTicket.client.credit < total
+                  !creditEnough
                     ? 'Cliente no tiene suficiente crédito para la transacción'
                     : `Cliente tiene disponible $${currentTicket.client.credit}`
                 }

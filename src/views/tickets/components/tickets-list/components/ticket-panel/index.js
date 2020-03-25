@@ -139,8 +139,8 @@ class TicketPanel extends Component {
             </tr>
             <tr>
               <td>
-                <b>CRÉDITO: </b>
-                <Credit credit={ticket.client.credit}>{ticket.client.credit}</Credit>
+                <b>BALANCE: </b>
+                <Credit credit={ticket.client.balance}>{ticket.client.balance}</Credit>
               </td>
               <td id="skip">
                 <Link

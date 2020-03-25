@@ -23,7 +23,6 @@ const GET_CLIENTS = gql`
         intNumber
         zipcode
       }
-      credit
       balance
     }
   }

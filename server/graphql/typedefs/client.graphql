@@ -13,7 +13,6 @@ type Client {
   cellphone: [String!]!
   address: Address!
   balance: Float!
-  credit: Float!
 }
 
 type ClientPendingBill {
@@ -50,8 +49,6 @@ input ClientInput {
   CFDIuse: CFDIuse
   cellphone: [String!]
   address: AddressInput
-  balance: Float!
-  credit: Float!
 }
 
 input ClientEditInput {
@@ -65,8 +62,6 @@ input ClientEditInput {
   CFDIuse: CFDIuse
   cellphone: [String!]
   address: AddressInput
-  balance: Float!
-  credit: Float!
 }
 
 input AddressInput {
