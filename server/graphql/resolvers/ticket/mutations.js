@@ -1,6 +1,14 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import { Client, ClientPrice, Folio, Rock, Ticket, Truck } from '../../../mongo-db/models';
+import {
+  Client,
+  ClientPrice,
+  ClientCreditLimit,
+  Folio,
+  Rock,
+  Ticket,
+  Truck
+} from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -188,33 +196,37 @@ const ticketMutations = {
     if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product.price;
     else price = specialPrice[0].price;
 
+    if (newTicket.credit)
+      // Recover previous balance from client
+      client.balance = (client.balance + newTicket.totalPrice).toFixed(2);
+
     newTicket.tax = newTicket.bill ? newTicket.totalWeight * price * TAX : 0;
     newTicket.totalPrice = (newTicket.totalWeight * price + newTicket.tax).toFixed(2);
 
-    if ((newTicket.credit && credit) || (newTicket.credit && !credit))
-      // Return previous credit to client
-      client.credit = (client.credit + newTicket.totalPrice).toFixed(2);
-
     newTicket.credit = credit;
 
-    try {
-      if (credit) {
-        if (client.credit < newTicket.totalPrice)
-          return new Error('¡El cliente no tiene suficientes créditos!');
-        client.credit = (client.credit - newTicket.totalPrice).toFixed(2);
-      }
+    if (credit) {
+      const clientCreditLimit = await ClientCreditLimit.find({ client: client.id }).sort({
+        addedAt: 'descending'
+      });
+      const creditLimit = clientCreditLimit ? clientCreditLimit.creditLimit : 0;
 
-      await newTicket.save();
-      await client.save();
+      const newClientBalance = (client.balance - newTicket.totalPrice).toFixed(2);
 
-      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+      if (newClientBalance * -1 > creditLimit)
+        return new Error('¡Esta operación supera el límite de crédito del cliente en su balance!');
 
-      pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
-
-      return ticket;
-    } catch (e) {
-      return new ApolloError(e);
+      client.balance = newClientBalance;
     }
+
+    await newTicket.save();
+    await client.save();
+
+    const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+
+    pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
+
+    return ticket;
   }),
   ticketDisable: async (_, { id }, { req: { userRequesting } }) => {
     try {

@@ -23,8 +23,6 @@ const EDIT_CLIENT = gql`
         intNumber
         zipcode
       }
-      credit
-      balance
     }
   }
 `;

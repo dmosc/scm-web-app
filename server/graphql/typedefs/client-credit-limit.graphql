@@ -1,0 +1,18 @@
+# Types
+type ClientCreditLimit {
+  id: ID!
+  client: Client!
+  creditLimit: Float!
+  addedAt: Date!
+  setBy: User!
+}
+
+# Input
+
+# NOTE: CLIENT CREDIT LIMIT SHOULD ONLY BE ADDED
+# THERE IS NO WAY YOU CAN EDIT, THIS WAY WE KEEP TRACK
+# OF EVERY SINGLE CHANGE ON CLIENT CREDIT LIMITS
+input ClientCreditLimitInput {
+  client: ID!
+  creditLimit: Float!
+}

@@ -25,7 +25,7 @@ const ACTIVE_TICKETS = gql`
           zipcode
         }
         rfc
-        credit
+        balance
       }
       truck {
         id
@@ -74,7 +74,7 @@ const TICKET_UPDATE = gql`
           zipcode
         }
         rfc
-        credit
+        balance
       }
       truck {
         id
