@@ -1,18 +1,18 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Form } from 'antd';
-import { withAuth } from 'components/providers/withAuth';
+import { useAuth } from 'components/providers/withAuth';
 import Container from 'components/common/container';
 import Chat from './components/chat';
 import PostForm from './components/post-form';
 import ChatContainer from './elements';
 
-const Messages = ({ auth: { user, isAdmin } }) => {
+const Messages = () => {
+  const { user, isAdmin, isManager } = useAuth();
   const PostRegisterForm = Form.create({ name: 'post' })(PostForm);
 
   return (
     <ChatContainer>
-      {isAdmin && (
+      {(isAdmin || isManager) && (
         <Container title="Crear publicación" width="50%" alignitems="center">
           <PostRegisterForm user={user} />
         </Container>
@@ -24,8 +24,4 @@ const Messages = ({ auth: { user, isAdmin } }) => {
   );
 };
 
-Messages.propTypes = {
-  auth: PropTypes.object.isRequired
-};
-
-export default withAuth(Messages);
+export default Messages;

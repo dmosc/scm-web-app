@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import jwt from 'jsonwebtoken';
@@ -38,7 +38,9 @@ const AuthProvider = ({ children, client }) => {
         isGuard: tokenPayload.role === 'GUARD',
         isLoader: tokenPayload.role === 'LOADER',
         isCashier: tokenPayload.role === 'CASHIER',
-        isAccountant: tokenPayload.role === 'ACCOUNTANT'
+        isAccountant: tokenPayload.role === 'ACCOUNTANT',
+        isManager: tokenPayload.role === 'MANAGER',
+        isSupport: tokenPayload.role === 'SUPPORT'
       }}
     >
       {children}

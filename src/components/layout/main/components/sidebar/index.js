@@ -8,7 +8,7 @@ import { Menu, Sider } from './elements';
 const { Item, SubMenu, ItemGroup } = Menu;
 
 const Sidebar = ({ history, collapsed, onCollapse }) => {
-  const { isAdmin, isCashier, isLoader, isGuard, isAccountant } = useAuth();
+  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport } = useAuth();
 
   return (
     <Sider theme="light" collapsible collapsed={collapsed} onCollapse={onCollapse}>
@@ -18,15 +18,13 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
         selectedKeys={history.location.pathname.toLowerCase()}
         mode="inline"
       >
-        {(isAdmin || isCashier || isAccountant) && (
-          <Item key="dashboard">
-            <Link to="/dashboard">
-              <Icon type="dashboard" />
-              <span>Dashboard</span>
-            </Link>
-          </Item>
-        )}
-        {(isAdmin || isGuard) && (
+        <Item key="dashboard">
+          <Link to="/dashboard">
+            <Icon type="dashboard" />
+            <span>Dashboard</span>
+          </Link>
+        </Item>
+        {(isAdmin || isGuard || isSupport || isManager) && (
           <Item key="accesos">
             <Link to="/accesos">
               <Icon type="key" />
@@ -34,7 +32,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isLoader) && (
+        {(isAdmin || isLoader || isSupport || isManager) && (
           <Item key="cargas">
             <Link to="/cargas">
               <Icon type="funnel-plot" />
@@ -42,7 +40,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier) && (
+        {(isAdmin || isCashier || isSupport || isManager) && (
           <Item key="boletas">
             <Link to="/boletas">
               <Icon type="unordered-list" />
@@ -50,7 +48,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier || isAccountant) && (
+        {(isAdmin || isAccountant || isSupport || isManager) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
@@ -60,7 +58,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             }
           >
             <ItemGroup title="Clientes">
-              {(isAdmin || isCashier) && (
+              {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/clientes">
                   <Link to="/registros/clientes">
                     <Icon type="usergroup-add" />
@@ -68,7 +66,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                   </Link>
                 </Item>
               )}
-              {(isAdmin || isAccountant) && (
+              {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/peticiones-clientes">
                   <Link to="/registros/peticiones-clientes">
                     <Icon type="form" />
@@ -77,7 +75,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               )}
             </ItemGroup>
-            {(isAdmin || isCashier) && (
+            {(isAdmin || isAccountant || isSupport || isManager) && (
               <ItemGroup title="Camiones">
                 <Item key="registros/camiones">
                   <Link to="/registros/camiones">
@@ -87,7 +85,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               </ItemGroup>
             )}
-            {isAdmin && (
+            {(isAdmin || isAccountant || isSupport || isManager) && (
               <ItemGroup title="Usuarios">
                 <Item key="registros/usuarios">
                   <Link to="/registros/usuarios">
@@ -98,7 +96,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
               </ItemGroup>
             )}
             <ItemGroup title="Productos">
-              {(isAdmin || isCashier || isAccountant) && (
+              {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/productos">
                   <Link to="/registros/productos">
                     <Icon type="star" />
@@ -106,7 +104,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                   </Link>
                 </Item>
               )}
-              {(isAdmin || isAccountant) && (
+              {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/peticiones-productos">
                   <Link to="/registros/peticiones-productos">
                     <Icon type="form" />
@@ -117,7 +115,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </ItemGroup>
           </SubMenu>
         )}
-        {isAdmin && (
+        {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="reportes">
             <Link to="/reportes">
               <Icon type="line-chart" />
@@ -125,7 +123,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {isAdmin && (
+        {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="historial">
             <Link to="/historial">
               <Icon type="history" />
@@ -133,7 +131,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier || isGuard || isAccountant) && (
+        {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
           <Item key="mensajes">
             <Link to="/mensajes">
               <Icon type="message" />
@@ -141,7 +139,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isAccountant) && (
+        {(isAdmin || isAccountant || isManager) && (
           <Item key="facturas">
             <Link to="/facturas">
               <Icon type="file-text" />

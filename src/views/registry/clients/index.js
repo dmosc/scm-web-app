@@ -4,6 +4,7 @@ import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import { Button, Form, Modal, notification, Row, Table, Tag, Tooltip } from 'antd';
 import shortid from 'shortid';
+import { useAuth } from 'components/providers/withAuth';
 import Title from './components/title';
 import { GET_CLIENTS } from './graphql/queries';
 import { DELETE_CLIENT } from './graphql/mutations';
@@ -16,6 +17,7 @@ import CreditBalance from './components/credit-balance';
 const { confirm } = Modal;
 
 const Clients = ({ client }) => {
+  const { isAdmin, isAccountant, isManager } = useAuth();
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
@@ -149,9 +151,11 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          <Tooltip placement="top" title="Eliminar">
-            <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
-          </Tooltip>
+          {(isAdmin || isAccountant || isManager) && (
+            <Tooltip placement="top" title="Eliminar">
+              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
+            </Tooltip>
+          )}
         </Row>
       )
     }

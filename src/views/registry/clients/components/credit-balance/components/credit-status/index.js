@@ -51,7 +51,7 @@ const CreditStatus = ({ client, currentClient }) => {
       setBalance(balanceToSet);
       setCreditLimit(creditLimitToSet);
 
-      if (balanceToSet > 0) {
+      if (balanceToSet >= 0) {
         setPercentage(0);
       } else {
         const percentageToSet = (balanceToSet * -1) / creditLimitToSet;
@@ -147,7 +147,7 @@ const CreditStatus = ({ client, currentClient }) => {
                   '100%': '#108ee9'
                 }}
                 type="dashboard"
-                percent={percentage}
+                percent={Number(percentage)}
               />
               <Text>Crédito utilizado</Text>
             </Col>
