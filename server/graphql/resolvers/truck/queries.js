@@ -1,5 +1,6 @@
 /* eslint-disable new-cap */
 import QRCode from 'qrcode';
+import ExcelJS from 'exceljs';
 import aesjs from 'aes-js';
 import { Truck } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -48,12 +49,10 @@ const truckQueries = {
     // The \u0019 is an F12
     // Frontend relies on this key to active the hidden input
     // with the ciphered plates
-    const qr = await QRCode.toDataURL(`\u0019\u0019\u0019\u0019${encryptedHex}`, {
+    return QRCode.toDataURL(`\u0019\u0019\u0019\u0019${encryptedHex}`, {
       width: 1200,
       version: 4
     });
-
-    return qr;
   }),
   truckDecipherPlates: authenticated(async (_, { cipheredPlates }) => {
     const bufferedKey = Buffer.from(AES_SECRET);
@@ -61,9 +60,7 @@ const truckQueries = {
 
     const encryptedBytes = aesjs.utils.hex.toBytes(cipheredPlates);
     const decryptedBytes = aesCtr.decrypt(encryptedBytes);
-    const decipheredPlates = aesjs.utils.utf8.fromBytes(decryptedBytes);
-
-    return decipheredPlates;
+    return aesjs.utils.utf8.fromBytes(decryptedBytes);
   })
 };
 

@@ -40,7 +40,9 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Client Credit Limit
   clientCreditLimit(client: ID!): ClientCreditLimit
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientCreditLimitHistory(client: ID!): [ClientCreditLimit!]!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Ticket
   ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -113,7 +115,7 @@ type Mutation {
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER])
   # Client Credit Limit
   clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
-    @auth(roles: [ADMIN, CASHIER])
+    @auth(roles: [ADMIN, MANAGER])
   # Ticket
   ticket(ticket: TicketInput!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])

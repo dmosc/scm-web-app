@@ -107,7 +107,6 @@ const turnMutations = {
 
       return turn;
     } catch (e) {
-      console.log(e);
       return e;
     }
   }),
