@@ -115,11 +115,13 @@ const CreditStatus = ({ client, currentClient }) => {
 
         updateCreditBalance();
         toggleAddBalance(false);
+        message.success(
+          `¡Se han añadido $${toAdd}MXN a favor del balancde de ${currentClient.businessName}!`
+        );
         setToAdd(0);
-        message.success('¡El límite de crédito ha sido actualizado correctamente!');
       },
       onCancel: () => {
-        message.error('Se ha cancelado el cambio de límite de crédito');
+        message.error('No se añadió nada al balance');
       }
     });
   };
