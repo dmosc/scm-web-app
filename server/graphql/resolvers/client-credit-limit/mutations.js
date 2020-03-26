@@ -1,13 +1,13 @@
-import { ClientPrice } from '../../../mongo-db/models';
+import { ClientCreditLimit } from '../../../mongo-db/models';
 
 const clientCreditMutations = {
   clientCreditLimit: async (_, { clientCreditLimit }, { req: { userRequesting } }) => {
-    const newClientPrice = new ClientPrice({
+    const newCreditLimit = new ClientCreditLimit({
       ...clientCreditLimit,
       setBy: userRequesting.id
     });
 
-    return newClientPrice.save();
+    return newCreditLimit.save();
   }
 };
 

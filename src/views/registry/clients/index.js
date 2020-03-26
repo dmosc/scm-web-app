@@ -12,6 +12,7 @@ import { Card, TableContainer } from './elements';
 import EditForm from './components/client-edit-form';
 import NewForm from './components/new-client-form';
 import SpecialPrices from './components/special-prices';
+import CreditBalance from './components/credit-balance';
 
 const { confirm } = Modal;
 
@@ -22,6 +23,7 @@ const Clients = ({ client }) => {
   const [filters, setFilters] = useState({ search: '' });
   const [currentClient, setCurrentClient] = useState(null);
   const [currentClientPrices, setCurrentClientPrices] = useState();
+  const [currentClientCredit, setCurrentClientCredit] = useState();
   const [isNewClientModalOpen, toggleNewClientModal] = useState(false);
   const debouncedFilters = useDebounce(filters, 1000);
 
@@ -140,6 +142,15 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
+          <Tooltip placement="top" title="Crédito y balance">
+            <Button
+              onClick={() => setCurrentClientCredit(row)}
+              style={{ marginRight: 5 }}
+              type="primary"
+              icon="credit-card"
+              size="small"
+            />
+          </Tooltip>
           {(isAdmin || isAccountant || isManager) && (
             <Tooltip placement="top" title="Eliminar">
               <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
@@ -168,6 +179,12 @@ const Clients = ({ client }) => {
           dataSource={clients.map(clientMapped => ({ ...clientMapped, key: shortid.generate() }))}
         />
       </Card>
+      {currentClientCredit && (
+        <CreditBalance
+          close={() => setCurrentClientCredit(undefined)}
+          currentClient={currentClientCredit}
+        />
+      )}
       {currentClientPrices && (
         <SpecialPrices
           close={() => setCurrentClientPrices(undefined)}

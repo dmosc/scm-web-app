@@ -29,6 +29,13 @@ const clientMutations = {
     await client.save();
     return Client.findOne({ _id: client.id }).populate('prices.rock');
   }),
+  clientAddToBalance: async (_, { client, toAdd }) => {
+    const clientToUpdate = await Client.findOne({ _id: client });
+
+    clientToUpdate.balance += toAdd;
+
+    clientToUpdate.save();
+  },
   clientEdit: authenticated(async (_, { client }) => {
     const clientToEdit = { ...client };
 
