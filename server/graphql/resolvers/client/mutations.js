@@ -32,7 +32,7 @@ const clientMutations = {
   clientAddToBalance: async (_, { client, toAdd }) => {
     const clientToUpdate = await Client.findOne({ _id: client });
 
-    clientToUpdate.balance += toAdd;
+    clientToUpdate.balance = (clientToUpdate.balance + toAdd).toFixed(2);
 
     clientToUpdate.save();
   },

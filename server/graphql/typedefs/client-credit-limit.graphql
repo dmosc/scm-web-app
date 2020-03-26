@@ -14,5 +14,6 @@ type ClientCreditLimit {
 # OF EVERY SINGLE CHANGE ON CLIENT CREDIT LIMITS
 input ClientCreditLimitInput {
   client: ID!
-  creditLimit: Float!
+  creditLimit: Float
+  unlimited: Boolean
 }

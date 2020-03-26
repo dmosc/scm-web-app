@@ -5,6 +5,7 @@ import { withApollo } from 'react-apollo';
 import { Form, InputNumber, Modal, Radio, Row, Select, Tooltip, message, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
 import { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE, GET_CREDIT_LIMIT } from './graphql/queries';
+import { isUnlimited } from 'utils/constants/credit';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -282,6 +283,8 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
                 title={
                   !creditEnough
                     ? 'Cliente no tiene suficiente crédito para la transacción'
+                    : isUnlimited(creditLimit)
+                    ? 'El cliente tiene crédito ilimitado'
                     : `Cliente tiene disponible $${creditAvailable}`
                 }
               >
