@@ -4,6 +4,7 @@ import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Button, Form, Modal, notification, Row, Table, Tag } from 'antd';
+import { useAuth } from 'components/providers/withAuth';
 import { GET_ENCRYPTED_PLATES, GET_TRUCKS } from './graphql/queries';
 import { DELETE_TRUCK } from './graphql/mutations';
 import { Card, TableContainer } from './elements';
@@ -14,6 +15,7 @@ import NewForm from './components/new-truck-form';
 const { confirm } = Modal;
 
 const Trucks = ({ client }) => {
+  const { isAdmin, isAccountant, isManager } = useAuth();
   const [loading, setLoading] = useState(true);
   const [trucks, setTrucks] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
@@ -157,7 +159,9 @@ const Trucks = ({ client }) => {
             icon="qrcode"
             size="small"
           />
-          <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small" />
+          {(isAdmin || isAccountant || isManager) && (
+            <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small" />
+          )}
         </Row>
       )
     }

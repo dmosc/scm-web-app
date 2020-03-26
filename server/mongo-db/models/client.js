@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
-import roles from '../enums/roles';
 import { User } from './index';
-import CFDIuse from '../enums/CFDIuse';
+import roles from '../../utils/enums/roles';
+import CFDIuse from '../../utils/enums/CFDIuse';
 
 const Client = User.discriminator(
   'Client',

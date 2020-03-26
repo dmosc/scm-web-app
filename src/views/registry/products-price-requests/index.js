@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Typography, message, Tabs, Button } from 'antd';
-import { ListContainer, Card, TitleContainer } from './elements';
+import { Button, message, Tabs, Typography } from 'antd';
+import { useAuth } from 'components/providers/withAuth';
+import { Card, ListContainer, TitleContainer } from './elements';
 import NewPriceRequestModal from './components/new-price-request-modal';
 import PriceRequestsList from './components/price-requests-list';
 import { GET_PRICE_REQUESTS } from './graphql/queries';
@@ -11,6 +12,7 @@ const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const ProductPriceRequests = ({ client }) => {
+  const { isAdmin, isAccountant, isManager } = useAuth();
   const [isRequestModalOpen, toggleNewRequestModal] = useState(false);
   const [priceRequests, setPriceRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,9 +52,11 @@ const ProductPriceRequests = ({ client }) => {
       <ListContainer>
         <TitleContainer>
           <Title level={3}>Lista de solicitudes</Title>
-          <Button onClick={() => toggleNewRequestModal(true)} type="primary" icon="form">
-            Crear solicitud
-          </Button>
+          {(isAdmin || isAccountant || isManager) && (
+            <Button onClick={() => toggleNewRequestModal(true)} type="primary" icon="form">
+              Crear solicitud
+            </Button>
+          )}
         </TitleContainer>
         <Card>
           <Tabs

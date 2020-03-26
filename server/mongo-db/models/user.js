@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
 import uniqueValidator from 'mongoose-unique-validator';
-import roles from '../enums/roles';
+import roles from '../../utils/enums/roles';
 
 const User = new Schema(
   {

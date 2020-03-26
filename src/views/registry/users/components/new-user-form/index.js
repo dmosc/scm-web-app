@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { withApollo } from 'react-apollo';
-import { Form, Drawer, Icon, Input, Select, Button, notification } from 'antd';
+import { Button, Drawer, Form, Icon, Input, notification, Select } from 'antd';
 import PropTypes from 'prop-types';
 import roles from 'utils/enums/roles';
+import { useAuth } from 'components/providers/withAuth';
 import { REGISTER_USER } from './graphql/mutations';
 
 const { Option } = Select;
 
 const NewUserForm = ({ client, form, visible, toggleNewUserModal, users, setUsers }) => {
+  const { isManager, isSupport } = useAuth();
   const [loading, setLoading] = useState(false);
+  let filteredRoles = [...roles];
+
+  if (isManager) filteredRoles = filteredRoles.filter(role => role !== 'ADMIN');
+  if (isSupport)
+    filteredRoles = filteredRoles.filter(role => role !== 'ADMIN' && role !== 'MANAGER');
 
   const handleSubmit = e => {
     setLoading(true);
@@ -127,7 +134,7 @@ const NewUserForm = ({ client, form, visible, toggleNewUserModal, users, setUser
         <Form.Item>
           {form.getFieldDecorator('role')(
             <Select showSearch style={{ width: '100%' }} placeholder="Rol del usuario" allowClear>
-              {roles.map(role => (
+              {filteredRoles.map(role => (
                 <Option key={role} value={role}>
                   <span>{`${role}`}</span>
                 </Option>

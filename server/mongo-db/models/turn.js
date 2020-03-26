@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
-import periods from '../enums/periods';
+import periods from '../../utils/enums/periods';
 
 const Turn = new Schema({
   user: { type: Schema.ObjectId, ref: 'User', required: true },
