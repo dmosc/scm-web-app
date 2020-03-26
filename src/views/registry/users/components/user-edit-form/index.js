@@ -10,8 +10,13 @@ import { EDIT_USER } from './graphql/mutations';
 const { Option } = Select;
 
 const EditForm = ({ form, currentUser, onUserEdit, setCurrentUser, client }) => {
-  const { isSupport } = useAuth();
+  const { isManager, isSupport } = useAuth();
   const [loading, setLoading] = useState(false);
+  let filteredRoles = [...roles];
+
+  if (isManager) filteredRoles = filteredRoles.filter(role => role !== 'ADMIN');
+  if (isSupport)
+    filteredRoles = filteredRoles.filter(role => role !== 'ADMIN' && role !== 'MANAGER');
 
   const handleSubmit = e => {
     const { id, password: currentPassword } = currentUser;
@@ -112,7 +117,7 @@ const EditForm = ({ form, currentUser, onUserEdit, setCurrentUser, client }) => 
         <Form.Item>
           {form.getFieldDecorator('role', { initialValue: currentUser.role })(
             <Select showSearch style={{ width: '100%' }} placeholder="Rol del usuario" allowClear>
-              {roles.map(role => (
+              {filteredRoles.map(role => (
                 <Option key={role} value={role}>
                   <span>{`${role}`}</span>
                 </Option>
