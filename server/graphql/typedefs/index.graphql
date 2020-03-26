@@ -85,6 +85,7 @@ type Mutation {
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN])
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
+  clientAddToBalance(client: ID!, toAdd: Float!): Client @auth(roles: [ADMIN, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, CASHIER])
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Client Price

@@ -17,6 +17,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
   const [total, setTotal] = useState(0);
   const [specialPrice, setSpecialPrice] = useState();
   const [creditEnough, setCreditEnough] = useState(0);
+  const [creditAvailable, setCreditAvailable] = useState(0);
   const [creditLimit, setCreditLimit] = useState();
   const [tax, setTax] = useState(0);
   const [bill, setBill] = useState(false);
@@ -102,7 +103,10 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
   useEffect(() => {
     const balanceAfterCreditTicket = currentTicket.client.balance - total;
-    setCreditEnough(balanceAfterCreditTicket <= creditLimit);
+    setCreditEnough(balanceAfterCreditTicket * -1 < creditLimit);
+
+    const creditAvailableToSet = creditLimit - currentTicket.client.balance * -1;
+    setCreditAvailable(creditAvailableToSet);
   }, [total, currentTicket, creditLimit]);
 
   useEffect(() => {
@@ -278,10 +282,10 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
                 title={
                   !creditEnough
                     ? 'Cliente no tiene suficiente crédito para la transacción'
-                    : `Cliente tiene disponible $${currentTicket.client.credit}`
+                    : `Cliente tiene disponible $${creditAvailable}`
                 }
               >
-                <Radio.Button disabled={currentTicket.client.credit < total} value={true}>
+                <Radio.Button disabled={!creditEnough} value={true}>
                   CRÉDITO
                 </Radio.Button>
               </Tooltip>
