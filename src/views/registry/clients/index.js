@@ -151,15 +151,6 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          <Tooltip placement="top" title="Crédito y balance">
-            <Button
-              onClick={() => setCurrentClientCredit(row)}
-              style={{ marginRight: 5 }}
-              type="primary"
-              icon="credit-card"
-              size="small"
-            />
-          </Tooltip>
           {(isAdmin || isAccountant || isManager) && (
             <Tooltip placement="top" title="Eliminar">
               <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />

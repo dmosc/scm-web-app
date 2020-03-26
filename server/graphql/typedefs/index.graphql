@@ -109,24 +109,25 @@ type Mutation {
   clientAddToBalance(client: ID!, toAdd: Float!): Client @auth(roles: [ADMIN, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, CASHIER])
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
-  client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER])
-  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER])
-  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER])
   # Client Price
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER])
-  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, CASHIER])
   # Client Credit Limit
   clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
     @auth(roles: [ADMIN, CASHIER])
   # Ticket
-  ticket(ticket: TicketInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD])
-  ticketEdit(ticket: TicketEditInput!): Ticket @auth(roles: [ADMIN, CASHIER, GUARD, LOADER])
-  ticketInit(ticket: TicketInitInput!): Ticket! @auth(roles: [ADMIN, GUARD])
-  ticketProductLoad(ticket: TicketProductLoadInput!): Ticket! @auth(roles: [ADMIN, CASHIER, LOADER])
-  ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket! @auth(roles: [ADMIN, CASHIER, LOADER])
-  ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, GUARD])
-  ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
-  ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
+  ticket(ticket: TicketInput!): Ticket
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  ticketEdit(ticket: TicketEditInput!): Ticket
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  ticketInit(ticket: TicketInitInput!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  ticketProductLoad(ticket: TicketProductLoadInput!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
+  ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
+    @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
+  ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
+  ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
+  ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
   truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER])
