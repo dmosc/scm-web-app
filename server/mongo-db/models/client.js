@@ -3,6 +3,13 @@ import { User } from './index';
 import roles from '../../utils/enums/roles';
 import CFDIuse from '../../utils/enums/CFDIuse';
 
+const Deposit = new Schema({
+  depositedAt: { type: Date, required: true, default: Date.now },
+  amount: { type: Number, required: true },
+  depositedBy: { type: Schema.ObjectId, ref: 'User', required: true },
+  newBalance: { type: Number, required: true }
+});
+
 const Client = User.discriminator(
   'Client',
   new Schema({
@@ -38,7 +45,8 @@ const Client = User.discriminator(
       intNumber: { type: String, required: true, default: '' },
       zipcode: { type: String, required: true, default: '' }
     },
-    balance: { type: Number, required: true, default: 0 }
+    balance: { type: Number, required: true, default: 0 },
+    depositHistory: { type: [Deposit], default: [] }
   })
 );
 

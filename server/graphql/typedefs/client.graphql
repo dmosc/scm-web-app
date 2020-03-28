@@ -13,6 +13,7 @@ type Client {
   cellphone: [String!]!
   address: Address!
   balance: Float!
+  depositHistory: [Deposit!]!
 }
 
 type ClientPendingBill {
@@ -36,6 +37,13 @@ type Address {
   extNumber: String
   intNumber: String!
   zipcode: String!
+}
+
+type Deposit {
+  depositedAt: Date!
+  amount: Float!
+  depositedBy: User!
+  newBalance: Float!
 }
 
 # Inputs
@@ -62,6 +70,10 @@ input ClientEditInput {
   CFDIuse: CFDIuse
   cellphone: [String!]
   address: AddressInput
+  # PLEASE DO NOT ADD balance AS
+  # EDITABLE INPUT, IT SHOULD PASS THROUGH
+  # clientAddToBalance MUTATION, SO IT
+  # IS REGISTERED ON depositHistory
 }
 
 input AddressInput {

@@ -5,7 +5,9 @@ import authenticated from '../../middleware/authenticated';
 const clientQueries = {
   client: authenticated(async (_, args) => {
     const { id } = args;
-    const client = await Client.findOne({ _id: id, deleted: false }).populate('trucks');
+    const client = await Client.findOne({ _id: id, deleted: false }).populate(
+      'trucks depositHistory.depositedBy'
+    );
 
     if (!client) throw new Error('¡El cliente no existe!');
 

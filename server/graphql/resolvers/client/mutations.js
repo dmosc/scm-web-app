@@ -29,12 +29,18 @@ const clientMutations = {
     await client.save();
     return Client.findOne({ _id: client.id }).populate('prices.rock');
   }),
-  clientAddToBalance: async (_, { client, toAdd }) => {
+  clientAddToBalance: async (_, { client, toAdd }, { req: { userRequesting } }) => {
     const clientToUpdate = await Client.findOne({ _id: client });
 
     clientToUpdate.balance = (clientToUpdate.balance + toAdd).toFixed(2);
 
-    clientToUpdate.save();
+    clientToUpdate.depositHistory.push({
+      depositedBy: userRequesting.id,
+      amount: toAdd,
+      newBalance: clientToUpdate.balance
+    });
+
+    return clientToUpdate.save();
   },
   clientEdit: authenticated(async (_, { client }) => {
     const clientToEdit = { ...client };
