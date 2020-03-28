@@ -111,14 +111,14 @@ type Mutation {
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
-  clientAddToBalance(client: ID!, toAdd: Float!): Client @auth(roles: [ADMIN, CASHIER])
-  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, CASHIER])
+  clientAddToBalance(client: ID!, toAdd: Float!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
+  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Client Price
-  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER])
+  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client Credit Limit
   clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
-    @auth(roles: [ADMIN, MANAGER])
+    @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Ticket
   ticket(ticket: TicketInput!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])

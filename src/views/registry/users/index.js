@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
+import { useAuth } from 'components/providers/withAuth';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Table, Button, Form } from 'antd';
-import { GET_USERS } from './graphql/queries';
 import { TableContainer, Card } from './elements';
 import Title from './components/title';
 import EditForm from './components/user-edit-form';
 import NewForm from './components/new-user-form';
+import { GET_USERS } from './graphql/queries';
 
 const Users = ({ client }) => {
+  const { isSupport, isManager, isCashier } = useAuth();
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
   const [loading, setLoading] = useState(true);
@@ -86,7 +88,19 @@ const Users = ({ client }) => {
       key: 'action',
       align: 'right',
       render: row => (
-        <Button onClick={() => setCurrentUser(row)} type="default" icon="edit" size="small" />
+        <Button
+          onClick={() => setCurrentUser(row)}
+          disabled={
+            isCashier ?
+              row.role === 'ADMIN' || row.role === 'MANAGER' || row.role === 'SUPPORT' :
+            isSupport ?
+              row.role === 'ADMIN' || row.role === 'MANAGER' :
+              (isManager && row.role === 'ADMIN') || (isManager && row.role === 'MANAGER')
+          }
+          type="default"
+          icon="edit"
+          size="small"
+        />
       )
     }
   ];
