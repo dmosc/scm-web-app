@@ -29,6 +29,7 @@ type Query {
   # Client
   client(id: ID!): Client @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clients(filters: ClientFilters!): [Client!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsXLS(filters: ClientFilters!): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientsPendingTicketsToBill: [ClientPendingBill!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Client Price
@@ -67,6 +68,8 @@ type Query {
   truckDecipherPlates(cipheredPlates: String!): String!
     @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER])
   trucks(filters: TruckFilters!): [Truck!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  trucksXLS(filters: TruckFilters!): String!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Rock
   rock(id: ID!): Rock @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])

@@ -1,12 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
-import { Typography, Input, Button } from 'antd';
+import { Button, Input, Typography } from 'antd';
 import TitleContainer from './elements';
+import { GET_REPORT } from './graphql/queries';
 
 const { Title } = Typography;
 const { Search } = Input;
 
-const TableTitle = ({ handleFilterChange, toggleNewClientModal }) => {
+const TableTitle = ({ client, handleFilterChange, toggleNewClientModal, filters }) => {
+  const [loading, setLoading] = useState(false);
+
+  const downloadReport = async () => {
+    setLoading(true);
+    const {
+      data: { clientsXLS }
+    } = await client.query({
+      query: GET_REPORT,
+      variables: { filters }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(clientsXLS);
+    link.download = `Lista-Clientes-${new Date().toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    setLoading(false);
+  };
+
   return (
     <TitleContainer>
       <Title style={{ margin: 'auto 10px' }} level={3}>
@@ -18,16 +43,32 @@ const TableTitle = ({ handleFilterChange, toggleNewClientModal }) => {
         placeholder="Buscar clientes"
         onChange={({ target: { value } }) => handleFilterChange('search', value)}
       />
-      <Button type="primary" icon="user-add" onClick={() => toggleNewClientModal(true)}>
+      <Button
+        style={{ margin: 'auto 10px' }}
+        type="primary"
+        icon="user-add"
+        onClick={() => toggleNewClientModal(true)}
+      >
         Añadir
+      </Button>
+      <Button
+        style={{ margin: 'auto 10px' }}
+        loading={loading}
+        type="primary"
+        icon="file-excel"
+        onClick={downloadReport}
+      >
+        {(loading && 'Generando...') || 'Descargar clientes'}
       </Button>
     </TitleContainer>
   );
 };
 
 TableTitle.propTypes = {
+  client: PropTypes.object.isRequired,
   handleFilterChange: PropTypes.func.isRequired,
-  toggleNewClientModal: PropTypes.func.isRequired
+  toggleNewClientModal: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired
 };
 
-export default TableTitle;
+export default withApollo(TableTitle);

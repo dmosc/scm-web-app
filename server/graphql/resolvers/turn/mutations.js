@@ -70,6 +70,7 @@ const turnMutations = {
           businessName: tickets[i].client.businessName,
           address: Object.values(tickets[i].client.address)
             .filter(value => typeof value === 'string')
+            .map(value => value.toUpperCase().trim())
             .join(', '),
           rfc: tickets[i].client.rfc,
           plates: tickets[i].truck.plates,

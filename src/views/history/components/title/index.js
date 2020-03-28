@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import moment from 'moment';
-import { DatePicker, Typography, Input, Button, Select } from 'antd';
-import { TitleContainer, HeadContainer, FiltersContainer, InputContainer } from './elements';
-import { GET_REPORT, GET_PRODUCTS } from './graphql/queries';
+import { Button, DatePicker, Input, Select, Typography } from 'antd';
+import { FiltersContainer, HeadContainer, InputContainer, TitleContainer } from './elements';
+import { GET_PRODUCTS, GET_REPORT } from './graphql/queries';
 
 const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
@@ -63,7 +63,7 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
           onChange={({ target: { value } }) => handleFilterChange('search', value)}
         />
         <Button loading={loading} type="primary" icon="file-excel" onClick={downloadReport}>
-          {(loading && 'Generando...') || 'Descargar .xls'}
+          {(loading && 'Generando...') || 'Descargar boletas'}
         </Button>
       </HeadContainer>
       <FiltersContainer>

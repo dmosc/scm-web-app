@@ -89,6 +89,11 @@ const Clients = ({ client }) => {
 
   const columns = [
     {
+      title: 'ID',
+      dataIndex: 'uniqueId',
+      key: 'uniqueId'
+    },
+    {
       title: 'Negocio',
       dataIndex: 'businessName',
       key: 'businessName'
@@ -171,6 +176,7 @@ const Clients = ({ client }) => {
             <Title
               handleFilterChange={handleFilterChange}
               toggleNewClientModal={toggleNewClientModal}
+              filters={filters}
             />
           )}
           size="small"
