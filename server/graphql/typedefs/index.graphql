@@ -64,9 +64,9 @@ type Query {
   # Truck
   truck(id: ID, plates: String): Truck
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
-  truckQRCode(id: ID): String! @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER])
+  truckQRCode(id: ID): String! @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD])
   truckDecipherPlates(cipheredPlates: String!): String!
-    @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER])
+    @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD])
   trucks(filters: TruckFilters!): [Truck!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   trucksXLS(filters: TruckFilters!): String!
