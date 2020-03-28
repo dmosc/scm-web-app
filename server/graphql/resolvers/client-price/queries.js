@@ -14,13 +14,13 @@ const clientPriceQueries = {
 
     const pricesPerRock = await Promise.all(pricesPerRockPromise);
 
-    const a = pricesPerRock
-      // First element will always be the most recent, which is considered the 'active'
-      .map(rockPrices => rockPrices[0])
-      // Filter not nulls and not noSpecialPrice flag
-      .filter(price => price && !price.noSpecialPrice);
-
-    return a;
+    return (
+      pricesPerRock
+        // First element will always be the most recent, which is considered the 'active'
+        .map(rockPrices => rockPrices[0])
+        // Filter not nulls and not noSpecialPrice flag
+        .filter(price => price && !price.noSpecialPrice)
+    );
   }),
   clientPriceByClient: authenticated(async (_, { client, rock }) => {
     const clientPrices = await ClientPrice.find({ client, rock })

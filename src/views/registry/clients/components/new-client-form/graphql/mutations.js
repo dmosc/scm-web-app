@@ -4,6 +4,7 @@ const REGISTER_CLIENT = gql`
   mutation client($client: ClientInput!) {
     client(client: $client) {
       id
+      uniqueId
       firstName
       lastName
       email

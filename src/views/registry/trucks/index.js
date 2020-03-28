@@ -177,6 +177,7 @@ const Trucks = ({ client }) => {
             <Title
               handleFilterChange={handleFilterChange}
               toggleNewTruckModal={toggleNewTruckModal}
+              filters={filters}
             />
           )}
           size="small"

@@ -4,6 +4,7 @@ const GET_CLIENTS = gql`
   query clients($filters: ClientFilters!) {
     clients(filters: $filters) {
       id
+      uniqueId
       firstName
       lastName
       email
