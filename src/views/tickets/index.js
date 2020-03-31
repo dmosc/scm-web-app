@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import ReactDOMServer from 'react-dom/server';
 import { withAuth } from 'components/providers/withAuth';
 import { graphql } from '@apollo/react-hoc';
 import print from 'print-js';
 import mapStyles from 'react-map-styles';
-import { Form, List } from 'antd';
+import { Form, List, Empty, Spin } from 'antd';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
 import TicketImageForm from './components/ticket-image-form';
@@ -56,21 +57,35 @@ class Tickets extends Component {
       props: { ticket }
     } = node;
 
-    document
-      .getElementById('root')
-      .insertAdjacentHTML(
-        'beforeend',
-        `<div id="printable">${mapStyles(ReactDOMServer.renderToString(node))}</div>`
-      );
+    document.getElementById('root').insertAdjacentHTML(
+      'beforeend',
+      `
+      <div id="printable">
+        <div id="title">
+          <p>Folio: ${ticket.folio}</p>
+          <p>${moment().format('LLL')}</p>
+          <p>${ticket.credit ? 'CRÉDITO' : 'CONTADO'}</p>
+        </div>
+        <div id="content">
+        ${mapStyles(ReactDOMServer.renderToString(node))}
+        </div>
+      </div>
+      `
+    );
 
     print({
       printable: 'printable',
       type: 'html',
       ignoreElements: ['skip'],
       honorColor: true,
-      header: `Folio: ${ticket.folio}`,
-      style:
-        '@page { margin: 0; } #printable { margin: 50px; font-size: 16px; font-family: Courier; }'
+      style: `
+        @page { margin: 0; } 
+        #printable { width: 100vw; size: margin: 50px; font-size: 16px; font-family: Courier; }
+        #title { width: 100%; position: absolute; right: 0; display: flex; flex-direction: column; }
+        #content { position: absolute; top: 100px; }
+        p { margin: 0 } 
+        .skip { visibility: hidden }
+      `
     });
 
     const printable = document.getElementById('printable');
@@ -123,9 +138,11 @@ class Tickets extends Component {
         </Container>
         <Container justifycontent="center" alignitems="center">
           {error ? (
-            <div>¡No se han podido cargar las boletas!</div>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           ) : loading ? (
-            <div>Cargando boletas...</div>
+            <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
+              <Spin />
+            </div>
           ) : (
             <TicketsList
               turnActive={turnActive}
