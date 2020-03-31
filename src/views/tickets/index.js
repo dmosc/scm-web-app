@@ -81,7 +81,7 @@ class Tickets extends Component {
       style: `
         @page { margin: 0; } 
         #printable { width: 100vw; size: margin: 50px; font-size: 16px; font-family: Courier; }
-        #title { width: 100%; position: absolute; right: 0; display: flex; flex-direction: column; }
+        #title { width: 100%; position: absolute; right: -350px; display: flex; flex-direction: column; }
         #content { position: absolute; top: 100px; }
         p { margin: 0 } 
         .skip { visibility: hidden }
