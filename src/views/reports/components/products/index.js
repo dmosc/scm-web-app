@@ -25,7 +25,8 @@ import {
   Statistic,
   Icon,
   Card,
-  Empty
+  Empty,
+  Col
 } from 'antd';
 import shortid from 'shortid';
 import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
@@ -237,13 +238,23 @@ const ProductSales = ({ client, globalFilters }) => {
         </InputContainer>
       </FiltersContainer>
       <Card>
-        <Statistic
-          valueStyle={{ color: '#3f8600' }}
-          title="Ventas totales"
-          value={productSalesReport.total ?? 0}
-          suffix="MXN"
-          prefix={<Icon type="rise" />}
-        />
+        <Col span={12}>
+          <Statistic
+            valueStyle={{ color: '#3f8600' }}
+            title="Ventas totales"
+            value={productSalesReport.total ?? 0}
+            suffix="MXN"
+            prefix={<Icon type="rise" />}
+          />
+        </Col>
+        <Col span={12}>
+          <Statistic
+            valueStyle={{ color: '#1890ff' }}
+            title="Boletas"
+            value={tickets.length}
+            prefix={<Icon type="file-done" />}
+          />
+        </Col>
       </Card>
       <ChartsContainer>
         <Card title="Gráfico de pie">
