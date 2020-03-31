@@ -43,10 +43,11 @@ const Login = ({ form, client }) => {
     <Form
       onSubmit={handleSubmit}
       style={{
-        width: 300
+        display: 'flex',
+        alignItems: 'center'
       }}
     >
-      <Form.Item>
+      <Form.Item style={{ marginBottom: 0, marginRight: 10 }}>
         {form.getFieldDecorator('username', {
           rules: [
             {
@@ -61,7 +62,7 @@ const Login = ({ form, client }) => {
           />
         )}
       </Form.Item>
-      <Form.Item>
+      <Form.Item style={{ marginBottom: 0, marginRight: 10 }}>
         {form.getFieldDecorator('password')(
           <Input
             prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -70,7 +71,7 @@ const Login = ({ form, client }) => {
           />
         )}
       </Form.Item>
-      <Form.Item>
+      <Form.Item style={{ marginBottom: 0 }}>
         <Button
           type="primary"
           htmlType="submit"
