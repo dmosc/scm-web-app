@@ -144,7 +144,7 @@ const App = ({
             <Route exact path="/historial" component={History} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/reportes" component={Reports} />
+            <Route path="/reportes" component={Reports} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
             <Route exact path="/mensajes" component={Messages} />

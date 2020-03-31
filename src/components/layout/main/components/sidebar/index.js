@@ -99,7 +99,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/productos">
                   <Link to="/registros/productos">
-                    <Icon type="star" />
+                    <Icon type="block" />
                     Productos
                   </Link>
                 </Item>
@@ -116,12 +116,51 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
           </SubMenu>
         )}
         {(isAdmin || isAccountant || isSupport || isManager) && (
-          <Item key="reportes">
-            <Link to="/reportes">
-              <Icon type="line-chart" />
-              <span>Reportes</span>
-            </Link>
-          </Item>
+          <SubMenu
+            title={
+              <span className="submenu-title-wrapper">
+                <Icon type="line-chart" />
+                <span>Reportes</span>
+              </span>
+            }
+          >
+            <Item key="reportes/global">
+              <Link to="/reportes/global">
+                <Icon type="area-chart" />
+                Global
+              </Link>
+            </Item>
+            <Item key="reportes/productos">
+              <Link to="/reportes/productos">
+                <Icon type="block" />
+                Productos
+              </Link>
+            </Item>
+            <Item key="reportes/boletas">
+              <Link to="/reportes/boletas">
+                <Icon type="unordered-list" />
+                Boletas
+              </Link>
+            </Item>
+            <Item key="reportes/clientes">
+              <Link to="/reportes/clientes">
+                <Icon type="usergroup-add" />
+                Clientes
+              </Link>
+            </Item>
+            <Item key="reportes/camiones">
+              <Link to="/reportes/camiones">
+                <Icon type="car" />
+                Camiones
+              </Link>
+            </Item>
+            <Item key="reportes/turnos">
+              <Link to="/reportes/turnos">
+                <Icon type="file-done" />
+                Turnos
+              </Link>
+            </Item>
+          </SubMenu>
         )}
         {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="historial">

@@ -15,14 +15,24 @@ import {
   Line,
   Tooltip
 } from 'recharts';
-import { notification, Select, Typography, Icon, Tag, Table } from 'antd';
+import {
+  notification,
+  Select,
+  Typography,
+  Spin,
+  Tag,
+  Table,
+  Statistic,
+  Icon,
+  Card,
+  Empty
+} from 'antd';
 import shortid from 'shortid';
-import Container from 'components/common/container';
-import { ProductSalesContainer, FiltersContainer, MessageContainer, Column } from './elements';
+import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
 import { GET_ROCK_MONTH_SALES, GET_ROCK_SALES, GET_ROCKS } from './graphql/queries';
 
 const { Option } = Select;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const columns = [
   {
@@ -60,9 +70,10 @@ const columns = [
   }
 ];
 
-const ProductSales = ({ client, filters: globalFilters }) => {
+const ProductSales = ({ client, globalFilters }) => {
   const [filters, setFilters] = useState({
-    rocks: []
+    rocks: [],
+    type: null
   });
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
@@ -73,6 +84,9 @@ const ProductSales = ({ client, filters: globalFilters }) => {
 
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
+
+    // eslint-disable-next-line no-param-reassign
+    if (key === 'type' && value === '') value = null;
 
     setFilters(filtersToSet);
   };
@@ -114,7 +128,7 @@ const ProductSales = ({ client, filters: globalFilters }) => {
             filters: {
               ...globalFilters,
               ...debouncedFilters,
-              type: globalFilters.type ? globalFilters.type === 'BILL' : null
+              type: debouncedFilters.type ? debouncedFilters.type === 'BILL' : null
             }
           }
         });
@@ -158,7 +172,7 @@ const ProductSales = ({ client, filters: globalFilters }) => {
             filters: {
               ...globalFilters,
               ...debouncedFilters,
-              type: globalFilters.type ? globalFilters.type === 'BILL' : null
+              type: debouncedFilters.type ? debouncedFilters.type === 'BILL' : null
             }
           }
         });
@@ -190,114 +204,133 @@ const ProductSales = ({ client, filters: globalFilters }) => {
   }, [globalFilters, debouncedFilters, client]);
 
   return (
-    <ProductSalesContainer>
-      <Column>
-        <Container
-          title={`Ventas totales: $${productSalesReport.total ?? 0}`}
-          margin="10px 30px"
-          justifycontent="center"
-          alignitems="center"
-          width="90%"
-          height="fit-content"
-        >
-          <FiltersContainer>
-            <Select
-              loading={loading}
-              mode="multiple"
-              allowClear
-              onChange={rocks => handleFilterChange('rocks', rocks)}
-              style={{ width: '100%' }}
-              placeholder="Filtra por producto"
-              defaultValue={[]}
-            >
-              {products.map(({ id, name }) => (
-                <Option key={id} value={id}>
-                  {name}
-                </Option>
-              ))}
-            </Select>
-          </FiltersContainer>
-          {loading && <Icon type="loading" />}
-          {productSalesReport?.rocks?.length > 0 && !loading && (
-            <div style={{ padding: 20 }}>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={productMonthSalesReport}>
-                  <XAxis dataKey="name" />
-                  <YAxis padding={{ left: 0, right: 0 }} />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Tooltip />
-                  <Legend />
-                  {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
-                    <Line
-                      type="monotone"
-                      animationEasing="linear"
-                      strokeWidth={3}
-                      key={name}
-                      dataKey={name}
-                      stroke={color}
-                    />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-              <ResponsiveContainer width="50%" height={220}>
-                <PieChart width={220} height={220}>
-                  <Pie
-                    dataKey="value"
-                    isAnimationActive={true}
-                    data={productSalesReport?.rocks?.map(
-                      ({ rock: { name, color }, total: value }) => ({
-                        name,
-                        color,
-                        value
-                      })
-                    )}
-                    outerRadius={60}
-                    fill="#8884d8"
-                    label={true}
-                  >
-                    {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
-                      <Cell key={name} fill={color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+    <>
+      <FiltersContainer>
+        <InputContainer>
+          <Text type="secondary">Tipo de boletas</Text>
+          <Select
+            onChange={value => handleFilterChange('type', value)}
+            style={{ width: 120 }}
+            value={filters.type || ''}
+          >
+            <Option value="">Todos</Option>
+            <Option value="BILL">Factura</Option>
+            <Option value="REMISSION">Remisión</Option>
+          </Select>
+        </InputContainer>
+        <InputContainer>
+          <Text type="secondary">Filtrar por producto</Text>
+          <Select
+            loading={loading}
+            mode="multiple"
+            allowClear
+            onChange={rocks => handleFilterChange('rocks', rocks)}
+            placeholder="Producto"
+            defaultValue={[]}
+          >
+            {products.map(({ id, name }) => (
+              <Option key={id} value={id}>
+                {name}
+              </Option>
+            ))}
+          </Select>
+        </InputContainer>
+      </FiltersContainer>
+      <Card>
+        <Statistic
+          valueStyle={{ color: '#3f8600' }}
+          title="Ventas totales"
+          value={productSalesReport.total ?? 0}
+          suffix="MXN"
+          prefix={<Icon type="rise" />}
+        />
+      </Card>
+      <ChartsContainer>
+        <Card title="Gráfico de pie">
+          {loading && (
+            <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
+              <Spin />
             </div>
           )}
-          {productSalesReport?.rocks?.length === 0 && (
-            <MessageContainer>
-              <Title level={4}>No hay suficientes datos...</Title>
-            </MessageContainer>
+          {productSalesReport?.rocks?.length > 0 && !loading && (
+            <ResponsiveContainer width="50%" height={220}>
+              <PieChart width={220} height={220}>
+                <Pie
+                  dataKey="value"
+                  isAnimationActive={true}
+                  data={productSalesReport?.rocks?.map(
+                    ({ rock: { name, color }, total: value }) => ({
+                      name,
+                      color,
+                      value
+                    })
+                  )}
+                  outerRadius={60}
+                  fill="#8884d8"
+                  label={true}
+                >
+                  {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
+                    <Cell key={name} fill={color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           )}
-        </Container>
-      </Column>
-      <Column>
-        <Container
-          title={`${tickets.length} Boletas`}
-          margin="10px 30px"
-          justifycontent="center"
-          alignitems="center"
-          width="90%"
-          height="fit-content"
-        >
-          <Table
-            loading={loading}
-            columns={columns}
-            size="small"
-            scroll={{ x: true, y: '55vh' }}
-            pagination={{ defaultPageSize: 20 }}
-            dataSource={tickets.map(ticket => ({ ...ticket, key: shortid.generate() }))}
-          />
-        </Container>
-      </Column>
-    </ProductSalesContainer>
+          {productSalesReport?.rocks?.length === 0 && (
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          )}
+        </Card>
+        <Card title="Distribución">
+          {loading && (
+            <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
+              <Spin />
+            </div>
+          )}
+          {productSalesReport?.rocks?.length > 0 && !loading && (
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={productMonthSalesReport}>
+                <XAxis dataKey="name" />
+                <YAxis padding={{ left: 0, right: 0 }} />
+                <CartesianGrid strokeDasharray="3 3" />
+                <Tooltip />
+                <Legend />
+                {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
+                  <Line
+                    type="monotone"
+                    animationEasing="linear"
+                    strokeWidth={3}
+                    key={name}
+                    dataKey={name}
+                    stroke={color}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+          {productSalesReport?.rocks?.length === 0 && (
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          )}
+        </Card>
+      </ChartsContainer>
+      <Card title={`${tickets.length} Boletas`}>
+        <Table
+          loading={loading}
+          columns={columns}
+          size="small"
+          scroll={{ x: true, y: '55vh' }}
+          pagination={{ defaultPageSize: 20 }}
+          dataSource={tickets.map(ticket => ({ ...ticket, key: shortid.generate() }))}
+        />
+      </Card>
+    </>
   );
 };
 
 ProductSales.propTypes = {
   client: PropTypes.object.isRequired,
-  filters: PropTypes.object.isRequired
+  globalFilters: PropTypes.object.isRequired
 };
 
 export default withApollo(ProductSales);
