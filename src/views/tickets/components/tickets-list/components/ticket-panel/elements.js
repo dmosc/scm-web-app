@@ -25,4 +25,22 @@ const Actions = styled.div`
   }
 `;
 
-export { Link, Credit, Actions };
+const Table = styled.table`
+  width: 100%;
+  margin: 10px;
+  font-size: 12px;
+
+  .hide {
+    visibility: hidden;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  tbody > tr > td > b {
+    font-size: 8px;
+  }
+`;
+
+export { Link, Credit, Actions, Table };

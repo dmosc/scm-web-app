@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { Button, message, Modal } from 'antd';
-import { Actions, Credit, Link } from './elements';
+import { Table, Actions, Credit, Link } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET } from './graphql/mutations';
 
 const { confirm } = Modal;
@@ -59,7 +59,7 @@ class TicketPanel extends Component {
 
     return (
       <>
-        <table style={{ width: '100%', margin: 10 }}>
+        <Table>
           <thead>
             <tr>
               <td>
@@ -82,40 +82,40 @@ class TicketPanel extends Component {
           <tbody>
             <tr>
               <td>
-                <b>RAZÓN SOCIAL</b>
-                {`: ${ticket.client.businessName}`}
+                <b>RAZÓN SOCIAL:</b>
+                <p>{`${ticket.client.businessName}`}</p>
               </td>
               <td>
                 {ticket.driver && (
                   <>
-                    <b>CONDUCTOR</b>
-                    {`: ${ticket.driver}`}
+                    <b>CONDUCTOR:</b>
+                    <p>{`${ticket.driver}`}</p>
                   </>
                 )}
               </td>
               <td>
                 {ticket.product && (
                   <>
-                    <b>TIPO</b>
-                    {`: ${ticket.product.name}`}
+                    <b>TIPO:</b>
+                    <p>{`${ticket.product.name}`}</p>
                   </>
                 )}
               </td>
             </tr>
             <tr>
               <td>
-                <b>DIRECCIÓN</b>
-                {`: ${ticket.client.address?.street}`}
+                <b>DIRECCIÓN:</b>
+                <p>{`${ticket.client.address?.street}`}</p>
               </td>
               <td>
-                <b>PLACAS</b>
-                {`: ${ticket.truck.plates}`}
+                <b>PLACAS:</b>
+                <p>{`${ticket.truck.plates}`}</p>
               </td>
               <td>
                 {ticket.totalWeight && (
                   <>
-                    <b>PESO NETO</b>
-                    {`: ${ticket.totalWeight} tons`}
+                    <b>PESO NETO:</b>
+                    <p>{`${ticket.totalWeight} tons`}</p>
                   </>
                 )}
               </td>
@@ -123,11 +123,12 @@ class TicketPanel extends Component {
             </tr>
             <tr>
               <td>
-                <b>CÓDIGO POSTAL</b>
-                {`: ${ticket.client.address?.zipcode}`}
+                <b>CÓDIGO POSTAL: </b>
+                <p>{`${ticket.client.address?.zipcode}`}</p>
               </td>
-              <td id="skip">
+              <td>
                 <Link
+                  id="skip"
                   link={ticket.inTruckImage}
                   href={ticket.inTruckImage}
                   rel="noopener noreferrer"
@@ -136,14 +137,23 @@ class TicketPanel extends Component {
                   <b>IMAGEN ENTRADA</b>
                 </Link>
               </td>
+              <td>
+                {ticket.weight && (
+                  <>
+                    <b>PESO BRUTO: </b>
+                    {`${ticket.weight} tons`}
+                  </>
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <b>BALANCE: </b>
                 <Credit credit={ticket.client.balance}>{ticket.client.balance}</Credit>
               </td>
-              <td id="skip">
+              <td>
                 <Link
+                  id="skip"
                   href={ticket.outTruckImage}
                   rel="noopener noreferrer"
                   target="_blank"
@@ -152,29 +162,31 @@ class TicketPanel extends Component {
                   <b>IMAGEN SALIDA</b>
                 </Link>
               </td>
-            </tr>
-            <tr>
-              <td />
-              <td />
-              <td>
-                {ticket.weight && (
-                  <>
-                    <b>PESO BRUTO</b>
-                    {`: ${ticket.weight} tons`}
-                  </>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td />
-              <td />
               <td>
                 <b>PESO CAMIÓN</b>
                 {`: ${ticket.truck.weight} tons`}
               </td>
             </tr>
             <tr>
+              <td className="hide">
+                <b>
+                  <u>CONSIGNADO</u>
+                </b>
+              </td>
               <td />
+              <td />
+            </tr>
+            <tr>
+              <td className="hide">
+                Matriz
+                <br />
+                Matriz
+              </td>
+              <td />
+              <td />
+            </tr>
+            <tr>
+              <td className="hide">Santa Catarina, Nuevo León</td>
               <td />
               <td>
                 {ticket.totalPrice && (
@@ -186,7 +198,7 @@ class TicketPanel extends Component {
               </td>
             </tr>
           </tbody>
-        </table>
+        </Table>
         <Actions id="skip">
           <Button
             icon="camera"
