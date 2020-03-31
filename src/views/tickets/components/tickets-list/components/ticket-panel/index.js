@@ -141,15 +141,17 @@ class TicketPanel extends Component {
                 {ticket.weight && (
                   <>
                     <b>PESO BRUTO: </b>
-                    {`${ticket.weight} tons`}
+                    <p>{`${ticket.weight} tons`}</p>
                   </>
                 )}
               </td>
             </tr>
             <tr>
               <td>
-                <b>BALANCE: </b>
-                <Credit credit={ticket.client.balance}>{ticket.client.balance}</Credit>
+                <b id="skip">BALANCE: </b>
+                <Credit id="skip" credit={ticket.client.balance}>
+                  {ticket.client.balance} MXN
+                </Credit>
               </td>
               <td>
                 <Link
@@ -163,8 +165,8 @@ class TicketPanel extends Component {
                 </Link>
               </td>
               <td>
-                <b>PESO CAMIÓN</b>
-                {`: ${ticket.truck.weight} tons`}
+                <b>PESO CAMIÓN: </b>
+                <p>{`${ticket.truck.weight} tons`}</p>
               </td>
             </tr>
             <tr>
@@ -190,10 +192,10 @@ class TicketPanel extends Component {
               <td />
               <td>
                 {ticket.totalPrice && (
-                  <>
-                    <b>TOTAL</b>
-                    {`: $${ticket.totalPrice}`}
-                  </>
+                  <p id="skip">
+                    <b>TOTAL:</b>
+                    <p id="skip">{`$${ticket.totalPrice}`}</p>
+                  </p>
                 )}
               </td>
             </tr>
