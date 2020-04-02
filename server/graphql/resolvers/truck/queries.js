@@ -9,10 +9,13 @@ import { AES_SECRET } from '../../../config';
 const truckQueries = {
   truck: authenticated(async (_, args) => {
     const { id, plates, client } = args;
-    const truck = await Truck.findOne({
-      deleted: false,
-      $and: [{ $or: [{ _id: id }, { plates }] }, { client }]
-    }).populate('client');
+
+    let query = { deleted: false };
+
+    if (id) query = { ...query, _id: id };
+    else query = { ...query, plates, client };
+
+    const truck = await Truck.findOne(query).populate('client');
 
     if (!truck) throw new Error('¡El camión no existe!');
 

@@ -2,8 +2,8 @@ import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
 import {
   Client,
-  ClientPrice,
   ClientCreditLimit,
+  ClientPrice,
   Folio,
   Rock,
   Ticket,
@@ -34,16 +34,40 @@ const ticketMutations = {
         ticket.ticket,
         { ...ticket },
         { new: true }
-      ).populate('client truck product');
+      ).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
       const activeTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
       const loadedTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
@@ -67,7 +91,7 @@ const ticketMutations = {
     if (ticketExists.length !== 0) throw new Error(`¡El camión ${plates} ya está activo!`);
 
     try {
-      const truck = await Truck.findOne({ plates });
+      const truck = await Truck.findOne({ plates, client: newTicket.client });
       const product = await Rock.findById(productId);
       const client = await Client.findById(newTicket.client);
 
@@ -83,18 +107,42 @@ const ticketMutations = {
 
       await newTicket.save();
 
-      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+      const ticket = await Ticket.findById(newTicket.id).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
       const activeTickets = await Ticket.find({
         disabled: false,
         deleted: false,
         turn: { $exists: false }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
       const notLoadedActiveTickets = await Ticket.find({
         disabled: false,
         deleted: false,
         turn: { $exists: false },
         load: { $exists: false }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
       pubsub.publish('NOT_LOADED_ACTIVE_TICKETS', { notLoadedActiveTickets });
@@ -117,7 +165,15 @@ const ticketMutations = {
         { new: true }
       );
 
-      const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+      const ticket = await Ticket.findById(newTicket.id).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
 
@@ -134,19 +190,43 @@ const ticketMutations = {
         ticket.ticket,
         { load: Date.now(), 'usersInvolved.loader': userRequesting.id },
         { new: true }
-      ).populate('client truck product');
+      ).populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       const loadedTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       const notLoadedActiveTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },
         load: { $exists: false }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       pubsub.publish('TICKET_UPDATE', { ticketUpdate: newTicket });
       pubsub.publish('LOADED_TICKETS', { loadedTickets });
@@ -156,6 +236,24 @@ const ticketMutations = {
     } catch (e) {
       return new ApolloError(e);
     }
+  }),
+  ticketSetStore: authenticated(async (_, args, { pubsub }) => {
+    const { ticket, store } = args;
+
+    let update;
+
+    if (!store) update = { $unset: { store: 1 } };
+    else update = { store };
+
+    const newTicket = await Ticket.findByIdAndUpdate(ticket, update, { new: true }).populate(
+      'client truck product turn store'
+    );
+
+    if (!newTicket) throw new Error('No ha sido posible seleccionar la sucursal!');
+
+    pubsub.publish('TICKET_UPDATE', { ticketUpdate: newTicket });
+
+    return true;
   }),
   ticketSubmit: authenticated(async (_, args, { pubsub }) => {
     const { id, driver, weight, credit, bill } = args.ticket;
@@ -224,7 +322,15 @@ const ticketMutations = {
     await newTicket.save();
     await client.save();
 
-    const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
+    const ticket = await Ticket.findById(newTicket.id).populate([
+      {
+        path: 'client truck product turn store',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }
+    ]);
 
     pubsub.publish('TICKET_UPDATE', { ticketUpdate: ticket });
 
