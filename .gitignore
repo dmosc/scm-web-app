@@ -5,9 +5,6 @@
 /.pnp
 .pnp.js
 
-# migrations
-/server/mongo-db/scripts/.migrate
-
 # testing
 /coverage
 
