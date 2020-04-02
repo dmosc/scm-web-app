@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, Drawer, Form, Icon, Input, message, Select } from 'antd';
+import { Button, Drawer, Form, Icon, Input, InputNumber, message, Select } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
 import { EDIT_CLIENT } from './graphql/mutations';
 
@@ -42,7 +42,8 @@ class EditForm extends Component {
           street,
           extNumber,
           intNumber,
-          zipcode
+          zipcode,
+          defaultCreditDays
         }
       ) => {
         if (!err) {
@@ -61,6 +62,7 @@ class EditForm extends Component {
                   rfc,
                   CFDIuse,
                   cellphone,
+                  defaultCreditDays,
                   address: {
                     country,
                     state,
@@ -271,6 +273,22 @@ class EditForm extends Component {
               <Input
                 prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Código postal"
+              />
+            )}
+          </Form.Item>
+          <Form.Item label="Días de crédito default">
+            {form.getFieldDecorator('defaultCreditDays', {
+              initialValue: currentClient?.defaultCreditDays || 0,
+              rules: [
+                {
+                  required: true,
+                  message: 'Los días de crédito default son requeridos!'
+                }
+              ]
+            })(
+              <InputNumber
+                min={0}
+                prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }} />}
               />
             )}
           </Form.Item>

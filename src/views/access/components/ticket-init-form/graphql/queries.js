@@ -11,10 +11,14 @@ const GET_ROCKS = gql`
   }
 `;
 
-const GET_TRUCK = gql`
-  query truck($plates: String!) {
-    truck(plates: $plates) {
+const GET_SIMILAR_TRUCKS = gql`
+  query similarTrucks($plates: String!) {
+    similarTrucks(plates: $plates) {
       id
+      client {
+        id
+        businessName
+      }
     }
   }
 `;
@@ -25,4 +29,4 @@ const DECIPHER_PLATES = gql`
   }
 `;
 
-export { GET_ROCKS, GET_TRUCK, DECIPHER_PLATES };
+export { GET_ROCKS, GET_SIMILAR_TRUCKS, DECIPHER_PLATES };

@@ -69,7 +69,7 @@ const ticketMutations = {
     try {
       const truck = await Truck.findOne({ plates });
       const product = await Rock.findById(productId);
-      const client = await Client.findById(truck.client);
+      const client = await Client.findById(newTicket.client);
 
       newTicket.client = client.id;
       newTicket.truck = truck.id;
@@ -86,10 +86,12 @@ const ticketMutations = {
       const ticket = await Ticket.findById(newTicket.id).populate('client truck product');
       const activeTickets = await Ticket.find({
         disabled: false,
+        deleted: false,
         turn: { $exists: false }
       }).populate('client truck product');
       const notLoadedActiveTickets = await Ticket.find({
         disabled: false,
+        deleted: false,
         turn: { $exists: false },
         load: { $exists: false }
       }).populate('client truck product');

@@ -24,7 +24,7 @@ const clientQueries = {
         { phone: { $in: [new RegExp(search, 'i')] } }
       ]
     })
-      .populate('trucks')
+      .populate('prices.rock trucks stores')
       .limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
@@ -78,7 +78,7 @@ const clientQueries = {
         { phone: { $in: [new RegExp(search, 'i')] } }
       ]
     })
-      .populate('trucks')
+      .populate('prices.rock trucks stores')
       .limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');

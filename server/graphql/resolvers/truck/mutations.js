@@ -11,6 +11,14 @@ const truckMutations = {
     truck.weight = truck.weight.toFixed(2) / 1000;
     truck.drivers = truck.drivers.map(driver => driver.toUpperCase());
 
+    const clientWithTruckExists = await Truck.findOne({
+      plates: truck.plates,
+      client: truck.client
+    });
+
+    if (clientWithTruckExists)
+      throw new Error('¡Este camión ya ha sido registrado para el mismo cliente!');
+
     const client = await Client.findOneAndUpdate(
       { _id: args.truck.client },
       { $push: { trucks: truck._id } }

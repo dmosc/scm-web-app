@@ -13,6 +13,7 @@ const EDIT_CLIENT = gql`
       rfc
       CFDIuse
       cellphone
+      defaultCreditDays
       address {
         country
         state

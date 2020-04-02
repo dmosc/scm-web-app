@@ -5,6 +5,7 @@ const REGISTER_TICKET_INIT = gql`
     ticketInit(ticket: $ticket) {
       id
       truck {
+        id
         plates
       }
     }

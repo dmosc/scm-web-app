@@ -30,6 +30,7 @@ const Client = User.discriminator(
     },
     role: { type: String, enum: [...roles], required: true, default: 'CLIENT' },
     trucks: [{ type: Schema.ObjectId, ref: 'Truck', required: true, default: [] }],
+    stores: [{ type: Schema.ObjectId, ref: 'Store', required: false }],
     businessName: { type: String, required: true },
     rfc: { type: String, required: true, default: 'XAXX010101000' },
     CFDIuse: { type: String, enum: [...CFDIuse], default: 'NE' },
@@ -46,7 +47,8 @@ const Client = User.discriminator(
       zipcode: { type: String, required: true, default: '' }
     },
     balance: { type: Number, required: true, default: 0 },
-    depositHistory: { type: [Deposit], default: [] }
+    depositHistory: { type: [Deposit], default: [] },
+    defaultCreditDays: { type: Number, required: true, default: 0 }
   })
 );
 

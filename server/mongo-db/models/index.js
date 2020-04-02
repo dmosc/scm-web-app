@@ -8,5 +8,6 @@ export { default as Folio } from './folio';
 export { default as Turn } from './turn';
 export { default as PriceRequest } from './price-request';
 export { default as RockPriceRequest } from './rock-price-request';
+export { default as Store } from './store';
 export { default as ClientPrice } from './client-price';
 export { default as ClientCreditLimit } from './client-credit-limit';
