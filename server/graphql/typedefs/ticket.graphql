@@ -6,6 +6,7 @@ type Ticket {
   client: Client
   truck: Truck
   product: Rock
+  store: Store
   tax: Float
   weight: Float
   totalWeight: Float

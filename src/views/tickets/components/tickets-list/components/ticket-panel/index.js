@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, message, Modal } from 'antd';
-import { Table, Actions, Credit, Link } from './elements';
-import { ADD_TICKET_TO_TURN, DISABLE_TICKET } from './graphql/mutations';
+import { Button, message, Modal, Select } from 'antd';
+import { Actions, Credit, Link, Table } from './elements';
+import { ADD_TICKET_TO_TURN, DISABLE_TICKET, SET_STORE_TO_TICKET } from './graphql/mutations';
 
 const { confirm } = Modal;
+const { Option } = Select;
 
 class TicketPanel extends Component {
   addTicketToTurn = async ticket => {
@@ -18,6 +19,34 @@ class TicketPanel extends Component {
 
     try {
       await client.mutate({ mutation: ADD_TICKET_TO_TURN, variables: { turn: { id, ticket } } });
+
+      refetchTickets();
+      refetchTurn();
+    } catch (e) {
+      message.error(e.toString());
+    }
+  };
+
+  setStoreToTicket = async store => {
+    const { ticket, refetchTickets, refetchTurn, client } = this.props;
+
+    try {
+      const {
+        data: { ticketSetStore },
+        errors
+      } = await client.mutate({
+        mutation: SET_STORE_TO_TICKET,
+        variables: { ticket: ticket.id, store }
+      });
+
+      if (errors) {
+        message.success('Ha habido un error durante la selección de la sucursal!');
+        return;
+      }
+
+      if (ticketSetStore) {
+        message.success('La sucursal ha sido seleccionada exitosamente!');
+      }
 
       refetchTickets();
       refetchTurn();
@@ -252,6 +281,22 @@ class TicketPanel extends Component {
             Cancelar
           </Button>
         </Actions>
+        {ticket.client.stores.length > 0 && (
+          <Select
+            style={{ width: 250, marginTop: 10 }}
+            placeholder="Seleccionar sucursal"
+            onChange={store => this.setStoreToTicket(store)}
+            defaultValue={ticket.store?.id}
+            size="small"
+            allowClear
+          >
+            {ticket.client.stores.map(store => (
+              <Option key={store.id} value={store.id}>
+                {store.name}
+              </Option>
+            ))}
+          </Select>
+        )}
       </>
     );
   }

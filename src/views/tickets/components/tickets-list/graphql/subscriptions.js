@@ -13,6 +13,10 @@ const ACTIVE_TICKETS = gql`
         firstName
         lastName
         businessName
+        stores {
+          id
+          name
+        }
         address {
           country
           state
@@ -36,6 +40,10 @@ const ACTIVE_TICKETS = gql`
         id
         name
         price
+      }
+      store {
+        id
+        name
       }
       turn {
         id
@@ -62,6 +70,10 @@ const TICKET_UPDATE = gql`
         firstName
         lastName
         businessName
+        stores {
+          id
+          name
+        }
         address {
           country
           state
@@ -85,6 +97,10 @@ const TICKET_UPDATE = gql`
         id
         name
         price
+      }
+      store {
+        id
+        name
       }
       turn {
         id

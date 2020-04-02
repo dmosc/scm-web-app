@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
-import { Form, InputNumber, Modal, Radio, Row, Select, Tooltip, message, Typography } from 'antd';
+import { Form, InputNumber, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE, GET_CREDIT_LIMIT } from './graphql/queries';
+import { GET_CREDIT_LIMIT, GET_SPECIAL_PRICE, GET_TRUCK_DRIVERS } from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -300,10 +300,10 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
           )}
         </Form.Item>
         <Row>
-          <Text disabled>{total > 0 ? `Subtotal: $${(total - tax).toFixed(2)} MXN` : '-'}</Text>
+          <Text disabled>{total >= 0 ? `Subtotal: $${(total - tax).toFixed(2)} MXN` : '-'}</Text>
         </Row>
         <Row>
-          <Text disabled>{total > 0 ? `Tax: $${tax} MXN` : '-'}</Text>
+          <Text disabled>{total >= 0 ? `Tax: $${tax} MXN` : '-'}</Text>
         </Row>
         <Row>
           <Title level={4}>{`Total: $${total} MXN`}</Title>

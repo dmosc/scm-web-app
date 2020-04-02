@@ -1,9 +1,10 @@
-import { Store } from '../../../mongo-db/models';
+import { Client, Store } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const storeMutations = {
   store: async (_, args) => {
     const store = new Store({ ...args.store });
+    await Client.findByIdAndUpdate(store.client, { $push: { stores: store.id } }, { new: true });
 
     if (store.address) store.address = args.store.address.toLowerCase().trim();
     if (store.state) store.state = args.store.state.toLowerCase().trim();

@@ -13,6 +13,10 @@ const GET_TICKETS = gql`
         firstName
         lastName
         businessName
+        stores {
+          id
+          name
+        }
         address {
           country
           state
@@ -36,6 +40,10 @@ const GET_TICKETS = gql`
         id
         name
         price
+      }
+      store {
+        id
+        name
       }
       turn {
         id

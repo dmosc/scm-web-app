@@ -137,6 +137,7 @@ type Mutation {
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
   ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
+  ticketSetStore(ticket: ID!, store: ID): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
