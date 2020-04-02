@@ -6,6 +6,7 @@ type Turn {
   end: Date
   period: Period!
   folios: [String!]!
+  uniqueId: Int!
 }
 
 type TurnSummary {

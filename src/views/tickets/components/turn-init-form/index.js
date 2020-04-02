@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withApollo } from 'react-apollo';
 import periods from 'utils/enums/periods';
-import { Form, Select, Button, Typography, notification } from 'antd';
+import { Form, Select, Button, Typography, message } from 'antd';
 import { INIT_TURN } from './graphql/mutations';
 
 const { Title } = Typography;
@@ -35,12 +35,12 @@ class TurnInitForm extends Component {
         try {
           await client.mutate({ mutation: INIT_TURN, variables: { turn: { user, period } } });
         } catch (e) {
-          notification.error({ message: e.toString() });
+          message.error(e.message);
         }
 
         this.setState({ loading: false });
       } else {
-        notification.error({ message: '¡Ha habido un error intentando iniciar el turno!' });
+        message.error('¡Ha habido un error intentando iniciar el turno!');
         this.setState({ loading: false });
       }
     });
@@ -59,7 +59,14 @@ class TurnInitForm extends Component {
           <Title>{date.toLocaleTimeString()}</Title>
         </Form.Item>
         <Form.Item>
-          {form.getFieldDecorator('period')(
+          {form.getFieldDecorator('period', {
+            rules: [
+              {
+                required: true,
+                message: 'Es necesario añadir el tipo de periodo'
+              }
+            ]
+          })(
             <Select showSearch placeholder="Tipo de periodo">
               {Object.entries(periods).map(period => (
                 <Option key={period[0]} value={period[0]}>
