@@ -6,12 +6,15 @@ const ACTIVE_TICKETS = gql`
       id
       folio
       client {
+        id
         businessName
       }
       truck {
+        id
         plates
       }
       product {
+        id
         name
       }
     }

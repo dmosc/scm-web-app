@@ -59,7 +59,8 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
   useEffect(() => {
     const {
-      truck: { id },
+      truck: { id: truckId },
+      client: { id: clientId },
       bill: currentTicketBill
     } = currentTicket;
 
@@ -68,7 +69,10 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
         data: {
           truck: { drivers: driversToSet }
         }
-      } = await client.query({ query: GET_TRUCK_DRIVERS, variables: { id } });
+      } = await client.query({
+        query: GET_TRUCK_DRIVERS,
+        variables: { id: truckId, client: clientId }
+      });
 
       setDrivers(driversToSet);
       setBill(currentTicketBill);

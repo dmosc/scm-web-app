@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
 
 const Truck = new Schema({
-  plates: { type: String, required: true, unique: true },
+  plates: { type: String, required: true },
   brand: { type: String, required: true },
   model: { type: String, required: true },
   weight: { type: Number, required: true },

@@ -27,10 +27,12 @@ const clientMutations = {
     } else delete client.address;
 
     await client.save();
-    return Client.findOne({ _id: client.id }).populate('prices.rock');
+    return Client.findOne({ _id: client.id }).populate('prices.rock trucks stores');
   }),
   clientAddToBalance: async (_, { client, toAdd }, { req: { userRequesting } }) => {
-    const clientToUpdate = await Client.findOne({ _id: client });
+    const clientToUpdate = await Client.findOne({ _id: client }).populate(
+      'prices.rock trucks stores'
+    );
 
     clientToUpdate.balance = (clientToUpdate.balance + toAdd).toFixed(2);
 
@@ -66,7 +68,7 @@ const clientMutations = {
         { _id: Types.ObjectId(clientToEdit.id) },
         { ...clientToEdit },
         { new: true }
-      ).populate('prices.rock');
+      ).populate('prices.rock trucks stores');
     } catch (e) {
       return e;
     }
