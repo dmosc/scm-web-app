@@ -95,7 +95,7 @@ type Query {
   turns(filters: TurnFilters!): [Turn!]!
     @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnActive: Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummary: TurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnSummary(ticketType: TicketType): TurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnSummaryXLS: String! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   # Price request
   priceRequest(id: ID!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])

@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs';
+import cloneDeep from 'lodash.clonedeep';
 import { Ticket, Turn } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
@@ -23,11 +24,31 @@ const turnQueries = {
   turnActive: authenticated(() => {
     return Turn.findOne({ end: { $exists: false } });
   }),
-  turnSummary: authenticated(async () => {
+  turnSummary: authenticated(async (_, { ticketType }) => {
     const turn = await Turn.findOne({ end: { $exists: false } });
+
+    const $match = {
+      turn: turn._id,
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true }
+    };
+
+    if (ticketType) {
+      switch (ticketType) {
+        case 'CASH':
+          $match.credit = false;
+          break;
+        case 'CREDIT':
+          $match.credit = true;
+          break;
+        default:
+          break;
+      }
+    }
+
     const clients = await Ticket.aggregate([
       {
-        $match: { turn: turn._id, totalPrice: { $exists: true }, outTruckImage: { $exists: true } }
+        $match
       },
       { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
       { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
@@ -95,7 +116,8 @@ const turnQueries = {
   }),
   turnSummaryXLS: authenticated(async () => {
     const turn = await Turn.findOne({ end: { $exists: false } });
-    const clients = await Ticket.aggregate([
+
+    const aggregation = [
       {
         $match: { turn: turn._id, totalPrice: { $exists: true }, outTruckImage: { $exists: true } }
       },
@@ -142,16 +164,29 @@ const turnQueries = {
           totalPrice: '$totalPrice'
         }
       }
+    ];
+
+    // Here we explicitly need a recursive copy function to
+    // clone very single value unlinking value pointers
+    const creditAggregation = cloneDeep(aggregation);
+    const cashAggregation = cloneDeep(aggregation);
+
+    creditAggregation[0].$match.credit = true;
+    cashAggregation[0].$match.credit = false;
+
+    const [clientsCredit, clientsCash] = await Promise.all([
+      Ticket.aggregate(creditAggregation),
+      Ticket.aggregate(cashAggregation)
     ]);
 
     const attributes = [
       {
-        header: 'Cliente',
-        key: 'businessName'
-      },
-      {
         header: 'RFC',
         key: 'rfc'
+      },
+      {
+        header: 'Cliente',
+        key: 'businessName'
       },
       {
         header: 'Folio',
@@ -212,24 +247,50 @@ const turnQueries = {
 
     worksheet.columns = attributes;
 
-    clients.forEach(({ client, tickets, totalWeight, subtotal, tax, totalPrice }) => {
+    const cashSums = {
+      product: 0,
+      totalWeight: 0,
+      subtotal: 0,
+      tax: 0,
+      totalPrice: 0
+    };
+
+    const creditSums = {
+      product: 0,
+      totalWeight: 0,
+      subtotal: 0,
+      tax: 0,
+      totalPrice: 0
+    };
+
+    const addClient = ({ client, tickets, totalWeight, subtotal, tax, totalPrice }) => {
       const clientInfoRow = {
-        businessName: client[0].businessName,
-        rfc: client[0].rfc
+        rfc: client[0].rfc,
+        businessName: client[0].businessName
       };
 
       worksheet.addRow(clientInfoRow);
+      Object.keys(clientInfoRow).forEach(key => {
+        worksheet.lastRow.getCell(key).font = {
+          size: 12,
+          bold: true
+        };
+      });
+
+      let isCreditRow;
 
       tickets.forEach(ticket => {
+        if (!isCreditRow && ticket.credit) isCreditRow = true;
+
         const ticketRow = {
           folio: ticket.folio,
           out: ticket.out,
           plates: ticket.truck[0].plates,
           product: ticket.product[0].name,
-          totalWeight: ticket.totalWeight,
-          subtotal: ticket.subtotal,
-          tax: ticket.tax,
-          totalPrice: ticket.totalPrice,
+          totalWeight: ticket.totalWeight.toFixed(2),
+          subtotal: ticket.subtotal.toFixed(2),
+          tax: ticket.tax.toFixed(2),
+          totalPrice: ticket.totalPrice.toFixed(2),
           credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
           bill: ticket.bill ? 'FACTURA' : 'REMISIÓN'
         };
@@ -238,23 +299,111 @@ const turnQueries = {
       });
 
       const resultsRow = {
-        businessName: 'Total',
-        totalWeight: `${totalWeight} tons`,
-        subtotal: `$${subtotal}`,
-        tax: `$${tax}`,
-        totalPrice: `$${totalPrice}`
+        product: tickets.length,
+        totalWeight: `${totalWeight.toFixed(2)} tons`,
+        subtotal: `$${subtotal.toFixed(2)}`,
+        tax: `$${tax.toFixed(2)}`,
+        totalPrice: `$${totalPrice.toFixed(2)}`
       };
+
+      if (!isCreditRow) {
+        cashSums.product += tickets.length;
+        cashSums.totalWeight += totalWeight;
+        cashSums.subtotal += subtotal;
+        cashSums.tax += tax;
+        cashSums.totalPrice += totalPrice;
+      }
+
+      if (isCreditRow) {
+        creditSums.product += tickets.length;
+        creditSums.totalWeight += totalWeight;
+        creditSums.subtotal += subtotal;
+        creditSums.tax += tax;
+        creditSums.totalPrice += totalPrice;
+      }
 
       worksheet.addRow(resultsRow);
       Object.keys(resultsRow).forEach(key => {
-        worksheet.lastRow.getCell(key).border = {
-          top: { style: 'medium' },
-          bottom: { style: 'medium' }
+        const row = worksheet.lastRow.getCell(key);
+        row.border = {
+          top: { style: 'medium' }
+        };
+        row.font = {
+          size: 12,
+          bold: true
         };
       });
 
       worksheet.addRow({});
-    });
+    };
+
+    if (clientsCash.length > 0) {
+      worksheet.addRow({});
+      worksheet.addRow({
+        rfc: 'CONTADO'
+      });
+      worksheet.lastRow.getCell('rfc').font = {
+        size: 14,
+        bold: true
+      };
+      worksheet.addRow({});
+      clientsCash.forEach(addClient);
+      worksheet.addRow({});
+      const resultsRow = {
+        plates: 'Total',
+        product: cashSums.product.toFixed(2),
+        totalWeight: `$${cashSums.totalWeight.toFixed(2)} tons`,
+        subtotal: `$${cashSums.subtotal.toFixed(2)}`,
+        tax: `$${cashSums.tax.toFixed(2)}`,
+        totalPrice: `$${cashSums.totalPrice.toFixed(2)}`
+      };
+      worksheet.addRow(resultsRow);
+      Object.keys(resultsRow).forEach(key => {
+        const row = worksheet.lastRow.getCell(key);
+        row.border = {
+          top: { style: 'medium' }
+        };
+        row.font = {
+          size: 12,
+          bold: true
+        };
+      });
+      worksheet.addRow({});
+    }
+
+    if (clientsCredit.length > 0) {
+      worksheet.addRow({});
+      worksheet.addRow({
+        rfc: 'CRÉDITO'
+      });
+      worksheet.lastRow.getCell('rfc').font = {
+        size: 14,
+        bold: true
+      };
+      worksheet.addRow({});
+      clientsCredit.forEach(addClient);
+      worksheet.addRow({});
+      const resultsRow = {
+        plates: 'Total',
+        product: creditSums.product.toFixed(2),
+        totalWeight: `$${creditSums.totalWeight.toFixed(2)} tons`,
+        subtotal: `$${creditSums.subtotal.toFixed(2)}`,
+        tax: `$${creditSums.tax.toFixed(2)}`,
+        totalPrice: `$${creditSums.totalPrice.toFixed(2)}`
+      };
+      worksheet.addRow(resultsRow);
+      Object.keys(resultsRow).forEach(key => {
+        const row = worksheet.lastRow.getCell(key);
+        row.border = {
+          top: { style: 'medium' }
+        };
+        row.font = {
+          size: 12,
+          bold: true
+        };
+      });
+      worksheet.addRow({});
+    }
 
     const firstRow = worksheet.getRow(1);
     firstRow.font = {
