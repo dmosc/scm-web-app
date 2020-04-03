@@ -1,6 +1,7 @@
-import ExcelJS from 'exceljs';
 import cloneDeep from 'lodash.clonedeep';
 import { Ticket, Turn } from '../../../mongo-db/models';
+import { createWorksheet, createWorkbook } from '../../../utils/reports';
+import periods from '../../../../src/utils/enums/periods';
 import authenticated from '../../middleware/authenticated';
 
 const turnQueries = {
@@ -232,20 +233,22 @@ const turnQueries = {
 
     for (let i = 0; i < attributes.length; i++) attributes[i] = { ...attributes[i], width: 15 };
 
-    const workbook = new ExcelJS.Workbook();
+    const workbook = createWorkbook();
 
-    workbook.creator = 'GEMSA';
-    workbook.lastModifiedBy = 'GEMSA';
-    workbook.created = new Date();
-    workbook.modified = new Date();
-    workbook.lastPrinted = new Date();
-
-    const worksheet = workbook.addWorksheet('Boletas', {
-      pageSetup: { fitToPage: true, orientation: 'landscape' }
-    });
-    worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
-
-    worksheet.columns = attributes;
+    const worksheet = createWorksheet(
+      workbook,
+      {
+        name: 'Boletas',
+        columns: attributes,
+        date: turn.end,
+        title: `Boletas por tipo de pago  del corte de turno: ${turn.uniqueId}  (${
+          periods[turn.period]
+        })`
+      },
+      {
+        pageSetup: { fitToPage: true, orientation: 'landscape' }
+      }
+    );
 
     const cashSums = {
       product: 0,
@@ -404,14 +407,6 @@ const turnQueries = {
       });
       worksheet.addRow({});
     }
-
-    const firstRow = worksheet.getRow(1);
-    firstRow.font = {
-      size: 12,
-      bold: true
-    };
-    firstRow.alignment = { vertical: 'middle', horizontal: 'center' };
-    firstRow.height = 20;
 
     const buffer = await workbook.xlsx.writeBuffer();
 
