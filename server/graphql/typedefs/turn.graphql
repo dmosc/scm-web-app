@@ -40,6 +40,8 @@ input TurnAddTicket {
 
 input TurnFilters {
   limit: Int
+  end: Date
+  start: Date
 }
 
 enum TicketType {

@@ -75,7 +75,7 @@ class TurnEndForm extends Component {
 
     const {
       data: { turnSummaryXLS }
-    } = await client.query({ query: GET_REPORT });
+    } = await client.query({ query: GET_REPORT, variables: { uniqueId: turnActive.uniqueId } });
 
     const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
 

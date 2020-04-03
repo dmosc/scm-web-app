@@ -13,15 +13,23 @@ const turnQueries = {
 
     return turn;
   }),
-  turns: authenticated(async (_, { filters: { limit } }) => {
-    const turns = await Turn.find({})
-      .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('user');
+  turns: authenticated(
+    async (
+      _,
+      { filters: { limit, start = new Date('1970-01-01'), end = new Date('2100-12-31') } }
+    ) => {
+      const query = {};
+      if (start) query.start = { $gte: start };
+      if (end) query.end = { $lte: end };
+      const turns = await Turn.find(query)
+        .limit(limit || Number.MAX_SAFE_INTEGER)
+        .populate('user');
 
-    if (!turns) throw new Error('¡Ha habido un error cargando los turnos!');
+      if (!turns) throw new Error('¡Ha habido un error cargando los turnos!');
 
-    return turns;
-  }),
+      return turns;
+    }
+  ),
   turnActive: authenticated(() => {
     return Turn.findOne({ end: { $exists: false } });
   }),
@@ -115,8 +123,8 @@ const turnQueries = {
 
     return { clients, upfront, credit, total };
   }),
-  turnSummaryXLS: authenticated(async () => {
-    const turn = await Turn.findOne({ end: { $exists: false } });
+  turnSummaryXLS: authenticated(async (_, { uniqueId }) => {
+    const turn = await Turn.findOne({ uniqueId });
 
     const aggregation = [
       {
@@ -413,7 +421,13 @@ const turnQueries = {
     return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
       'base64'
     )}`;
-  })
+  }),
+  turnMostRecentlyEnded: async () => {
+    const turn = await Turn.find({ end: { $exists: true } }).sort({ end: -1 });
+
+    return turn[0];
+  },
+  turnByUniqueId: async (_, { uniqueId }) => Turn.findOne({ uniqueId })
 };
 
 export default turnQueries;
