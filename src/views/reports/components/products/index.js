@@ -258,7 +258,7 @@ const ProductSales = ({ client, globalFilters }) => {
             </div>
           )}
           {productSalesReport?.rocks?.length > 0 && !loading && (
-            <ResponsiveContainer width="50%" height={220}>
+            <ResponsiveContainer height={220}>
               <PieChart width={220} height={220}>
                 <Pie
                   dataKey="value"
