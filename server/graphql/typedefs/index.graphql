@@ -11,6 +11,7 @@
 # import * from "turn.graphql"
 # import * from "price-request.graphql"
 # import * from "rock-price-request.graphql"
+# import * from "store.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -62,13 +63,15 @@ type Query {
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Truck
-  truck(id: ID, plates: String): Truck
+  truck(id: ID, plates: String, client: ID!): Truck
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  trucks(filters: TruckFilters!): [Truck!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  similarTrucks(plates: String!): [Truck!]
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   truckQRCode(id: ID): String! @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD])
   truckDecipherPlates(cipheredPlates: String!): String!
     @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD])
-  trucks(filters: TruckFilters!): [Truck!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   trucksXLS(filters: TruckFilters!): String!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Rock
@@ -92,8 +95,10 @@ type Query {
   turns(filters: TurnFilters!): [Turn!]!
     @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnActive: Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummary: TurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummaryXLS: String! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnSummary(ticketType: TicketType): TurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnSummaryXLS(uniqueId: Int!): String! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnMostRecentlyEnded: Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnByUniqueId(uniqueId: Int!): Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   # Price request
   priceRequest(id: ID!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   priceRequests(filters: PriceRequestFilters!): [PriceRequest!]!
@@ -102,6 +107,9 @@ type Query {
   rockPriceRequest(id: ID!): RockPriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   rockPriceRequests(filters: RockPriceRequestFilters!): [RockPriceRequest!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Store
+  store(id: ID!): Store @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  stores(client: ID!): [Store!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
 }
 
 type Mutation {
@@ -111,7 +119,8 @@ type Mutation {
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
-  clientAddToBalance(client: ID!, toAdd: Float!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
+  clientAddToBalance(client: ID!, toAdd: Float!): Client
+    @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
   # Client Price
@@ -130,6 +139,7 @@ type Mutation {
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
   ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
+  ticketSetStore(ticket: ID!, store: ID): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
@@ -161,6 +171,10 @@ type Mutation {
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   rockPriceRequestEdit(rockPriceRequest: RockPriceRequestEditInput!): RockPriceRequest
     @auth(roles: [ADMIN, ACCOUNTANT])
+  # Store
+  store(store: StoreInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  storeEdit(store: StoreEditInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  storeDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

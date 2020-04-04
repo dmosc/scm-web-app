@@ -2,7 +2,19 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import Webcam from 'react-webcam';
-import { Form, Row, Col, Button, Input, Icon, notification, List, message } from 'antd';
+import {
+  Form,
+  Row,
+  Col,
+  Modal,
+  Button,
+  Input,
+  Icon,
+  notification,
+  Select,
+  List,
+  message
+} from 'antd';
 import {
   FormContainer,
   ImageContainer,
@@ -12,11 +24,16 @@ import {
   HiddenForm
 } from './elements';
 import { REGISTER_TICKET_INIT } from './graphql/mutations';
-import { GET_ROCKS, GET_TRUCK, DECIPHER_PLATES } from './graphql/queries';
+import { GET_ROCKS, GET_SIMILAR_TRUCKS, DECIPHER_PLATES } from './graphql/queries';
+
+const { Option } = Select;
 
 const TicketInit = ({ client, user }) => {
   const camRef = React.createRef();
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [trucks, setTrucks] = useState([]);
+  const [ticketClient, setTicketClient] = useState(null);
   const [plates, setPlates] = useState(null);
   const [inTruckImage, setInTruckImage] = useState(null);
   const [products, setProducts] = useState([]);
@@ -101,6 +118,45 @@ const TicketInit = ({ client, user }) => {
     setPlates(platesToSet.replace(/[^0-9a-z]/gi, '').toUpperCase());
   };
 
+  const initializeTicket = async clientId => {
+    const { data, errors } = await client.mutate({
+      mutation: REGISTER_TICKET_INIT,
+      variables: {
+        ticket: {
+          client: ticketClient ? ticketClient : clientId,
+          plates,
+          product: currentProduct?.id,
+          inTruckImage,
+          folderKey: 'trucks',
+          id: user.id
+        }
+      }
+    });
+
+    if (errors) {
+      notification.open({
+        message: errors[0].message
+      });
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+    setShowModal(false);
+    setPlates(null);
+    setInTruckImage('/static/images/truck_image.png');
+    setCurrentProduct(null);
+
+    notification.open({
+      message: `Camión ${data?.ticketInit.truck.plates} puede ingresar!`
+    });
+  };
+
+  const cancelTicket = () => {
+    setLoading(false);
+    setShowModal(false);
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
 
@@ -117,47 +173,24 @@ const TicketInit = ({ client, user }) => {
     if (plates && inTruckImage && currentProduct) {
       setLoading(true);
       const {
-        data: { truck }
+        data: { similarTrucks }
       } = await client.query({
-        query: GET_TRUCK,
+        query: GET_SIMILAR_TRUCKS,
         variables: { plates }
       });
 
-      if (!truck) {
+      if (similarTrucks.length === 0) {
         message.error('El camión no está identificado y tiene que pasar a registrarse primero');
-        setLoading(false);
-        return;
-      }
-
-      const { data, errors } = await client.mutate({
-        mutation: REGISTER_TICKET_INIT,
-        variables: {
-          ticket: {
-            plates,
-            product: currentProduct?.id,
-            inTruckImage,
-            folderKey: 'trucks',
-            id: user.id
-          }
-        }
-      });
-
-      if (errors) {
-        notification.open({
-          message: errors[0].message
-        });
-        setLoading(false);
+      } else if (similarTrucks.length === 1) {
+        await initializeTicket(similarTrucks[0]?.client.id);
+      } else {
+        setTicketClient(similarTrucks[0]?.client.id);
+        setTrucks(similarTrucks);
+        setShowModal(true);
         return;
       }
 
       setLoading(false);
-      setPlates(null);
-      setInTruckImage('/static/images/truck_image.png');
-      setCurrentProduct(null);
-
-      notification.open({
-        message: `Camión ${data.ticketInit.truck.plates} puede ingresar!`
-      });
     } else {
       message.warning('¡Es necesario completar todos los datos!');
 
@@ -256,6 +289,25 @@ const TicketInit = ({ client, user }) => {
       <HiddenForm onSubmit={submitHiddenInput}>
         <input id="hidden-input" />
       </HiddenForm>
+      <Modal
+        title="Seleccione un cliente"
+        visible={showModal}
+        onOk={initializeTicket}
+        onCancel={cancelTicket}
+      >
+        <Select
+          showSearch
+          defaultValue={trucks[0]?.client.id}
+          onChange={ticketClientToSet => setTicketClient(ticketClientToSet)}
+          style={{ width: '100%' }}
+        >
+          {trucks?.map(truck => (
+            <Option key={truck.client.id} value={truck.client.id}>
+              {truck.client.businessName}
+            </Option>
+          ))}
+        </Select>
+      </Modal>
     </FormContainer>
   );
 };

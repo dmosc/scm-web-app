@@ -55,6 +55,10 @@ import priceRequestQueries from './price-request/queries';
 import rockPriceRequestMutations from './rock-price-request/mutations';
 import rockPriceRequestQueries from './rock-price-request/queries';
 
+// Store
+import storeMutations from './store/mutations';
+import storeQueries from './store/queries';
+
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -71,7 +75,8 @@ const resolvers = {
     ...messageQueries,
     ...turnQueries,
     ...priceRequestQueries,
-    ...rockPriceRequestQueries
+    ...rockPriceRequestQueries,
+    ...storeQueries
   },
   Mutation: {
     ...userMutations,
@@ -87,6 +92,7 @@ const resolvers = {
     ...turnMutations,
     ...priceRequestMutations,
     ...rockPriceRequestMutations,
+    ...storeMutations,
     ...uploaders // AWS
   },
   Subscription: {

@@ -6,7 +6,8 @@ type Client {
   lastName: String
   email: String
   role: Role!
-  trucks: [ID!]!
+  trucks: [Truck!]!
+  stores: [Store!]!
   businessName: String!
   rfc: String!
   CFDIuse: CFDIuse!
@@ -14,6 +15,7 @@ type Client {
   address: Address!
   balance: Float!
   depositHistory: [Deposit!]!
+  defaultCreditDays: Int!
 }
 
 type ClientPendingBill {
@@ -51,12 +53,12 @@ input ClientInput {
   firstName: String!
   lastName: String!
   email: String
-  trucks: [ID!]
   businessName: String!
   rfc: String
   CFDIuse: CFDIuse
   cellphone: [String!]
   address: AddressInput
+  defaultCreditDays: Int!
 }
 
 input ClientEditInput {
@@ -70,6 +72,7 @@ input ClientEditInput {
   CFDIuse: CFDIuse
   cellphone: [String!]
   address: AddressInput
+  defaultCreditDays: Int!
   # PLEASE DO NOT ADD balance AS
   # EDITABLE INPUT, IT SHOULD PASS THROUGH
   # clientAddToBalance MUTATION, SO IT

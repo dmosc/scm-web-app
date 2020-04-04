@@ -13,6 +13,7 @@ const GET_CLIENTS = gql`
       rfc
       CFDIuse
       cellphone
+      defaultCreditDays
       address {
         country
         state

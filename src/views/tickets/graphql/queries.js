@@ -8,6 +8,7 @@ const TURN_ACTIVE = gql`
       end
       period
       folios
+      uniqueId
     }
   }
 `;

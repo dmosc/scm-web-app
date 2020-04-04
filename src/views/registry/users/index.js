@@ -91,11 +91,11 @@ const Users = ({ client }) => {
         <Button
           onClick={() => setCurrentUser(row)}
           disabled={
-            isCashier ?
-              row.role === 'ADMIN' || row.role === 'MANAGER' || row.role === 'SUPPORT' :
-            isSupport ?
-              row.role === 'ADMIN' || row.role === 'MANAGER' :
-              (isManager && row.role === 'ADMIN') || (isManager && row.role === 'MANAGER')
+            isCashier
+              ? row.role === 'ADMIN' || row.role === 'MANAGER' || row.role === 'SUPPORT'
+              : isSupport
+              ? row.role === 'ADMIN' || row.role === 'MANAGER'
+              : (isManager && row.role === 'ADMIN') || (isManager && row.role === 'MANAGER')
           }
           type="default"
           icon="edit"

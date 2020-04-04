@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, Drawer, Form, Icon, Input, Select, message } from 'antd';
+import { Button, Drawer, Form, Icon, Input, Select, message, InputNumber } from 'antd';
 import CFDIUseEnum from 'utils/enums/CFDIuse';
 import { REGISTER_CLIENT } from './graphql/mutations';
 
@@ -17,7 +17,10 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
 
     setLoading(true);
     form.validateFields(
-      async (err, { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone }) => {
+      async (
+        err,
+        { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, defaultCreditDays }
+      ) => {
         if (!err) {
           const {
             data: { client: cli },
@@ -33,6 +36,7 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
                 rfc,
                 CFDIuse,
                 cellphone,
+                defaultCreditDays,
                 address: Object.keys(address).length > 0 ? address : null
               }
             }
@@ -213,6 +217,22 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
             placeholder="Código Postal"
             onChange={({ target: { value } }) => setAddress({ ...address, zipcode: value })}
           />
+        </Form.Item>
+        <Form.Item label="Días de crédito default">
+          {form.getFieldDecorator('defaultCreditDays', {
+            initialValue: 0,
+            rules: [
+              {
+                required: true,
+                message: 'Los días de crédito default son requeridos!'
+              }
+            ]
+          })(
+            <InputNumber
+              min={0}
+              prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            />
+          )}
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" icon="save" loading={loading}>

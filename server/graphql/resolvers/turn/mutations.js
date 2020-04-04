@@ -40,9 +40,15 @@ const turnMutations = {
 
       if (!turn) return new Error('¡No ha sido posible encontrar el turno!');
 
-      const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate(
-        'client truck product'
-      );
+      const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       const ticketsToCreate = [];
       const ticketsToDelete = [];
@@ -135,12 +141,28 @@ const turnMutations = {
       const activeTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
       const loadedTickets = await Ticket.find({
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
-      }).populate('client truck product');
+      }).populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
       pubsub.publish('ACTIVE_TICKETS', { activeTickets });
       pubsub.publish('LOADED_TICKETS', { loadedTickets });

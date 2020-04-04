@@ -6,6 +6,7 @@ type Ticket {
   client: Client
   truck: Truck
   product: Rock
+  store: Store
   tax: Float
   weight: Float
   totalWeight: Float
@@ -84,6 +85,7 @@ input TicketEditInput {
 
 input TicketInitInput {
   plates: String!
+  client: ID!
   product: ID!
   inTruckImage: String!
   folderKey: s3FolderKey!

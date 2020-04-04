@@ -1,0 +1,24 @@
+type Store {
+  client: Client!
+  id: ID!
+  address: String
+  name: String!
+  state: String
+  municipality: String
+}
+
+input StoreInput {
+  client: ID!
+  address: String
+  name: String!
+  state: String
+  municipality: String
+}
+
+input StoreEditInput {
+  id: ID!
+  address: String
+  name: String
+  state: String
+  municipality: String
+}

@@ -9,14 +9,32 @@ import authenticated from '../../middleware/authenticated';
 const ticketQueries = {
   ticket: authenticated(async (_, args) => {
     const { id } = args;
-    const ticket = await Ticket.findById(id).populate('client truck product turn');
+    const ticket = await Ticket.findById(id).populate([
+      {
+        path: 'client truck product turn',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }
+    ]);
 
     if (!ticket) throw new Error('¡No ha sido posible encontrar el ticket!');
 
     return ticket;
   }),
   tickets: authenticated(async (_, { filters: { limit } }) => {
-    const tickets = await Ticket.find({}).limit(limit || Number.MAX_SAFE_INTEGER);
+    const tickets = await Ticket.find({})
+      .limit(limit || Number.MAX_SAFE_INTEGER)
+      .populate([
+        {
+          path: 'client truck product turn',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
@@ -24,7 +42,15 @@ const ticketQueries = {
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
       .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('client truck product turn');
+      .populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return activeTickets;
@@ -41,7 +67,15 @@ const ticketQueries = {
 
       const disabledTickets = await Ticket.find(query)
         .limit(limit || Number.MAX_SAFE_INTEGER)
-        .populate('client truck product');
+        .populate([
+          {
+            path: 'client truck product turn store',
+            populate: {
+              path: 'stores',
+              model: 'Store'
+            }
+          }
+        ]);
 
       if (!disabledTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
       else return disabledTickets;
@@ -54,7 +88,15 @@ const ticketQueries = {
       load: { $exists: false }
     })
       .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('client truck product');
+      .populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
     if (!activeTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return activeTickets;
@@ -66,7 +108,15 @@ const ticketQueries = {
       load: { $exists: true }
     })
       .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('client truck product');
+      .populate([
+        {
+          path: 'client truck product turn store',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
+        }
+      ]);
 
     if (!loadedTickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return loadedTickets;
@@ -78,7 +128,15 @@ const ticketQueries = {
       bill: true,
       isBilled: false,
       disabled: false
-    }).populate('client truck product');
+    }).populate([
+      {
+        path: 'client truck product turn store',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }
+    ]);
 
     if (!ticketsPendingToBill)
       throw new ApolloError('¡Ha habido un error cargando las boletas por facturar del cliente!');

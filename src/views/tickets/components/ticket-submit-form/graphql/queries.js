@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost';
 
 const GET_TRUCK_DRIVERS = gql`
-  query truck($id: ID!) {
-    truck(id: $id) {
+  query truck($id: ID!, $client: ID!) {
+    truck(id: $id, client: $client) {
       id
       drivers
     }

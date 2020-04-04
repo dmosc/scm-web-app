@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost';
 
 const GET_REPORT = gql`
-  query turnSummaryXLS {
-    turnSummaryXLS
+  query turnSummaryXLS($uniqueId: Int!) {
+    turnSummaryXLS(uniqueId: $uniqueId)
   }
 `;
 

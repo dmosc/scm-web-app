@@ -16,7 +16,7 @@ import {
   Tooltip
 } from 'recharts';
 import {
-  notification,
+  message,
   Select,
   Typography,
   Spin,
@@ -106,9 +106,7 @@ const ProductSales = ({ client, globalFilters }) => {
         setProducts(rocks);
         setLoading(false);
       } catch (e) {
-        notification.open({
-          message: '¡No se han podido cargar los productos correctamente!'
-        });
+        message.error('¡No se han podido cargar los productos correctamente!');
 
         setLoading(false);
       }
@@ -148,9 +146,7 @@ const ProductSales = ({ client, globalFilters }) => {
         setTickets(newTickets);
         setLoading(false);
       } catch (e) {
-        notification.open({
-          message: '¡No se han podido cargar las ventas por producto!'
-        });
+        message.error('¡No se han podido cargar las ventas por producto!');
 
         setLoading(false);
       }
@@ -193,9 +189,7 @@ const ProductSales = ({ client, globalFilters }) => {
         setProductMonthSalesReport(newProductMonthSalesReport);
         setLoading(false);
       } catch (e) {
-        notification.open({
-          message: '¡No se han podido cargar las ventas por producto!'
-        });
+        message.error('¡No se han podido cargar las ventas por producto!');
 
         setLoading(false);
       }

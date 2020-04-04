@@ -8,11 +8,14 @@ import { AES_SECRET } from '../../../config';
 
 const truckQueries = {
   truck: authenticated(async (_, args) => {
-    const { id, plates } = args;
-    const truck = await Truck.findOne({
-      deleted: false,
-      $or: [{ _id: id }, { plates }]
-    }).populate('client');
+    const { id, plates, client } = args;
+
+    let query = { deleted: false };
+
+    if (id) query = { ...query, _id: id };
+    else query = { ...query, plates, client };
+
+    const truck = await Truck.findOne(query).populate('client');
 
     if (!truck) throw new Error('¡El camión no existe!');
 
@@ -30,6 +33,15 @@ const truckQueries = {
     })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client');
+
+    if (!trucks) throw new Error('¡No ha sido posible cargar los camiones!');
+
+    return trucks;
+  }),
+  similarTrucks: authenticated(async (_, { plates }) => {
+    const trucks = await Truck.find({ deleted: false, plates: new RegExp(plates, 'i') }).populate(
+      'client'
+    );
 
     if (!trucks) throw new Error('¡No ha sido posible cargar los camiones!');
 
