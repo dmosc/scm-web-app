@@ -1,28 +1,60 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import PropTypes from 'prop-types';
+import {
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip,
+  Bar,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
-import { Statistic, Icon, Card, Col, Button, Select, Typography, Tag } from 'antd';
+import {
+  Statistic,
+  Icon,
+  Card,
+  Col,
+  Button,
+  Select,
+  Typography,
+  Tag,
+  Row,
+  Collapse,
+  Spin
+} from 'antd';
 import {
   GET_TURNS,
   GET_REPORT,
   GET_MOST_RECENTLY_ENDED_TURN,
-  TURN_BY_UNIQUE_ID
+  TURN_BY_UNIQUE_ID,
+  GET_TURN_SUMMARY
 } from './graphql/queries';
 import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
 
+const { Panel } = Collapse;
 const { Option } = Select;
-const { Text } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 const Turns = ({ client, globalFilters }) => {
+  const [loading, setLoading] = useState(true);
+  const [ticketType, setTicketType] = useState();
   const [loadingReport, setLoadingReport] = useState(false);
   const [loadingTurns, setLoadingTurns] = useState(false);
   const [turnUniqueId, setTurnUniqueId] = useState();
   const [turns, setTurns] = useState([]);
   const [turn, setTurn] = useState({});
+  const [ticketCount, setTicketCount] = useState(0);
+  const [summary, setSummary] = useState({});
 
   useEffect(() => {
     const getTurn = async () => {
+      setLoading(true);
       if (!turnUniqueId) {
         const {
           data: { turnMostRecentlyEnded }
@@ -38,11 +70,37 @@ const Turns = ({ client, globalFilters }) => {
           variables: { uniqueId: turnUniqueId }
         });
         setTurn(turnByUniqueId);
+        setLoading(false);
       }
     };
 
     getTurn();
   }, [client, turnUniqueId]);
+
+  useEffect(() => {
+    if (turn.uniqueId) {
+      const getSummary = async () => {
+        setLoading(true);
+        const {
+          data: { turnSummary }
+        } = await client.query({
+          query: GET_TURN_SUMMARY,
+          variables: { uniqueId: turn.uniqueId, ticketType }
+        });
+        const ticketCountToSet = turnSummary.clients.reduce((total, { count }) => {
+          // eslint-disable-next-line no-param-reassign
+          total += count;
+          return total;
+        }, 0);
+
+        setSummary(turnSummary);
+        setTicketCount(ticketCountToSet);
+        setLoading(false);
+      };
+
+      getSummary();
+    }
+  }, [client, turn.uniqueId, ticketType]);
 
   useEffect(() => {
     const getTurns = async () => {
@@ -69,7 +127,10 @@ const Turns = ({ client, globalFilters }) => {
     setLoadingReport(true);
     const {
       data: { turnSummaryXLS }
-    } = await client.query({ query: GET_REPORT, variables: { uniqueId: turn.uniqueId } });
+    } = await client.query({
+      query: GET_REPORT,
+      variables: { uniqueId: turn.uniqueId, ticketType }
+    });
 
     const start = new Date(turn.start.substring(0, turn.start.indexOf('Z') - 1));
 
@@ -118,9 +179,22 @@ const Turns = ({ client, globalFilters }) => {
             )}
           </Select>
         </InputContainer>
+        <InputContainer>
+          <Text type="secondary">Tipo de boleta</Text>
+          <Select
+            allowClear
+            style={{ minWidth: 200 }}
+            placeholder="Selecciona el tipo"
+            onChange={value => setTicketType(value)}
+            value={ticketType}
+          >
+            <Option value="CREDIT">Crédito</Option>
+            <Option value="CASH">Contado</Option>
+          </Select>
+        </InputContainer>
         {turn && (
           <Button
-            style={{ marginLeft: 'auto' }}
+            style={{ marginLeft: 'auto', marginTop: 20 }}
             loading={loadingReport}
             type="primary"
             icon="file-excel"
@@ -130,36 +204,196 @@ const Turns = ({ client, globalFilters }) => {
           </Button>
         )}
       </FiltersContainer>
-      <Card>
-        <Col span={12}>
-          <Statistic
-            valueStyle={{ color: '#3f8600' }}
-            title="Ventas totales"
-            value={0}
-            suffix="MXN"
-            prefix={<Icon type="rise" />}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic
-            valueStyle={{ color: '#1890ff' }}
-            title="Boletas"
-            value={0}
-            prefix={<Icon type="file-done" />}
-          />
-        </Col>
-      </Card>
-      <ChartsContainer>
-        <Card title="Gráfico de pie">
-          <p>Gráfica 2</p>
-        </Card>
-        <Card title="Distribución">
-          <p>Gráfica 1</p>
-        </Card>
-      </ChartsContainer>
-      <Card title="0 boletas">
-        <p>Tabla</p>
-      </Card>
+      {loading ? (
+        <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
+          <Spin />
+        </div>
+      ) : (
+        <>
+          <Card>
+            <Title level={4}>Datos Generales del Turno: {turn.uniqueId}</Title>
+            <Col span={12}>
+              <Paragraph style={{ margin: 0 }} type="secondary">
+                Operador por:
+              </Paragraph>
+              <Paragraph style={{ margin: 0 }}>
+                {turn?.user?.firstName} {turn?.user?.lastName}{' '}
+              </Paragraph>
+              <Paragraph style={{ margin: 0 }} type="secondary">
+                Periodo:
+              </Paragraph>
+              <Paragraph style={{ margin: 0 }}>
+                <Tag color="blue">{periods[turn.period]}</Tag>
+              </Paragraph>
+            </Col>
+            <Col span={12}>
+              <Paragraph style={{ margin: 0 }} type="secondary">
+                Inicio:
+              </Paragraph>
+              <Paragraph style={{ margin: 0 }}>{moment(turn.start).format('LLL')}</Paragraph>
+              <Paragraph style={{ margin: 0 }} type="secondary">
+                Término:
+              </Paragraph>
+              <Paragraph style={{ margin: 0 }}>{moment(turn.end).format('LLL')}</Paragraph>
+            </Col>
+          </Card>
+          <Card>
+            <Col span={6}>
+              <Statistic
+                valueStyle={{ color: '#3f8600' }}
+                title="Ventas totales"
+                value={summary?.total?.toFixed(2)}
+                suffix="MXN"
+                prefix={<Icon type="rise" />}
+              />
+            </Col>
+            <Col span={6}>
+              <Statistic
+                valueStyle={{ color: '#30CEE7' }}
+                title="Ventas de contado"
+                value={summary?.upfront?.toFixed(2)}
+                suffix="MXN"
+                prefix={<Icon type="pay-circle" />}
+              />
+            </Col>
+            <Col span={6}>
+              <Statistic
+                valueStyle={{ color: '#FFAB00' }}
+                title="Ventas ventas a crédito"
+                value={summary?.credit?.toFixed(2)}
+                suffix="MXN"
+                prefix={<Icon type="credit-card" />}
+              />
+            </Col>
+            <Col span={6}>
+              <Statistic
+                valueStyle={{ color: '#1890ff' }}
+                title="Boletas"
+                value={ticketCount}
+                prefix={<Icon type="file-done" />}
+              />
+            </Col>
+          </Card>
+          <ChartsContainer>
+            <Card title="Gasto por cliente">
+              <ResponsiveContainer height={220}>
+                <BarChart
+                  height={220}
+                  data={summary?.clients?.map(({ info, tickets }) => {
+                    let credit = 0;
+                    let cash = 0;
+
+                    tickets.forEach(({ totalPrice, credit: isCredit }) => {
+                      if (isCredit) credit += totalPrice;
+                      else cash += totalPrice;
+                    });
+
+                    return {
+                      name: info.businessName,
+                      credit,
+                      cash
+                    };
+                  })}
+                  outerRadius={60}
+                >
+                  <XAxis tick={false} dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar name="Crédito" stackId="a" fill="#1890ff" dataKey="credit" />
+                  <Bar name="Contado" stackId="a" fill="#3f8600" dataKey="cash" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card title="Distribución porcentual de crédito vs contado">
+              <ResponsiveContainer height={220}>
+                <PieChart height={220}>
+                  <Pie
+                    dataKey="value"
+                    isAnimationActive={true}
+                    data={[
+                      {
+                        name: 'credit',
+                        value: (summary.credit / summary.total).toFixed(4) * 100
+                      },
+                      {
+                        name: 'cash',
+                        value: (summary.upfront / summary.total).toFixed(4) * 100
+                      }
+                    ]}
+                    outerRadius={60}
+                    label={true}
+                  >
+                    <Cell name="Contado" key="cash" fill="#FFAB00" />
+                    <Cell name="Crédito" key="credit" fill="#30CEE7" />
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </ChartsContainer>
+          <Card title={`${summary?.clients?.length || 0} clientes atendidos`}>
+            <Collapse
+              bordered={false}
+              expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
+            >
+              {summary.clients?.map(({ info, count, tickets }) => (
+                <Panel key={info.id} header={info.businessName} extra={count}>
+                  <Collapse
+                    expandIcon={({ isActive }) => (
+                      <Icon type="caret-right" rotate={isActive ? 90 : 0} />
+                    )}
+                  >
+                    {tickets.map(ticket => (
+                      <Panel key={ticket.id} header={ticket.folio} extra={`$${ticket.totalPrice}`}>
+                        <Row style={{ margin: 5, padding: 10 }} gutter={{ xs: 8, sm: 16, md: 24 }}>
+                          <Col span={6}>
+                            <Statistic
+                              valueStyle={{ color: '#FF4F64' }}
+                              title="Peso neto"
+                              value={ticket.totalWeight.toFixed(2)}
+                              suffix="tons"
+                              prefix={<Icon type="car" />}
+                            />
+                          </Col>
+                          <Col span={6}>
+                            <Statistic
+                              valueStyle={{ color: '#1890ff' }}
+                              title="Subtotal"
+                              value={(ticket.totalPrice - ticket.tax).toFixed(2)}
+                              suffix="MXN"
+                              prefix={<Icon type="check-circle" />}
+                            />
+                          </Col>
+                          <Col span={6}>
+                            <Statistic
+                              valueStyle={{ color: '#FFAB00' }}
+                              title="Impuesto"
+                              value={ticket.tax.toFixed(2)}
+                              suffix="MXN"
+                              prefix={<Icon type="minus-circle" />}
+                            />
+                          </Col>
+                          <Col span={6}>
+                            <Statistic
+                              valueStyle={{ color: '#3f8600' }}
+                              title="Total"
+                              value={ticket.totalPrice.toFixed(2)}
+                              prefix={<Icon type="plus-square" />}
+                              suffix="MXN"
+                            />
+                          </Col>
+                        </Row>
+                      </Panel>
+                    ))}
+                  </Collapse>
+                </Panel>
+              ))}
+            </Collapse>
+          </Card>
+        </>
+      )}
     </>
   );
 };

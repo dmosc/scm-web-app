@@ -1,17 +1,24 @@
 import { gql } from 'apollo-boost';
 
+// This is beacause the three queries using this type are intimately related
+// This will enforce consistency between them
+const turnData = `
+  id
+  start
+  end
+  uniqueId
+  period
+  user {
+    id
+    firstName
+    lastName
+  }
+`;
+
 const GET_TURNS = gql`
   query turns($filters: TurnFilters!) {
     turns(filters: $filters) {
-      id
-      end
-      uniqueId
-      period
-      user {
-        id
-        firstName
-        lastName
-      }
+      ${turnData}
     }
   }
 `;
@@ -19,11 +26,7 @@ const GET_TURNS = gql`
 const TURN_BY_UNIQUE_ID = gql`
   query turnByUniqueId($uniqueId: Int!) {
     turnByUniqueId(uniqueId: $uniqueId) {
-      id
-      period
-      start
-      end
-      uniqueId
+      ${turnData}
     }
   }
 `;
@@ -31,24 +34,20 @@ const TURN_BY_UNIQUE_ID = gql`
 const GET_MOST_RECENTLY_ENDED_TURN = gql`
   query turnMostRecentlyEnded {
     turnMostRecentlyEnded {
-      id
-      period
-      start
-      end
-      uniqueId
+      ${turnData}
     }
   }
 `;
 
 const GET_REPORT = gql`
-  query turnSummaryXLS($uniqueId: Int!) {
-    turnSummaryXLS(uniqueId: $uniqueId)
+  query turnSummaryXLS($uniqueId: Int!, $ticketType: TicketType) {
+    turnSummaryXLS(uniqueId: $uniqueId, ticketType: $ticketType)
   }
 `;
 
 const GET_TURN_SUMMARY = gql`
-  query turnSummary {
-    turnSummary {
+  query turnSummary($uniqueId: Int!, $ticketType: TicketType) {
+    turnSummary(uniqueId: $uniqueId, ticketType: $ticketType) {
       clients {
         info {
           id

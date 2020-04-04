@@ -28,11 +28,15 @@ class TurnEndForm extends Component {
   };
 
   getSummary = async () => {
-    const { client } = this.props;
+    const { client, turnActive } = this.props;
 
     const {
       data: { turnSummary: summary }
-    } = await client.query({ query: GET_TURN_SUMMARY, fetchPolicy: 'network-only' });
+    } = await client.query({
+      query: GET_TURN_SUMMARY,
+      variables: { uniqueId: turnActive.uniqueId },
+      fetchPolicy: 'network-only'
+    });
     const ticketCount = summary.clients.reduce((total, { count }) => (total += count), 0);
 
     this.setState({ summary, ticketCount }, this.toggleSummary);

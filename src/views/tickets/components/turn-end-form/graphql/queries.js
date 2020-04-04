@@ -7,8 +7,8 @@ const GET_REPORT = gql`
 `;
 
 const GET_TURN_SUMMARY = gql`
-  query turnSummary {
-    turnSummary {
+  query turnSummary($uniqueId: Int!) {
+    turnSummary(uniqueId: $uniqueId) {
       clients {
         info {
           id

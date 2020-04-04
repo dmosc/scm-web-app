@@ -33,8 +33,8 @@ const turnQueries = {
   turnActive: authenticated(() => {
     return Turn.findOne({ end: { $exists: false } });
   }),
-  turnSummary: authenticated(async (_, { ticketType }) => {
-    const turn = await Turn.findOne({ end: { $exists: false } });
+  turnSummary: authenticated(async (_, { uniqueId, ticketType }) => {
+    const turn = await Turn.findOne({ uniqueId });
 
     const $match = {
       turn: turn._id,
@@ -42,17 +42,15 @@ const turnQueries = {
       outTruckImage: { $exists: true }
     };
 
-    if (ticketType) {
-      switch (ticketType) {
-        case 'CASH':
-          $match.credit = false;
-          break;
-        case 'CREDIT':
-          $match.credit = true;
-          break;
-        default:
-          break;
-      }
+    switch (ticketType) {
+      case 'CASH':
+        $match.credit = false;
+        break;
+      case 'CREDIT':
+        $match.credit = true;
+        break;
+      default:
+        break;
     }
 
     const clients = await Ticket.aggregate([
@@ -123,7 +121,7 @@ const turnQueries = {
 
     return { clients, upfront, credit, total };
   }),
-  turnSummaryXLS: authenticated(async (_, { uniqueId }) => {
+  turnSummaryXLS: authenticated(async (_, { uniqueId, ticketType }) => {
     const turn = await Turn.findOne({ uniqueId });
 
     const aggregation = [
@@ -183,10 +181,23 @@ const turnQueries = {
     creditAggregation[0].$match.credit = true;
     cashAggregation[0].$match.credit = false;
 
-    const [clientsCredit, clientsCash] = await Promise.all([
-      Ticket.aggregate(creditAggregation),
-      Ticket.aggregate(cashAggregation)
-    ]);
+    let clientsCredit = [];
+    let clientsCash = [];
+
+    switch (ticketType) {
+      case 'CASH':
+        clientsCash = await Ticket.aggregate(cashAggregation);
+        break;
+      case 'CREDIT':
+        clientsCredit = await Ticket.aggregate(creditAggregation);
+        break;
+      default:
+        [clientsCredit, clientsCash] = await Promise.all([
+          Ticket.aggregate(creditAggregation),
+          Ticket.aggregate(cashAggregation)
+        ]);
+        break;
+    }
 
     const attributes = [
       {
@@ -423,11 +434,13 @@ const turnQueries = {
     )}`;
   }),
   turnMostRecentlyEnded: async () => {
-    const turn = await Turn.find({ end: { $exists: true } }).sort({ end: -1 });
+    const turn = await Turn.find({ end: { $exists: true } })
+      .populate('user')
+      .sort({ end: -1 });
 
     return turn[0];
   },
-  turnByUniqueId: async (_, { uniqueId }) => Turn.findOne({ uniqueId })
+  turnByUniqueId: async (_, { uniqueId }) => Turn.findOne({ uniqueId }).populate('user')
 };
 
 export default turnQueries;
