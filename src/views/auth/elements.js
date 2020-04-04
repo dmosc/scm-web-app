@@ -4,7 +4,7 @@ import { Card as CommonCard } from 'antd';
 const LoginContainer = styled.div`
   width: 100%;
   position: relative;
-  background-image: url('/static/images/background.jpeg');
+  background-image: url('/static/images/background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
