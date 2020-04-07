@@ -68,6 +68,18 @@ const ProductPriceRequests = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Machines" */
+const Machines = Loadable({
+  loader: () => import('./views/registry/machines'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "DieselRegistry" */
+const DieselRegistry = Loadable({
+  loader: () => import('./views/registry/diesel-registry'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "History" */
 const Reports = Loadable({
   loader: () => import('./views/reports'),
@@ -136,6 +148,12 @@ const App = ({
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/peticiones-productos" component={ProductPriceRequests} />
+          )}
+          {(isAdmin || isAccountant || isSupport || isManager) && (
+            <Route exact path="/registros/maquinas" component={Machines} />
+          )}
+          {(isAdmin || isAccountant || isSupport || isManager) && (
+            <Route exact path="/registros/diesel" component={DieselRegistry} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/usuarios" component={Users} />

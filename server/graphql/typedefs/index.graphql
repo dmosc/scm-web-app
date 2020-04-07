@@ -11,6 +11,9 @@
 # import * from "turn.graphql"
 # import * from "price-request.graphql"
 # import * from "rock-price-request.graphql"
+# import * from "machine.graphql"
+# import * from "machine-diesel-load.graphql"
+# import * from "tank-diesel-load.graphql"
 # import * from "store.graphql"
 # import * from "others.graphql"
 
@@ -95,8 +98,10 @@ type Query {
   turns(filters: TurnFilters!): [Turn!]!
     @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnActive: Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummary(uniqueId: Int!, ticketType: TicketType): TurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummaryXLS(uniqueId: Int!, ticketType: TicketType): String! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnSummary(uniqueId: Int!, ticketType: TicketType): TurnSummary!
+    @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turnSummaryXLS(uniqueId: Int!, ticketType: TicketType): String!
+    @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnMostRecentlyEnded: Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnByUniqueId(uniqueId: Int!): Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   # Price request
@@ -110,6 +115,21 @@ type Query {
   # Store
   store(id: ID!): Store @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   stores(client: ID!): [Store!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Machine
+  machine(id: ID!): Machine
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  machines(filters: MachineFilters!): [Machine!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  # Machine Diesel Load
+  machineDieselLoad(id: ID!): MachineDieselLoad
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  machineDieselLoads(filters: MachineDieselLoadFilters!): [MachineDieselLoad!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  # Tank Diesel Load
+  tankDieselLoad(id: ID!): TankDieselLoad
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  tankDieselLoads(filters: TankDieselLoadFilters!): [TankDieselLoad!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
 }
 
 type Mutation {
@@ -175,6 +195,16 @@ type Mutation {
   store(store: StoreInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   storeEdit(store: StoreEditInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   storeDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  # Machine
+  machine(machine: MachineInput!): Machine @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  machineEdit(machine: MachineEditInput!): Machine
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Machine Diesel Load
+  machineDieselLoad(machineDieselLoad: MachineDieselLoadInput!): MachineDieselLoad
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Tank Diesel Load
+  tankDieselLoad(tankDieselLoad: TankDieselLoadInput!): TankDieselLoad
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

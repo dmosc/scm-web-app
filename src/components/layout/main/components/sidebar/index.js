@@ -113,6 +113,32 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
                 </Item>
               )}
             </ItemGroup>
+            <ItemGroup title="Máquinas">
+              {(isAdmin || isAccountant || isSupport || isManager) && (
+                <Item key="registros/maquinas">
+                  <Link to="/registros/maquinas">
+                    <Icon type="robot" />
+                    Máquinas
+                  </Link>
+                </Item>
+              )}
+              {(isAdmin || isAccountant || isSupport || isManager) && (
+                <Item key="registros/diesel">
+                  <Link to="/registros/diesel">
+                    <Icon type="share-alt" />
+                    Diésel
+                  </Link>
+                </Item>
+              )}
+              {(isAdmin || isAccountant || isSupport || isManager) && (
+                <Item key="registros/aceite">
+                  <Link to="/registros/aceite">
+                    <Icon type="deployment-unit" />
+                    Aceite
+                  </Link>
+                </Item>
+              )}
+            </ItemGroup>
           </SubMenu>
         )}
         {(isAdmin || isAccountant || isSupport || isManager) && (

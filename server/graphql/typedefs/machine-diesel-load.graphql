@@ -1,0 +1,25 @@
+# Types
+type MachineDieselLoad {
+  id: ID!
+  date: Date!
+  previousTankIndicator: Float!
+  tankIndicator: Float!
+  horometer: Float!
+  driver: String!
+  machine: Machine!
+  registeredBy: User!
+}
+
+# Inputs
+input MachineDieselLoadInput {
+  previousTankIndicator: Float!
+  tankIndicator: Float!
+  horometer: Float!
+  driver: String!
+  machine: ID!
+}
+
+input MachineDieselLoadFilters {
+  limit: Int
+  search: String
+}

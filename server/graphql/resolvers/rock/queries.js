@@ -4,7 +4,7 @@ import { Rock, Ticket } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import months from '../../../utils/enums/months';
 
-const ticketQueries = {
+const rockQueries = {
   rock: authenticated(async (_, args) => {
     const { id } = args;
     const rock = await Rock.findById(id).populate('client truck product');
@@ -148,4 +148,4 @@ const ticketQueries = {
   )
 };
 
-export default ticketQueries;
+export default rockQueries;

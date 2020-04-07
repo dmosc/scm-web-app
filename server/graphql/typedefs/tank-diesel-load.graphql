@@ -1,0 +1,23 @@
+# Types
+type TankDieselLoad {
+  id: ID!
+  date: Date!
+  tankIndicator: Float!
+  load: Float!
+  reference: String!
+  comments: String!
+  registeredBy: User!
+}
+
+# Inputs
+input TankDieselLoadInput {
+  tankIndicator: Float!
+  load: Float!
+  reference: String!
+  comments: String!
+}
+
+input TankDieselLoadFilters {
+  limit: Int
+  search: String
+}
