@@ -1,16 +1,16 @@
 import React from 'react';
 import { Form } from 'antd';
+import Container from 'components/common/container';
 import Login from './components/login';
-import { LoginContainer, Logo, Card } from './elements';
+import { LoginContainer } from './elements';
 
 const Auth = () => {
   const UserLoginForm = Form.create({ name: 'login' })(Login);
   return (
     <LoginContainer>
-      <Card>
-        <Logo src="/static/images/gemsa-logo.jpeg" />
+      <Container width="40vh" opacity={0.9}>
         <UserLoginForm />
-      </Card>
+      </Container>
     </LoginContainer>
   );
 };

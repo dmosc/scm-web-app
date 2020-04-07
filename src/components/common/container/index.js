@@ -13,6 +13,7 @@ const Container = ({
   display,
   direction,
   justify,
+  opacity,
   align
 }) => {
   return (
@@ -25,6 +26,7 @@ const Container = ({
       display={display}
       direction={direction}
       justify={justify}
+      opacity={opacity}
       align={align}
     >
       {title && <TitleContainer>{title}</TitleContainer>}
@@ -44,6 +46,7 @@ Container.propTypes = {
   display: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   direction: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   justify: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  opacity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   align: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
@@ -57,6 +60,7 @@ Container.defaultProps = {
   display: null,
   direction: null,
   justify: null,
+  opacity: null,
   align: null
 };
 

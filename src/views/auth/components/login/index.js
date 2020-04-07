@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import cookie from 'react-cookies';
-import toast from 'toast-me';
-import { Form, Icon, Input, Button } from 'antd';
+import { Button, Form, Icon, Input, message } from 'antd';
 import { USER_LOGIN } from './graphql/mutations';
 
 const Login = ({ form, client }) => {
@@ -21,7 +20,9 @@ const Login = ({ form, client }) => {
         });
 
         if (errors) {
-          toast(errors[0].message, 'error', { duration: 3000, closeable: true });
+          errors.forEach(error => {
+            message.error(error.message);
+          });
           setLoading(false);
           return;
         }
@@ -33,7 +34,7 @@ const Login = ({ form, client }) => {
 
         window.location.reload();
       } else {
-        toast(err, 'error', { duration: 3000, closeable: true });
+        message.error('El ingreso ha sido incorrecto!');
         setLoading(false);
       }
     });
@@ -41,13 +42,10 @@ const Login = ({ form, client }) => {
 
   return (
     <Form
+      style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
       onSubmit={handleSubmit}
-      style={{
-        display: 'flex',
-        alignItems: 'center'
-      }}
     >
-      <Form.Item style={{ marginBottom: 0, marginRight: 10 }}>
+      <Form.Item style={{ marginBottom: 20 }}>
         {form.getFieldDecorator('username', {
           rules: [
             {
@@ -62,7 +60,7 @@ const Login = ({ form, client }) => {
           />
         )}
       </Form.Item>
-      <Form.Item style={{ marginBottom: 0, marginRight: 10 }}>
+      <Form.Item style={{ marginBottom: 20 }}>
         {form.getFieldDecorator('password')(
           <Input
             prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -71,13 +69,13 @@ const Login = ({ form, client }) => {
           />
         )}
       </Form.Item>
-      <Form.Item style={{ marginBottom: 0 }}>
+      <Form.Item style={{ marginTop: 20 }}>
         <Button
+          style={{ width: '100%' }}
           type="primary"
           htmlType="submit"
           icon="login"
           loading={loading}
-          style={{ width: '100%' }}
         >
           {(loading && 'Espere..') || 'Ingresar'}
         </Button>
