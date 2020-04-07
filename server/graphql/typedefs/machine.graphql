@@ -1,0 +1,38 @@
+# Types
+type Machine {
+  id: ID!
+  name: String!
+  plates: String!
+  brand: String!
+  model: String!
+  drivers: [String]!
+  averageHorometer: Float!
+  standardHorometerDeviation: Float!
+}
+
+# Inputs
+input MachineInput {
+  name: String!
+  plates: String!
+  brand: String!
+  model: String!
+  drivers: [String]!
+  averageHorometer: Float!
+  standardHorometerDeviation: Float!
+}
+
+input MachineEditInput {
+  id: ID!
+  name: String
+  plates: String
+  brand: String
+  model: String
+  drivers: [String]
+  averageHorometer: Float
+  standardHorometerDeviation: Float
+}
+
+input MachineFilters {
+  limit: Int
+  search: String
+}

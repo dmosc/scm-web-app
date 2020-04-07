@@ -11,3 +11,6 @@ export { default as RockPriceRequest } from './rock-price-request';
 export { default as Store } from './store';
 export { default as ClientPrice } from './client-price';
 export { default as ClientCreditLimit } from './client-credit-limit';
+export { default as Machine } from './machine';
+export { default as MachineDieselLoad } from './machine-diesel-load';
+export { default as TankDieselLoad } from './tank-diesel-load';
