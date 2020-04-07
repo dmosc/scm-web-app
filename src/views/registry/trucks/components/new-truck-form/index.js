@@ -8,7 +8,7 @@ import { GET_CLIENTS } from './graphql/queries';
 
 const { Option } = Select;
 
-const NewClientForm = ({ form, visible, toggleNewTruckModal, client, trucks, setTrucks }) => {
+const NewTruckForm = ({ form, visible, toggleNewTruckModal, client, trucks, setTrucks }) => {
   const [loadingClients, setLoadingClients] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -208,7 +208,7 @@ const NewClientForm = ({ form, visible, toggleNewTruckModal, client, trucks, set
   );
 };
 
-NewClientForm.propTypes = {
+NewTruckForm.propTypes = {
   client: PropTypes.object.isRequired,
   form: PropTypes.object.isRequired,
   visible: PropTypes.bool.isRequired,
@@ -217,4 +217,4 @@ NewClientForm.propTypes = {
   setTrucks: PropTypes.func.isRequired
 };
 
-export default withApollo(NewClientForm);
+export default withApollo(NewTruckForm);
