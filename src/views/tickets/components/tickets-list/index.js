@@ -79,7 +79,7 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
         </Dropdown>
       </TitleContainer>
       {activeTickets?.length !== 0 && (
-        <Collapse accordion>
+        <Collapse accordion style={{ overflowY: 'scroll' }}>
           {activeTickets?.map(ticket => (
             <Panel
               disabled={!turnActive}

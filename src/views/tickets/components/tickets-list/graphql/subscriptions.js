@@ -44,6 +44,9 @@ const ACTIVE_TICKETS = gql`
       store {
         id
         name
+        address
+        municipality
+        state
       }
       turn {
         id
@@ -101,6 +104,9 @@ const TICKET_UPDATE = gql`
       store {
         id
         name
+        address
+        municipality
+        state
       }
       turn {
         id

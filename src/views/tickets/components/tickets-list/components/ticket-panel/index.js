@@ -209,15 +209,17 @@ class TicketPanel extends Component {
             </tr>
             <tr>
               <td className="hide">
-                Matriz
+                {!ticket.store ? 'Matriz' : `${ticket.store.name}`}
                 <br />
-                Matriz
+                {!ticket.store ? 'Matriz' : `${ticket.store.address || 'N/A'}`}
+                <br />
+                {ticket.store &&
+                  `${ticket.store.municipality || 'N/A'}, ${ticket.store.state || 'N/A'}`}
               </td>
               <td />
               <td />
             </tr>
             <tr>
-              <td className="hide">Santa Catarina, Nuevo León</td>
               <td />
               <td>
                 {ticket.totalPrice && (
@@ -283,6 +285,7 @@ class TicketPanel extends Component {
         </Actions>
         {ticket.client.stores.length > 0 && (
           <Select
+            id="skip"
             style={{ width: 250, marginTop: 10 }}
             placeholder="Seleccionar sucursal"
             onChange={store => this.setStoreToTicket(store)}

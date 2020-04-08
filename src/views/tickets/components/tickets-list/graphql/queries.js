@@ -44,6 +44,9 @@ const GET_TICKETS = gql`
       store {
         id
         name
+        address
+        municipality
+        state
       }
       turn {
         id

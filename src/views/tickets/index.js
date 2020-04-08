@@ -6,7 +6,7 @@ import { withAuth } from 'components/providers/withAuth';
 import { graphql } from '@apollo/react-hoc';
 import print from 'print-js';
 import mapStyles from 'react-map-styles';
-import { Form, List, Empty, Spin } from 'antd';
+import { Empty, Form, List, Spin } from 'antd';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
 import TicketImageForm from './components/ticket-image-form';
@@ -80,9 +80,9 @@ class Tickets extends Component {
       honorColor: true,
       style: `
         @page { margin: 0; } 
-        #printable { width: 100vw; size: margin: 50px; font-size: 16px; font-family: Courier; }
-        #title { width: 100%; position: absolute; right: -500px; top: 80px; display: flex; flex-direction: column; }
-        #content { margin-top: 220px; }
+        #printable { width: 100vw; size: margin: 50px; font-size: 20px; font-family: Sans Serif; }
+        #title { width: 100%; font-size: 25px; position: absolute; right: -400px; top: 80px; display: flex; flex-direction: column; justify-content: space-between; font-weight: bold; }
+        #content { margin-top: 100px; padding: 100px }
         p { margin: 0 }
         .skip { visibility: hidden }
         table { margin: 0; }
