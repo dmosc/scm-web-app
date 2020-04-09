@@ -7,6 +7,7 @@ const ListContentContainer = styled.div`
 
 const ContentList = styled.div`
   max-height: ${props => props.height ?? '20vh'};
+  min-height: ${props => props.height ?? '20vh'};
 
   overflow-y: scroll;
   -ms-overflow-style: none;

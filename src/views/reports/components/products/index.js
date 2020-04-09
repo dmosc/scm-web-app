@@ -3,33 +3,33 @@ import PropTypes from 'prop-types';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
 import {
-  PieChart,
-  Pie,
-  LineChart,
-  Cell,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
   CartesianGrid,
+  Cell,
   Legend,
   Line,
-  Tooltip
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
 } from 'recharts';
 import {
+  Card,
+  Col,
+  Empty,
+  Icon,
   message,
   Select,
-  Typography,
   Spin,
-  Tag,
-  Table,
   Statistic,
-  Icon,
-  Card,
-  Empty,
-  Col
+  Table,
+  Tag,
+  Typography
 } from 'antd';
 import shortid from 'shortid';
-import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
+import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
 import { GET_ROCK_MONTH_SALES, GET_ROCK_SALES, GET_ROCKS } from './graphql/queries';
 
 const { Option } = Select;
@@ -235,7 +235,7 @@ const ProductSales = ({ client, globalFilters }) => {
         <Col span={12}>
           <Statistic
             valueStyle={{ color: '#3f8600' }}
-            title="Ventas totales"
+            title="Ventas"
             value={productSalesReport.total ?? 0}
             suffix="MXN"
             prefix={<Icon type="rise" />}

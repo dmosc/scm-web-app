@@ -159,10 +159,10 @@ const App = ({
             <Route exact path="/registros/usuarios" component={Users} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/historial" component={History} />
+            <Route path="/reportes" component={Reports} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/reportes" component={Reports} />
+            <Route exact path="/historial" component={History} />
           )}
           {(isAdmin || isAccountant || isManager) && <Route path="/facturas" component={Bills} />}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (

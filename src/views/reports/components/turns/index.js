@@ -1,41 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import PropTypes from 'prop-types';
 import {
-  BarChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Legend,
-  Tooltip,
   Bar,
-  PieChart,
+  BarChart,
+  Cell,
+  Legend,
   Pie,
-  Cell
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
 } from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import {
-  Statistic,
-  Icon,
+  Button,
   Card,
   Col,
-  Button,
-  Select,
-  Typography,
-  Tag,
-  Row,
   Collapse,
-  Spin
+  Icon,
+  Row,
+  Select,
+  Spin,
+  Statistic,
+  Tag,
+  Typography
 } from 'antd';
 import {
-  GET_TURNS,
-  GET_REPORT,
   GET_MOST_RECENTLY_ENDED_TURN,
-  TURN_BY_UNIQUE_ID,
-  GET_TURN_SUMMARY
+  GET_REPORT,
+  GET_TURN_SUMMARY,
+  GET_TURNS,
+  TURN_BY_UNIQUE_ID
 } from './graphql/queries';
-import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
+import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -211,10 +211,10 @@ const Turns = ({ client, globalFilters }) => {
       ) : (
         <>
           <Card>
-            <Title level={4}>Datos Generales del Turno: {turn.uniqueId}</Title>
+            <Title level={4}>Turno: {turn.uniqueId}</Title>
             <Col span={12}>
               <Paragraph style={{ margin: 0 }} type="secondary">
-                Operador por:
+                Operador:
               </Paragraph>
               <Paragraph style={{ margin: 0 }}>
                 {turn?.user?.firstName} {turn?.user?.lastName}{' '}
@@ -230,18 +230,26 @@ const Turns = ({ client, globalFilters }) => {
               <Paragraph style={{ margin: 0 }} type="secondary">
                 Inicio:
               </Paragraph>
-              <Paragraph style={{ margin: 0 }}>{moment(turn.start).format('LLL')}</Paragraph>
+              <Paragraph style={{ margin: 0 }}>
+                {moment(turn.start)
+                  .locale('es')
+                  .format('LLLL')}
+              </Paragraph>
               <Paragraph style={{ margin: 0 }} type="secondary">
                 Término:
               </Paragraph>
-              <Paragraph style={{ margin: 0 }}>{moment(turn.end).format('LLL')}</Paragraph>
+              <Paragraph style={{ margin: 0 }}>
+                {moment(turn.end)
+                  .locale('es')
+                  .format('LLLL')}
+              </Paragraph>
             </Col>
           </Card>
           <Card>
             <Col span={6}>
               <Statistic
                 valueStyle={{ color: '#3f8600' }}
-                title="Ventas totales"
+                title="Ventas"
                 value={summary?.total?.toFixed(2)}
                 suffix="MXN"
                 prefix={<Icon type="rise" />}
@@ -250,19 +258,17 @@ const Turns = ({ client, globalFilters }) => {
             <Col span={6}>
               <Statistic
                 valueStyle={{ color: '#30CEE7' }}
-                title="Ventas de contado"
-                value={summary?.upfront?.toFixed(2)}
+                title="Contado"
+                value={`$${summary?.upfront?.toFixed(2)}`}
                 suffix="MXN"
-                prefix={<Icon type="pay-circle" />}
               />
             </Col>
             <Col span={6}>
               <Statistic
                 valueStyle={{ color: '#FFAB00' }}
-                title="Ventas ventas a crédito"
-                value={summary?.credit?.toFixed(2)}
+                title="Crédito"
+                value={`$${summary?.credit?.toFixed(2)}`}
                 suffix="MXN"
-                prefix={<Icon type="credit-card" />}
               />
             </Col>
             <Col span={6}>
