@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 import softDelete from 'mongoose-delete';
 
@@ -8,7 +8,7 @@ const Rock = new Schema({
     type: Number,
     required: true,
     validate: {
-      // WATCH OUT: Valiadtors will run on .save() operations
+      // WATCH OUT: Validators will run on .save() operations
       validator: function validator(price) {
         return price >= this.floorPrice;
       },
@@ -19,7 +19,7 @@ const Rock = new Schema({
     type: Number,
     required: true,
     validate: {
-      // WATCH OUT: Valiadtors will run on .save() operations
+      // WATCH OUT: Validators will run on .save() operations
       validator: function validator(floorPrice) {
         return floorPrice <= this.price;
       },

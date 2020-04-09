@@ -18,6 +18,9 @@ import ticketSubscriptions from './ticket/subscriptions';
 // Truck
 import truckMutations from './truck/mutations';
 import truckQueries from './truck/queries';
+// Bill
+import billMutations from './bill/mutations';
+import billQueries from './bill/queries';
 // Rock
 import rockMutations from './rock/mutations';
 import rockQueries from './rock/queries';
@@ -64,6 +67,7 @@ const resolvers = {
     ...clientCreditLimitQueries,
     ...ticketQueries,
     ...truckQueries,
+    ...billQueries,
     ...rockQueries,
     ...postQueries,
     ...messageQueries,
@@ -82,6 +86,7 @@ const resolvers = {
     ...clientCreditLimitMutations,
     ...ticketMutations,
     ...truckMutations,
+    ...billMutations,
     ...rockMutations,
     ...folioMutations,
     ...postMutations,

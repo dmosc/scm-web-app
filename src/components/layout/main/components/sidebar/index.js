@@ -188,6 +188,29 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             </Item>
           </SubMenu>
         )}
+        {(isAdmin || isAccountant || isManager) && (
+          <SubMenu
+            title={
+              <span className="submenu-title-wrapper">
+                <Icon type="file-text" />
+                <span>Facturas</span>
+              </span>
+            }
+          >
+            <Item key="facturas/agrupador">
+              <Link to="/facturas/agrupador">
+                <Icon type="shrink" />
+                <span>Agrupador</span>
+              </Link>
+            </Item>
+            <Item key="facturas/registros">
+              <Link to="/facturas/registros">
+                <Icon type="read" />
+                Registros
+              </Link>
+            </Item>
+          </SubMenu>
+        )}
         {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="historial">
             <Link to="/historial">
@@ -201,14 +224,6 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
             <Link to="/mensajes">
               <Icon type="message" />
               <span>Mensajes</span>
-            </Link>
-          </Item>
-        )}
-        {(isAdmin || isAccountant || isManager) && (
-          <Item key="facturas">
-            <Link to="/facturas">
-              <Icon type="file-text" />
-              <span>Facturas</span>
             </Link>
           </Item>
         )}

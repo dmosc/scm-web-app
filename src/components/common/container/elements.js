@@ -9,7 +9,7 @@ const ContentContainer = styled(Content)`
   border-radius: 5px;
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
   background-color: ${props =>
-    props.opacity ? `rgba(255, 255, 255, ${props.opacity})` : 'rgba(255, 255, 255, 0)'};
+    props.opacity ? `rgba(255, 255, 255, ${props.opacity})` : 'rgba(255, 255, 255, 1)'};
   overflow-y: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;

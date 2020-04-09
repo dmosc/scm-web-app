@@ -162,13 +162,11 @@ const App = ({
             <Route exact path="/historial" component={History} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route path="/reportes" component={Reports} />
+            <Route exact path="/reportes" component={Reports} />
           )}
+          {(isAdmin || isAccountant || isManager) && <Route path="/facturas" component={Bills} />}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
             <Route exact path="/mensajes" component={Messages} />
-          )}
-          {(isAdmin || isAccountant || isManager) && (
-            <Route exact path="/facturas" component={Bills} />
           )}
           {(isAdmin || isGuard || isSupport || isManager) && (
             <Route exact path="/accesos" component={Access} />
