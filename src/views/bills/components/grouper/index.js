@@ -78,16 +78,6 @@ const Grouper = ({ client }) => {
           />
         </Container>
         <div style={{ width: '100%', padding: '0px 60px 0px 0px' }}>
-          <Container width="100%" height="30vh">
-            <BillSubmitForm
-              type={type}
-              clients={clients}
-              currentClient={currentClient}
-              targetTickets={targetTickets}
-              setCurrentClient={setCurrentClient}
-              setClients={setClients}
-            />
-          </Container>
           <Container title="Boletas pendientes por facturar" width="100%">
             <TicketsSelect
               type={type}
@@ -96,6 +86,16 @@ const Grouper = ({ client }) => {
               targetTickets={targetTickets}
               setTargetTickets={setTargetTickets}
               setType={setType}
+            />
+          </Container>
+          <Container width="100%" height="30vh">
+            <BillSubmitForm
+              type={type}
+              clients={clients}
+              currentClient={currentClient}
+              targetTickets={targetTickets}
+              setCurrentClient={setCurrentClient}
+              setClients={setClients}
             />
           </Container>
         </div>
