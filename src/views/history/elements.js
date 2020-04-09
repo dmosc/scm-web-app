@@ -6,7 +6,7 @@ const HistoryContainer = styled.div`
   width: 100%;
   font-size: 8px;
   /* 64 for header and 79 for footer */
-  min-height: calc(100vh - 64px - 79px);
+  min-height: calc(105vh - 64px - 79px);
 `;
 
 const TableContainer = styled.div`

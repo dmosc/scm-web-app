@@ -4,10 +4,12 @@ import { useDebounce } from 'use-lodash-debounce';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { Button, notification, Table, Tag } from 'antd';
+import { Button, notification, Table, Tag, Typography } from 'antd';
 import Title from './components/title';
-import { HistoryContainer, TableContainer, Card } from './elements';
+import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS } from './graphql/queries';
+
+const { Text } = Typography;
 
 const History = ({ client }) => {
   const [filters, setFilters] = useState({
@@ -20,6 +22,7 @@ const History = ({ client }) => {
   });
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
+  const [results, setResults] = useState(0);
   const debouncedFilters = useDebounce(filters, 1000);
 
   const handleFilterChange = (key, value) => {
@@ -61,6 +64,7 @@ const History = ({ client }) => {
         }));
 
         setTickets(archivedTicketsToSet);
+        setResults(archivedTicketsToSet.length);
         setLoading(false);
       } catch (e) {
         notification.open({
@@ -106,12 +110,6 @@ const History = ({ client }) => {
       key: 'client',
       width: 150,
       fixed: 'left'
-    },
-    {
-      title: 'Dirección',
-      dataIndex: 'address',
-      key: 'address',
-      width: 100
     },
     {
       title: 'RFC',
@@ -221,13 +219,41 @@ const History = ({ client }) => {
                 style={{ margin: 'auto 10px' }}
                 level={3}
                 filters={filters}
+                results={results}
                 handleFilterChange={handleFilterChange}
                 handleDateFilterChange={handleDateFilterChange}
               />
             )}
+            footer={ticketsToAdd => {
+              let subtotal = 0;
+              let tax = 0;
+              let total = 0;
+
+              ticketsToAdd.forEach(
+                ({ subtotal: ticketSubtotal, tax: ticketTax, total: ticketTotal }) => {
+                  subtotal += ticketSubtotal;
+                  tax += ticketTax;
+                  total += ticketTotal;
+                }
+              );
+
+              return (
+                <div style={{ display: 'flex' }}>
+                  <Text style={{ marginRight: 10 }}>
+                    Subtotal <Tag>{`$${subtotal.toFixed(2)}`}</Tag>
+                  </Text>
+                  <Text style={{ marginRight: 10 }}>
+                    Impuestos <Tag>{`$${tax.toFixed(2)}`}</Tag>
+                  </Text>
+                  <Text style={{ marginRight: 10 }}>
+                    Total <Tag>{`$${total.toFixed(2)}`}</Tag>
+                  </Text>
+                </div>
+              );
+            }}
             size="small"
-            scroll={{ x: true, y: '55vh' }}
-            pagination={{ defaultPageSize: 20 }}
+            scroll={{ x: true, y: '42vh' }}
+            pagination={{ defaultPageSize: 40 }}
             dataSource={tickets.map(ticket => ({ ...ticket, key: shortid.generate() }))}
           />
         </Card>

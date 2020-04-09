@@ -220,7 +220,6 @@ const ticketQueries = {
       { filters: { limit, offset, search: oldSearch, start, end, date, type, product } }
     ) => {
       const search = `%${oldSearch}%`;
-
       const where = {
         createdAt: {
           [Op.between]: [start || '1970-01-01T00:00:00.000Z', end || '2100-12-31T00:00:00.000Z']

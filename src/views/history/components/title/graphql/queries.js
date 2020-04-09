@@ -9,7 +9,6 @@ const GET_REPORT = gql`
 const GET_PRODUCTS = gql`
   query rocks($filters: RockFilters!) {
     rocks(filters: $filters) {
-      id
       name
     }
   }

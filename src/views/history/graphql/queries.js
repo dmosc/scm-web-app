@@ -8,7 +8,6 @@ const GET_HISTORY_TICKETS = gql`
       driver
       client
       businessName
-      address
       rfc
       plates
       truckWeight

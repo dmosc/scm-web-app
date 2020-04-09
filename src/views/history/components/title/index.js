@@ -11,7 +11,7 @@ const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
-const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filters }) => {
+const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filters, results }) => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
 
@@ -87,8 +87,8 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
             value={filters.product}
           >
             <Option value="">Todos</Option>
-            {products.map(({ name, id }) => (
-              <Option key={id} value={id}>
+            {products.map(({ name }) => (
+              <Option key={name} value={name}>
                 {name}
               </Option>
             ))}
@@ -99,7 +99,8 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
           <RangePicker
             style={{ marginRight: 0 }}
             ranges={{
-              'De hoy': [moment(), moment()],
+              'De hoy': [moment(), moment().add(1, 'day')],
+              'De ayer': [moment().subtract(1, 'day'), moment()],
               'De este mes': [moment().startOf('month'), moment().endOf('month')],
               'Del mes pasado': [
                 moment()
@@ -112,6 +113,10 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
             }}
             onChange={dates => handleDateFilterChange(dates)}
           />
+        </InputContainer>
+        <InputContainer>
+          <Text type="secondary">Resultados:</Text>
+          <Text type="secondary">{results}</Text>
         </InputContainer>
       </FiltersContainer>
     </TitleContainer>
