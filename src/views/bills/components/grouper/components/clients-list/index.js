@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { withApollo } from '@apollo/react-hoc';
 import { Table } from 'antd';
-import { GET_CLIENTS_PENDING_TICKETS_TO_BILL } from './graphql/queries';
 
 const columns = [
   {
@@ -17,9 +15,7 @@ const columns = [
   }
 ];
 
-const ClientsList = ({ client, currentClient, setCurrentClient }) => {
-  const [clients, setClients] = useState([]);
-
+const ClientsList = ({ clients, currentClient, setCurrentClient, setTargetTickets }) => {
   const rowSelection = {
     selectedRowKeys: [currentClient],
     onChange: (selectedRowKeys, selectedRows) => {
@@ -33,32 +29,15 @@ const ClientsList = ({ client, currentClient, setCurrentClient }) => {
         rowSelection.selectedRowKeys = [newSelection];
         setCurrentClient(newSelection);
       }
+
+      setTargetTickets([]);
     }
   };
-
-  useEffect(() => {
-    const getClients = async () => {
-      const {
-        data: { clientsPendingTicketsToBill }
-      } = await client.query({ query: GET_CLIENTS_PENDING_TICKETS_TO_BILL });
-
-      const clientsToSet = clientsPendingTicketsToBill.map(
-        ({ client: { id, businessName }, count }) => ({
-          businessName,
-          count,
-          key: id
-        })
-      );
-
-      setClients(clientsToSet);
-    };
-
-    getClients();
-  }, [client]);
 
   return (
     <Table
       rowSelection={rowSelection}
+      pagination={{ defaultPageSize: 5 }}
       columns={columns}
       dataSource={clients}
       showHeader={false}
@@ -74,9 +53,10 @@ ClientsList.defaultProps = {
 };
 
 ClientsList.propTypes = {
-  client: PropTypes.object.isRequired,
   currentClient: PropTypes.string,
-  setCurrentClient: PropTypes.func.isRequired
+  clients: PropTypes.array.isRequired,
+  setCurrentClient: PropTypes.func.isRequired,
+  setTargetTickets: PropTypes.func.isRequired
 };
 
-export default withApollo(ClientsList);
+export default ClientsList;

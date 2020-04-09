@@ -6,7 +6,7 @@ const clientQueries = {
   client: authenticated(async (_, args) => {
     const { id } = args;
     const client = await Client.findOne({ _id: id, deleted: false }).populate(
-      'trucks depositHistory.depositedBy'
+      'trucks stores depositHistory.depositedBy'
     );
 
     if (!client) throw new Error('¡El cliente no existe!');
@@ -24,7 +24,7 @@ const clientQueries = {
         { phone: { $in: [new RegExp(search, 'i')] } }
       ]
     })
-      .populate('prices.rock trucks stores')
+      .populate('trucks stores depositHistory.depositedBy')
       .limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
@@ -38,7 +38,6 @@ const clientQueries = {
           turn: { $exists: true },
           totalPrice: { $exists: true },
           outTruckImage: { $exists: true },
-          bill: true,
           isBilled: false,
           disabled: false
         }

@@ -1,0 +1,28 @@
+# Types
+type Bill {
+  id: ID!
+  date: Date!
+  folio: String!
+  client: Client!
+  store: Store
+  folios: [String!]!
+  products: [ProductSummary!]!
+  tax: Float!
+  total: Float!
+  creditDays: Int!
+  bill: Boolean!
+}
+
+# Inputs
+input BillInput {
+  client: ID!
+  store: ID
+  tickets: [ID!]!
+  creditDays: Int!
+  bill: Boolean!
+}
+
+input BillFilters {
+  limit: Int
+  search: String
+}

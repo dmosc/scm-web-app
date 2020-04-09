@@ -3,6 +3,7 @@
 # import * from "client-price.graphql"
 # import * from "client-credit-limit.graphql"
 # import * from "ticket.graphql"
+# import * from "bill.graphql"
 # import * from "truck.graphql"
 # import * from "rock.graphql"
 # import * from "folio.graphql"
@@ -59,12 +60,19 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, MANAGER])
   notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
-  ticketsPendingToBill(client: ID!): [Ticket!]! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  ticketsToBillSummary(tickets: [ID!]!): BillSummary! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  ticketsPendingToBill(client: ID!, type: ArchivedTicketType!): [Ticket!]!
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  ticketsToBillSummary(tickets: [ID!]!, client: ID!): BillSummary!
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Bill
+  bill(id: ID, folio: String): Bill
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  bills(filters: BillFilters!): [Bill!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Truck
   truck(id: ID, plates: String, client: ID!): Truck
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -163,6 +171,8 @@ type Mutation {
   ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
+  # Bill
+  bill(bill: BillInput!): Bill @auth(roles: [ADMIN, ACCOUNTANT])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
   truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER])

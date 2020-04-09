@@ -266,7 +266,7 @@ const ticketMutations = {
 
     if (!newTicket) throw new Error('¡No ha sido posible encontrar el ticket!');
 
-    const client = await Client.findById(newTicket.client).populate('prices.rock');
+    const client = await Client.findById(newTicket.client);
     const product = await Rock.findById(newTicket.product);
     await Truck.findOneAndUpdate(
       { _id: newTicket.truck },

@@ -31,6 +31,8 @@ type BillSummary {
 
 type ProductSummary {
   product: Rock!
+  price: Float!
+  weight: Float!
   total: Float!
 }
 
