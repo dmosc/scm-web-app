@@ -7,6 +7,7 @@ const GET_ROCKS = gql`
       name
       price
       floorPrice
+      color
     }
   }
 `;

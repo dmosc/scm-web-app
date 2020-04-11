@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import PropTypes from 'prop-types';
-import { Form, InputNumber, Button, notification, Modal } from 'antd';
+import { Button, Form, InputNumber, Modal, notification } from 'antd';
 import { EDIT_ROCK } from './graphql/mutations';
+import { InputColor } from './elements';
 
 const ProductForm = ({ client, currentProduct, visible, toggleEditModal, updateProducts }) => {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState(currentProduct);
+  const [product, setProduct] = useState(currentProduct);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const { id, name, price, floorPrice } = form;
+    const { id, name, price, floorPrice, color } = product;
 
     if (floorPrice > price) {
       Modal.error({
@@ -28,7 +29,7 @@ const ProductForm = ({ client, currentProduct, visible, toggleEditModal, updateP
     } = await client.mutate({
       mutation: EDIT_ROCK,
       variables: {
-        rock: { id, name, price, floorPrice }
+        rock: { id, name, price, floorPrice, color }
       }
     });
 
@@ -48,12 +49,10 @@ const ProductForm = ({ client, currentProduct, visible, toggleEditModal, updateP
     notification.open({
       message: `Product ${newProduct.name} ha sido actualizado exitosamente!`
     });
-
-    form.resetFields();
   };
 
   useEffect(() => {
-    setForm(currentProduct);
+    setProduct(currentProduct);
   }, [currentProduct]);
 
   return (
@@ -65,30 +64,43 @@ const ProductForm = ({ client, currentProduct, visible, toggleEditModal, updateP
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item
-          extra={form.price < form.floorPrice ? 'El precio piso debe ser mayor al precio' : ''}
-          validateStatus={form.price < form.floorPrice ? 'error' : ''}
-          label="Price"
+          extra={
+            product.price < product.floorPrice ? 'El precio piso debe ser mayor al precio' : ''
+          }
+          validateStatus={product.price < product.floorPrice ? 'error' : ''}
+          label="Precio"
         >
           <InputNumber
             style={{ width: '100%' }}
             validate
             min={0}
             step={0.1}
-            value={form.price}
-            onChange={value => setForm({ ...form, price: value })}
+            value={product.price}
+            onChange={value => setProduct({ ...product, price: value })}
           />
         </Form.Item>
         <Form.Item
-          label="Floor price"
-          extra={form.price < form.floorPrice ? 'El precio piso debe ser mayor al precio' : ''}
-          validateStatus={form.price < form.floorPrice ? 'error' : ''}
+          label="Precio suelo"
+          extra={
+            product.price < product.floorPrice ? 'El precio piso debe ser mayor al precio' : ''
+          }
+          validateStatus={product.price < product.floorPrice ? 'error' : ''}
         >
           <InputNumber
             style={{ width: '100%' }}
             min={0}
             step={0.1}
-            value={form.floorPrice}
-            onChange={value => setForm({ ...form, floorPrice: value })}
+            value={product.floorPrice}
+            onChange={value => setProduct({ ...product, floorPrice: value })}
+          />
+        </Form.Item>
+        <Form.Item label="Color">
+          <InputColor
+            type="color"
+            value={product.color}
+            onChange={({ target: { value } }) =>
+              setProduct({ ...product, color: value.toUpperCase() })
+            }
           />
         </Form.Item>
         <Form.Item>

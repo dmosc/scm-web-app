@@ -53,6 +53,7 @@ input RockEditInput {
 
 input RockFilters {
   limit: Int
+  search: String
 }
 
 input RockSalesReportFilters {
