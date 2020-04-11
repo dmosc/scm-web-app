@@ -13,7 +13,7 @@ const GET_CLIENTS_PENDING_TICKETS_TO_BILL = gql`
 `;
 
 const GET_CLIENT_TICKETS_PENDING_TO_BILL = gql`
-  query ticketsPendingToBill($client: ID!, $type: ArchivedTicketType!) {
+  query ticketsPendingToBill($client: ID!, $type: TicketBillType!) {
     ticketsPendingToBill(client: $client, type: $type) {
       id
       folio

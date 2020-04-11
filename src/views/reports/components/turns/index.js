@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import {
   Bar,
@@ -155,7 +155,7 @@ const Turns = ({ client, globalFilters }) => {
           <Text type="secondary">ID Seleccionado</Text>
           <Select
             allowClear
-            style={{ minWidth: 500 }}
+            style={{ minWidth: 650 }}
             placeholder="ID del turno"
             onChange={value => setTurnUniqueId(value)}
             notFoundContent={null}
@@ -171,7 +171,11 @@ const Turns = ({ client, globalFilters }) => {
                     ) : (
                       <>
                         <Tag color="blue">{periods[period]}</Tag>
-                        {user.firstName} {user.lastName} ({uniqueId})
+                        {user.firstName} {user.lastName} ({uniqueId}) (Terminado el{' '}
+                        {moment(end)
+                          .locale('es')
+                          .format('lll')}
+                        )
                       </>
                     )}
                   </Option>
@@ -320,11 +324,11 @@ const Turns = ({ client, globalFilters }) => {
                     data={[
                       {
                         name: 'credit',
-                        value: (summary.credit / summary.total).toFixed(4) * 100
+                        value: Number(((summary.credit / summary.total) * 100).toFixed(2))
                       },
                       {
                         name: 'cash',
-                        value: (summary.upfront / summary.total).toFixed(4) * 100
+                        value: Number(((summary.upfront / summary.total) * 100).toFixed(2))
                       }
                     ]}
                     outerRadius={60}

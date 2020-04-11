@@ -1,3 +1,8 @@
+input DateRange {
+  start: Date
+  end: Date
+}
+
 # AWS
 enum s3FolderKey {
   trucks
@@ -7,6 +12,7 @@ enum order {
   asc
   desc
 }
+
 enum Month {
   JANUARY
   FEBRUARY

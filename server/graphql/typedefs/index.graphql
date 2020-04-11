@@ -49,6 +49,8 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientCreditLimitHistory(client: ID!): [ClientCreditLimit!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsSummary(clientIds: [ID]!, range: DateRange, turnId: ID, billType: TicketBillType): ClientsSummary!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Ticket
   ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -60,7 +62,7 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, MANAGER])
   notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
-  ticketsPendingToBill(client: ID!, type: ArchivedTicketType!): [Ticket!]!
+  ticketsPendingToBill(client: ID!, type: TicketBillType!): [Ticket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   ticketsToBillSummary(tickets: [ID!]!, client: ID!): BillSummary!
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
@@ -106,9 +108,9 @@ type Query {
   turns(filters: TurnFilters!): [Turn!]!
     @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnActive: Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummary(uniqueId: Int!, ticketType: TicketType): TurnSummary!
+  turnSummary(uniqueId: Int!, ticketType: TicketPaymentType): TurnSummary!
     @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnSummaryXLS(uniqueId: Int!, ticketType: TicketType): String!
+  turnSummaryXLS(uniqueId: Int!, ticketType: TicketPaymentType): String!
     @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnMostRecentlyEnded: Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
   turnByUniqueId(uniqueId: Int!): Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])

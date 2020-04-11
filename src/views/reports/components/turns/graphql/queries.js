@@ -40,13 +40,13 @@ const GET_MOST_RECENTLY_ENDED_TURN = gql`
 `;
 
 const GET_REPORT = gql`
-  query turnSummaryXLS($uniqueId: Int!, $ticketType: TicketType) {
+  query turnSummaryXLS($uniqueId: Int!, $ticketType: TicketPaymentType) {
     turnSummaryXLS(uniqueId: $uniqueId, ticketType: $ticketType)
   }
 `;
 
 const GET_TURN_SUMMARY = gql`
-  query turnSummary($uniqueId: Int!, $ticketType: TicketType) {
+  query turnSummary($uniqueId: Int!, $ticketType: TicketPaymentType) {
     turnSummary(uniqueId: $uniqueId, ticketType: $ticketType) {
       clients {
         info {

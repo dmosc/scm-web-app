@@ -43,8 +43,3 @@ input TurnFilters {
   end: Date
   start: Date
 }
-
-enum TicketType {
-  CASH
-  CREDIT
-}

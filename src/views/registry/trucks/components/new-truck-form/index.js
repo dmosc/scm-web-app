@@ -102,22 +102,20 @@ const NewTruckForm = ({ form, visible, toggleNewTruckModal, client, trucks, setT
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item>
-          {form.getFieldDecorator('client')(
-            <Select
-              showSearch
-              allowClear
-              style={{ width: '100%' }}
-              placeholder="Cliente"
-              onSearch={onSearch}
-              loading={loadingClients}
-            >
-              {clients.map(({ id, businessName }) => (
-                <Option key={id} value={`${businessName}:${id}`}>
-                  <span>{`${businessName}`}</span>
-                </Option>
-              ))}
-            </Select>
-          )}
+          <Select
+            showSearch
+            allowClear
+            style={{ width: '100%' }}
+            placeholder="Cliente"
+            onSearch={onSearch}
+            loading={loadingClients}
+          >
+            {clients.map(({ id, businessName }) => (
+              <Option key={id} value={`${businessName}:${id}`}>
+                <span>{`${businessName}`}</span>
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('plates', {

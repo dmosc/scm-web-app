@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs';
+import { Types } from 'mongoose';
 import { Client, ClientPrice, Rock, Ticket } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
@@ -171,7 +172,102 @@ const clientQueries = {
     return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
       'base64'
     )}`;
-  })
+  }),
+  clientsSummary: authenticated(
+    async (
+      _,
+      {
+        clientIds,
+        range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
+        turnId,
+        billType
+      }
+    ) => {
+      const $match = {
+        client: { $in: clientIds.map(id => Types.ObjectId(id)) },
+        out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true }
+      };
+
+      if (turnId) {
+        $match.turn = Types.ObjectId(turnId);
+      }
+
+      if (billType) {
+        if (billType === 'BILL') $match.tax = { $gt: 0 };
+        if (billType === 'REMISSION') $match.tax = { $eq: 0 };
+      }
+
+      const clients = await Ticket.aggregate([
+        {
+          $match
+        },
+        { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+        {
+          $group: {
+            _id: '$client',
+            count: { $sum: 1 },
+            tickets: {
+              $push: {
+                id: '$_id',
+                folio: '$folio',
+                driver: '$driver',
+                truck: '$truck',
+                product: '$product',
+                tax: '$tax',
+                weight: '$weight',
+                totalWeight: '$totalWeight',
+                totalPrice: '$totalPrice',
+                credit: '$credit',
+                inTruckImage: '$inTruckImage',
+                outTruckImage: '$outTruckImage'
+              }
+            }
+          }
+        },
+        { $project: { _id: 0, info: '$_id', count: '$count', tickets: '$tickets' } }
+      ]);
+
+      if (clients.length === 0) return { clients, upfront: 0, credit: 0, total: 0 };
+
+      let upfront = 0;
+      let credit = 0;
+      let total = 0;
+      for (const client of clients) {
+        const { tickets } = client;
+        for (const ticket of tickets) {
+          if (ticket.credit) credit += ticket.totalPrice;
+          else upfront += ticket.totalPrice;
+
+          total += ticket.totalPrice;
+        }
+      }
+
+      for (let i = 0; i < clients.length; i++) {
+        // Parse data and remove generated arrays from $lookups
+        clients[i].info = { ...clients[i].info[0] };
+        clients[i].info.id = clients[i].info._id;
+        delete clients[i].info._id;
+
+        const { tickets } = clients[i];
+        for (const ticket of tickets) {
+          ticket.product = { ...ticket.product[0] };
+          ticket.truck = { ...ticket.truck[0] };
+
+          ticket.product.id = ticket.product._id;
+          ticket.truck.id = ticket.truck._id;
+
+          delete ticket.product._id;
+          delete ticket.truck._id;
+        }
+      }
+
+      return { clients, upfront, credit, total };
+    }
+  )
 };
 
 export default clientQueries;

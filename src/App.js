@@ -6,6 +6,7 @@ import Layout from 'components/layout/main';
 import { useAuth } from 'components/providers/withAuth';
 import TopBarProgress from 'react-topbar-progress-indicator';
 import Auth from 'views/auth';
+import 'moment/locale/es';
 import './App.css';
 
 /* webpackChunkName: "Dashboard" */

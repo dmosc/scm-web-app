@@ -123,7 +123,7 @@ input ArchivedTicketFilters {
   start: Date
   end: Date
   date: Date
-  type: ArchivedTicketType
+  type: TicketBillType
   product: String
 }
 
@@ -133,7 +133,12 @@ input DisabledTicketFilters {
   end: Date
 }
 
-enum ArchivedTicketType {
+enum TicketBillType {
   BILL
   REMISSION
+}
+
+enum TicketPaymentType {
+  CASH
+  CREDIT
 }
