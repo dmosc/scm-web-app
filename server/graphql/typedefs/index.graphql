@@ -152,7 +152,7 @@ type Mutation {
   clientAddToBalance(client: ID!, toAdd: Float!): Client
     @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
-  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
+  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, CASHIER])
   # Client Price
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client Credit Limit
@@ -182,6 +182,7 @@ type Mutation {
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
   rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN])
+  rockDelete(id: ID!): Boolean! @auth(roles: [ADMIN])
   # Folio
   folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
   # Post

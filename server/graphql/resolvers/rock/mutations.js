@@ -4,7 +4,9 @@ import authenticated from '../../middleware/authenticated';
 const rockMutations = {
   rock: authenticated(async (_, args) => {
     const rock = new Rock({ ...args.rock });
-    rock.name = rock.name.toUpperCase();
+
+    rock.name = rock.name.trim().toUpperCase();
+    rock.color = rock.color.trim().toUpperCase();
 
     try {
       await rock.save();
@@ -24,6 +26,14 @@ const rockMutations = {
     // MODEL VALIDATIONS CORRECTLY. PLEASE AVOID
     // findOneAndUpdate or similars
     return rock.save();
+  }),
+  rockDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      await Rock.deleteById(id, userRequesting.id);
+      return true;
+    } catch (e) {
+      return e;
+    }
   })
 };
 
