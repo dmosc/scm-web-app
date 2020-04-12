@@ -1,9 +1,9 @@
 import ExcelJS from 'exceljs';
+import moment from 'moment';
 import { Types } from 'mongoose';
 import { createWorksheet, createWorkbook } from '../../../utils/reports';
 import { Client, ClientPrice, Rock, Ticket } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
-import moment from '../../../../node_modules/moment/moment';
 
 const clientQueries = {
   client: authenticated(async (_, args) => {
@@ -405,7 +405,7 @@ const clientQueries = {
         {
           name: 'Boletas',
           columns: attributes,
-          date: moment().format('lll'),
+          date: new Date(),
           title: `Boletas por clientes del ${moment(range.start).format('lll')} al ${moment(
             range.end
           ).format('lll')}`
