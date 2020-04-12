@@ -7,6 +7,7 @@ const EDIT_ROCK = gql`
       name
       price
       floorPrice
+      color
     }
   }
 `;

@@ -13,15 +13,18 @@ const rockQueries = {
 
     return rock;
   }),
-  rocks: authenticated(async (_, { filters: { limit } }) => {
-    const rocks = await Rock.find({}).limit(limit || Number.MAX_SAFE_INTEGER);
+  rocks: authenticated(async (_, { filters: { limit, search } }) => {
+    const rocks = await Rock.find({
+      deleted: false,
+      name: { $in: [new RegExp(search, 'i')] }
+    }).limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!rocks) throw new ApolloError('¡No ha sido posible cargar los productos!');
     else return rocks;
   }),
   rockSalesReport: authenticated(
     async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type } }) => {
-      const allRocks = await Rock.find({}).select('id');
+      const allRocks = await Rock.find({ deleted: false }).select('id');
       const date = new Date();
 
       const start = new Date(oldStart || date.setFullYear(date.getFullYear() - 1));
@@ -84,7 +87,7 @@ const rockQueries = {
   ),
   rockMonthSalesReport: authenticated(
     async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type } }) => {
-      const allRocks = await Rock.find({}).select('id');
+      const allRocks = await Rock.find({ deleted: false }).select('id');
       const date = new Date();
 
       const start = new Date(oldStart || date.setFullYear(date.getFullYear() - 1));
