@@ -49,10 +49,18 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientCreditLimitHistory(client: ID!): [ClientCreditLimit!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  clientsSummary(clientIds: [ID]!, range: DateRange, turnId: ID, billType: TicketBillType): ClientsSummary!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  clientsSummaryXLS(clientIds: [ID]!, range: DateRange, turnId: ID, billType: TicketBillType): String!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsSummary(
+    clientIds: [ID]!
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+  ): ClientsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsSummaryXLS(
+    clientIds: [ID]!
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Ticket
   ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -72,6 +80,18 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ticketsSummary(
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+    paymentType: TicketPaymentType
+  ): TicketsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ticketsSummaryXLS(
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+    paymentType: TicketPaymentType
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Bill
   bill(id: ID, folio: String): Bill
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])

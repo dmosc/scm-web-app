@@ -2,6 +2,8 @@ import { ApolloError } from 'apollo-server';
 import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
+import moment from 'moment';
+import { createWorksheet, createWorkbook } from '../../../utils/reports';
 import { ClientPrice, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -404,6 +406,356 @@ const ticketQueries = {
       firstRow.height = 20;
 
       const buffer = await workbook.xlsx.writeBuffer();
+      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+        'base64'
+      )}`;
+    }
+  ),
+  ticketsSummary: authenticated(
+    async (
+      _,
+      {
+        range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
+        turnId,
+        billType,
+        paymentType
+      }
+    ) => {
+      const $match = {
+        out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true }
+      };
+
+      if (turnId) {
+        $match.turn = Types.ObjectId(turnId);
+      }
+
+      if (billType) {
+        if (billType === 'BILL') $match.tax = { $gt: 0 };
+        if (billType === 'REMISSION') $match.tax = { $eq: 0 };
+      }
+
+      if (paymentType) {
+        if (paymentType === 'CASH') $match.credit = false;
+        if (paymentType === 'CREDIT') $match.credit = true;
+      }
+
+      const clients = await Ticket.aggregate([
+        {
+          $match
+        },
+        { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+        {
+          $group: {
+            _id: '$client',
+            count: { $sum: 1 },
+            tickets: {
+              $push: {
+                id: '$_id',
+                folio: '$folio',
+                driver: '$driver',
+                truck: '$truck',
+                product: '$product',
+                tax: '$tax',
+                weight: '$weight',
+                totalWeight: '$totalWeight',
+                totalPrice: '$totalPrice',
+                credit: '$credit',
+                inTruckImage: '$inTruckImage',
+                outTruckImage: '$outTruckImage'
+              }
+            }
+          }
+        },
+        { $project: { _id: 0, info: '$_id', count: '$count', tickets: '$tickets' } }
+      ]);
+
+      if (clients.length === 0) return { clients, upfront: 0, credit: 0, total: 0 };
+
+      let upfront = 0;
+      let credit = 0;
+      let total = 0;
+      for (const client of clients) {
+        const { tickets } = client;
+        for (const ticket of tickets) {
+          if (ticket.credit) credit += ticket.totalPrice;
+          else upfront += ticket.totalPrice;
+
+          total += ticket.totalPrice;
+        }
+      }
+
+      for (let i = 0; i < clients.length; i++) {
+        // Parse data and remove generated arrays from $lookups
+        clients[i].info = { ...clients[i].info[0] };
+        clients[i].info.id = clients[i].info._id;
+        delete clients[i].info._id;
+
+        const { tickets } = clients[i];
+        for (const ticket of tickets) {
+          ticket.product = { ...ticket.product[0] };
+          ticket.truck = { ...ticket.truck[0] };
+
+          ticket.product.id = ticket.product._id;
+          ticket.truck.id = ticket.truck._id;
+
+          delete ticket.product._id;
+          delete ticket.truck._id;
+        }
+      }
+
+      return { clients, upfront, credit, total };
+    }
+  ),
+  ticketsSummaryXLS: authenticated(
+    async (
+      _,
+      {
+        range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
+        turnId,
+        billType,
+        paymentType
+      }
+    ) => {
+      const $match = {
+        out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true }
+      };
+
+      if (turnId) {
+        $match.turn = Types.ObjectId(turnId);
+      }
+
+      if (billType) {
+        if (billType === 'BILL') $match.tax = { $gt: 0 };
+        if (billType === 'REMISSION') $match.tax = { $eq: 0 };
+      }
+
+      if (paymentType) {
+        if (paymentType === 'CASH') $match.credit = false;
+        if (paymentType === 'CREDIT') $match.credit = true;
+      }
+
+      const clients = await Ticket.aggregate([
+        {
+          $match
+        },
+        { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+        {
+          $group: {
+            _id: '$client',
+            tickets: {
+              $push: {
+                folio: '$folio',
+                truck: '$truck',
+                out: {
+                  $dateToString: {
+                    date: '$out',
+                    format: '%Y-%m-%d %H:%M:%S',
+                    timezone: 'America/Monterrey'
+                  }
+                },
+                product: '$product',
+                totalWeight: '$totalWeight',
+                tax: '$tax',
+                subtotal: { $subtract: ['$totalPrice', '$tax'] },
+                totalPrice: '$totalPrice',
+                credit: '$credit',
+                bill: '$bill'
+              }
+            },
+            totalWeight: { $sum: '$totalWeight' },
+            subtotal: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+            tax: { $sum: '$tax' },
+            totalPrice: { $sum: '$totalPrice' }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            client: '$_id',
+            tickets: '$tickets',
+            totalWeight: '$totalWeight',
+            subtotal: '$subtotal',
+            tax: '$tax',
+            totalPrice: '$totalPrice'
+          }
+        }
+      ]);
+
+      const attributes = [
+        {
+          header: 'RFC',
+          key: 'rfc'
+        },
+        {
+          header: 'Cliente',
+          key: 'businessName'
+        },
+        {
+          header: 'Folio',
+          key: 'folio'
+        },
+        {
+          header: 'Fecha',
+          key: 'out'
+        },
+        {
+          header: 'Placas',
+          key: 'plates'
+        },
+        {
+          header: 'Producto',
+          key: 'product'
+        },
+        {
+          header: 'Peso neto',
+          key: 'totalWeight'
+        },
+        {
+          header: 'Subtotal',
+          key: 'subtotal'
+        },
+        {
+          header: 'Impuesto',
+          key: 'tax'
+        },
+        {
+          header: 'Total',
+          key: 'totalPrice'
+        },
+        {
+          header: 'Tipo de pago',
+          key: 'credit'
+        },
+        {
+          header: 'Tipo de boleta',
+          key: 'bill'
+        }
+      ];
+
+      for (let i = 0; i < attributes.length; i++) attributes[i] = { ...attributes[i], width: 15 };
+
+      const workbook = createWorkbook();
+
+      const worksheet = createWorksheet(
+        workbook,
+        {
+          name: 'Boletas',
+          columns: attributes,
+          date: new Date(),
+          title: `Boletas filtradas del ${moment(range.start).format('lll')} al ${moment(
+            range.end
+          ).format('lll')}`
+        },
+        {
+          pageSetup: { fitToPage: true, orientation: 'landscape' }
+        }
+      );
+
+      const sums = {
+        product: 0,
+        totalWeight: 0,
+        subtotal: 0,
+        tax: 0,
+        totalPrice: 0
+      };
+
+      const addClient = ({ client, tickets, totalWeight, subtotal, tax, totalPrice }) => {
+        const clientInfoRow = {
+          rfc: client[0].rfc,
+          businessName: client[0].businessName
+        };
+
+        worksheet.addRow(clientInfoRow);
+        Object.keys(clientInfoRow).forEach(key => {
+          worksheet.lastRow.getCell(key).font = {
+            size: 12,
+            bold: true
+          };
+        });
+
+        let isCreditRow;
+
+        tickets.forEach(ticket => {
+          if (!isCreditRow && ticket.credit) isCreditRow = true;
+
+          const ticketRow = {
+            folio: ticket.folio,
+            out: ticket.out,
+            plates: ticket.truck[0].plates,
+            product: ticket.product[0].name,
+            totalWeight: ticket.totalWeight.toFixed(2),
+            subtotal: ticket.subtotal.toFixed(2),
+            tax: ticket.tax.toFixed(2),
+            totalPrice: ticket.totalPrice.toFixed(2),
+            credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
+            bill: ticket.bill ? 'FACTURA' : 'REMISIÓN'
+          };
+
+          worksheet.addRow(ticketRow);
+        });
+
+        const resultsRow = {
+          product: tickets.length,
+          totalWeight: `${totalWeight.toFixed(2)} tons`,
+          subtotal: `$${subtotal.toFixed(2)}`,
+          tax: `$${tax.toFixed(2)}`,
+          totalPrice: `$${totalPrice.toFixed(2)}`
+        };
+
+        sums.product += tickets.length;
+        sums.totalWeight += totalWeight;
+        sums.subtotal += subtotal;
+        sums.tax += tax;
+        sums.totalPrice += totalPrice;
+
+        worksheet.addRow(resultsRow);
+        Object.keys(resultsRow).forEach(key => {
+          const row = worksheet.lastRow.getCell(key);
+          row.border = {
+            top: { style: 'medium' }
+          };
+          row.font = {
+            size: 12,
+            bold: true
+          };
+        });
+
+        worksheet.addRow({});
+      };
+
+      clients.forEach(addClient);
+      worksheet.addRow({});
+      const resultsRow = {
+        plates: 'Total',
+        product: sums.product.toFixed(2),
+        totalWeight: `$${sums.totalWeight.toFixed(2)} tons`,
+        subtotal: `$${sums.subtotal.toFixed(2)}`,
+        tax: `$${sums.tax.toFixed(2)}`,
+        totalPrice: `$${sums.totalPrice.toFixed(2)}`
+      };
+      worksheet.addRow(resultsRow);
+      Object.keys(resultsRow).forEach(key => {
+        const row = worksheet.lastRow.getCell(key);
+        row.border = {
+          top: { style: 'medium' }
+        };
+        row.font = {
+          size: 12,
+          bold: true
+        };
+      });
+      worksheet.addRow({});
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
       return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
         'base64'
       )}`;

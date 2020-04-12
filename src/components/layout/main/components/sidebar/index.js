@@ -7,7 +7,7 @@ import { Menu, Sider } from './elements';
 
 const { Item, SubMenu, ItemGroup } = Menu;
 
-const Sidebar = ({ history, collapsed, onCollapse }) => {
+const Sidebar = ({ history, location, collapsed, onCollapse }) => {
   const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport } = useAuth();
 
   return (
@@ -41,7 +41,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
           </Item>
         )}
         {(isAdmin || isCashier || isSupport || isManager) && (
-          <Item key="boletas">
+          <Item key={location.pathname === '/boletas' ? 'boletas' : undefined}>
             <Link to="/boletas">
               <Icon type="unordered-list" />
               <span>Boletas</span>
@@ -233,6 +233,7 @@ const Sidebar = ({ history, collapsed, onCollapse }) => {
 };
 
 Sidebar.propTypes = {
+  location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   collapsed: PropTypes.bool.isRequired,
   onCollapse: PropTypes.func.isRequired

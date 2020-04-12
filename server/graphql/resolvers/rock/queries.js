@@ -78,7 +78,7 @@ const rockQueries = {
       const rocks = allRocksSummary.map(({ rock, tickets, total }) => ({
         rock: { ...rock[0], id: rock[0]._id },
         tickets,
-        total: parseInt(total.toFixed(2), 10)
+        total
       }));
       const total = rocks.reduce((total, rock) => (total += rock.total), 0);
 

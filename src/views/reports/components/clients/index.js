@@ -211,11 +211,11 @@ const Turns = ({ client, globalFilters }) => {
       </FiltersContainer>
       <FiltersContainer>
         <InputContainer>
-          <Text type="secondary">ID Seleccionado</Text>
+          <Text type="secondary">Turno</Text>
           <Select
             allowClear
             style={{ minWidth: 600 }}
-            placeholder="ID del turno"
+            placeholder="Turno"
             onChange={value => setTurnId(value)}
             notFoundContent={null}
             loading={loadingTurns}

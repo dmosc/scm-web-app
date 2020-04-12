@@ -133,6 +133,13 @@ input DisabledTicketFilters {
   end: Date
 }
 
+type TicketsSummary {
+  clients: [ClientTurnSummary!]
+  upfront: Float
+  credit: Float
+  total: Float
+}
+
 enum TicketBillType {
   BILL
   REMISSION
