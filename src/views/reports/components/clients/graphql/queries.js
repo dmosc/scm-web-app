@@ -60,4 +60,15 @@ const GET_SUMMARY = gql`
   }
 `;
 
-export { GET_TURNS, GET_CLIENTS, GET_SUMMARY };
+const GET_SUMMARY_XLS = gql`
+  query clientsSummaryXLS(
+    $clientIds: [ID]!
+    $range: DateRange
+    $turnId: ID
+    $billType: TicketBillType
+  ) {
+    clientsSummaryXLS(clientIds: $clientIds, range: $range, turnId: $turnId, billType: $billType)
+  }
+`;
+
+export { GET_TURNS, GET_CLIENTS, GET_SUMMARY, GET_SUMMARY_XLS };

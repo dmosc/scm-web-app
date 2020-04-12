@@ -51,6 +51,8 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientsSummary(clientIds: [ID]!, range: DateRange, turnId: ID, billType: TicketBillType): ClientsSummary!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsSummaryXLS(clientIds: [ID]!, range: DateRange, turnId: ID, billType: TicketBillType): String!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Ticket
   ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])

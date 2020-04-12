@@ -260,7 +260,7 @@ const turnQueries = {
         name: 'Boletas',
         columns: attributes,
         date: turn.end,
-        title: `Boletas por tipo de pago  del corte de turno: ${turn.uniqueId}  (${
+        title: `Boletas por tipo de pago del corte de turno: ${turn.uniqueId}  (${
           periods[turn.period]
         })`
       },

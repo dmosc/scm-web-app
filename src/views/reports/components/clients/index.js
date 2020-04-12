@@ -2,7 +2,18 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDebounce } from 'use-lodash-debounce';
 import moment from 'moment';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  BarChart,
+  Bar
+} from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import {
@@ -19,7 +30,7 @@ import {
   Collapse,
   Row
 } from 'antd';
-import { GET_TURNS, GET_CLIENTS, GET_SUMMARY } from './graphql/queries';
+import { GET_TURNS, GET_CLIENTS, GET_SUMMARY, GET_SUMMARY_XLS } from './graphql/queries';
 import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
 
 const { Panel } = Collapse;
@@ -138,26 +149,36 @@ const Turns = ({ client, globalFilters }) => {
 
   const downloadReport = async () => {
     setLoadingReport(true);
-    // const {
-    //   data: { turnSummaryXLS }
-    // } = await client.query({
-    //   query: GET_REPORT,
-    //   variables: { uniqueId: turn.uniqueId, ticketType }
-    // });
 
-    // const start = new Date(turn.start.substring(0, turn.start.indexOf('Z') - 1));
+    const range =
+      globalFilters.end && globalFilters.start
+        ? {
+            start: globalFilters.start,
+            end: globalFilters.end
+          }
+        : undefined;
 
-    // const link = document.createElement('a');
-    // link.href = encodeURI(turnSummaryXLS);
-    // link.download = `TURNO-${
-    //   periods[turn.period]
-    // }-${start.toISOString()}-${new Date().toISOString()}.xlsx`;
-    // link.target = '_blank';
-    // document.body.appendChild(link);
+    const {
+      data: { clientsSummaryXLS }
+    } = await client.query({
+      query: GET_SUMMARY_XLS,
+      variables: {
+        turnId,
+        clientIds: clientIds.map(clientId => clientId.split(':')[1]),
+        range,
+        billType: billType || undefined
+      }
+    });
 
-    // link.click();
+    const link = document.createElement('a');
+    link.href = encodeURI(clientsSummaryXLS);
+    link.download = `CLIENTES-${new Date().toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
 
-    // document.body.removeChild(link);
+    link.click();
+
+    document.body.removeChild(link);
     setLoadingReport(false);
   };
 
@@ -230,15 +251,17 @@ const Turns = ({ client, globalFilters }) => {
             <Option value="REMISSION">Remision</Option>
           </Select>
         </InputContainer>
-        <Button
-          style={{ marginLeft: 'auto' }}
-          loading={loadingReport}
-          type="primary"
-          icon="file-excel"
-          onClick={downloadReport}
-        >
-          {(loadingReport && 'Generando...') || 'Descargar reporte'}
-        </Button>
+        {clients.length > 0 && (
+          <Button
+            style={{ marginLeft: 'auto', marginTop: 20 }}
+            loading={loadingReport}
+            type="primary"
+            icon="file-excel"
+            onClick={downloadReport}
+          >
+            {(loadingReport && 'Generando...') || 'Descargar reporte'}
+          </Button>
+        )}
       </FiltersContainer>
       {loading ? (
         <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
@@ -327,8 +350,8 @@ const Turns = ({ client, globalFilters }) => {
                     outerRadius={60}
                     label={true}
                   >
-                    <Cell name="Contado" key="cash" fill="#FFAB00" />
                     <Cell name="Crédito" key="credit" fill="#30CEE7" />
+                    <Cell name="Contado" key="cash" fill="#FFAB00" />
                   </Pie>
                   <Tooltip />
                   <Legend />
@@ -362,65 +385,121 @@ const Turns = ({ client, globalFilters }) => {
                 </PieChart>
               </ResponsiveContainer>
             </Card>
+            <Card title="Gasto por cliente">
+              <ResponsiveContainer height={220}>
+                <BarChart
+                  height={220}
+                  data={clientsSummary?.clients?.map(({ info, tickets }) => {
+                    let credit = 0;
+                    let cash = 0;
+                    let remissions = 0;
+                    let bills = 0;
+
+                    tickets.forEach(({ totalPrice, credit: isCredit, tax }) => {
+                      if (isCredit) credit += totalPrice;
+                      else cash += totalPrice;
+                      if (tax > 0) remissions += totalPrice;
+                      else bills += totalPrice;
+                    });
+
+                    return {
+                      name: info.businessName,
+                      credit,
+                      cash,
+                      remissions,
+                      bills
+                    };
+                  })}
+                  outerRadius={60}
+                >
+                  <XAxis tick={false} dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar name="Crédito" stackId="a" fill="#1890ff" dataKey="credit" />
+                  <Bar name="Contado" stackId="a" fill="#3f8600" dataKey="cash" />
+                  <Bar name="Remisiones" stackId="b" fill="#8884d8" dataKey="remissions" />
+                  <Bar name="Facturas" stackId="b" fill="#82ca9d" dataKey="bills" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
           </ChartsContainer>
-          <Card title="0 boletas">
-            <Collapse
-              bordered={false}
-              expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
-            >
-              {clientsSummary.clients?.map(({ info, count, tickets }) => (
-                <Panel key={info.id} header={info.businessName} extra={count}>
-                  <Collapse
-                    expandIcon={({ isActive }) => (
-                      <Icon type="caret-right" rotate={isActive ? 90 : 0} />
-                    )}
-                  >
-                    {tickets.map(ticket => (
-                      <Panel key={ticket.id} header={ticket.folio} extra={`$${ticket.totalPrice}`}>
-                        <Row style={{ margin: 5, padding: 10 }} gutter={{ xs: 8, sm: 16, md: 24 }}>
-                          <Col span={6}>
-                            <Statistic
-                              valueStyle={{ color: '#FF4F64' }}
-                              title="Peso neto"
-                              value={ticket.totalWeight.toFixed(2)}
-                              suffix="tons"
-                              prefix={<Icon type="car" />}
-                            />
-                          </Col>
-                          <Col span={6}>
-                            <Statistic
-                              valueStyle={{ color: '#1890ff' }}
-                              title="Subtotal"
-                              value={(ticket.totalPrice - ticket.tax).toFixed(2)}
-                              suffix="MXN"
-                              prefix={<Icon type="check-circle" />}
-                            />
-                          </Col>
-                          <Col span={6}>
-                            <Statistic
-                              valueStyle={{ color: '#FFAB00' }}
-                              title="Impuesto"
-                              value={ticket.tax.toFixed(2)}
-                              suffix="MXN"
-                              prefix={<Icon type="minus-circle" />}
-                            />
-                          </Col>
-                          <Col span={6}>
-                            <Statistic
-                              valueStyle={{ color: '#3f8600' }}
-                              title="Total"
-                              value={ticket.totalPrice.toFixed(2)}
-                              prefix={<Icon type="plus-square" />}
-                              suffix="MXN"
-                            />
-                          </Col>
-                        </Row>
-                      </Panel>
-                    ))}
-                  </Collapse>
-                </Panel>
-              ))}
-            </Collapse>
+          <Card
+            title={`${clientsSummary?.clients?.length ||
+              0} tienen boletas con los filtros seleccionados`}
+          >
+            {clientsSummary?.clients?.length > 0 ? (
+              <Collapse
+                bordered={false}
+                expandIcon={({ isActive }) => (
+                  <Icon type="caret-right" rotate={isActive ? 90 : 0} />
+                )}
+              >
+                {clientsSummary.clients?.map(({ info, count, tickets }) => (
+                  <Panel key={info.id} header={info.businessName} extra={count}>
+                    <Collapse
+                      expandIcon={({ isActive }) => (
+                        <Icon type="caret-right" rotate={isActive ? 90 : 0} />
+                      )}
+                    >
+                      {tickets.map(ticket => (
+                        <Panel
+                          key={ticket.id}
+                          header={ticket.folio}
+                          extra={`$${ticket.totalPrice}`}
+                        >
+                          <Row
+                            style={{ margin: 5, padding: 10 }}
+                            gutter={{ xs: 8, sm: 16, md: 24 }}
+                          >
+                            <Col span={6}>
+                              <Statistic
+                                valueStyle={{ color: '#FF4F64' }}
+                                title="Peso neto"
+                                value={ticket.totalWeight.toFixed(2)}
+                                suffix="tons"
+                                prefix={<Icon type="car" />}
+                              />
+                            </Col>
+                            <Col span={6}>
+                              <Statistic
+                                valueStyle={{ color: '#1890ff' }}
+                                title="Subtotal"
+                                value={(ticket.totalPrice - ticket.tax).toFixed(2)}
+                                suffix="MXN"
+                                prefix={<Icon type="check-circle" />}
+                              />
+                            </Col>
+                            <Col span={6}>
+                              <Statistic
+                                valueStyle={{ color: '#FFAB00' }}
+                                title="Impuesto"
+                                value={ticket.tax.toFixed(2)}
+                                suffix="MXN"
+                                prefix={<Icon type="minus-circle" />}
+                              />
+                            </Col>
+                            <Col span={6}>
+                              <Statistic
+                                valueStyle={{ color: '#3f8600' }}
+                                title="Total"
+                                value={ticket.totalPrice.toFixed(2)}
+                                prefix={<Icon type="plus-square" />}
+                                suffix="MXN"
+                              />
+                            </Col>
+                          </Row>
+                        </Panel>
+                      ))}
+                    </Collapse>
+                  </Panel>
+                ))}
+              </Collapse>
+            ) : (
+              <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
+                <Empty style={{ margin: '40px 0' }} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            )}
           </Card>
         </>
       )}
