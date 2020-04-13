@@ -52,4 +52,21 @@ const GET_ROCK_MONTH_SALES = gql`
   }
 `;
 
-export { GET_ROCKS, GET_ROCK_SALES, GET_ROCK_MONTH_SALES };
+const GET_TURNS = gql`
+  query turns($filters: TurnFilters!) {
+    turns(filters: $filters) {
+      id
+      start
+      end
+      uniqueId
+      period
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
+
+export { GET_ROCKS, GET_ROCK_SALES, GET_ROCK_MONTH_SALES, GET_TURNS };
