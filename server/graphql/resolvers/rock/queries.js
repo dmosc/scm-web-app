@@ -23,28 +23,34 @@ const rockQueries = {
     else return rocks;
   }),
   rockSalesReport: authenticated(
-    async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type } }) => {
+    async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type, turn } }) => {
       const allRocks = await Rock.find({ deleted: false }).select('id');
       const date = new Date();
 
       const start = new Date(oldStart || date.setFullYear(date.getFullYear() - 1));
       const end = new Date(oldEnd || date.setFullYear(date.getFullYear() + 1));
 
+      const $match = {
+        turn: { $exists: true },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true },
+        bill: { $in: type !== null ? [type] : [true, false] },
+        out: { $gte: start, $lte: end },
+        product: {
+          $in:
+            oldRocks.length > 0
+              ? oldRocks.map(id => Types.ObjectId(id))
+              : allRocks.map(({ id }) => Types.ObjectId(id))
+        }
+      };
+
+      if (turn) {
+        $match.turn = Types.ObjectId(turn);
+      }
+
       const allRocksSummary = await Ticket.aggregate([
         {
-          $match: {
-            turn: { $exists: true },
-            totalPrice: { $exists: true },
-            outTruckImage: { $exists: true },
-            bill: { $in: type !== null ? [type] : [true, false] },
-            out: { $gte: start, $lte: end },
-            product: {
-              $in:
-                oldRocks.length > 0
-                  ? oldRocks.map(id => Types.ObjectId(id))
-                  : allRocks.map(({ id }) => Types.ObjectId(id))
-            }
-          }
+          $match
         },
         { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
         { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
@@ -80,34 +86,44 @@ const rockQueries = {
         tickets,
         total
       }));
-      const total = rocks.reduce((total, rock) => (total += rock.total), 0);
+      const total = rocks.reduce((innerTotal, rock) => {
+        // eslint-disable-next-line no-param-reassign
+        innerTotal += rock.total;
+        return innerTotal;
+      }, 0);
 
       return { rocks, total };
     }
   ),
   rockMonthSalesReport: authenticated(
-    async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type } }) => {
+    async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type, turn } }) => {
       const allRocks = await Rock.find({ deleted: false }).select('id');
       const date = new Date();
 
       const start = new Date(oldStart || date.setFullYear(date.getFullYear() - 1));
       const end = new Date(oldEnd || date.setFullYear(date.getFullYear() + 1));
 
+      const $match = {
+        turn: { $exists: true },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true },
+        bill: { $in: type !== null ? [type] : [true, false] },
+        out: { $gte: start, $lte: end },
+        product: {
+          $in:
+            oldRocks.length > 0
+              ? oldRocks.map(id => Types.ObjectId(id))
+              : allRocks.map(({ id }) => Types.ObjectId(id))
+        }
+      };
+
+      if (turn) {
+        $match.turn = turn;
+      }
+
       const allRocksMonthSummary = await Ticket.aggregate([
         {
-          $match: {
-            turn: { $exists: true },
-            totalPrice: { $exists: true },
-            outTruckImage: { $exists: true },
-            bill: { $in: type !== null ? [type] : [true, false] },
-            out: { $gte: start, $lte: end },
-            product: {
-              $in:
-                oldRocks.length > 0
-                  ? oldRocks.map(id => Types.ObjectId(id))
-                  : allRocks.map(({ id }) => Types.ObjectId(id))
-            }
-          }
+          $match
         },
         { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
         { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
