@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
+import periods from 'utils/enums/periods';
+import moment from 'moment';
 import {
   CartesianGrid,
   Cell,
@@ -30,7 +32,7 @@ import {
 } from 'antd';
 import shortid from 'shortid';
 import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
-import { GET_ROCK_MONTH_SALES, GET_ROCK_SALES, GET_ROCKS } from './graphql/queries';
+import { GET_ROCK_MONTH_SALES, GET_ROCK_SALES, GET_ROCKS, GET_TURNS } from './graphql/queries';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -77,10 +79,13 @@ const ProductSales = ({ client, globalFilters }) => {
     type: null
   });
   const [loading, setLoading] = useState(true);
+  const [loadingTurns, setLoadingTurns] = useState(true);
   const [products, setProducts] = useState([]);
+  const [turns, setTurns] = useState([]);
   const [productSalesReport, setProductSalesReport] = useState([]);
   const [productMonthSalesReport, setProductMonthSalesReport] = useState([]);
   const [tickets, setTickets] = useState([]);
+  const [turnId, setTurnId] = useState();
   const debouncedFilters = useDebounce(filters, 1000);
 
   const handleFilterChange = (key, value) => {
@@ -116,6 +121,27 @@ const ProductSales = ({ client, globalFilters }) => {
   }, [client]);
 
   useEffect(() => {
+    const getTurns = async () => {
+      setLoadingTurns(true);
+      const {
+        data: { turns: toSet }
+      } = await client.query({
+        query: GET_TURNS,
+        variables: {
+          filters: {
+            start: globalFilters.start,
+            end: globalFilters.end
+          }
+        }
+      });
+      setLoadingTurns(false);
+      setTurns(toSet);
+    };
+
+    getTurns();
+  }, [client, globalFilters]);
+
+  useEffect(() => {
     const getData = async () => {
       try {
         setLoading(true);
@@ -127,7 +153,8 @@ const ProductSales = ({ client, globalFilters }) => {
             filters: {
               ...globalFilters,
               ...debouncedFilters,
-              type: debouncedFilters.type ? debouncedFilters.type === 'BILL' : null
+              type: debouncedFilters.type ? debouncedFilters.type === 'BILL' : null,
+              turn: turnId || undefined
             }
           }
         });
@@ -153,7 +180,7 @@ const ProductSales = ({ client, globalFilters }) => {
     };
 
     getData();
-  }, [globalFilters, debouncedFilters, client]);
+  }, [globalFilters, debouncedFilters, client, turnId]);
 
   useEffect(() => {
     const getData = async () => {
@@ -202,6 +229,32 @@ const ProductSales = ({ client, globalFilters }) => {
     <>
       <FiltersContainer>
         <InputContainer>
+          <Text type="secondary">Turno</Text>
+          <Select
+            allowClear
+            style={{ minWidth: 600 }}
+            placeholder="Turno"
+            onChange={value => setTurnId(value)}
+            notFoundContent={null}
+            loading={loadingTurns}
+            value={turnId}
+          >
+            {turns.map(
+              ({ id, uniqueId, end, user, period }) =>
+                end && (
+                  <Option key={id} value={id}>
+                    <Tag color="blue">{periods[period]}</Tag>
+                    {user.firstName} {user.lastName} ({uniqueId}) (Terminado el{' '}
+                    {moment(end)
+                      .locale('es')
+                      .format('lll')}
+                    )
+                  </Option>
+                )
+            )}
+          </Select>
+        </InputContainer>
+        <InputContainer>
           <Text type="secondary">Tipo de boletas</Text>
           <Select
             onChange={value => handleFilterChange('type', value)}
@@ -236,7 +289,7 @@ const ProductSales = ({ client, globalFilters }) => {
           <Statistic
             valueStyle={{ color: '#3f8600' }}
             title="Ventas"
-            value={productSalesReport.total ?? 0}
+            value={productSalesReport?.total?.toFixed(2) ?? 0}
             suffix="MXN"
             prefix={<Icon type="rise" />}
           />
@@ -287,37 +340,39 @@ const ProductSales = ({ client, globalFilters }) => {
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}
         </Card>
-        <Card title="Distribución">
-          {loading && (
-            <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
-              <Spin />
-            </div>
-          )}
-          {productSalesReport?.rocks?.length > 0 && !loading && (
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={productMonthSalesReport}>
-                <XAxis dataKey="name" />
-                <YAxis padding={{ left: 0, right: 0 }} />
-                <CartesianGrid strokeDasharray="3 3" />
-                <Tooltip />
-                <Legend />
-                {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
-                  <Line
-                    type="monotone"
-                    animationEasing="linear"
-                    strokeWidth={3}
-                    key={name}
-                    dataKey={name}
-                    stroke={color}
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-          {productSalesReport?.rocks?.length === 0 && (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          )}
-        </Card>
+        {!turnId && (
+          <Card title="Distribución">
+            {loading && (
+              <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
+                <Spin />
+              </div>
+            )}
+            {productSalesReport?.rocks?.length > 0 && !loading && (
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={productMonthSalesReport}>
+                  <XAxis dataKey="name" />
+                  <YAxis padding={{ left: 0, right: 0 }} />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Tooltip />
+                  <Legend />
+                  {productSalesReport?.rocks?.map(({ rock: { name, color } }) => (
+                    <Line
+                      type="monotone"
+                      animationEasing="linear"
+                      strokeWidth={3}
+                      key={name}
+                      dataKey={name}
+                      stroke={color}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+            {productSalesReport?.rocks?.length === 0 && (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
+          </Card>
+        )}
       </ChartsContainer>
       <Card title={`${tickets.length} Boletas`}>
         <Table

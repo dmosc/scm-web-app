@@ -61,4 +61,5 @@ input RockSalesReportFilters {
   start: Date
   end: Date
   type: Boolean
+  turn: ID
 }
