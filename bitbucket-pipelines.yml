@@ -1,0 +1,10 @@
+pipelines:
+  branches:
+    master:
+      - step:
+          script:
+            - ssh $SSH_USER@$SERVER_ADDRESS 'echo hello'
+    development:
+      - step:
+          script:
+            - ssh $SSH_USER@$SERVER_ADDRESS_DEV 'echo hello from dev'
