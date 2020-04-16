@@ -66,6 +66,7 @@
     "mongoose-unique-validator": "^2.0.3",
     "mysql2": "^2.0.2",
     "nodemon": "^2.0.1",
+    "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
     "qrcode": "^1.4.4",
     "react": "^16.12.0",

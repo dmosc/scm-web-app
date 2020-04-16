@@ -7,6 +7,7 @@ import { createWorksheet, createWorkbook } from '../../../utils/reports';
 import { ClientPrice, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
+import { createPDF } from '../../../utils/pdfs';
 
 const ticketQueries = {
   ticket: authenticated(async (_, args) => {
@@ -41,6 +42,112 @@ const ticketQueries = {
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
   }),
+  ticketPDF: async (_, { id }) => {
+    const ticket = await Ticket.findOne({ _id: id }).populate('client store product truck');
+
+    const { address } = ticket.client;
+
+    const pdfOptions = {
+      content: [
+        {
+          table: {
+            widths: ['*', '*', '*'],
+            body: [
+              [
+                '',
+                '',
+                {
+                  table: {
+                    body: [
+                      [`Folio: ${ticket.folio}`],
+                      [moment(ticket.out).format('l LTS')],
+                      [ticket.credit ? 'Crédito' : 'Contado']
+                    ]
+                  },
+                  layout: 'noBorders',
+                  alignment: 'right'
+                }
+              ]
+            ]
+          },
+          layout: 'noBorders'
+        },
+        {
+          margin: [0, 40, 0, 0],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  table: {
+                    headerRows: 1,
+                    body: [
+                      ['Remisionado'],
+                      [
+                        address.street
+                          ? `${address.street} #${address.extNumber} ${address.municipality}, ${address.state}`
+                          : 'N/A'
+                      ],
+                      [{ text: `Placas: ${ticket.truck.plates}`, margin: [0, 20] }]
+                    ]
+                  },
+                  layout: 'headerLineOnly'
+                },
+                {
+                  margin: [30, 0],
+                  table: {
+                    headerRows: 1,
+                    body: [
+                      ['Consignado'],
+                      [!ticket.store ? 'Matriz' : ticket.store.name],
+                      [!ticket.store ? 'Matriz' : ticket.store.address || 'N/A'],
+                      [
+                        ticket.store
+                          ? `${ticket.store.municipality || 'N/A'}, ${ticket.store.state || 'N/A'}`
+                          : ''
+                      ],
+                      [`Peso bruto: ${ticket.weight} tons`],
+                      [`Peso del camión: ${ticket.truck.weight} tons`]
+                    ]
+                  },
+                  layout: 'headerLineOnly'
+                }
+              ]
+            ]
+          },
+          layout: 'noBorders'
+        },
+        {
+          margin: [0, 40, 0, 0],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  table: {
+                    headerRows: 1,
+                    body: [['Producto'], [ticket.product.name]]
+                  },
+                  layout: 'headerLineOnly'
+                },
+                {
+                  margin: [30, 0],
+                  table: {
+                    headerRows: 1,
+                    body: [['Toneladas'], [ticket.totalWeight]]
+                  },
+                  layout: 'headerLineOnly'
+                }
+              ]
+            ]
+          },
+          layout: 'noBorders'
+        }
+      ]
+    };
+
+    return createPDF(pdfOptions, 'first');
+  },
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
       .limit(limit || Number.MAX_SAFE_INTEGER)

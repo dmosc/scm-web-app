@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { withApollo } from 'react-apollo';
-import { Button, message, Modal, Select, Tabs, Statistic, Col, Row, Typography, Divider } from 'antd';
+import {
+  Button,
+  message,
+  Modal,
+  Select,
+  Tabs,
+  Statistic,
+  Col,
+  Row,
+  Typography,
+  Divider
+} from 'antd';
 import { Actions } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET, SET_STORE_TO_TICKET } from './graphql/mutations';
+import { GET_PDF } from './graphql/queries';
 
 const { confirm } = Modal;
 const { Option } = Select;
@@ -12,6 +25,7 @@ const { Text, Title, Paragraph } = Typography;
 
 const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCurrent }) => {
   const [tab, setTab] = useState('client');
+  const [downloadingPDF, setDownloadingPDF] = useState(false);
 
   const addTicketToTurn = async ticketToAdd => {
     const { id } = turn;
@@ -79,6 +93,30 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
       },
       onCancel: () => {}
     });
+  };
+
+  const downloadPDF = async () => {
+    setDownloadingPDF(true);
+    const {
+      data: { ticketPDF }
+    } = await client.query({
+      query: GET_PDF,
+      variables: {
+        id: ticket.id
+      }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(ticketPDF);
+    link.download = `Ticket-${ticket.truck.plates}-${moment().format('lll')}.pdf`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    setDownloadingPDF(false);
   };
 
   const { address } = ticket.client;
@@ -192,14 +230,17 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
           </TabPane>
         )}
       </Tabs>
-      {
-        ticket.totalPrice &&
+      {ticket.totalPrice && (
         <>
-
-      <Divider style={{ margin: 0 }}/>
-      <Statistic style={{  margin: '10px 0', marginLeft: 'auto',width: 'fit-content' }} title="Total" suffix="MXN" value={`$${ticket.totalPrice}`} />
+          <Divider style={{ margin: 0 }} />
+          <Statistic
+            style={{ margin: '10px 0', marginLeft: 'auto', width: 'fit-content' }}
+            title="Total"
+            suffix="MXN"
+            value={`$${ticket.totalPrice}`}
+          />
         </>
-      }
+      )}
 
       <Actions id="skip">
         <Button
@@ -221,8 +262,8 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
         </Button>
         <Button
           size="small"
-          onClick={() => {}}
-          disabled={!ticket.totalPrice}
+          onClick={downloadPDF}
+          disabled={!ticket.totalPrice || downloadingPDF}
           type="primary"
           icon="printer"
         >
