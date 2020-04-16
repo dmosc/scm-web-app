@@ -1,24 +1,26 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import { Button, message, Modal, Select } from 'antd';
-import { Actions, Credit, Link, Table } from './elements';
+import { Button, message, Modal, Select, Tabs, Statistic, Col, Row, Typography, Divider } from 'antd';
+import { Actions } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET, SET_STORE_TO_TICKET } from './graphql/mutations';
 
 const { confirm } = Modal;
 const { Option } = Select;
+const { TabPane } = Tabs;
+const { Text, Title, Paragraph } = Typography;
 
-class TicketPanel extends Component {
-  addTicketToTurn = async ticket => {
-    const {
-      turn: { id },
-      refetchTickets,
-      refetchTurn,
-      client
-    } = this.props;
+const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCurrent }) => {
+  const [tab, setTab] = useState('client');
+
+  const addTicketToTurn = async ticketToAdd => {
+    const { id } = turn;
 
     try {
-      await client.mutate({ mutation: ADD_TICKET_TO_TURN, variables: { turn: { id, ticket } } });
+      await client.mutate({
+        mutation: ADD_TICKET_TO_TURN,
+        variables: { turn: { id, ticket: ticketToAdd } }
+      });
 
       refetchTickets();
       refetchTurn();
@@ -27,9 +29,7 @@ class TicketPanel extends Component {
     }
   };
 
-  setStoreToTicket = async store => {
-    const { ticket, refetchTickets, refetchTurn, client } = this.props;
-
+  const setStoreToTicket = async store => {
     try {
       const {
         data: { ticketSetStore },
@@ -51,13 +51,11 @@ class TicketPanel extends Component {
       refetchTickets();
       refetchTurn();
     } catch (e) {
-      message.error(e.toString());
+      message.error(e.message);
     }
   };
 
-  handleCancel = ticketId => {
-    const { client, refetchTickets } = this.props;
-
+  const handleCancel = ticketId => {
     confirm({
       title: '¿Quieres cancelar esta boleta?',
       content:
@@ -83,227 +81,193 @@ class TicketPanel extends Component {
     });
   };
 
-  render() {
-    const { ticket, setCurrent, printTicket } = this.props;
+  const { address } = ticket.client;
 
-    return (
-      <>
-        <Table>
-          <thead>
-            <tr>
-              <td>
-                <b>
-                  <u>CLIENTE</u>
-                </b>
-              </td>
-              <td>
-                <b>
-                  <u>CAMIÓN</u>
-                </b>
-              </td>
-              <td>
-                <b>
-                  <u>PRODUCTO</u>
-                </b>
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <b>RAZÓN SOCIAL:</b>
-                <p>{`${ticket.client.businessName}`}</p>
-              </td>
-              <td>
-                {ticket.driver && (
-                  <>
-                    <b>CONDUCTOR:</b>
-                    <p>{`${ticket.driver}`}</p>
-                  </>
-                )}
-              </td>
-              <td>
-                {ticket.product && (
-                  <>
-                    <b>TIPO:</b>
-                    <p>{`${ticket.product.name}`}</p>
-                  </>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <b>DIRECCIÓN:</b>
-                <p>{`${ticket.client.address?.street}`}</p>
-              </td>
-              <td>
-                <b>PLACAS:</b>
-                <p>{`${ticket.truck.plates}`}</p>
-              </td>
-              <td>
-                {ticket.totalWeight && (
-                  <>
-                    <b>PESO NETO:</b>
-                    <p>{`${ticket.totalWeight} tons`}</p>
-                  </>
-                )}
-              </td>
-              <td />
-            </tr>
-            <tr>
-              <td>
-                <b>CÓDIGO POSTAL: </b>
-                <p>{`${ticket.client.address?.zipcode}`}</p>
-              </td>
-              <td>
-                <Link
-                  id="skip"
-                  link={ticket.inTruckImage}
-                  href={ticket.inTruckImage}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <b>IMAGEN ENTRADA</b>
-                </Link>
-              </td>
-              <td>
-                {ticket.weight && (
-                  <>
-                    <b>PESO BRUTO: </b>
-                    <p>{`${ticket.weight} tons`}</p>
-                  </>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <b id="skip">BALANCE: </b>
-                <Credit id="skip" credit={ticket.client.balance}>
-                  {ticket.client.balance} MXN
-                </Credit>
-              </td>
-              <td>
-                <Link
-                  id="skip"
-                  href={ticket.outTruckImage}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  style={{ color: !ticket.outTruckImage ? '#f5222d' : null }}
-                >
-                  <b>IMAGEN SALIDA</b>
-                </Link>
-              </td>
-              <td>
-                <b>PESO CAMIÓN: </b>
-                <p>{`${ticket.truck.weight} tons`}</p>
-              </td>
-            </tr>
-            <tr>
-              <td className="hide">
-                <b>
-                  <u>CONSIGNADO</u>
-                </b>
-              </td>
-              <td />
-              <td />
-            </tr>
-            <tr>
-              <td className="hide">
-                {!ticket.store ? 'Matriz' : `${ticket.store.name}`}
-                <br />
-                {!ticket.store ? 'Matriz' : `${ticket.store.address || 'N/A'}`}
-                <br />
-                {ticket.store &&
-                  `${ticket.store.municipality || 'N/A'}, ${ticket.store.state || 'N/A'}`}
-              </td>
-              <td />
-              <td />
-            </tr>
-            <tr>
-              <td />
-              <td>
-                {ticket.totalPrice && (
-                  <p id="skip">
-                    <b>TOTAL:</b>
-                    <p id="skip">{`$${ticket.totalPrice}`}</p>
-                  </p>
-                )}
-              </td>
-            </tr>
-          </tbody>
-        </Table>
-        <Actions id="skip">
-          <Button
-            icon="camera"
-            size="small"
-            type="danger"
-            onClick={() => setCurrent(ticket, 'image')}
-          >
-            Tomar foto
-          </Button>
-          <Button
-            size="small"
-            type="primary"
-            disabled={!ticket.outTruckImage}
-            onClick={() => setCurrent(ticket, 'submit')}
-            icon="money-collect"
-          >
-            Cobrar
-          </Button>
-          <Button
-            size="small"
-            onClick={() =>
-              printTicket(
-                <TicketPanel ticket={ticket} setCurrent={setCurrent} printTicket={printTicket} />
-              )
-            }
-            disabled={!ticket.totalPrice}
-            type="primary"
-            icon="printer"
-          >
-            Imprimir
-          </Button>
-          <Button
-            size="small"
-            type="dashed"
-            disabled={!ticket.totalPrice}
-            onClick={() => this.addTicketToTurn(ticket.id)}
-            icon="plus"
-          >
-            Agregar a turno
-          </Button>
-          <Button
-            style={{ marginLeft: 'auto' }}
-            size="small"
-            onClick={() => this.handleCancel(ticket.id)}
-            type="danger"
-            ghost
-            icon="close"
-          >
-            Cancelar
-          </Button>
-        </Actions>
-        {ticket.client.stores.length > 0 && (
-          <Select
-            id="skip"
-            style={{ width: 250, marginTop: 10 }}
-            placeholder="Seleccionar sucursal"
-            onChange={store => this.setStoreToTicket(store)}
-            defaultValue={ticket.store?.id}
-            size="small"
-            allowClear
-          >
-            {ticket.client.stores.map(store => (
-              <Option key={store.id} value={store.id}>
-                {store.name}
-              </Option>
-            ))}
-          </Select>
+  return (
+    <>
+      <Tabs
+        style={{ padding: 10 }}
+        activeKey={tab}
+        animated={false}
+        defaultActiveKey="client"
+        onChange={setTab}
+      >
+        <TabPane tab="Cliente" key="client">
+          <Row>
+            <Col span={24}>
+              <Text type="secondary">Razón social</Text>
+              <Title style={{ margin: 0 }} level={4}>
+                {ticket.client.businessName}
+              </Title>
+            </Col>
+          </Row>
+          <Row style={{ marginTop: 10 }}>
+            <Col span={12}>
+              <Text type="secondary">Dirección</Text>
+              <Paragraph code>
+                {address.street
+                  ? `${address.street} #${address.extNumber} ${address.municipality}, ${address.state}`
+                  : 'N/A'}
+              </Paragraph>
+            </Col>
+            <Col span={6}>
+              <Text type="secondary">Código postal</Text>
+              <Paragraph code>{ticket.client.address?.zipcode || 'N/A'}</Paragraph>
+            </Col>
+            <Col span={6}>
+              <Text type="secondary">Balance</Text>
+              <Paragraph code type={ticket.client.balance < 0 ? 'danger' : undefined}>
+                {ticket.client.balance.toLocaleString('es-MX')} MXN
+              </Paragraph>
+            </Col>
+          </Row>
+        </TabPane>
+
+        <TabPane tab="Camión" key="truck">
+          <Row>
+            <Col span={24}>
+              <Text type="secondary">Conductor</Text>
+              <Title style={{ margin: 0 }} level={4}>
+                {ticket.driver || 'N/A'}
+              </Title>
+            </Col>
+          </Row>
+          <Row style={{ marginTop: 10 }}>
+            <Col span={12}>
+              <Text type="secondary">Placas</Text>
+              <Paragraph code>{ticket.truck.plates}</Paragraph>
+            </Col>
+            <Col span={12}>
+              <Paragraph style={{ marginBottom: 3 }} type="secondary">
+                Imágenes
+              </Paragraph>
+              <Button
+                icon="login"
+                style={{ marginRight: 10 }}
+                size="small"
+                type="primary"
+                onClick={() => window.open(ticket.inTruckImage, '_blank')}
+              >
+                Entrada
+              </Button>
+              <Button
+                size="small"
+                icon="logout"
+                type="primary"
+                onClick={() => window.open(ticket.inTruckImage, '_blank')}
+                disabled={!ticket.outTruckImage}
+              >
+                Salida
+              </Button>
+            </Col>
+          </Row>
+        </TabPane>
+
+        {ticket.product && (
+          <TabPane tab="Producto" key="product">
+            <Row>
+              <Col span={24}>
+                <Text type="secondary">Producto</Text>
+                <Title style={{ margin: 0 }} level={4}>
+                  {ticket.product.name}
+                </Title>
+              </Col>
+            </Row>
+            <Row style={{ marginTop: 10 }}>
+              <Col span={12}>
+                <Text type="secondary">Peso total</Text>
+                <Paragraph code>
+                  {ticket.totalWeight ? `${ticket.totalWeight} tons` : 'N/A'}
+                </Paragraph>
+              </Col>
+              <Col span={6}>
+                <Text type="secondary">Peso bruto</Text>
+                <Paragraph code>{ticket.weight ? `${ticket.weight} tons` : 'N/A'}</Paragraph>
+              </Col>
+              <Col span={6}>
+                <Text type="secondary">Peso del camión</Text>
+                <Paragraph code>{ticket.truck.weight} tons</Paragraph>
+              </Col>
+            </Row>
+          </TabPane>
         )}
-      </>
-    );
-  }
-}
+      </Tabs>
+      {
+        ticket.totalPrice &&
+        <>
+
+      <Divider style={{ margin: 0 }}/>
+      <Statistic style={{  margin: '10px 0', marginLeft: 'auto',width: 'fit-content' }} title="Total" suffix="MXN" value={`$${ticket.totalPrice}`} />
+        </>
+      }
+
+      <Actions id="skip">
+        <Button
+          icon="camera"
+          size="small"
+          type="danger"
+          onClick={() => setCurrent(ticket, 'image')}
+        >
+          Tomar foto
+        </Button>
+        <Button
+          size="small"
+          type="primary"
+          disabled={!ticket.outTruckImage}
+          onClick={() => setCurrent(ticket, 'submit')}
+          icon="money-collect"
+        >
+          Cobrar
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {}}
+          disabled={!ticket.totalPrice}
+          type="primary"
+          icon="printer"
+        >
+          Imprimir
+        </Button>
+        <Button
+          size="small"
+          type="dashed"
+          disabled={!ticket.totalPrice}
+          onClick={() => addTicketToTurn(ticket.id)}
+          icon="plus"
+        >
+          Agregar a turno
+        </Button>
+        <Button
+          style={{ marginLeft: 'auto' }}
+          size="small"
+          onClick={() => handleCancel(ticket.id)}
+          type="danger"
+          ghost
+          icon="close"
+        >
+          Cancelar
+        </Button>
+      </Actions>
+      {ticket.client.stores.length > 0 && (
+        <Select
+          id="skip"
+          style={{ width: 250, marginTop: 10 }}
+          placeholder="Seleccionar sucursal"
+          onChange={store => setStoreToTicket(store)}
+          defaultValue={ticket.store?.id}
+          size="small"
+          allowClear
+        >
+          {ticket.client.stores.map(store => (
+            <Option key={store.id} value={store.id}>
+              {store.name}
+            </Option>
+          ))}
+        </Select>
+      )}
+    </>
+  );
+};
 
 TicketPanel.propTypes = {
   ticket: PropTypes.object.isRequired,
@@ -311,8 +275,7 @@ TicketPanel.propTypes = {
   turn: PropTypes.object.isRequired,
   refetchTickets: PropTypes.func.isRequired,
   refetchTurn: PropTypes.func.isRequired,
-  setCurrent: PropTypes.func.isRequired,
-  printTicket: PropTypes.func.isRequired
+  setCurrent: PropTypes.func.isRequired
 };
 
 export default withApollo(TicketPanel);

@@ -11,7 +11,7 @@ import { ACTIVE_TICKETS, TICKET_UPDATE } from './graphql/subscriptions';
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data, refetchTurn }) => {
+const TicketList = ({ turnActive, setCurrent, loading, error, data, refetchTurn }) => {
   const [isCancelDrawerOpen, toggleCancelDrawer] = useState(false);
 
   useEffect(() => {
@@ -101,7 +101,6 @@ const TicketList = ({ turnActive, setCurrent, printTicket, loading, error, data,
                 refetchTickets={refetch}
                 refetchTurn={refetchTurn}
                 setCurrent={setCurrent}
-                printTicket={printTicket}
               />
             </Panel>
           ))}
@@ -129,7 +128,6 @@ TicketList.propTypes = {
   refetchTurn: PropTypes.func.isRequired,
   turnActive: PropTypes.object,
   setCurrent: PropTypes.func.isRequired,
-  printTicket: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   error: PropTypes.bool
 };
