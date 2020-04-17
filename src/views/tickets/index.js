@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-import ReactDOMServer from 'react-dom/server';
 import { withAuth } from 'components/providers/withAuth';
 import { graphql } from '@apollo/react-hoc';
-import print from 'print-js';
-import mapStyles from 'react-map-styles';
 import { Empty, Form, List, Spin } from 'antd';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
@@ -51,47 +47,6 @@ class Tickets extends Component {
   };
 
   setCurrent = (currentTicket, currentForm) => this.setState({ currentTicket, currentForm });
-
-  printTicket = node => {
-    const {
-      props: { ticket }
-    } = node;
-
-    document.getElementById('root').insertAdjacentHTML(
-      'beforeend',
-      `
-      <div id="printable">
-        <div id="title">
-          <p>Folio: ${ticket.folio}</p>
-          <p>${moment().format('LLL')}</p>
-          <p>${ticket.credit ? 'CRÉDITO' : 'CONTADO'}</p>
-        </div>
-        <div id="content">
-        ${mapStyles(ReactDOMServer.renderToString(node))}
-        </div>
-      </div>
-      `
-    );
-
-    print({
-      printable: 'printable',
-      type: 'html',
-      ignoreElements: ['skip'],
-      honorColor: true,
-      style: `
-        @page { margin: 0; } 
-        #printable { width: 100vw; size: margin: 50px; font-size: 20px; font-family: Sans Serif; }
-        #title { width: 100%; font-size: 25px; position: absolute; right: -400px; top: 80px; display: flex; flex-direction: column; justify-content: space-between; font-weight: bold; }
-        #content { margin-top: 100px; padding: 100px }
-        p { margin: 0 }
-        .skip { visibility: hidden }
-        table { margin: 0; }
-      `
-    });
-
-    const printable = document.getElementById('printable');
-    printable.parentNode.removeChild(printable);
-  };
 
   render() {
     const {
@@ -148,7 +103,6 @@ class Tickets extends Component {
             <TicketsList
               turnActive={turnActive}
               setCurrent={this.setCurrent}
-              printTicket={this.printTicket}
               refetchTurn={refetch}
             />
           )}
