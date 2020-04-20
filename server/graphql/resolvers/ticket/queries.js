@@ -146,7 +146,7 @@ const ticketQueries = {
       ]
     };
 
-    return createPDF(pdfOptions, 'first');
+    return createPDF(pdfOptions);
   },
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
