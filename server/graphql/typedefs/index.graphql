@@ -166,8 +166,8 @@ type Query {
   tankDieselLoads(filters: TankDieselLoadFilters!): [TankDieselLoad!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Quotation
-  quotation(id: ID!): Quotation
-  quotations(filters: QuotationFilters): [Quotation!]!
+  quotation(id: ID!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
+  quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, ACCOUNTANT])
 }
 
 type Mutation {
@@ -247,7 +247,7 @@ type Mutation {
   tankDieselLoad(tankDieselLoad: TankDieselLoadInput!): TankDieselLoad
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Quotation
-  quotation(quotation: QuotationInput!): Quotation
+  quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

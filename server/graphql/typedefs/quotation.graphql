@@ -1,7 +1,7 @@
 type Quotation {
   id: ID!
   client: String!
-  product: [QuotedProduct!]!
+  products: [QuotedProduct!]!
   validUntil: Date!
   createdAt: Date!
   freight: Float!
@@ -14,9 +14,9 @@ type QuotedProduct {
 
 input QuotationInput {
   client: String!
-  product: [QuotedProductInput!]!
+  products: [QuotedProductInput!]!
   validUntil: Date!
-  freight: Date!
+  freight: Float
 }
 
 input QuotedProductInput {
