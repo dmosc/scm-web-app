@@ -16,6 +16,7 @@
 # import * from "machine-diesel-load.graphql"
 # import * from "tank-diesel-load.graphql"
 # import * from "store.graphql"
+# import * from "quotation.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -164,6 +165,9 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   tankDieselLoads(filters: TankDieselLoadFilters!): [TankDieselLoad!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  # Quotation
+  quotation(id: ID!): Quotation
+  quotations(filters: QuotationFilters): [Quotation!]!
 }
 
 type Mutation {
@@ -242,6 +246,8 @@ type Mutation {
   # Tank Diesel Load
   tankDieselLoad(tankDieselLoad: TankDieselLoadInput!): TankDieselLoad
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # Quotation
+  quotation(quotation: QuotationInput!): Quotation
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

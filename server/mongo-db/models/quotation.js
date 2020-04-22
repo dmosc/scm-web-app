@@ -8,10 +8,9 @@ const QuotedProduct = new Schema({
 });
 
 const Quotation = new Schema({
-  name: { type: String, required: true },
   client: { type: String, required: true },
-  products: [QuotedProduct],
-  validUntil: { types: Date },
+  products: [{ type: QuotedProduct, required: true }],
+  validUntil: { type: Date, required: true },
   createdAt: { type: Date, default: Date.now },
   freight: { type: Number, default: 0 }
 });

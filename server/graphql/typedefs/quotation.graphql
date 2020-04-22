@@ -1,0 +1,31 @@
+type Quotation {
+  id: ID!
+  client: String!
+  product: [QuotedProduct!]!
+  validUntil: Date!
+  createdAt: Date!
+  freight: Float!
+}
+
+type QuotedProduct {
+  rock: Rock!
+  price: Float!
+}
+
+input QuotationInput {
+  client: String!
+  product: [QuotedProductInput!]!
+  validUntil: Date!
+  freight: Date!
+}
+
+input QuotedProductInput {
+  rock: ID!
+  price: Float!
+}
+
+input QuotationFilters {
+  client: String
+  validRange: DateRange
+  createdRange: DateRange
+}

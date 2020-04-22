@@ -15,3 +15,4 @@ export { default as ClientCreditLimit } from './client-credit-limit';
 export { default as Machine } from './machine';
 export { default as MachineDieselLoad } from './machine-diesel-load';
 export { default as TankDieselLoad } from './tank-diesel-load';
+export { default as Quotation } from './quotation';
