@@ -17,4 +17,10 @@ const GET_BILLS = gql`
   }
 `;
 
-export { GET_BILLS };
+const GET_PDF = gql`
+  query billPDF($id: ID!) {
+    billPDF(id: $id)
+  }
+`;
+
+export { GET_BILLS, GET_PDF };

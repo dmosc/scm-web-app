@@ -98,6 +98,8 @@ type Query {
   # Bill
   bill(id: ID, folio: String): Bill
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  billPDF(id: ID, folio: String): String!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   bills(filters: BillFilters!): [Bill!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Truck

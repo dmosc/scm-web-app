@@ -4,10 +4,10 @@ import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import shortid from 'shortid';
-import { notification, Table, Tag } from 'antd';
+import { notification, Table, Tag, Row, Tooltip, Button } from 'antd';
 import Title from './components/title';
 import { Card, TableContainer } from './elements';
-import { GET_BILLS } from './graphql/queries';
+import { GET_BILLS, GET_PDF } from './graphql/queries';
 
 const History = ({ client }) => {
   const [loading, setLoading] = useState(true);
@@ -43,6 +43,27 @@ const History = ({ client }) => {
 
     getData();
   }, [debouncedFilters, client]);
+
+  const downloadPDF = async ({ id, folio }) => {
+    const {
+      data: { billPDF }
+    } = await client.query({
+      query: GET_PDF,
+      variables: {
+        id
+      }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(billPDF);
+    link.download = `Factura-${folio}-${moment().format('lll')}.pdf`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  };
 
   const columns = [
     {
@@ -85,6 +106,18 @@ const History = ({ client }) => {
       dataIndex: 'total',
       key: 'total',
       render: total => `$${total.toFixed(2)}`
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      align: 'right',
+      render: row => (
+        <Row>
+          <Tooltip placement="top" title="Descargar PDF">
+            <Button onClick={() => downloadPDF(row)} type="primary" icon="file-pdf" size="small" />
+          </Tooltip>
+        </Row>
+      )
     }
   ];
 
