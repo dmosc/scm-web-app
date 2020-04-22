@@ -5,6 +5,7 @@ type Quotation {
   validUntil: Date!
   createdAt: Date!
   freight: Float!
+  folio: String!
 }
 
 type QuotedProduct {

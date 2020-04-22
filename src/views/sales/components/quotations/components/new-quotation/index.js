@@ -235,7 +235,7 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
       <Divider orientation="left">Añade flete</Divider>
       <InputNumber
         value={newPriceForm.freight}
-        onChange={freight => setNewPriceForm({ ...newPriceForm, freight })}
+        onChange={freight => setQuotationForm({ ...quotationForm, freight })}
         style={{ width: '100%' }}
         placeholder="MXN"
         min={0}

@@ -11,6 +11,7 @@ const Quotation = new Schema({
   client: { type: String, required: true },
   products: [{ type: QuotedProduct, required: true }],
   validUntil: { type: Date, required: true },
+  folio: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   freight: { type: Number, default: 0 }
 });

@@ -3,6 +3,7 @@ import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
+import moment from 'moment';
 import { Table, Tag } from 'antd';
 import { TableContainer, Card } from './elements';
 import Title from './components/title';
@@ -47,6 +48,11 @@ const Quotations = ({ client }) => {
 
   const columns = [
     {
+      title: 'Folio',
+      dataIndex: 'folio',
+      key: 'folio'
+    },
+    {
       title: 'Cliente',
       dataIndex: 'client',
       key: 'client'
@@ -54,12 +60,14 @@ const Quotations = ({ client }) => {
     {
       title: 'Creado el',
       dataIndex: 'createdAt',
-      key: 'createdAt'
+      key: 'createdAt',
+      render: date => moment(date).format('ll')
     },
     {
       title: 'Vence el',
       dataIndex: 'validUntil',
-      key: 'validUntil'
+      key: 'validUntil',
+      render: date => moment(date).format('ll')
     },
     {
       title: 'Flete',
@@ -74,7 +82,7 @@ const Quotations = ({ client }) => {
       render: products =>
         products.map(({ rock, price }) => (
           <Tag key={rock.id} color="geekblue">
-            {rock.name}: {price}
+            {rock.name}: ${price} MXN
           </Tag>
         ))
     }

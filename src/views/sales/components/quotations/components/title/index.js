@@ -38,7 +38,7 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
       </InputRow>
       <InputRow style={{ marginTop: 10, justifyContent: 'flex-end' }}>
         <InputContainer>
-          <Text type="secondary">Fecha de creación</Text>
+          <Text type="secondary">Fecha de vencimiento</Text>
           <RangePicker
             style={{ marginRight: 0 }}
             ranges={{
@@ -58,7 +58,7 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
           />
         </InputContainer>
         <InputContainer>
-          <Text type="secondary">Fecha de vencimiento</Text>
+          <Text type="secondary">Fecha de creación</Text>
           <RangePicker
             style={{ marginRight: 0 }}
             ranges={{

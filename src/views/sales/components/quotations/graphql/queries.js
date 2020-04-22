@@ -8,6 +8,7 @@ const GET_QUOTATIONS = gql`
       createdAt
       validUntil
       freight
+      folio
       products {
         rock {
           id
