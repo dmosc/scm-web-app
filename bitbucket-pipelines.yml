@@ -1,0 +1,10 @@
+pipelines:
+  branches:
+    master:
+      - step:
+          script:
+            - ssh $SSH_USER@$SERVER_ADDRESS 'cd scm-web-app && git fetch --all && git reset --hard origin/master && yarn install && pm2 restart prod'
+    development:
+      - step:
+          script:
+            - ssh $SSH_USER@$SERVER_ADDRESS_DEV 'cd scm-web-app && git fetch --all && git reset --hard origin/development && yarn install && pm2 restart dev'

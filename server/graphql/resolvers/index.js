@@ -56,6 +56,9 @@ import machineDieselLoadQueries from './machine-diesel-load/queries';
 // Tank Diesel Load
 import tankDieselLoadMutations from './tank-diesel-load/mutations';
 import tankDieselLoadQueries from './tank-diesel-load/queries';
+// Quotation
+import quotationMutations from './quotation/mutations';
+import quotationQueries from './quotation/queries';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -77,7 +80,8 @@ const resolvers = {
     ...storeQueries,
     ...machineQueries,
     ...machineDieselLoadQueries,
-    ...tankDieselLoadQueries
+    ...tankDieselLoadQueries,
+    ...quotationQueries
   },
   Mutation: {
     ...userMutations,
@@ -98,6 +102,7 @@ const resolvers = {
     ...machineMutations,
     ...machineDieselLoadMutations,
     ...tankDieselLoadMutations,
+    ...quotationMutations,
     ...uploaders // AWS
   },
   Subscription: {

@@ -88,6 +88,12 @@ const Reports = Loadable({
 });
 
 /* webpackChunkName: "History" */
+const Sales = Loadable({
+  loader: () => import('./views/sales'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "History" */
 const History = Loadable({
   loader: () => import('./views/history'),
   loading: TopBarProgress
@@ -159,6 +165,7 @@ const App = ({
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/usuarios" component={Users} />
           )}
+          {(isAdmin || isAccountant) && <Route path="/ventas" component={Sales} />}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route path="/reportes" component={Reports} />
           )}
