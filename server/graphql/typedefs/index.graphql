@@ -169,6 +169,7 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Quotation
   quotation(id: ID!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
+  quotationPDF(id: ID!): String! @auth(roles: [ADMIN, ACCOUNTANT])
   quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, ACCOUNTANT])
 }
 

@@ -13,7 +13,8 @@ const Quotation = new Schema({
   validUntil: { type: Date, required: true },
   folio: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  freight: { type: Number, default: 0 }
+  freight: { type: Number, default: 0 },
+  createdBy: { type: Schema.ObjectId, ref: 'User', required: true }
 });
 
 Quotation.plugin(softDelete, { deletedAt: true });

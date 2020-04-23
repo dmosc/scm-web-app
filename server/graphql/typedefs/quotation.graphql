@@ -6,6 +6,7 @@ type Quotation {
   createdAt: Date!
   freight: Float!
   folio: String!
+  createdBy: User!
 }
 
 type QuotedProduct {

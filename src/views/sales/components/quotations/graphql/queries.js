@@ -9,6 +9,11 @@ const GET_QUOTATIONS = gql`
       validUntil
       freight
       folio
+      createdBy {
+        id
+        firstName
+        lastName
+      }
       products {
         rock {
           id
@@ -20,4 +25,10 @@ const GET_QUOTATIONS = gql`
   }
 `;
 
-export { GET_QUOTATIONS };
+const GET_PDF = gql`
+  query quotationPDF($id: ID!) {
+    quotationPDF(id: $id)
+  }
+`;
+
+export { GET_QUOTATIONS, GET_PDF };
