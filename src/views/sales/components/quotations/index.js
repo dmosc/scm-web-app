@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
+import { printPDF } from 'utils/functions';
 import shortid from 'shortid';
 import moment from 'moment';
 import { Table, Tag, Typography, Row, Tooltip, Button } from 'antd';
@@ -58,15 +59,7 @@ const Quotations = ({ client }) => {
       }
     });
 
-    const link = document.createElement('a');
-    link.href = encodeURI(quotationPDF);
-    link.download = `Cotización-${folio}-${moment().format('lll')}.pdf`;
-    link.target = '_blank';
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
+    printPDF(quotationPDF);
   };
 
   const columns = [
@@ -125,8 +118,8 @@ const Quotations = ({ client }) => {
       align: 'right',
       render: row => (
         <Row>
-          <Tooltip placement="top" title="Descargar PDF">
-            <Button onClick={() => downloadPDF(row)} type="primary" icon="file-pdf" size="small" />
+          <Tooltip placement="top" title="Imprimir">
+            <Button onClick={() => downloadPDF(row)} type="primary" icon="printer" size="small" />
           </Tooltip>
         </Row>
       )

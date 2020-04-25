@@ -3,6 +3,7 @@ import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { printPDF } from 'utils/functions';
 import shortid from 'shortid';
 import { notification, Table, Tag, Row, Tooltip, Button } from 'antd';
 import Title from './components/title';
@@ -44,7 +45,7 @@ const History = ({ client }) => {
     getData();
   }, [debouncedFilters, client]);
 
-  const downloadPDF = async ({ id, folio }) => {
+  const downloadPDF = async ({ id }) => {
     const {
       data: { billPDF }
     } = await client.query({
@@ -54,15 +55,7 @@ const History = ({ client }) => {
       }
     });
 
-    const link = document.createElement('a');
-    link.href = encodeURI(billPDF);
-    link.download = `Factura-${folio}-${moment().format('lll')}.pdf`;
-    link.target = '_blank';
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
+    printPDF(billPDF);
   };
 
   const columns = [
@@ -113,8 +106,8 @@ const History = ({ client }) => {
       align: 'right',
       render: row => (
         <Row>
-          <Tooltip placement="top" title="Descargar PDF">
-            <Button onClick={() => downloadPDF(row)} type="primary" icon="file-pdf" size="small" />
+          <Tooltip placement="top" title="Imprimir">
+            <Button onClick={() => downloadPDF(row)} type="primary" icon="printer" size="small" />
           </Tooltip>
         </Row>
       )
