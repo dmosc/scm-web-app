@@ -5,21 +5,21 @@ import periods from 'utils/enums/periods';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import moment from 'moment';
 import {
-  Statistic,
-  Icon,
+  Button,
   Card,
   Col,
-  Typography,
-  Select,
-  Button,
-  Tag,
-  Spin,
-  Row,
   Collapse,
-  Empty
+  Empty,
+  Icon,
+  Row,
+  Select,
+  Spin,
+  Statistic,
+  Tag,
+  Typography
 } from 'antd';
-import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
-import { GET_TURNS, GET_SUMMARY, GET_SUMMARY_XLS } from './graphql/queries';
+import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
+import { GET_SUMMARY, GET_SUMMARY_XLS, GET_TURNS } from './graphql/queries';
 
 const { Text } = Typography;
 const { Option } = Select;

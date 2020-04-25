@@ -48,6 +48,13 @@ const ACTIVE_TICKETS = gql`
         municipality
         state
       }
+      promotion {
+        id
+        name
+        product {
+          price
+        }
+      }
       turn {
         id
       }
@@ -107,6 +114,13 @@ const TICKET_UPDATE = gql`
         address
         municipality
         state
+      }
+      promotion {
+        id
+        name
+        product {
+          price
+        }
       }
       turn {
         id

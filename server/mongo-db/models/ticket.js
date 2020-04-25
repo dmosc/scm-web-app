@@ -10,6 +10,7 @@ const Ticket = new Schema({
   truck: { type: Schema.Types.ObjectId, ref: 'Truck', required: false },
   product: { type: Schema.Types.ObjectId, ref: 'Rock', required: false },
   store: { type: Schema.Types.ObjectId, ref: 'Store', required: false },
+  promotion: { type: Schema.Types.ObjectId, ref: 'Promotion', required: false },
   tax: { type: Number, required: false },
   weight: { type: Number, required: false },
   totalWeight: { type: Number, required: false },

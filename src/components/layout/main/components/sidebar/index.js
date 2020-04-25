@@ -113,6 +113,16 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 </Item>
               )}
             </ItemGroup>
+            <ItemGroup title="Promociones">
+              {(isAdmin || isAccountant || isSupport || isManager) && (
+                <Item key="registros/promociones">
+                  <Link to="/registros/promociones">
+                    <Icon type="scissor" />
+                    Promociones
+                  </Link>
+                </Item>
+              )}
+            </ItemGroup>
             <ItemGroup title="Máquinas">
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/maquinas">
