@@ -1,0 +1,59 @@
+# Types
+type Promotion {
+  id: ID!
+  name: String!
+  start: Date
+  end: Date
+  limit: Float
+  currentLimit: Float
+  credit: Boolean
+  bill: Boolean
+  product: ProductPromotion
+  clients: [Client!]
+  createdBy: User!
+  disabled: Boolean
+}
+
+type ProductPromotion {
+  rock: Rock!
+  price: Float!
+}
+
+# Inputs
+input PromotionInput {
+  name: String!
+  start: Date
+  end: Date
+  limit: Float
+  credit: Boolean
+  bill: Boolean
+  product: ProductPromotionInput!
+  clients: [ID!]
+}
+
+input PromotionEditInput {
+  id: ID!
+  name: String
+  start: Date
+  end: Date
+  limit: Float
+  credit: Boolean
+  bill: Boolean
+  clients: [ID!]
+}
+
+input ProductPromotionInput {
+  rock: ID!
+  price: Float!
+}
+
+input PromotionFilters {
+  limit: Int
+  status: PromotionStatus
+}
+
+enum PromotionStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}

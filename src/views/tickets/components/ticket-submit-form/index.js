@@ -11,17 +11,27 @@ const { Option } = Select;
 const { Group } = Radio;
 const { Title, Text } = Typography;
 
-const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm }) => {
+const TicketSubmitForm = ({
+  currentTicket,
+  currentTicketPromotions,
+  client,
+  form,
+  setCurrent,
+  currentForm
+}) => {
   const [drivers, setDrivers] = useState([]);
   const [loadedInitialData, setLoadedInitialData] = useState(false);
   const [weight, setWeight] = useState(0);
   const [total, setTotal] = useState(0);
+  const [filteredPromotions, setFilteredPromotions] = useState([]);
+  const [promotion, setPromotion] = useState(currentTicket?.promotion?.id);
   const [specialPrice, setSpecialPrice] = useState();
   const [creditEnough, setCreditEnough] = useState(0);
   const [creditAvailable, setCreditAvailable] = useState(0);
   const [creditLimit, setCreditLimit] = useState();
   const [tax, setTax] = useState(0);
   const [bill, setBill] = useState(false);
+  const [credit, setCredit] = useState(false);
   const [isSocket, setIsSocket] = useState();
   const [isStable, setIsStable] = useState(true);
   const { setFieldsValue } = form;
@@ -119,7 +129,16 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
       const calculateTotal = async () => {
         const TAX = 0.16;
 
-        const price = specialPrice ? specialPrice.price : currentTicket.product.price;
+        const currentPromotion = currentTicket.promotion
+          ? [currentTicket.promotion]
+          : currentTicketPromotions.filter(({ id }) => promotion === id);
+
+        const price =
+          currentPromotion.length > 0
+            ? currentPromotion[0].product.price
+            : specialPrice
+            ? specialPrice.price
+            : currentTicket.product.price;
 
         const totalWeight =
           currentTicket.totalWeight && weight === 0
@@ -140,42 +159,75 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
       calculateTotal();
     }
-  }, [specialPrice, loadedInitialData, bill, currentTicket, tax, weight]);
+  }, [
+    specialPrice,
+    loadedInitialData,
+    bill,
+    currentTicket,
+    tax,
+    weight,
+    promotion,
+    currentTicketPromotions
+  ]);
+
+  useEffect(() => {
+    const filteredPromotionsToSet = currentTicketPromotions.filter(availablePromotion => {
+      let isPromotionValid = true;
+
+      if (availablePromotion.bill !== null)
+        isPromotionValid = isPromotionValid && availablePromotion.bill === bill;
+      if (availablePromotion.credit !== null)
+        isPromotionValid = isPromotionValid && availablePromotion.credit === credit;
+
+      return isPromotionValid;
+    });
+
+    setFilteredPromotions(filteredPromotionsToSet);
+  }, [bill, credit, currentTicketPromotions]);
 
   const handleSubmit = e => {
     e.preventDefault();
     const { id } = currentTicket;
 
-    form.validateFields(async (err, { driver, weight: formWeight, credit, bill: formBill }) => {
-      if (err) {
-        return;
-      }
+    form.validateFields(
+      async (err, { driver, weight: formWeight, credit: creditBill, bill: formBill }) => {
+        if (err) {
+          return;
+        }
 
-      if (typeof credit !== 'boolean') {
-        message.warning('Es necesario seleccionar contado o crédito');
-        return;
-      }
+        if (typeof creditBill !== 'boolean') {
+          message.warning('Es necesario seleccionar contado o crédito');
+          return;
+        }
 
-      if (credit === true && !creditEnough) {
-        message.warning('El total excede el crédito disponible del cliente, selecciona contado');
-        return;
-      }
+        if (creditBill === true && !creditEnough) {
+          message.warning('El total excede el crédito disponible del cliente, selecciona contado');
+          return;
+        }
 
-      try {
-        await client.mutate({
-          mutation: TICKET_SUBMIT,
-          variables: {
-            ticket: { id, driver: driver[0], weight: formWeight, credit, bill: formBill }
-          }
-        });
+        try {
+          await client.mutate({
+            mutation: TICKET_SUBMIT,
+            variables: {
+              ticket: {
+                id,
+                driver: driver[0],
+                weight: formWeight,
+                credit: creditBill,
+                bill: formBill,
+                promotion
+              }
+            }
+          });
 
-        form.resetFields();
-        setCurrent();
-        message.success('¡La información ha sido actualizada correctamente!');
-      } catch (error) {
-        message.error('¡Ha habido un error modificando la información!');
+          form.resetFields();
+          setCurrent();
+          message.success('¡La información ha sido actualizada correctamente!');
+        } catch (error) {
+          message.error('¡Ha habido un error modificando la información!');
+        }
       }
-    });
+    );
   };
 
   return (
@@ -271,7 +323,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
             ]
           })(
             <Group
-              disabled={!!currentTicket.bill}
+              disabled={!!currentTicket.bill || currentTicket.promotion}
               onChange={({ target: { value } }) => setBill(value)}
             >
               <Radio.Button value={true}>FACTURA</Radio.Button>
@@ -281,7 +333,10 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('credit', { initialValue: currentTicket.credit })(
-            <Group>
+            <Group
+              onChange={({ target: { value } }) => setCredit(value)}
+              disabled={currentTicket.promotion}
+            >
               <Radio.Button value={false}>CONTADO</Radio.Button>
               <Tooltip
                 title={
@@ -299,6 +354,32 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
             </Group>
           )}
         </Form.Item>
+        <Form.Item>
+          <Select
+            style={{ width: '50%' }}
+            placeholder={`Promociones disponibles (${filteredPromotions.length})`}
+            onChange={promotionToSet => setPromotion(promotionToSet)}
+            disabled={currentTicket.promotion}
+            defaultValue={(currentTicket.promotion && currentTicket.promotion.id) || undefined}
+            size="default"
+            allowClear
+          >
+            {filteredPromotions.length > 0 &&
+              filteredPromotions.map(({ id, name, product }) => (
+                <Option key={id} value={id}>
+                  <Text strong mark>{`${name} a $${product.price}`}</Text>
+                </Option>
+              ))}
+            {currentTicket.promotion && (
+              <Option key={currentTicket.promotion.id} value={currentTicket.promotion.id}>
+                <Text
+                  strong
+                  mark
+                >{`${currentTicket.promotion.name} a $${currentTicket.promotion.product.price}`}</Text>
+              </Option>
+            )}
+          </Select>
+        </Form.Item>
         <Row>
           <Text disabled>{total >= 0 ? `Subtotal: $${(total - tax).toFixed(2)} MXN` : '-'}</Text>
         </Row>
@@ -315,6 +396,7 @@ const TicketSubmitForm = ({ currentTicket, client, form, setCurrent, currentForm
 
 TicketSubmitForm.propTypes = {
   currentTicket: PropTypes.object.isRequired,
+  currentTicketPromotions: PropTypes.array.isRequired,
   client: PropTypes.object.isRequired,
   form: PropTypes.object.isRequired,
   setCurrent: PropTypes.func.isRequired,

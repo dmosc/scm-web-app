@@ -13,4 +13,18 @@ const TURN_ACTIVE = gql`
   }
 `;
 
-export { TURN_ACTIVE };
+const GET_TICKET_PROMOTIONS = gql`
+  query promotionsForTicket($ticket: ID!) {
+    promotionsForTicket(ticket: $ticket) {
+      id
+      name
+      credit
+      bill
+      product {
+        price
+      }
+    }
+  }
+`;
+
+export { TURN_ACTIVE, GET_TICKET_PROMOTIONS };

@@ -42,7 +42,7 @@ const turnMutations = {
 
       const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -143,7 +143,7 @@ const turnMutations = {
         turn: { $exists: false }
       }).populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -156,7 +156,7 @@ const turnMutations = {
         load: { $exists: true }
       }).populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'

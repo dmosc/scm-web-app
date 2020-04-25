@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withAuth } from 'components/providers/withAuth';
-import { graphql } from '@apollo/react-hoc';
-import { Empty, Form, List, Spin } from 'antd';
+import { graphql, withApollo } from '@apollo/react-hoc';
+import { Empty, Form, List, message, Spin } from 'antd';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
 import TicketImageForm from './components/ticket-image-form';
@@ -10,13 +10,14 @@ import TicketSubmitForm from './components/ticket-submit-form/index';
 import TurnInitForm from './components/turn-init-form';
 import TurnEndForm from './components/turn-end-form';
 import TicketsList from './components/tickets-list';
-import { TURN_ACTIVE } from './graphql/queries';
+import { GET_TICKET_PROMOTIONS, TURN_ACTIVE } from './graphql/queries';
 import { TURN_UPDATE } from './graphql/subscriptions';
 import TicketsContainer from './elements';
 
 class Tickets extends Component {
   state = {
     currentTicket: null,
+    currentTicketPromotions: [],
     currentForm: null
   };
 
@@ -46,7 +47,27 @@ class Tickets extends Component {
     });
   };
 
-  setCurrent = (currentTicket, currentForm) => this.setState({ currentTicket, currentForm });
+  setCurrent = async (currentTicket, currentForm) => {
+    const { client } = this.props;
+    const currentTicketPromotions = [];
+
+    if (currentTicket) {
+      try {
+        const {
+          data: { promotionsForTicket }
+        } = await client.query({
+          query: GET_TICKET_PROMOTIONS,
+          variables: { ticket: currentTicket.id }
+        });
+
+        currentTicketPromotions.push(...promotionsForTicket);
+      } catch (e) {
+        message.error(e);
+      }
+    }
+
+    this.setState({ currentTicket, currentTicketPromotions, currentForm });
+  };
 
   render() {
     const {
@@ -54,7 +75,7 @@ class Tickets extends Component {
       auth: { user }
     } = this.props;
 
-    const { currentTicket, currentForm } = this.state;
+    const { currentTicket, currentTicketPromotions, currentForm } = this.state;
 
     const { loading, error, turnActive, refetch } = data;
 
@@ -118,6 +139,7 @@ class Tickets extends Component {
               <TicketSubmitRegisterForm
                 setCurrent={this.setCurrent}
                 currentTicket={currentTicket}
+                currentTicketPromotions={currentTicketPromotions}
                 currentForm={currentForm}
               />
             ))}
@@ -128,8 +150,9 @@ class Tickets extends Component {
 }
 
 Tickets.propTypes = {
+  client: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 
-export default withAuth(graphql(TURN_ACTIVE)(Tickets));
+export default withAuth(withApollo(graphql(TURN_ACTIVE)(Tickets)));

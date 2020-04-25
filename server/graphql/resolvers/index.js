@@ -44,6 +44,9 @@ import priceRequestQueries from './price-request/queries';
 // Rock price request
 import rockPriceRequestMutations from './rock-price-request/mutations';
 import rockPriceRequestQueries from './rock-price-request/queries';
+// Promotion
+import promotionMutations from './promotion/mutations';
+import promotionQueries from './promotion/queries';
 // Store
 import storeMutations from './store/mutations';
 import storeQueries from './store/queries';
@@ -77,6 +80,7 @@ const resolvers = {
     ...turnQueries,
     ...priceRequestQueries,
     ...rockPriceRequestQueries,
+    ...promotionQueries,
     ...storeQueries,
     ...machineQueries,
     ...machineDieselLoadQueries,
@@ -98,6 +102,7 @@ const resolvers = {
     ...turnMutations,
     ...priceRequestMutations,
     ...rockPriceRequestMutations,
+    ...promotionMutations,
     ...storeMutations,
     ...machineMutations,
     ...machineDieselLoadMutations,
