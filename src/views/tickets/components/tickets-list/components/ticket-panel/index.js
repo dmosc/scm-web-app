@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import { printPDF } from 'utils/functions';
 import { withApollo } from 'react-apollo';
 import {
   Button,
@@ -106,15 +106,7 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
       }
     });
 
-    const link = document.createElement('a');
-    link.href = encodeURI(ticketPDF);
-    link.download = `Ticket-${ticket.truck.plates}-${moment().format('lll')}.pdf`;
-    link.target = '_blank';
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
+    await printPDF(ticketPDF);
 
     setDownloadingPDF(false);
   };
