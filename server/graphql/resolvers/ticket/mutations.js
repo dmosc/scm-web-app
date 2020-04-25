@@ -5,6 +5,7 @@ import {
   ClientCreditLimit,
   ClientPrice,
   Folio,
+  Promotion,
   Rock,
   Ticket,
   Truck
@@ -36,7 +37,7 @@ const ticketMutations = {
         { new: true }
       ).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -48,7 +49,7 @@ const ticketMutations = {
         turn: { $exists: false }
       }).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -61,7 +62,7 @@ const ticketMutations = {
         load: { $exists: true }
       }).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -109,7 +110,7 @@ const ticketMutations = {
 
       const ticket = await Ticket.findById(newTicket.id).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -122,7 +123,7 @@ const ticketMutations = {
         turn: { $exists: false }
       }).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -136,7 +137,7 @@ const ticketMutations = {
         load: { $exists: false }
       }).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -167,7 +168,7 @@ const ticketMutations = {
 
       const ticket = await Ticket.findById(newTicket.id).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -192,7 +193,7 @@ const ticketMutations = {
         { new: true }
       ).populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -206,7 +207,7 @@ const ticketMutations = {
         load: { $exists: true }
       }).populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -220,7 +221,7 @@ const ticketMutations = {
         load: { $exists: false }
       }).populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -246,7 +247,7 @@ const ticketMutations = {
     else update = { store };
 
     const newTicket = await Ticket.findByIdAndUpdate(ticket, update, { new: true }).populate(
-      'client truck product turn store'
+      'client truck product turn store promotion'
     );
 
     if (!newTicket) throw new Error('No ha sido posible seleccionar la sucursal!');
@@ -256,11 +257,11 @@ const ticketMutations = {
     return true;
   }),
   ticketSubmit: authenticated(async (_, args, { pubsub }) => {
-    const { id, driver, weight, credit, bill } = args.ticket;
+    const { id, driver, weight, credit, bill, promotion: promotionId } = args.ticket;
 
     const newTicket = await Ticket.findOneAndUpdate(
       { _id: id },
-      { driver: driver.toUpperCase(), weight: weight.toFixed(2), bill },
+      { driver: driver.toUpperCase(), weight: weight.toFixed(2), bill, $unset: { promotion: 1 } },
       { new: true }
     ).populate('client truck');
 
@@ -293,8 +294,18 @@ const ticketMutations = {
       addedAt: 'descending'
     });
 
-    if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product.price;
-    else price = specialPrice[0].price;
+    let promotion;
+    if (promotionId) promotion = await Promotion.findById(promotionId);
+
+    if (promotion) {
+      price = promotion.product.price;
+      newTicket.promotion = promotionId;
+      if (promotion.limit) promotion.currentLimit += newTicket.totalWeight;
+    } else if (!specialPrice[0] || specialPrice[0].noSpecialPrice) {
+      price = product.price;
+    } else {
+      price = specialPrice[0].price;
+    }
 
     if (newTicket.credit)
       // Recover previous balance from client
@@ -319,12 +330,13 @@ const ticketMutations = {
       client.balance = newClientBalance;
     }
 
+    if (promotion) await promotion.save();
     await newTicket.save();
     await client.save();
 
     const ticket = await Ticket.findById(newTicket.id).populate([
       {
-        path: 'client truck product turn store',
+        path: 'client truck product turn store promotion',
         populate: {
           path: 'stores',
           model: 'Store'

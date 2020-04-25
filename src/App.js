@@ -69,6 +69,12 @@ const ProductPriceRequests = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Promotions" */
+const Promotions = Loadable({
+  loader: () => import('./views/registry/promotions'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "Machines" */
 const Machines = Loadable({
   loader: () => import('./views/registry/machines'),
@@ -155,6 +161,9 @@ const App = ({
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/peticiones-productos" component={ProductPriceRequests} />
+          )}
+          {(isAdmin || isAccountant || isSupport || isManager) && (
+            <Route exact path="/registros/promociones" component={Promotions} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/maquinas" component={Machines} />

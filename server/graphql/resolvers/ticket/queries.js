@@ -3,7 +3,7 @@ import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment';
-import { createWorksheet, createWorkbook } from '../../../utils/reports';
+import { createWorkbook, createWorksheet } from '../../../utils/reports';
 import { ClientPrice, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -14,7 +14,7 @@ const ticketQueries = {
     const { id } = args;
     const ticket = await Ticket.findById(id).populate([
       {
-        path: 'client truck product turn',
+        path: 'client truck product turn promotion',
         populate: {
           path: 'stores',
           model: 'Store'
@@ -31,7 +31,7 @@ const ticketQueries = {
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
-          path: 'client truck product turn',
+          path: 'client truck product turn promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -50,6 +50,7 @@ const ticketQueries = {
     const pdfOptions = {
       content: [
         {
+          margin: [0, 40, 0, 0],
           table: {
             widths: ['*', '*', '*'],
             body: [
@@ -59,9 +60,9 @@ const ticketQueries = {
                 {
                   table: {
                     body: [
-                      [`Folio: ${ticket.folio}`],
-                      [moment(ticket.out).format('l LTS')],
-                      [ticket.credit ? 'Crédito' : 'Contado']
+                      [{ text: `Folio: ${ticket.folio}`, fontSize: 18 }],
+                      [{ text: moment(ticket.out).format('l LTS'), fontSize: 18 }],
+                      [{ text: ticket.credit ? 'Crédito' : 'Contado', fontSize: 18 }]
                     ]
                   },
                   layout: 'noBorders',
@@ -153,7 +154,7 @@ const ticketQueries = {
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -178,7 +179,7 @@ const ticketQueries = {
         .limit(limit || Number.MAX_SAFE_INTEGER)
         .populate([
           {
-            path: 'client truck product turn store',
+            path: 'client truck product turn store promotion',
             populate: {
               path: 'stores',
               model: 'Store'
@@ -199,7 +200,7 @@ const ticketQueries = {
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -219,7 +220,7 @@ const ticketQueries = {
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
-          path: 'client truck product turn store',
+          path: 'client truck product turn store promotion',
           populate: {
             path: 'stores',
             model: 'Store'
@@ -239,7 +240,7 @@ const ticketQueries = {
       disabled: false
     }).populate([
       {
-        path: 'client truck product turn store',
+        path: 'client truck product turn store promotion',
         populate: {
           path: 'stores',
           model: 'Store'

@@ -7,6 +7,7 @@ type Ticket {
   truck: Truck
   product: Rock
   store: Store
+  promotion: Promotion
   tax: Float
   weight: Float
   totalWeight: Float
@@ -71,6 +72,7 @@ input TicketEditInput {
   client: ID
   truck: ID
   product: ID
+  promotion: ID
   tax: Float
   weight: Float
   totalWeight: Float
@@ -105,6 +107,7 @@ input TicketSubmitInput {
   weight: Float!
   credit: Boolean!
   bill: Boolean!
+  promotion: ID
 }
 
 input TicketFilters {

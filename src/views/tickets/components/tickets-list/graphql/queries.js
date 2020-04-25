@@ -48,6 +48,13 @@ const GET_TICKETS = gql`
         municipality
         state
       }
+      promotion {
+        id
+        name
+        product {
+          price
+        }
+      }
       turn {
         id
       }
