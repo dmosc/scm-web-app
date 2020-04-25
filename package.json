@@ -75,7 +75,7 @@
     "react-dom": "^16.12.0",
     "react-loadable": "^5.5.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.0",
+    "react-scripts": "3.4.0",
     "react-scrollable-feed": "^1.1.2",
     "react-topbar-progress-indicator": "^4.0.2",
     "react-webcam": "^4.0.0",
@@ -105,7 +105,6 @@
     ]
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
     "csvtojson": "^2.0.10",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
