@@ -6,7 +6,7 @@ import { createPDF } from '../../../utils/pdfs';
 const quotationQueries = {
   quotation: async (_, { id }) => Quotation.findOne({ _id: id }),
   quotations: async (_, { filters }) => {
-    const { client, validRange = {}, createdRange = {} } = filters;
+    const { businessName, name, validRange = {}, createdRange = {} } = filters;
 
     const query = {
       deleted: false,
@@ -20,7 +20,8 @@ const quotationQueries = {
       }
     };
 
-    if (client) query.client = new RegExp(client, 'i');
+    if (businessName) query.businessName = new RegExp(businessName, 'i');
+    if (name) query.name = new RegExp(name, 'i');
 
     return Quotation.find(query)
       .populate('products.rock')
