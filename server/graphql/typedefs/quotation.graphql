@@ -7,12 +7,13 @@ type Quotation {
   createdAt: Date!
   folio: String!
   createdBy: User!
+  hasFreight: Boolean!
 }
 
 type QuotedProduct {
   rock: Rock!
   price: Float!
-  freight: Float!
+  freight: Float
 }
 
 input QuotationInput {
@@ -20,12 +21,13 @@ input QuotationInput {
   businessName: String
   products: [QuotedProductInput!]!
   validUntil: Date!
+  hasFreight: Boolean
 }
 
 input QuotedProductInput {
   rock: ID!
   price: Float!
-  freight: Float!
+  freight: Float
 }
 
 input QuotationFilters {

@@ -9,6 +9,7 @@ const GET_QUOTATIONS = gql`
       createdAt
       validUntil
       folio
+      hasFreight
       createdBy {
         id
         firstName

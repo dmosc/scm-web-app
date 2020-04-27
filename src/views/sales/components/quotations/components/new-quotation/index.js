@@ -14,6 +14,7 @@ import {
   Tag,
   DatePicker,
   Input,
+  Checkbox,
   message
 } from 'antd';
 import { NewQuotationForm, Footer } from './elements';
@@ -93,12 +94,16 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
       return;
     }
 
-    if (typeof freight !== 'number') {
+    if (quotationForm.hasFreight && typeof freight !== 'number') {
       message.error('El flete no es un número');
       return;
     }
 
-    if (!priceQuoted || !freight || typeof currentRockIndex !== 'number') {
+    if (
+      !priceQuoted ||
+      (quotationForm.hasFreight && !freight) ||
+      typeof currentRockIndex !== 'number'
+    ) {
       message.error('Completa los campos');
       return;
     }
@@ -145,7 +150,7 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
           products: prices.map(({ rock, priceQuoted, freight }) => ({
             rock,
             price: priceQuoted,
-            freight
+            freight: quotationForm.hasFreight ? freight : undefined
           }))
         }
       }
@@ -194,6 +199,21 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
           </Option>
         ))}
       </Select>
+      <Checkbox
+        style={{
+          marginLeft: 'auto',
+          marginTop: 10,
+          width: 'fit-content',
+          display: 'flex',
+          justifyContent: 'right'
+        }}
+        disabled={prices.length > 0}
+        onChange={({ target: { checked } }) =>
+          setQuotationForm({ ...quotationForm, hasFreight: checked })
+        }
+      >
+        Incluye flete
+      </Checkbox>
       <Divider orientation="left">Añade las piedras y sus precios cotizados</Divider>
       <NewQuotationForm onSubmit={addRock}>
         <Select
@@ -215,15 +235,17 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
             </Option>
           ))}
         </Select>
-        <InputNumber
-          required
-          value={newPriceForm.freight}
-          onChange={freight => setNewPriceForm({ ...newPriceForm, freight })}
-          style={{ flexBasis: '30%', width: '100%', marginRight: 5 }}
-          placeholder="Flete en MXN / Ton"
-          min={0}
-          step={0.01}
-        />
+        {quotationForm.hasFreight && (
+          <InputNumber
+            required
+            value={newPriceForm.freight}
+            onChange={freight => setNewPriceForm({ ...newPriceForm, freight })}
+            style={{ flexBasis: '30%', width: '100%', marginRight: 5 }}
+            placeholder="Flete en MXN / Ton"
+            min={0}
+            step={0.01}
+          />
+        )}
         <InputNumber
           required
           value={newPriceForm.priceQuoted}
@@ -248,7 +270,7 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
           <Item>
             <Text>{nameToDisplay}</Text>
             <div>
-              <Tag color="orange">Flete a: ${freight}MXN</Tag>
+              {quotationForm.hasFreight && <Tag color="orange">Flete a: ${freight}MXN</Tag>}
               <Tag color="blue">Cotizado a: ${priceQuoted}MXN</Tag>
               <Button onClick={() => removeRock(index)} type="danger" icon="delete" size="small" />
             </div>

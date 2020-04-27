@@ -46,6 +46,8 @@ const Quotations = ({ client }) => {
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
 
+    console.log(filtersToSet);
+
     setFilters(filtersToSet);
   };
 
@@ -92,14 +94,12 @@ const Quotations = ({ client }) => {
     },
     {
       title: 'Productos',
-      dataIndex: 'products',
-      key: 'products',
-      render: products =>
+      render: ({ products, hasFreight }) =>
         products.map(({ rock, price, freight }) => (
-          <div style={{ margin: '3px 0' }}>
-            <Tag key={rock.id} color="geekblue">
+          <div key={rock.id} style={{ margin: '3px 0' }}>
+            <Tag color="geekblue">
               {rock.name}: ${price} MXN <br />
-              Flete: ${freight} MXN
+              {hasFreight && `Flete: $${freight} MXN`}
             </Tag>
           </div>
         ))

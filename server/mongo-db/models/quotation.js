@@ -5,7 +5,7 @@ import softDelete from 'mongoose-delete';
 const QuotedProduct = new Schema({
   price: { type: Number, required: true },
   rock: { type: Schema.ObjectId, required: true, ref: 'Rock' },
-  freight: { type: Number, required: true }
+  freight: { type: Number }
 });
 
 const Quotation = new Schema({
@@ -15,7 +15,8 @@ const Quotation = new Schema({
   validUntil: { type: Date, required: true },
   folio: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  createdBy: { type: Schema.ObjectId, ref: 'User', required: true }
+  createdBy: { type: Schema.ObjectId, ref: 'User', required: true },
+  hasFreight: { type: Boolean, default: false, required: true }
 });
 
 Quotation.plugin(softDelete, { deletedAt: true });

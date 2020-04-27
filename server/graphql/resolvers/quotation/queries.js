@@ -17,11 +17,9 @@ const quotationQueries = {
       createdAt: {
         $gte: new Date(createdRange.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(createdRange.end || '2100-12-31T00:00:00.000Z')
-      }
+      },
+      $or: [{ businessName: new RegExp(businessName, 'i') }, { name: new RegExp(name, 'i') }]
     };
-
-    if (businessName) query.businessName = new RegExp(businessName, 'i');
-    if (name) query.name = new RegExp(name, 'i');
 
     return Quotation.find(query)
       .populate('products.rock')
