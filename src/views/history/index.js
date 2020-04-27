@@ -4,6 +4,7 @@ import { useDebounce } from 'use-lodash-debounce';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
+import { format } from 'utils/functions';
 import { Button, notification, Table, Tag, Typography } from 'antd';
 import Title from './components/title';
 import { Card, HistoryContainer, TableContainer } from './elements';
@@ -187,7 +188,7 @@ const History = ({ client }) => {
       key: 'subtotal',
       width: 120,
       fixed: 'right',
-      render: subtotal => <Tag>{`$${subtotal.toFixed(2)}`}</Tag>
+      render: subtotal => <Tag>{format.currency(subtotal)}</Tag>
     },
     {
       title: 'Impuesto',
@@ -195,7 +196,7 @@ const History = ({ client }) => {
       key: 'tax',
       width: 120,
       fixed: 'right',
-      render: tax => <Tag>{`$${tax.toFixed(2)}`}</Tag>
+      render: tax => <Tag>{format.currency(tax)}</Tag>
     },
     {
       title: 'Total',
@@ -203,7 +204,7 @@ const History = ({ client }) => {
       key: 'total',
       width: 120,
       fixed: 'right',
-      render: total => <Tag>{`$${total.toFixed(2)}`}</Tag>
+      render: total => <Tag>{format.currency(total)}</Tag>
     }
   ];
 
@@ -240,13 +241,13 @@ const History = ({ client }) => {
               return (
                 <div style={{ display: 'flex' }}>
                   <Text style={{ marginRight: 10 }}>
-                    Subtotal <Tag>{`$${subtotal.toFixed(2)}`}</Tag>
+                    Subtotal <Tag>{format.currency(subtotal)}</Tag>
                   </Text>
                   <Text style={{ marginRight: 10 }}>
-                    Impuestos <Tag>{`$${tax.toFixed(2)}`}</Tag>
+                    Impuestos <Tag>{format.currency(tax)}</Tag>
                   </Text>
                   <Text style={{ marginRight: 10 }}>
-                    Total <Tag>{`$${total.toFixed(2)}`}</Tag>
+                    Total <Tag>{format.currency(total)}</Tag>
                   </Text>
                 </div>
               );

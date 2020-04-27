@@ -49,7 +49,7 @@ const Quotations = ({ client }) => {
     setFilters(filtersToSet);
   };
 
-  const downloadPDF = async ({ id, folio }) => {
+  const downloadPDF = async ({ id }) => {
     const {
       data: { quotationPDF }
     } = await client.query({

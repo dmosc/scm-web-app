@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import { Button, Form, Icon, InputNumber, List, message, Select, Tag, Typography } from 'antd';
@@ -139,9 +140,9 @@ const BillSubmit = ({
             <>
               <List.Item>
                 <Tag>{product.name}</Tag>
-                <Tag>{`${weight.toFixed(2)} tons`}</Tag>
-                <Tag>{`$${price.toFixed(2)} p/t`}</Tag>
-                <Tag>{`$${total.toFixed(2)}`}</Tag>
+                <Tag>{`${format.number(weight)} tons`}</Tag>
+                <Tag>{`${format.currency(price)} p/t`}</Tag>
+                <Tag>{format.currency(total)}</Tag>
               </List.Item>
             </>
           )}
