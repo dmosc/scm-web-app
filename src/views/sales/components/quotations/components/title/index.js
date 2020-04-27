@@ -29,8 +29,8 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
         <Search
           style={{ width: 250, margin: 'auto 10px auto auto' }}
           allowClear
-          placeholder="Cliente"
-          onChange={({ target: { value } }) => handleFilterChange('client', value)}
+          placeholder="Cliente o atención"
+          onChange={({ target: { value } }) => handleFilterChange('name', value)}
         />
         <Button type="primary" icon="file-add" onClick={() => toggleNewQuotation(true)}>
           Crear
