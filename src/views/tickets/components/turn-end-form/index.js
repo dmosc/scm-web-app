@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { format } from 'utils/functions';
 import { withApollo } from 'react-apollo';
 import { Form, Drawer, Collapse, Button, Tag, Typography, Row, Icon, notification } from 'antd';
 import periods from 'utils/enums/periods';
@@ -140,15 +141,15 @@ class TurnEndForm extends Component {
               </Column>
               <Column span={6}>
                 <ColumnTitle color="#52c41a">CONTADO</ColumnTitle>
-                <Title level={4}>{`$${summary.upfront.toFixed(2)}`}</Title>
+                <Title level={4}>{format.currency(summary.upfront)}</Title>
               </Column>
               <Column span={6}>
                 <ColumnTitle color="#f5222d">CRÉDITO</ColumnTitle>
-                <Title level={4}>{`$${summary.credit.toFixed(2)}`}</Title>
+                <Title level={4}>{format.currency(summary.credit)}</Title>
               </Column>
               <Column span={6}>
                 <ColumnTitle color="#1890ff">TOTAL</ColumnTitle>
-                <Title level={4}>{`$${summary.total.toFixed(2)}`}</Title>
+                <Title level={4}>{format.currency(summary.total)}</Title>
               </Column>
             </Row>
             <Row>
@@ -177,21 +178,23 @@ class TurnEndForm extends Component {
                           >
                             <Column span={6}>
                               <Text code>PESO NETO</Text>
-                              <Title level={4}>{`${ticket.totalWeight.toFixed(2)} tons`}</Title>
+                              <Title level={4}>{`${format.currency(
+                                ticket.totalWeight
+                              )} tons`}</Title>
                             </Column>
                             <Column span={6}>
                               <Text code>SUBTOTAL</Text>
-                              <Title level={4}>{`$${(ticket.totalPrice - ticket.tax).toFixed(
-                                2
-                              )}`}</Title>
+                              <Title level={4}>
+                                {format.currency(ticket.totalPrice - ticket.tax)}
+                              </Title>
                             </Column>
                             <Column span={6}>
                               <Text code>IMPUESTO</Text>
-                              <Title level={4}>{`$${ticket.tax.toFixed(2)}`}</Title>
+                              <Title level={4}>{format.currency(ticket.tax)}</Title>
                             </Column>
                             <Column span={6}>
                               <Text code>TOTAL</Text>
-                              <Title level={4}>{`$${ticket.totalPrice.toFixed(2)}`}</Title>
+                              <Title level={4}>{format.currency(ticket.totalPrice)}</Title>
                             </Column>
                           </Row>
                         </Panel>

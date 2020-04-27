@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment';
+import { format } from '../../../../src/utils/functions'
 import { createWorkbook, createWorksheet } from '../../../utils/reports';
 import { ClientPrice, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
@@ -799,10 +800,10 @@ const ticketQueries = {
             out: ticket.out,
             plates: ticket.truck[0].plates,
             product: ticket.product[0].name,
-            totalWeight: ticket.totalWeight.toFixed(2),
-            subtotal: ticket.subtotal.toFixed(2),
-            tax: ticket.tax.toFixed(2),
-            totalPrice: ticket.totalPrice.toFixed(2),
+            totalWeight: format.number(ticket.totalWeight),
+            sobtotal: format.number(ticket.sobtotal),
+            tax: format.number(ticket.tax),
+            totalPrice: format.number(ticket.totalPrice),
             credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
             bill: ticket.bill ? 'FACTURA' : 'REMISIÓN'
           };
@@ -812,10 +813,10 @@ const ticketQueries = {
 
         const resultsRow = {
           product: tickets.length,
-          totalWeight: `${totalWeight.toFixed(2)} tons`,
-          subtotal: `$${subtotal.toFixed(2)}`,
-          tax: `$${tax.toFixed(2)}`,
-          totalPrice: `$${totalPrice.toFixed(2)}`
+          totalWeight: `${format.number(totalWeight)} tons`,
+          subtotal: `${format.currency(subtotal)}`,
+          tax: `${format.currency(tax)}`,
+          totalPrice: `${format.currency(totalPrice)}`,
         };
 
         sums.product += tickets.length;
@@ -843,11 +844,11 @@ const ticketQueries = {
       worksheet.addRow({});
       const resultsRow = {
         plates: 'Total',
-        product: sums.product.toFixed(2),
-        totalWeight: `$${sums.totalWeight.toFixed(2)} tons`,
-        subtotal: `$${sums.subtotal.toFixed(2)}`,
-        tax: `$${sums.tax.toFixed(2)}`,
-        totalPrice: `$${sums.totalPrice.toFixed(2)}`
+        product: format.number(sums.product),
+        totalWeight: `${format.number(sums.totalWeight)} tons`,
+        subtotal: format.currency(sums.subtotal),
+        tax: format.currency(sums.subtotal),
+        totalPrice: format.currency(sums.subtotal),
       };
       worksheet.addRow(resultsRow);
       Object.keys(resultsRow).forEach(key => {
