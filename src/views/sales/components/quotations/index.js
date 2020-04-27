@@ -46,8 +46,6 @@ const Quotations = ({ client }) => {
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
 
-    console.log(filtersToSet);
-
     setFilters(filtersToSet);
   };
 
