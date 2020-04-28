@@ -1,33 +1,38 @@
 type Quotation {
   id: ID!
-  client: String!
+  name: String!
+  businessName: String
   products: [QuotedProduct!]!
   validUntil: Date!
   createdAt: Date!
-  freight: Float!
   folio: String!
   createdBy: User!
+  hasFreight: Boolean!
 }
 
 type QuotedProduct {
   rock: Rock!
   price: Float!
+  freight: Float
 }
 
 input QuotationInput {
-  client: String!
+  name: String!
+  businessName: String
   products: [QuotedProductInput!]!
   validUntil: Date!
-  freight: Float
+  hasFreight: Boolean
 }
 
 input QuotedProductInput {
   rock: ID!
   price: Float!
+  freight: Float
 }
 
 input QuotationFilters {
-  client: String
+  name: String!
+  businessName: String
   validRange: DateRange
   createdRange: DateRange
 }
