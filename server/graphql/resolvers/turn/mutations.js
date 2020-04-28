@@ -4,11 +4,17 @@ import authenticated from '../../middleware/authenticated';
 
 const turnMutations = {
   turnInit: authenticated(async (_, args, { pubsub }) => {
-    const existentTurn = await Turn.findOne({ end: { $exists: false } });
+    const [existentTurn, [{ uniqueId }]] = await Promise.all([
+      Turn.findOne({ end: { $exists: false } }),
+      Turn.find({})
+        .sort({ uniqueId: -1 })
+        .limit(1)
+    ]);
 
     if (existentTurn) return new Error('¡Ya hay un turno activo!');
 
     const turn = new Turn({ ...args.turn });
+    turn.uniqueId = (uniqueId || 1000) + 1;
     const start = new Date();
     const offset = start.getTimezoneOffset() / 60;
 
