@@ -79,7 +79,8 @@ const columns = [
 const ProductSales = ({ client, globalFilters }) => {
   const [filters, setFilters] = useState({
     rocks: [],
-    type: null
+    type: undefined,
+    paymentType: undefined
   });
   const [loading, setLoading] = useState(true);
   const [loadingTurns, setLoadingTurns] = useState(true);
@@ -267,6 +268,18 @@ const ProductSales = ({ client, globalFilters }) => {
             <Option value="">Todos</Option>
             <Option value="BILL">Factura</Option>
             <Option value="REMISSION">Remisión</Option>
+          </Select>
+        </InputContainer>
+        <InputContainer>
+          <Text type="secondary">Tipo de pago</Text>
+          <Select
+            onChange={value => handleFilterChange('paymentType', value)}
+            style={{ width: 120 }}
+            value={filters.paymentType || ''}
+          >
+            <Option value="">Todos</Option>
+            <Option value="CASH">Contado</Option>
+            <Option value="CREDIT">Crédito</Option>
           </Select>
         </InputContainer>
         <InputContainer>
