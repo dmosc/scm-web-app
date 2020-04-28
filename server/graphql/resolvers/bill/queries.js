@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { join } from 'path';
+import { format } from '../../../../src/utils/functions/index';
 import { Bill } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import { createPDF } from '../../../utils/pdfs';
@@ -254,15 +255,15 @@ const billQueries = {
                     style: 'itemTitle'
                   },
                   {
-                    text: weight.toFixed(2),
+                    text: format.number(weight),
                     style: 'itemNumber'
                   },
                   {
-                    text: `$${price.toFixed(2)}`,
+                    text: format.currency(price),
                     style: 'itemNumber'
                   },
                   {
-                    text: `$${total.toFixed(2)}`,
+                    text: format.currency(total),
                     style: 'itemTotal'
                   }
                 ];
@@ -283,7 +284,7 @@ const billQueries = {
                   style: 'itemsFooterSubTitle'
                 },
                 {
-                  text: `$${(bill.total - bill.tax).toFixed(2)} MXN`,
+                  text: `${format.currency(bill.total - bill.tax)} MXN`,
                   style: 'itemsFooterSubValue'
                 }
               ],
@@ -293,7 +294,7 @@ const billQueries = {
                   style: 'itemsFooterSubTitle'
                 },
                 {
-                  text: `$${bill.tax.toFixed(2)} MXN`,
+                  text: `${format.currency(bill.tax)} MXN`,
                   style: 'itemsFooterSubValue'
                 }
               ],
@@ -303,7 +304,7 @@ const billQueries = {
                   style: 'itemsFooterTotalTitle'
                 },
                 {
-                  text: `$${bill.total.toFixed(2)} MXN`,
+                  text: `${format.currency(bill.total)} MXN`,
                   style: 'itemsFooterTotalValue'
                 }
               ]

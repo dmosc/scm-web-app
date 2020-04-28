@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
 import periods from 'utils/enums/periods';
@@ -64,19 +65,22 @@ const columns = [
   {
     title: 'Peso neto',
     dataIndex: 'totalWeight',
-    key: 'totalWeight'
+    key: 'totalWeight',
+    render: product => format.number(product)
   },
   {
     title: 'Total',
     dataIndex: 'totalPrice',
-    key: 'totalPrice'
+    key: 'totalPrice',
+    render: totalPrice => format.number(totalPrice)
   }
 ];
 
 const ProductSales = ({ client, globalFilters }) => {
   const [filters, setFilters] = useState({
     rocks: [],
-    type: null
+    type: undefined,
+    paymentType: undefined
   });
   const [loading, setLoading] = useState(true);
   const [loadingTurns, setLoadingTurns] = useState(true);
@@ -267,6 +271,18 @@ const ProductSales = ({ client, globalFilters }) => {
           </Select>
         </InputContainer>
         <InputContainer>
+          <Text type="secondary">Tipo de pago</Text>
+          <Select
+            onChange={value => handleFilterChange('paymentType', value)}
+            style={{ width: 120 }}
+            value={filters.paymentType || ''}
+          >
+            <Option value="">Todos</Option>
+            <Option value="CASH">Contado</Option>
+            <Option value="CREDIT">Crédito</Option>
+          </Select>
+        </InputContainer>
+        <InputContainer>
           <Text type="secondary">Filtrar por producto</Text>
           <Select
             loading={loading}
@@ -289,7 +305,7 @@ const ProductSales = ({ client, globalFilters }) => {
           <Statistic
             valueStyle={{ color: '#3f8600' }}
             title="Ventas"
-            value={productSalesReport?.total?.toFixed(2) ?? 0}
+            value={format.currency(productSalesReport?.total || 0)}
             suffix="MXN"
             prefix={<Icon type="rise" />}
           />

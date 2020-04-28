@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import events from 'events';
+import 'moment/locale/es';
 import sequelize from './sequelize-db';
 import server from './graphql';
 import { mongoDB, auroraDB, api } from './config/loggers';

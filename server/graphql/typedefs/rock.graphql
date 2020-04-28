@@ -61,5 +61,6 @@ input RockSalesReportFilters {
   start: Date
   end: Date
   type: Boolean
+  paymentType: TicketPaymentType
   turn: ID
 }

@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
+import { format } from '../../../../src/utils/functions';
 import { Ticket, Turn } from '../../../mongo-db/models';
 import { createWorksheet, createWorkbook } from '../../../utils/reports';
 import periods from '../../../../src/utils/enums/periods';
@@ -309,10 +310,10 @@ const turnQueries = {
           out: ticket.out,
           plates: ticket.truck[0].plates,
           product: ticket.product[0].name,
-          totalWeight: ticket.totalWeight.toFixed(2),
-          subtotal: ticket.subtotal.toFixed(2),
-          tax: ticket.tax.toFixed(2),
-          totalPrice: ticket.totalPrice.toFixed(2),
+          totalWeight: format.number(ticket.totalWeight),
+          subtotal: format.currency(ticket.subtotal),
+          tax: format.currency(ticket.tax),
+          totalPrice: format.currency(ticket.totalPrice),
           credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
           bill: ticket.bill ? 'FACTURA' : 'REMISIÓN'
         };
@@ -322,10 +323,10 @@ const turnQueries = {
 
       const resultsRow = {
         product: tickets.length,
-        totalWeight: `${totalWeight.toFixed(2)} tons`,
-        subtotal: `$${subtotal.toFixed(2)}`,
-        tax: `$${tax.toFixed(2)}`,
-        totalPrice: `$${totalPrice.toFixed(2)}`
+        totalWeight: `${format.number(totalWeight)} tons`,
+        subtotal: format.currency(subtotal),
+        tax: format.currency(tax),
+        totalPrice: format.currency(totalPrice)
       };
 
       if (!isCreditRow) {
@@ -373,11 +374,11 @@ const turnQueries = {
       worksheet.addRow({});
       const resultsRow = {
         plates: 'Total',
-        product: cashSums.product.toFixed(2),
-        totalWeight: `$${cashSums.totalWeight.toFixed(2)} tons`,
-        subtotal: `$${cashSums.subtotal.toFixed(2)}`,
-        tax: `$${cashSums.tax.toFixed(2)}`,
-        totalPrice: `$${cashSums.totalPrice.toFixed(2)}`
+        product: format.number(cashSums.product),
+        totalWeight: `${format.currency(cashSums.totalWeight)} tons`,
+        subtotal: format.currency(cashSums.subtotal),
+        tax: format.currency(cashSums.tax),
+        totalPrice: format.currency(cashSums.totalPrice)
       };
       worksheet.addRow(resultsRow);
       Object.keys(resultsRow).forEach(key => {
@@ -407,11 +408,11 @@ const turnQueries = {
       worksheet.addRow({});
       const resultsRow = {
         plates: 'Total',
-        product: creditSums.product.toFixed(2),
-        totalWeight: `$${creditSums.totalWeight.toFixed(2)} tons`,
-        subtotal: `$${creditSums.subtotal.toFixed(2)}`,
-        tax: `$${creditSums.tax.toFixed(2)}`,
-        totalPrice: `$${creditSums.totalPrice.toFixed(2)}`
+        product: format.number(creditSums.product),
+        totalWeight: `${format.currency(creditSums.totalWeight)} tons`,
+        subtotal: format.currency(creditSums.subtotal),
+        tax: format.currency(creditSums.tax),
+        totalPrice: format.currency(creditSums.totalPrice)
       };
       worksheet.addRow(resultsRow);
       Object.keys(resultsRow).forEach(key => {

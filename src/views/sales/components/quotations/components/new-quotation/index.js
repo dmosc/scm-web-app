@@ -13,6 +13,8 @@ import {
   Button,
   Tag,
   DatePicker,
+  Input,
+  Checkbox,
   message
 } from 'antd';
 import { NewQuotationForm, Footer } from './elements';
@@ -26,12 +28,12 @@ const { Text } = Typography;
 const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => {
   const [rocks, setRocks] = useState([]);
   const [clients, setClients] = useState([]);
-  const [loadingClients, setLoadingClients] = useState(false);
+  const [loadingBusinessNames, setLoadingBusinessNames] = useState(false);
   const [search, setSearch] = useState('');
   const [filteredRocks, setFilteredRocks] = useState([]);
   const debouncedSearch = useDebounce(search, 400);
   const [prices, setPrices] = useState([]);
-  const [quotationForm, setQuotationForm] = useState(false);
+  const [quotationForm, setQuotationForm] = useState({});
   const [newPriceForm, setNewPriceForm] = useState({
     currentRockIndex: undefined,
     priceQuoted: undefined
@@ -56,7 +58,7 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
     const getClients = async () => {
       if (!debouncedSearch) {
         setClients([]);
-        setLoadingClients(false);
+        setLoadingBusinessNames(false);
         return;
       }
 
@@ -69,7 +71,7 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
         }
       });
 
-      setLoadingClients(false);
+      setLoadingBusinessNames(false);
       setClients(clientsToSet);
     };
 
@@ -85,14 +87,23 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
 
   const addRock = event => {
     event.preventDefault();
-    const { currentRockIndex, priceQuoted } = newPriceForm;
+    const { currentRockIndex, priceQuoted, freight } = newPriceForm;
 
     if (typeof priceQuoted !== 'number') {
       message.error('El precio no es un número');
       return;
     }
 
-    if (!priceQuoted || typeof currentRockIndex !== 'number') {
+    if (quotationForm.hasFreight && typeof freight !== 'number') {
+      message.error('El flete no es un número');
+      return;
+    }
+
+    if (
+      !priceQuoted ||
+      (quotationForm.hasFreight && !freight) ||
+      typeof currentRockIndex !== 'number'
+    ) {
       message.error('Completa los campos');
       return;
     }
@@ -102,6 +113,7 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
       {
         rock: filteredRocks[currentRockIndex].id,
         nameToDisplay: filteredRocks[currentRockIndex].name,
+        freight,
         priceQuoted
       }
     ]);
@@ -120,8 +132,8 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
       return;
     }
 
-    if (!quotationForm.client) {
-      message.warning('Especifica para qué cliente va dirigida la cotización');
+    if (!quotationForm.name) {
+      message.warning('Especifica para qué nombre (atención) va dirigida la cotización');
       return;
     }
 
@@ -135,7 +147,11 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
       variables: {
         quotation: {
           ...quotationForm,
-          products: prices.map(({ rock, priceQuoted }) => ({ rock, price: priceQuoted }))
+          products: prices.map(({ rock, priceQuoted, freight }) => ({
+            rock,
+            price: priceQuoted,
+            freight: quotationForm.hasFreight ? freight : undefined
+          }))
         }
       }
     });
@@ -152,22 +168,30 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
       title="Añade una nueva cotización"
       visible={visible}
       onClose={() => toggleNewQuotation(false)}
-      width={800}
+      width="80%"
     >
       <Divider style={{ marginTop: 0 }} orientation="left">
         ¿Para quién es la cotización?
       </Divider>
+      <Input
+        required
+        style={{ width: '100%' }}
+        placeholder="Atención"
+        value={quotationForm.name ? [quotationForm.name] : undefined}
+        onChange={({ target: { value: name } }) => setQuotationForm({ ...quotationForm, name })}
+      />
+      <Divider orientation="left">Nombre del negocio</Divider>
       <Select
         mode="tags"
-        dropdownStyle={{ display: quotationForm.client ? 'none' : 'initial' }}
+        dropdownStyle={{ display: quotationForm.businessName ? 'none' : 'initial' }}
         style={{ width: '100%' }}
         maxTagCount={1}
-        placeholder="Cliente"
+        placeholder="Nombre del negocio"
         onSearch={setSearch}
-        value={quotationForm.client ? [quotationForm.client] : undefined}
-        onChange={values => setQuotationForm({ ...quotationForm, client: values[0] })}
+        value={quotationForm.businessName ? [quotationForm.businessName] : undefined}
+        onChange={values => setQuotationForm({ ...quotationForm, businessName: values[0] })}
         notFoundContent={null}
-        loading={loadingClients}
+        loading={loadingBusinessNames}
       >
         {clients.map(({ id, businessName }) => (
           <Option key={id} value={businessName}>
@@ -175,6 +199,21 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
           </Option>
         ))}
       </Select>
+      <Checkbox
+        style={{
+          marginLeft: 'auto',
+          marginTop: 10,
+          width: 'fit-content',
+          display: 'flex',
+          justifyContent: 'right'
+        }}
+        disabled={prices.length > 0}
+        onChange={({ target: { checked } }) =>
+          setQuotationForm({ ...quotationForm, hasFreight: checked })
+        }
+      >
+        Incluye flete
+      </Checkbox>
       <Divider orientation="left">Añade las piedras y sus precios cotizados</Divider>
       <NewQuotationForm onSubmit={addRock}>
         <Select
@@ -196,12 +235,23 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
             </Option>
           ))}
         </Select>
+        {quotationForm.hasFreight && (
+          <InputNumber
+            required
+            value={newPriceForm.freight}
+            onChange={freight => setNewPriceForm({ ...newPriceForm, freight })}
+            style={{ flexBasis: '30%', width: '100%', marginRight: 5 }}
+            placeholder="Flete en MXN / Ton"
+            min={0}
+            step={0.01}
+          />
+        )}
         <InputNumber
           required
           value={newPriceForm.priceQuoted}
           onChange={priceQuoted => setNewPriceForm({ ...newPriceForm, priceQuoted })}
           style={{ flexBasis: '30%', width: '100%', marginRight: 5 }}
-          placeholder="MXN / Ton"
+          placeholder="Cotización en MXN / Ton"
           min={0}
           step={0.01}
         />
@@ -216,10 +266,11 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
         style={{ marginTop: 10 }}
         bordered
         dataSource={prices}
-        renderItem={({ nameToDisplay, priceQuoted }, index) => (
+        renderItem={({ nameToDisplay, priceQuoted, freight }, index) => (
           <Item>
             <Text>{nameToDisplay}</Text>
             <div>
+              {quotationForm.hasFreight && <Tag color="orange">Flete a: ${freight}MXN</Tag>}
               <Tag color="blue">Cotizado a: ${priceQuoted}MXN</Tag>
               <Button onClick={() => removeRock(index)} type="danger" icon="delete" size="small" />
             </div>
@@ -231,15 +282,6 @@ const NewQuotation = ({ client, visible, toggleNewQuotation, updateFather }) => 
         style={{ width: '100%' }}
         onChange={date => setQuotationForm({ ...quotationForm, validUntil: date })}
         disabledDate={d => moment(d).isBefore(moment())}
-      />
-      <Divider orientation="left">Añade flete</Divider>
-      <InputNumber
-        value={newPriceForm.freight}
-        onChange={freight => setQuotationForm({ ...quotationForm, freight })}
-        style={{ width: '100%' }}
-        placeholder="MXN"
-        min={0}
-        step={0.01}
       />
       <Footer>
         <Button onClick={createQuotation} type="primary">
