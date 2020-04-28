@@ -23,7 +23,10 @@ const rockQueries = {
     else return rocks;
   }),
   rockSalesReport: authenticated(
-    async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type, turn } }) => {
+    async (
+      _,
+      { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type, paymentType, turn } }
+    ) => {
       const allRocks = await Rock.find({ deleted: false }).select('id');
       const date = new Date();
 
@@ -43,6 +46,11 @@ const rockQueries = {
               : allRocks.map(({ id }) => Types.ObjectId(id))
         }
       };
+
+      if (paymentType) {
+        if (paymentType === 'CASH') $match.credit = false;
+        if (paymentType === 'CREDIT') $match.credit = true;
+      }
 
       if (turn) {
         $match.turn = Types.ObjectId(turn);
@@ -96,7 +104,10 @@ const rockQueries = {
     }
   ),
   rockMonthSalesReport: authenticated(
-    async (_, { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type, turn } }) => {
+    async (
+      _,
+      { filters: { rocks: oldRocks, start: oldStart, end: oldEnd, type, paymentType, turn } }
+    ) => {
       const allRocks = await Rock.find({ deleted: false }).select('id');
       const date = new Date();
 
@@ -116,6 +127,11 @@ const rockQueries = {
               : allRocks.map(({ id }) => Types.ObjectId(id))
         }
       };
+
+      if (paymentType) {
+        if (paymentType === 'CASH') $match.credit = false;
+        if (paymentType === 'CREDIT') $match.credit = true;
+      }
 
       if (turn) {
         $match.turn = turn;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { format } from 'utils/functions';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
@@ -381,13 +382,13 @@ const TicketSubmitForm = ({
           </Select>
         </Form.Item>
         <Row>
-          <Text disabled>{total >= 0 ? `Subtotal: $${(total - tax).toFixed(2)} MXN` : '-'}</Text>
+          <Text disabled>{total >= 0 ? `Subtotal: ${format.currency(total - tax)} MXN` : '-'}</Text>
         </Row>
         <Row>
-          <Text disabled>{total >= 0 ? `Tax: $${tax} MXN` : '-'}</Text>
+          <Text disabled>{total >= 0 ? `Tax: ${format.currency(tax)} MXN` : '-'}</Text>
         </Row>
         <Row>
-          <Title level={4}>{`Total: $${total} MXN`}</Title>
+          <Title level={4}>{`Total: ${format.currency(total)} MXN`}</Title>
         </Row>
       </Form>
     </Modal>

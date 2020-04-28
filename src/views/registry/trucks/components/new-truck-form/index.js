@@ -63,7 +63,7 @@ const NewTruckForm = ({ form, visible, toggleNewTruckModal, client, trucks, setT
               brand,
               model,
               weight,
-              client: cli.substring(cli.indexOf(':') + 1),
+              client: cli.split(':')[1],
               drivers
             }
           }
@@ -102,20 +102,29 @@ const NewTruckForm = ({ form, visible, toggleNewTruckModal, client, trucks, setT
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item>
-          <Select
-            showSearch
-            allowClear
-            style={{ width: '100%' }}
-            placeholder="Cliente"
-            onSearch={onSearch}
-            loading={loadingClients}
-          >
-            {clients.map(({ id, businessName }) => (
-              <Option key={id} value={`${businessName}:${id}`}>
-                <span>{`${businessName}`}</span>
-              </Option>
-            ))}
-          </Select>
+          {form.getFieldDecorator('client', {
+            rules: [
+              {
+                required: true,
+                message: 'Un cliente es requerido!'
+              }
+            ]
+          })(
+            <Select
+              showSearch
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Cliente"
+              onSearch={onSearch}
+              loading={loadingClients}
+            >
+              {clients.map(({ id, businessName }) => (
+                <Option key={id} value={`${businessName}:${id}`}>
+                  <span>{`${businessName}`}</span>
+                </Option>
+              ))}
+            </Select>
+          )}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('plates', {
