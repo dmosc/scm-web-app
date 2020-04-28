@@ -17,7 +17,7 @@ const Quotations = ({ client }) => {
   const [quotations, setQuotations] = useState([]);
   const [isNewQuotationOpen, toggleNewQuotation] = useState(false);
   const [filters, setFilters] = useState({
-    client: '',
+    name: '',
     createdRange: { start: undefined, end: undefined },
     validRange: { start: undefined, end: undefined }
   });
@@ -31,7 +31,7 @@ const Quotations = ({ client }) => {
         data: { quotations: quotationsToSet }
       } = await client.query({
         query: GET_QUOTATIONS,
-        variables: { filters: debouncedFilters }
+        variables: { filters: { ...debouncedFilters, businessName: debouncedFilters.name } }
       });
 
       setLoading(false);
@@ -49,7 +49,7 @@ const Quotations = ({ client }) => {
     setFilters(filtersToSet);
   };
 
-  const downloadPDF = async ({ id, folio }) => {
+  const downloadPDF = async ({ id }) => {
     const {
       data: { quotationPDF }
     } = await client.query({
@@ -69,9 +69,14 @@ const Quotations = ({ client }) => {
       key: 'folio'
     },
     {
-      title: 'Cliente',
-      dataIndex: 'client',
-      key: 'client'
+      title: 'Atención',
+      dataIndex: 'name',
+      key: 'name'
+    },
+    {
+      title: 'Nombre del negocio',
+      dataIndex: 'businessName',
+      key: 'businessName'
     },
     {
       title: 'Creado el',
@@ -86,20 +91,15 @@ const Quotations = ({ client }) => {
       render: date => moment(date).format('ll')
     },
     {
-      title: 'Flete',
-      dataIndex: 'freight',
-      key: 'freight',
-      render: freight => `$${freight} MXN`
-    },
-    {
       title: 'Productos',
-      dataIndex: 'products',
-      key: 'products',
-      render: products =>
-        products.map(({ rock, price }) => (
-          <Tag key={rock.id} color="geekblue">
-            {rock.name}: ${price} MXN
-          </Tag>
+      render: ({ products, hasFreight }) =>
+        products.map(({ rock, price, freight }) => (
+          <div key={rock.id} style={{ margin: '3px 0' }}>
+            <Tag color="geekblue">
+              {rock.name}: ${price} MXN <br />
+              {hasFreight && `Flete: $${freight} MXN`}
+            </Tag>
+          </div>
         ))
     },
     {

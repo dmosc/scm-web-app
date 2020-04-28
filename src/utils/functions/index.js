@@ -34,4 +34,23 @@ const printPDF = base64PDF =>
     };
   });
 
-export { printPDF };
+const format = {
+  number: num => {
+    let toFormat = num;
+
+    if (typeof num === 'number') toFormat = Number(num);
+
+    let formatted = toFormat.toLocaleString('es-MX', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    // This is a special case when number is 4 digits long and needs a ,
+    if (formatted.length === 7) formatted = `${formatted[0]},${formatted.substring(1)}`;
+
+    return formatted;
+  },
+  currency: num => `$${format.number(num)}`
+};
+
+export { printPDF, format };

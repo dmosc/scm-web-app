@@ -4,11 +4,12 @@ const GET_QUOTATIONS = gql`
   query quotations($filters: QuotationFilters!) {
     quotations(filters: $filters) {
       id
-      client
+      name
+      businessName
       createdAt
       validUntil
-      freight
       folio
+      hasFreight
       createdBy {
         id
         firstName
@@ -19,6 +20,7 @@ const GET_QUOTATIONS = gql`
           id
           name
         }
+        freight
         price
       }
     }

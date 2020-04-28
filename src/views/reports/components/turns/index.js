@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import { format } from 'utils/functions';
 import PropTypes from 'prop-types';
 import {
   Bar,
@@ -254,7 +255,7 @@ const Turns = ({ client, globalFilters }) => {
               <Statistic
                 valueStyle={{ color: '#3f8600' }}
                 title="Ventas"
-                value={summary?.total?.toFixed(2)}
+                value={format.currency(summary?.total)}
                 suffix="MXN"
                 prefix={<Icon type="rise" />}
               />
@@ -263,7 +264,7 @@ const Turns = ({ client, globalFilters }) => {
               <Statistic
                 valueStyle={{ color: '#30CEE7' }}
                 title="Contado"
-                value={`$${summary?.upfront?.toFixed(2)}`}
+                value={format.currency(summary?.upfront)}
                 suffix="MXN"
               />
             </Col>
@@ -271,7 +272,7 @@ const Turns = ({ client, globalFilters }) => {
               <Statistic
                 valueStyle={{ color: '#FFAB00' }}
                 title="Crédito"
-                value={`$${summary?.credit?.toFixed(2)}`}
+                value={format.currency(summary?.credit)}
                 suffix="MXN"
               />
             </Col>
@@ -300,8 +301,8 @@ const Turns = ({ client, globalFilters }) => {
 
                     return {
                       name: info.businessName,
-                      credit,
-                      cash
+                      credit: credit.toFixed(2),
+                      cash: cash.toFixed(2)
                     };
                   })}
                   outerRadius={60}
@@ -362,7 +363,7 @@ const Turns = ({ client, globalFilters }) => {
                             <Statistic
                               valueStyle={{ color: '#FF4F64' }}
                               title="Peso neto"
-                              value={ticket.totalWeight.toFixed(2)}
+                              value={format.number(ticket.totalWeight)}
                               suffix="tons"
                               prefix={<Icon type="car" />}
                             />
@@ -371,7 +372,7 @@ const Turns = ({ client, globalFilters }) => {
                             <Statistic
                               valueStyle={{ color: '#1890ff' }}
                               title="Subtotal"
-                              value={(ticket.totalPrice - ticket.tax).toFixed(2)}
+                              value={format.currency(ticket.totalPrice - ticket.tax)}
                               suffix="MXN"
                               prefix={<Icon type="check-circle" />}
                             />
@@ -380,7 +381,7 @@ const Turns = ({ client, globalFilters }) => {
                             <Statistic
                               valueStyle={{ color: '#FFAB00' }}
                               title="Impuesto"
-                              value={ticket.tax.toFixed(2)}
+                              value={format.currency(ticket.tax)}
                               suffix="MXN"
                               prefix={<Icon type="minus-circle" />}
                             />
@@ -389,7 +390,7 @@ const Turns = ({ client, globalFilters }) => {
                             <Statistic
                               valueStyle={{ color: '#3f8600' }}
                               title="Total"
-                              value={ticket.totalPrice.toFixed(2)}
+                              value={format.currency(ticket.totalPrice)}
                               prefix={<Icon type="plus-square" />}
                               suffix="MXN"
                             />

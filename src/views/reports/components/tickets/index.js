@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
@@ -226,7 +227,7 @@ const Tickets = ({ client, globalFilters }) => {
                 <Statistic
                   valueStyle={{ color: '#3f8600' }}
                   title="Ventas"
-                  value={ticketsSummary?.total?.toFixed(2)}
+                  value={format.currency(ticketsSummary?.total || 0)}
                   suffix="MXN"
                   prefix={<Icon type="rise" />}
                 />
@@ -235,7 +236,7 @@ const Tickets = ({ client, globalFilters }) => {
                 <Statistic
                   valueStyle={{ color: '#30CEE7' }}
                   title="Contado"
-                  value={`$${ticketsSummary?.upfront?.toFixed(2)}`}
+                  value={format.currency(ticketsSummary?.upfront || 0)}
                   suffix="MXN"
                 />
               </Col>
@@ -243,7 +244,7 @@ const Tickets = ({ client, globalFilters }) => {
                 <Statistic
                   valueStyle={{ color: '#FFAB00' }}
                   title="Crédito"
-                  value={`$${ticketsSummary?.credit?.toFixed(2)}`}
+                  value={format.currency(ticketsSummary?.credit || 0)}
                   suffix="MXN"
                 />
               </Col>
@@ -383,7 +384,7 @@ const Tickets = ({ client, globalFilters }) => {
                               <Statistic
                                 valueStyle={{ color: '#FF4F64' }}
                                 title="Peso neto"
-                                value={ticket.totalWeight.toFixed(2)}
+                                value={format.number(ticket.totalWeight)}
                                 suffix="tons"
                                 prefix={<Icon type="car" />}
                               />
@@ -392,7 +393,7 @@ const Tickets = ({ client, globalFilters }) => {
                               <Statistic
                                 valueStyle={{ color: '#1890ff' }}
                                 title="Subtotal"
-                                value={(ticket.totalPrice - ticket.tax).toFixed(2)}
+                                value={format.currency(ticket.totalPrice - ticket.tax)}
                                 suffix="MXN"
                                 prefix={<Icon type="check-circle" />}
                               />
@@ -401,7 +402,7 @@ const Tickets = ({ client, globalFilters }) => {
                               <Statistic
                                 valueStyle={{ color: '#FFAB00' }}
                                 title="Impuesto"
-                                value={ticket.tax.toFixed(2)}
+                                value={format.currency(ticket.tax)}
                                 suffix="MXN"
                                 prefix={<Icon type="minus-circle" />}
                               />
@@ -410,7 +411,7 @@ const Tickets = ({ client, globalFilters }) => {
                               <Statistic
                                 valueStyle={{ color: '#3f8600' }}
                                 title="Total"
-                                value={ticket.totalPrice.toFixed(2)}
+                                value={format.currency(ticket.totalPrice)}
                                 prefix={<Icon type="plus-square" />}
                                 suffix="MXN"
                               />

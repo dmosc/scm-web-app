@@ -3,7 +3,7 @@ import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { printPDF } from 'utils/functions';
+import { printPDF, format } from 'utils/functions';
 import shortid from 'shortid';
 import { notification, Table, Tag, Row, Tooltip, Button } from 'antd';
 import Title from './components/title';
@@ -92,13 +92,13 @@ const History = ({ client }) => {
       title: 'Impuestos',
       dataIndex: 'tax',
       key: 'tax',
-      render: tax => `$${tax.toFixed(2)}`
+      render: tax => format.currency(tax)
     },
     {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
-      render: total => `$${total.toFixed(2)}`
+      render: total => format.currency(total)
     },
     {
       title: 'Acciones',
