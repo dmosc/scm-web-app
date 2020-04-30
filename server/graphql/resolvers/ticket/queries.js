@@ -801,7 +801,7 @@ const ticketQueries = {
             plates: ticket.truck[0].plates,
             product: ticket.product[0].name,
             totalWeight: format.number(ticket.totalWeight),
-            sobtotal: format.number(ticket.sobtotal),
+            subtotal: format.number(ticket.subtotal),
             tax: format.number(ticket.tax),
             totalPrice: format.number(ticket.totalPrice),
             credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
