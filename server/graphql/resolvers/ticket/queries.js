@@ -44,14 +44,19 @@ const ticketQueries = {
     else return tickets;
   }),
   ticketPDF: async (_, { id }) => {
-    const ticket = await Ticket.findOne({ _id: id }).populate('client store product truck');
+    const ticket = await Ticket.findOne({ _id: id }).populate(
+      'client store product truck usersInvolved.cashier'
+    );
 
+    const {
+      usersInvolved: { cashier }
+    } = ticket;
     const { address } = ticket.client;
 
     const pdfOptions = {
       content: [
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*', '*'],
             body: [
@@ -61,9 +66,10 @@ const ticketQueries = {
                 {
                   table: {
                     body: [
-                      [{ text: `Folio: ${ticket.folio}`, fontSize: 18 }],
-                      [{ text: moment(ticket.out).format('l LTS'), fontSize: 18 }],
-                      [{ text: ticket.credit ? 'Crédito' : 'Contado', fontSize: 18 }]
+                      [{ text: `Folio: ${ticket.folio}`, fontSize: 16 }],
+                      [{ text: moment(ticket.out).format('l LTS'), fontSize: 16 }],
+                      [{ text: ticket.credit ? 'Crédito' : 'Contado', fontSize: 16 }],
+                      [{ text: `Operador: ${cashier.firstName} ${cashier.lastName}`, fontSize: 16 }]
                     ]
                   },
                   layout: 'noBorders',
@@ -137,6 +143,32 @@ const ticketQueries = {
                   table: {
                     headerRows: 1,
                     body: [['Toneladas'], [ticket.totalWeight]]
+                  },
+                  layout: 'headerLineOnly'
+                }
+              ]
+            ]
+          },
+          layout: 'noBorders'
+        },
+        {
+          margin: [0, 40, 0, 0],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  table: {
+                    headerRows: 1,
+                    body: [[''], [`${ticket.driver}`]]
+                  },
+                  layout: 'headerLineOnly'
+                },
+                {
+                  margin: [30, 0],
+                  table: {
+                    headerRows: 1,
+                    body: [[''], ['SUPERVISOR DE ÁREA']]
                   },
                   layout: 'headerLineOnly'
                 }
