@@ -81,7 +81,7 @@ const ticketQueries = {
           layout: 'noBorders'
         },
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*'],
             body: [
@@ -126,7 +126,7 @@ const ticketQueries = {
           layout: 'noBorders'
         },
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*'],
             body: [
@@ -152,7 +152,7 @@ const ticketQueries = {
           layout: 'noBorders'
         },
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*'],
             body: [
