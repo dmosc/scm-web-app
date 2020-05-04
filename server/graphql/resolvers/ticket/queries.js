@@ -333,7 +333,7 @@ const ticketQueries = {
       } = productSummary[i];
 
       // eslint-disable-next-line no-await-in-loop
-      const specialPrice = await ClientPrice.find({ client, rock: product[0].id }).sort({
+      const specialPrice = await ClientPrice.find({ client, rock: product[0]._id }).sort({
         addedAt: 'descending'
       });
 

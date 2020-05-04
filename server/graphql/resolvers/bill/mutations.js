@@ -56,7 +56,7 @@ const billMutations = {
         } = productSummary[i];
 
         // eslint-disable-next-line no-await-in-loop
-        const specialPrice = await ClientPrice.find({ client, rock: product[0].id }).sort({
+        const specialPrice = await ClientPrice.find({ client, rock: product[0]._id }).sort({
           addedAt: 'descending'
         });
 
@@ -70,7 +70,7 @@ const billMutations = {
           folios.push(folioId);
         });
 
-        products.push({ product: product[0], price, weight, total: productTotal });
+        products.push({ product: product[0], price, weight, total: productTotal - productTax });
       }
 
       const folio = await Folio.findOneAndUpdate(
