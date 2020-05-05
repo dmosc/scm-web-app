@@ -137,12 +137,18 @@ const promotionQueries = {
     const ticket = await Ticket.findById(args.ticket);
     const groups = await ClientsGroup.find({ clients: ticket.client });
 
+    const groupIds = groups.map(({ _id }) => _id);
+
     const eligibleClients = {
       $or: [
-        { clients: { $exists: false } },
-        { clients: { $size: 0 } },
+        {
+          $and: [
+            { $or: [{ clients: { $size: 0 } }, { clients: { $exists: false } }] },
+            { $or: [{ groups: { $size: 0 } }, { groups: { $exists: false } }] }
+          ]
+        },
         { clients: ticket.client },
-        { groups }
+        { groups: { $in: [...groupIds] } }
       ]
     };
 

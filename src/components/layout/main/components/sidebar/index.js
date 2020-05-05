@@ -61,7 +61,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/clientes">
                   <Link to="/registros/clientes">
-                    <Icon type="usergroup-add" />
+                    <Icon type="user" />
                     Clientes
                   </Link>
                 </Item>
@@ -71,6 +71,14 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                   <Link to="/registros/peticiones-clientes">
                     <Icon type="form" />
                     Peticiones
+                  </Link>
+                </Item>
+              )}
+              {(isAdmin || isSupport || isManager) && (
+                <Item key="registros/grupos">
+                  <Link to="/registros/grupos">
+                    <Icon type="team" />
+                    Grupos
                   </Link>
                 </Item>
               )}
@@ -89,7 +97,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               <ItemGroup title="Usuarios">
                 <Item key="registros/usuarios">
                   <Link to="/registros/usuarios">
-                    <Icon type="user-add" />
+                    <Icon type="user" />
                     Usuarios
                   </Link>
                 </Item>
