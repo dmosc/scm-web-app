@@ -8,6 +8,9 @@ import clientMutations from './client/mutations';
 // Client price
 import clientPriceQueries from './client-price/queries';
 import clientPriceMutations from './client-price/mutations';
+// Clients group
+import clientsGroupQueries from './clients-group/queries';
+import clientsGroupMutations from './clients-group/mutations';
 // Client credit limit
 import clientCreditLimitQueries from './client-credit-limit/queries';
 import clientCreditLimitMutations from './client-credit-limit/mutations';
@@ -70,6 +73,7 @@ const resolvers = {
     ...userQueries,
     ...clientQueries,
     ...clientPriceQueries,
+    ...clientsGroupQueries,
     ...clientCreditLimitQueries,
     ...ticketQueries,
     ...truckQueries,
@@ -91,6 +95,7 @@ const resolvers = {
     ...userMutations,
     ...clientMutations,
     ...clientPriceMutations,
+    ...clientsGroupMutations,
     ...clientCreditLimitMutations,
     ...ticketMutations,
     ...truckMutations,

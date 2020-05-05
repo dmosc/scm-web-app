@@ -22,6 +22,10 @@ const GET_PROMOTIONS = gql`
         id
         businessName
       }
+      groups {
+        id
+        name
+      }
       createdBy {
         id
         firstName

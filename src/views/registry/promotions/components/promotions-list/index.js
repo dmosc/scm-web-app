@@ -64,22 +64,35 @@ const PromotionsList = ({
             <Content>
               <Col style={{ flexGrow: 1, flexBasis: '70%', marginRight: 10 }}>
                 <Row style={{ marginTop: 10 }}>
-                  <Row>
-                    <Text type="secondary" style={{ marginRight: 10 }}>
-                      Creador:
-                    </Text>
-                    <Text style={{ marginRight: 10 }}>
-                      {promotion.createdBy.firstName} {promotion.createdBy.lastName}
-                    </Text>
-                  </Row>
+                  <Text type="secondary" style={{ marginRight: 10 }}>
+                    Creador:
+                  </Text>
+                  <Text strong style={{ marginRight: 10 }}>
+                    {promotion.createdBy.firstName} {promotion.createdBy.lastName}
+                  </Text>
+                </Row>
+                <Row style={{ marginTop: 10 }}>
+                  <Text type="secondary" style={{ marginRight: 10 }}>
+                    Participantes:
+                  </Text>
+                  <Tag color="purple" style={{ marginRight: 10 }}>
+                    {`${promotion.clients.length} ${
+                      promotion.clients.length === 1 ? 'cliente' : 'clientes'
+                    }`}
+                  </Tag>
+                  <Tag color="geekblue" style={{ marginRight: 10 }}>
+                    {`${promotion.groups.length} ${
+                      promotion.groups.length === 1 ? 'grupo' : 'grupos'
+                    }`}
+                  </Tag>
                 </Row>
               </Col>
               <Col style={{ flexGrow: 1, flexBasis: '30%', marginTop: 20 }}>
-                <Text strong>Descuento aplicado</Text>
+                <Text strong>Detalles de la promoción:</Text>
                 <Col style={{ marginTop: 10 }}>
                   <Row style={{ display: 'flex', marginTop: 5 }} key={promotion.product.rock.id}>
                     <Text style={{ marginRight: 'auto' }}>{promotion.product.rock.name}:</Text>
-                    <Tag color="blue">${promotion.product.price}MXN</Tag>
+                    <Tag color="green">${promotion.product.price}MXN</Tag>
                   </Row>
                 </Col>
               </Col>
