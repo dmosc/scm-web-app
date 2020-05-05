@@ -10,6 +10,7 @@ type Promotion {
   bill: Boolean
   product: ProductPromotion
   clients: [Client!]
+  groups: [ClientsGroup!]
   createdBy: User!
   disabled: Boolean
 }
@@ -29,6 +30,7 @@ input PromotionInput {
   bill: Boolean
   product: ProductPromotionInput!
   clients: [ID!]
+  groups: [ID!]
 }
 
 input PromotionEditInput {
@@ -40,6 +42,7 @@ input PromotionEditInput {
   credit: Boolean
   bill: Boolean
   clients: [ID!]
+  groups: [ID!]
 }
 
 input ProductPromotionInput {

@@ -2,6 +2,7 @@
 # import * from "client.graphql"
 # import * from "client-price.graphql"
 # import * from "client-credit-limit.graphql"
+# import * from "clients-group.graphql"
 # import * from "ticket.graphql"
 # import * from "bill.graphql"
 # import * from "truck.graphql"
@@ -53,25 +54,29 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientsSummary(
     clientIds: [ID]!
-    range: DateRange
-    turnId: ID
-    billType: TicketBillType
+      range: DateRange
+      turnId: ID
+      billType: TicketBillType
   ): ClientsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  clientsSummaryXLS(
-    clientIds: [ID]!
-    range: DateRange
-    turnId: ID
-    billType: TicketBillType
-  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  # Ticket
-  ticket(id: ID!): Ticket
+    clientsSummaryXLS(
+        clientIds: [ID]!
+        range: DateRange
+        turnId: ID
+        billType: TicketBillType
+    ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+    # ClientsGroup
+    clientsGroup(id: ID!): ClientsGroup @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+    clientsGroups(filters: ClientsGroupFilters!): [ClientsGroup!]!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+    # Ticket
+    ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
-  tickets(filters: TicketFilters!): [Ticket!]!
+    tickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  ticketPDF(id: ID!): String! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  activeTickets(filters: TicketFilters!): [Ticket!]!
+    ticketPDF(id: ID!): String! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+    activeTickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
+    disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, MANAGER])
   notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
@@ -185,25 +190,30 @@ type Mutation {
   user(user: UserRegisterInput!): User!
   login(user: UserLogin!): String!
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
-  # Client
-  client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
-  clientAddToBalance(client: ID!, toAdd: Float!): Client
+    # Client
+    client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
+    clientAddToBalance(client: ID!, toAdd: Float!): Client
     @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
-  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
-  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, CASHIER])
-  # Client Price
-  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
-  # Client Credit Limit
-  clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
+    clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
+    clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, CASHIER])
+    # Client Price
+    clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+    # Client Credit Limit
+    clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
     @auth(roles: [ADMIN, MANAGER, SUPPORT])
-  # Ticket
-  ticket(ticket: TicketInput!): Ticket
+    # ClientsGroup
+    clientsGroup(clientsGroup: ClientsGroupInput!): ClientsGroup
+    @auth(roles: [ADMIN, MANAGER, CASHIER])
+    clientsGroupEdit(clientsGroup: ClientsGroupEditInput!): ClientsGroup
+    @auth(roles: [ADMIN, MANAGER, SUPPORT])
+    # Ticket
+    ticket(ticket: TicketInput!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  ticketEdit(ticket: TicketEditInput!): Ticket
+    ticketEdit(ticket: TicketEditInput!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  ticketInit(ticket: TicketInitInput!): Ticket!
+    ticketInit(ticket: TicketInitInput!): Ticket!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  ticketProductLoad(ticket: TicketProductLoadInput!): Ticket!
+    ticketProductLoad(ticket: TicketProductLoadInput!): Ticket!
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
   ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
