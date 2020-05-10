@@ -256,12 +256,18 @@ const ticketMutations = {
 
     return true;
   }),
-  ticketSubmit: authenticated(async (_, args, { pubsub }) => {
+  ticketSubmit: authenticated(async (_, args, { req: { userRequesting }, pubsub }) => {
     const { id, driver, weight, credit, bill, promotion: promotionId } = args.ticket;
 
     const newTicket = await Ticket.findOneAndUpdate(
       { _id: id },
-      { driver: driver.toUpperCase(), weight: weight.toFixed(2), bill, $unset: { promotion: 1 } },
+      {
+        driver: driver.toUpperCase(),
+        weight: weight.toFixed(2),
+        bill,
+        $unset: { promotion: 1 },
+        'usersInvolved.cashier': userRequesting.id
+      },
       { new: true }
     ).populate('client truck');
 

@@ -3,7 +3,7 @@ import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment';
-import { format } from '../../../../src/utils/functions'
+import { format } from '../../../../src/utils/functions';
 import { createWorkbook, createWorksheet } from '../../../utils/reports';
 import { ClientPrice, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
@@ -44,14 +44,19 @@ const ticketQueries = {
     else return tickets;
   }),
   ticketPDF: async (_, { id }) => {
-    const ticket = await Ticket.findOne({ _id: id }).populate('client store product truck');
+    const ticket = await Ticket.findOne({ _id: id }).populate(
+      'client store product truck usersInvolved.cashier'
+    );
 
+    const {
+      usersInvolved: { cashier }
+    } = ticket;
     const { address } = ticket.client;
 
     const pdfOptions = {
       content: [
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*', '*'],
             body: [
@@ -61,9 +66,10 @@ const ticketQueries = {
                 {
                   table: {
                     body: [
-                      [{ text: `Folio: ${ticket.folio}`, fontSize: 18 }],
-                      [{ text: moment(ticket.out).format('l LTS'), fontSize: 18 }],
-                      [{ text: ticket.credit ? 'Crédito' : 'Contado', fontSize: 18 }]
+                      [{ text: `Folio: ${ticket.folio}`, fontSize: 16 }],
+                      [{ text: moment(ticket.out).format('l LTS'), fontSize: 16 }],
+                      [{ text: ticket.credit ? 'Crédito' : 'Contado', fontSize: 16 }],
+                      [{ text: `Operador: ${cashier.firstName} ${cashier.lastName}`, fontSize: 16 }]
                     ]
                   },
                   layout: 'noBorders',
@@ -75,7 +81,7 @@ const ticketQueries = {
           layout: 'noBorders'
         },
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*'],
             body: [
@@ -120,7 +126,7 @@ const ticketQueries = {
           layout: 'noBorders'
         },
         {
-          margin: [0, 40, 0, 0],
+          margin: [0, 10, 0, 0],
           table: {
             widths: ['*', '*'],
             body: [
@@ -137,6 +143,32 @@ const ticketQueries = {
                   table: {
                     headerRows: 1,
                     body: [['Toneladas'], [ticket.totalWeight]]
+                  },
+                  layout: 'headerLineOnly'
+                }
+              ]
+            ]
+          },
+          layout: 'noBorders'
+        },
+        {
+          margin: [0, 10, 0, 0],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  table: {
+                    headerRows: 1,
+                    body: [[''], [`${ticket.driver}`]]
+                  },
+                  layout: 'headerLineOnly'
+                },
+                {
+                  margin: [30, 0],
+                  table: {
+                    headerRows: 1,
+                    body: [[''], ['SUPERVISOR DE ÁREA']]
                   },
                   layout: 'headerLineOnly'
                 }
@@ -301,7 +333,7 @@ const ticketQueries = {
       } = productSummary[i];
 
       // eslint-disable-next-line no-await-in-loop
-      const specialPrice = await ClientPrice.find({ client, rock: product[0].id }).sort({
+      const specialPrice = await ClientPrice.find({ client, rock: product[0]._id }).sort({
         addedAt: 'descending'
       });
 
@@ -801,7 +833,7 @@ const ticketQueries = {
             plates: ticket.truck[0].plates,
             product: ticket.product[0].name,
             totalWeight: format.number(ticket.totalWeight),
-            sobtotal: format.number(ticket.sobtotal),
+            subtotal: format.number(ticket.subtotal),
             tax: format.number(ticket.tax),
             totalPrice: format.number(ticket.totalPrice),
             credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
@@ -816,7 +848,7 @@ const ticketQueries = {
           totalWeight: `${format.number(totalWeight)} tons`,
           subtotal: `${format.currency(subtotal)}`,
           tax: `${format.currency(tax)}`,
-          totalPrice: `${format.currency(totalPrice)}`,
+          totalPrice: `${format.currency(totalPrice)}`
         };
 
         sums.product += tickets.length;
@@ -848,7 +880,7 @@ const ticketQueries = {
         totalWeight: `${format.number(sums.totalWeight)} tons`,
         subtotal: format.currency(sums.subtotal),
         tax: format.currency(sums.subtotal),
-        totalPrice: format.currency(sums.subtotal),
+        totalPrice: format.currency(sums.subtotal)
       };
       worksheet.addRow(resultsRow);
       Object.keys(resultsRow).forEach(key => {

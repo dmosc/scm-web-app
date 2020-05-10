@@ -2,6 +2,7 @@
 # import * from "client.graphql"
 # import * from "client-price.graphql"
 # import * from "client-credit-limit.graphql"
+# import * from "clients-group.graphql"
 # import * from "ticket.graphql"
 # import * from "bill.graphql"
 # import * from "truck.graphql"
@@ -63,6 +64,10 @@ type Query {
     turnId: ID
     billType: TicketBillType
   ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  # ClientsGroup
+  clientsGroup(id: ID!): ClientsGroup @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsGroups(filters: ClientsGroupFilters!): [ClientsGroup!]!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Ticket
   ticket(id: ID!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -195,6 +200,11 @@ type Mutation {
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client Credit Limit
   clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
+    @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # ClientsGroup
+  clientsGroup(clientsGroup: ClientsGroupInput!): ClientsGroup
+    @auth(roles: [ADMIN, MANAGER, CASHIER])
+  clientsGroupEdit(clientsGroup: ClientsGroupEditInput!): ClientsGroup
     @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Ticket
   ticket(ticket: TicketInput!): Ticket

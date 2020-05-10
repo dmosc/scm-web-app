@@ -1,5 +1,5 @@
 import { ApolloError } from 'apollo-server';
-import { Promotion, Ticket } from '../../../mongo-db/models';
+import { ClientsGroup, Promotion, Ticket } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const promotionQueries = {
@@ -128,16 +128,28 @@ const promotionQueries = {
 
     const promotions = await Promotion.find(query)
       .limit(limit || Number.MAX_SAFE_INTEGER)
-      .populate('product.rock clients createdBy');
+      .populate('product.rock clients groups createdBy');
 
     if (!promotions) throw new ApolloError('¡No ha sido posible cargar las promociones!');
     else return promotions;
   }),
   promotionsForTicket: authenticated(async (_, args) => {
     const ticket = await Ticket.findById(args.ticket);
+    const groups = await ClientsGroup.find({ clients: ticket.client });
+
+    const groupIds = groups.map(({ _id }) => _id);
 
     const eligibleClients = {
-      $or: [{ clients: { $exists: false } }, { clients: { $size: 0 } }, { clients: ticket.client }]
+      $or: [
+        {
+          $and: [
+            { $or: [{ clients: { $size: 0 } }, { clients: { $exists: false } }] },
+            { $or: [{ groups: { $size: 0 } }, { groups: { $exists: false } }] }
+          ]
+        },
+        { clients: ticket.client },
+        { groups: { $in: [...groupIds] } }
+      ]
     };
 
     const query = {
@@ -191,7 +203,9 @@ const promotionQueries = {
       ]
     };
 
-    const promotions = await Promotion.find(query).populate('product.rock clients createdBy');
+    const promotions = await Promotion.find(query).populate(
+      'product.rock clients groups createdBy'
+    );
 
     if (!promotions) throw new ApolloError('¡No ha sido posible cargar las promociones!');
     else return promotions;

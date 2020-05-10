@@ -12,7 +12,7 @@ const promotionMutations = {
 
     try {
       await promotion.save();
-      return Promotion.findById(promotion.id).populate('product.rock clients createdBy');
+      return Promotion.findById(promotion.id).populate('product.rock clients groups createdBy');
     } catch (e) {
       return e;
     }
@@ -33,10 +33,11 @@ const promotionMutations = {
     promotionToSet.bill = typeof promotion.bill !== 'undefined' ? promotion.bill : undefined;
     promotionToSet.credit = typeof promotion.credit !== 'undefined' ? promotion.credit : undefined;
     promotionToSet.clients = promotion.clients ? [...promotion.clients] : undefined;
+    promotionToSet.groups = promotion.groups ? [...promotion.groups] : undefined;
 
     await promotionToSet.save();
 
-    return Promotion.findById(promotion.id).populate('product.rock clients createdBy');
+    return Promotion.findById(promotion.id).populate('product.rock clients groups createdBy');
   }),
   promotionDisable: authenticated(async (_, { id }, { req: { userRequesting } }) => {
     try {

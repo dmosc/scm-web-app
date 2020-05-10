@@ -45,6 +45,12 @@ const ClientPriceRequests = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "ClientsGroup" */
+const ClientsGroup = Loadable({
+  loader: () => import('./views/registry/clients-group'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "Trucks" */
 const Trucks = Loadable({
   loader: () => import('./views/registry/trucks'),
@@ -152,6 +158,9 @@ const App = ({
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests} />
+          )}
+          {(isAdmin || isSupport || isManager) && (
+            <Route exact path="/registros/grupos" component={ClientsGroup} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/camiones" component={Trucks} />

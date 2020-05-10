@@ -17,6 +17,7 @@ const Promotion = new Schema({
   bill: { type: Boolean, required: false },
   product: { type: ProductPromotion, required: true },
   clients: [{ type: Schema.Types.ObjectId, ref: 'Client', required: false }],
+  groups: [{ type: Schema.Types.ObjectId, ref: 'ClientsGroup', required: false }],
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }
 });
 

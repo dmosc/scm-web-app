@@ -21,6 +21,7 @@ const GET_CLIENT_TICKETS_PENDING_TO_BILL = gql`
       totalPrice
       out
       product {
+        id
         name
       }
     }
