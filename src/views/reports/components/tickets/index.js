@@ -20,7 +20,12 @@ import {
   Typography
 } from 'antd';
 import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
-import { GET_SUMMARY, GET_SUMMARY_XLS, GET_TURNS } from './graphql/queries';
+import {
+  GET_SUMMARY,
+  GET_SUMMARY_BY_CLIENT_XLS,
+  GET_SUMMARY_BY_DATE_XLS,
+  GET_TURNS
+} from './graphql/queries';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -28,7 +33,8 @@ const { Panel } = Collapse;
 
 const Tickets = ({ client, globalFilters }) => {
   const [loading, setLoading] = useState(true);
-  const [loadingReport, setLoadingReport] = useState(false);
+  const [loadingReportByClients, setLoadingReportByClients] = useState(false);
+  const [loadingReportByDates, setLoadingReportByDates] = useState(false);
   const [loadingTurns, setLoadingTurns] = useState(false);
   const [turns, setTurns] = useState([]);
   const [turnId, setTurnId] = useState();
@@ -113,8 +119,8 @@ const Tickets = ({ client, globalFilters }) => {
     getTurns();
   }, [client, globalFilters]);
 
-  const downloadReport = async () => {
-    setLoadingReport(true);
+  const downloadReportByDates = async () => {
+    setLoadingReportByDates(true);
 
     const range =
       globalFilters.end && globalFilters.start
@@ -125,9 +131,9 @@ const Tickets = ({ client, globalFilters }) => {
         : undefined;
 
     const {
-      data: { ticketsSummaryXLS }
+      data: { ticketsSummaryByDateXLS }
     } = await client.query({
-      query: GET_SUMMARY_XLS,
+      query: GET_SUMMARY_BY_DATE_XLS,
       variables: {
         turnId,
         range,
@@ -137,15 +143,50 @@ const Tickets = ({ client, globalFilters }) => {
     });
 
     const link = document.createElement('a');
-    link.href = encodeURI(ticketsSummaryXLS);
-    link.download = `BOLETAS-${new Date().toISOString()}.xlsx`;
+    link.href = encodeURI(ticketsSummaryByDateXLS);
+    link.download = `BOLETAS-FECHA-${new Date().toISOString()}.xlsx`;
     link.target = '_blank';
     document.body.appendChild(link);
 
     link.click();
 
     document.body.removeChild(link);
-    setLoadingReport(false);
+    setLoadingReportByDates(false);
+  };
+
+  const downloadReportByClients = async () => {
+    setLoadingReportByClients(true);
+
+    const range =
+      globalFilters.end && globalFilters.start
+        ? {
+            start: globalFilters.start,
+            end: globalFilters.end
+          }
+        : undefined;
+
+    const {
+      data: { ticketsSummaryByClientXLS }
+    } = await client.query({
+      query: GET_SUMMARY_BY_CLIENT_XLS,
+      variables: {
+        turnId,
+        range,
+        billType: billType || undefined,
+        paymentType: paymentType || undefined
+      }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(ticketsSummaryByClientXLS);
+    link.download = `BOLETAS-CLIENTE-${new Date().toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    setLoadingReportByClients(false);
   };
 
   return (
@@ -181,7 +222,7 @@ const Tickets = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de boletas</Text>
           <Select
             allowClear
-            style={{ minWidth: 300 }}
+            style={{ minWidth: 150 }}
             placeholder="Tipo de boletas"
             onChange={value => setBillType(value)}
             value={billType}
@@ -195,7 +236,7 @@ const Tickets = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de pago</Text>
           <Select
             allowClear
-            style={{ minWidth: 300 }}
+            style={{ minWidth: 150 }}
             placeholder="Tipo de pago"
             onChange={value => setPaymentType(value)}
             value={paymentType}
@@ -207,12 +248,21 @@ const Tickets = ({ client, globalFilters }) => {
         </InputContainer>
         <Button
           style={{ marginLeft: 'auto', marginTop: 20 }}
-          loading={loadingReport}
+          loading={loadingReportByClients}
           type="primary"
           icon="file-excel"
-          onClick={downloadReport}
+          onClick={downloadReportByClients}
         >
-          {(loadingReport && 'Generando...') || 'Descargar reporte'}
+          {(loadingReportByClients && 'Generando...') || 'Reporte por cliente'}
+        </Button>
+        <Button
+          style={{ marginLeft: 5, marginTop: 20 }}
+          loading={loadingReportByDates}
+          type="primary"
+          icon="file-excel"
+          onClick={downloadReportByDates}
+        >
+          {(loadingReportByDates && 'Generando...') || 'Reporte por fecha'}
         </Button>
       </FiltersContainer>
       {loading ? (
@@ -353,8 +403,7 @@ const Tickets = ({ client, globalFilters }) => {
             </Card>
           </ChartsContainer>
           <Card
-            title={`${ticketsSummary?.clients?.length ||
-              0} tienen boletas con los filtros seleccionados`}
+            title={`${ticketsSummary?.clients?.length || 0} boletas con los filtros seleccionados`}
           >
             {ticketsSummary?.clients?.length > 0 ? (
               <Collapse

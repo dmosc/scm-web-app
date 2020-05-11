@@ -94,7 +94,13 @@ type Query {
     billType: TicketBillType
     paymentType: TicketPaymentType
   ): TicketsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  ticketsSummaryXLS(
+  ticketsSummaryByClientXLS(
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+    paymentType: TicketPaymentType
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ticketsSummaryByDateXLS(
     range: DateRange
     turnId: ID
     billType: TicketBillType

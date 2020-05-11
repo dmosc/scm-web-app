@@ -651,7 +651,7 @@ const ticketQueries = {
       return { clients, upfront, credit, total };
     }
   ),
-  ticketsSummaryXLS: authenticated(
+  ticketsSummaryByClientXLS: authenticated(
     async (
       _,
       {
@@ -879,8 +879,8 @@ const ticketQueries = {
         product: format.number(sums.product),
         totalWeight: `${format.number(sums.totalWeight)} tons`,
         subtotal: format.currency(sums.subtotal),
-        tax: format.currency(sums.subtotal),
-        totalPrice: format.currency(sums.subtotal)
+        tax: format.currency(sums.tax),
+        totalPrice: format.currency(sums.totalPrice)
       };
       worksheet.addRow(resultsRow);
       Object.keys(resultsRow).forEach(key => {
@@ -894,6 +894,165 @@ const ticketQueries = {
         };
       });
       worksheet.addRow({});
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+        'base64'
+      )}`;
+    }
+  ),
+  ticketsSummaryByDateXLS: authenticated(
+    async (
+      _,
+      {
+        range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
+        turnId,
+        billType,
+        paymentType
+      }
+    ) => {
+      const query = {
+        out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true }
+      };
+
+      if (turnId) {
+        query.turn = turnId;
+      }
+
+      if (billType) {
+        if (billType === 'BILL') query.tax = { $gt: 0 };
+        if (billType === 'REMISSION') query.tax = { $eq: 0 };
+      }
+
+      if (paymentType) {
+        if (paymentType === 'CASH') query.credit = false;
+        if (paymentType === 'CREDIT') query.credit = true;
+      }
+
+      const tickets = await Ticket.find(query).populate('client product truck');
+
+      const attributes = [
+        {
+          header: 'Folio',
+          key: 'folio'
+        },
+        {
+          header: 'Fecha',
+          key: 'out'
+        },
+        {
+          header: 'Cliente',
+          key: 'businessName'
+        },
+        {
+          header: 'Camión',
+          key: 'plates'
+        },
+        {
+          header: 'Producto',
+          key: 'product'
+        },
+        {
+          header: 'Peso',
+          key: 'totalWeight'
+        },
+        {
+          header: 'Importe Producto',
+          key: 'subtotal'
+        },
+        {
+          header: 'Impuesto',
+          key: 'tax'
+        },
+        {
+          header: 'Importe',
+          key: 'totalPrice'
+        },
+        {
+          header: 'Tipo de pago',
+          key: 'credit'
+        },
+        {
+          header: 'Status',
+          key: 'status'
+        }
+      ];
+
+      for (let i = 0; i < attributes.length; i++) attributes[i] = { ...attributes[i], width: 15 };
+
+      const workbook = createWorkbook();
+
+      const worksheet = createWorksheet(
+        workbook,
+        {
+          name: 'BoletasFecha',
+          columns: attributes,
+          date: new Date(),
+          title: `Boletas por fecha del ${moment(range.start).format('lll')} al ${moment(
+            range.end
+          ).format('lll')}`
+        },
+        {
+          pageSetup: { fitToPage: true, orientation: 'landscape' }
+        }
+      );
+
+      const sums = {
+        product: 0,
+        totalWeight: 0,
+        subtotal: 0,
+        tax: 0,
+        totalPrice: 0
+      };
+
+      tickets.forEach(ticket => {
+        const ticketRow = {
+          folio: ticket.folio,
+          out: moment(ticket.out).format('LLL'),
+          businessName: ticket.client.businessName,
+          plates: ticket.truck.plates,
+          product: ticket.product.name,
+          totalWeight: format.number(ticket.totalWeight),
+          subtotal: format.number(ticket.totalPrice - ticket.tax),
+          tax: format.number(ticket.tax || 0),
+          totalPrice: format.number(ticket.totalPrice),
+          credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
+          status: !ticket.isBilled ? '<Por facturar>' : ticket.tax ? '<Remisionada>' : '<Facturada>'
+        };
+
+        sums.product++;
+        sums.totalWeight += ticket.totalWeight;
+        sums.subtotal += ticket.totalPrice - (ticket.tax || 0);
+        sums.tax += ticket.tax || 0;
+        sums.totalPrice += ticket.totalPrice;
+
+        worksheet.addRow(ticketRow);
+      });
+
+      const resultsRow = {
+        plates: 'Total',
+        product: format.number(sums.product),
+        totalWeight: `${format.number(sums.totalWeight)} tons`,
+        subtotal: format.currency(sums.subtotal),
+        tax: format.currency(sums.tax),
+        totalPrice: format.currency(sums.totalPrice)
+      };
+
+      worksheet.addRow(resultsRow);
+
+      Object.keys(resultsRow).forEach(key => {
+        const row = worksheet.lastRow.getCell(key);
+        row.border = {
+          top: { style: 'medium' }
+        };
+        row.font = {
+          size: 12,
+          bold: true
+        };
+      });
 
       const buffer = await workbook.xlsx.writeBuffer();
 
