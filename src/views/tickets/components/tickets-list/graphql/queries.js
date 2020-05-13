@@ -67,4 +67,13 @@ const GET_TICKETS = gql`
   }
 `;
 
-export { GET_TICKETS };
+const GET_PRODUCT_RATE = gql`
+  query productRate {
+    productRate {
+      id
+      rate
+    }
+  }
+`;
+
+export { GET_TICKETS, GET_PRODUCT_RATE };

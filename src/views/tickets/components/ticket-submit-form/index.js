@@ -6,7 +6,12 @@ import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
 import { Form, InputNumber, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import { GET_CREDIT_LIMIT, GET_SPECIAL_PRICE, GET_TRUCK_DRIVERS } from './graphql/queries';
+import {
+  GET_CREDIT_LIMIT,
+  GET_PRODUCT_RATE,
+  GET_SPECIAL_PRICE,
+  GET_TRUCK_DRIVERS
+} from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -20,6 +25,7 @@ const TicketSubmitForm = ({
   setCurrent,
   currentForm
 }) => {
+  const [productRate, setProductRate] = useState(null);
   const [drivers, setDrivers] = useState([]);
   const [loadedInitialData, setLoadedInitialData] = useState(false);
   const [weight, setWeight] = useState(0);
@@ -67,6 +73,18 @@ const TicketSubmitForm = ({
       }
     };
   }, [setFieldsValue]);
+
+  useEffect(() => {
+    const getProductRate = async () => {
+      const {
+        data: { productRate: productRateToSet }
+      } = await client.query({ query: GET_PRODUCT_RATE });
+
+      setProductRate(productRateToSet);
+    };
+
+    getProductRate();
+  }, [client]);
 
   useEffect(() => {
     const {
@@ -141,13 +159,15 @@ const TicketSubmitForm = ({
             ? specialPrice.price
             : currentTicket.product.price;
 
+        const percentageProductRate = productRate?.rate ? 1 + productRate?.rate / 100 : 1;
+
         const totalWeight =
           currentTicket.totalWeight && weight === 0
             ? currentTicket.totalWeight
             : (weight - currentTicket.truck.weight).toFixed(2);
         const taxToSet = bill ? totalWeight * price * TAX : 0;
 
-        const totalToSet = (totalWeight * price + taxToSet).toFixed(2);
+        const totalToSet = (totalWeight * percentageProductRate * price + taxToSet).toFixed(2);
 
         if (totalToSet > 0) {
           setTotal(totalToSet);
@@ -168,7 +188,8 @@ const TicketSubmitForm = ({
     tax,
     weight,
     promotion,
-    currentTicketPromotions
+    currentTicketPromotions,
+    productRate
   ]);
 
   useEffect(() => {

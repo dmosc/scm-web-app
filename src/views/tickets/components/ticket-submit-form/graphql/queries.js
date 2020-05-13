@@ -27,4 +27,13 @@ const GET_CREDIT_LIMIT = gql`
   }
 `;
 
-export { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE, GET_CREDIT_LIMIT };
+const GET_PRODUCT_RATE = gql`
+  query productRate {
+    productRate {
+      id
+      rate
+    }
+  }
+`;
+
+export { GET_TRUCK_DRIVERS, GET_SPECIAL_PRICE, GET_CREDIT_LIMIT, GET_PRODUCT_RATE };
