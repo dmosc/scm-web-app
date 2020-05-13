@@ -1,0 +1,8 @@
+type ProductRate {
+  id: ID!
+  rate: Float!
+}
+
+input ProductRateInput {
+  rate: Float!
+}
