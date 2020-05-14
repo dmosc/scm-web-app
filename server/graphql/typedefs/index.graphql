@@ -19,6 +19,7 @@
 # import * from "tank-diesel-load.graphql"
 # import * from "store.graphql"
 # import * from "quotation.graphql"
+# import * from "product-rate.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -189,6 +190,8 @@ type Query {
   quotation(id: ID!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
   quotationPDF(id: ID!): String! @auth(roles: [ADMIN, ACCOUNTANT])
   quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, ACCOUNTANT])
+  # ProductRate
+  productRate: ProductRate @auth(roles: [ADMIN])
 }
 
 type Mutation {
@@ -280,6 +283,8 @@ type Mutation {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Quotation
   quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
+  # ProductRate
+  productRate(rate: Float!): ProductRate @auth(roles: [ADMIN])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
