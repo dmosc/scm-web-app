@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { join } from 'path';
 import { format } from '../../../../src/utils/functions/index';
 import { Bill } from '../../../mongo-db/models';

@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Types } from 'mongoose';
 import { createWorksheet, createWorkbook } from '../../../utils/reports';
 import { format } from '../../../../src/utils/functions';

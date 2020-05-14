@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Divider, Typography, DatePicker } from 'antd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { FiltersContainer, InputContainer } from './elements';
 
 const { Text, Title } = Typography;
@@ -18,7 +18,11 @@ const TitleSection = ({ globalFilters, setGlobalFilters }) => {
     if (start && end && start.toString() === end.toString()) {
       setGlobalFilters({ ...globalFilters, start: null, end: null });
     } else {
-      setGlobalFilters({ ...globalFilters, start, end });
+      setGlobalFilters({
+        ...globalFilters,
+        start: start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+        end: end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+      });
     }
   };
 
@@ -34,14 +38,35 @@ const TitleSection = ({ globalFilters, setGlobalFilters }) => {
           <RangePicker
             style={{ marginRight: 0 }}
             ranges={{
-              'De hoy': [moment().subtract(1, 'day'), moment()],
-              'De ayer': [moment().subtract(2, 'day'), moment().subtract(1, 'day')],
-              'De este mes': [moment().startOf('month'), moment().endOf('month')],
+              'De hoy': [
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .subtract(1, 'day'),
+                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+              ],
+              'De ayer': [
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .subtract(2, 'day'),
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .subtract(1, 'day')
+              ],
+              'De este mes': [
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .startOf('month'),
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .endOf('month')
+              ],
               'Del mes pasado': [
                 moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .startOf('month')
                   .subtract(1, 'month'),
                 moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
                   .subtract(1, 'month')
               ]

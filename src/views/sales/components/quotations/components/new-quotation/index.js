@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { useDebounce } from 'use-lodash-debounce';
 import {
   Drawer,

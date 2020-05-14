@@ -4,7 +4,7 @@ import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import { printPDF } from 'utils/functions';
 import shortid from 'shortid';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Table, Tag, Typography, Row, Tooltip, Button } from 'antd';
 import { TableContainer, Card } from './elements';
 import Title from './components/title';

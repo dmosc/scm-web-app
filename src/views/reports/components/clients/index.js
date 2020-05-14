@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { format } from 'utils/functions';
 import { useDebounce } from 'use-lodash-debounce';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   Cell,
   Legend,

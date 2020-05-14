@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Select, Tag, Transfer } from 'antd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const { Option } = Select;
 

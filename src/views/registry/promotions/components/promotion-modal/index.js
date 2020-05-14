@@ -15,7 +15,7 @@ import {
 import { useDebounce } from 'use-lodash-debounce';
 import { withApollo } from 'react-apollo';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ProductSelectContainer } from './elements';
 import { GET_CLIENTS, GET_GROUPS, GET_ROCKS } from './graphql/queries';
 import { EDIT_PROMOTION, REGISTER_PROMOTION } from './graphql/mutations';
@@ -138,8 +138,8 @@ const PromotionModal = ({
         if (promotionToSet.dates) {
           const [start, end] = promotionToSet.dates;
 
-          promotionToSet.start = start;
-          promotionToSet.end = end;
+          promotionToSet.start = start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+          promotionToSet.end = end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
           delete promotionToSet.dates;
         }
@@ -264,10 +264,30 @@ const PromotionModal = ({
             <RangePicker
               style={{ width: '58%', marginRight: 15 }}
               ranges={{
-                'Una semana': [moment(), moment().add(1, 'week')],
-                'Dos semanas': [moment(), moment().add(2, 'week')],
-                'Un mes': [moment(), moment().add(1, 'month')],
-                'Tres meses': [moment(), moment().add(3, 'month')]
+                'Una semana': [
+                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(1, 'week')
+                ],
+                'Dos semanas': [
+                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(2, 'week')
+                ],
+                'Un mes': [
+                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(1, 'month')
+                ],
+                'Tres meses': [
+                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(3, 'month')
+                ]
               }}
               // onChange={dates => handleDateFilterChange(dates)}
             />

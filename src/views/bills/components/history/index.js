@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { printPDF, format } from 'utils/functions';
 import shortid from 'shortid';
 import { notification, Table, Tag, Row, Tooltip, Button } from 'antd';

@@ -4,7 +4,7 @@ import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
 import periods from 'utils/enums/periods';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   CartesianGrid,
   Cell,

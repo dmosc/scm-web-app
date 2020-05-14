@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from 'components/providers/withAuth';
 import { withApollo } from 'react-apollo';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { List, Typography, Tag, Row, Col, Button, message, Modal } from 'antd';
 import PropTypes from 'prop-types';
 import { Content, Title } from './elements';

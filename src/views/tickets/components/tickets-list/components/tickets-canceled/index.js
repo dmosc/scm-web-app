@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import { Button, Drawer, List, message, Typography } from 'antd';
 import { withApollo } from 'react-apollo';

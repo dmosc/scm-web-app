@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { format } from 'utils/functions';
@@ -44,7 +44,11 @@ const History = ({ client }) => {
     if (start && end && start.toString() === end.toString()) {
       setFilters({ ...filters, start: null, end: null, date: start });
     } else {
-      setFilters({ ...filters, start, end });
+      setFilters({
+        ...filters,
+        start: start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+        end: end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+      });
     }
   };
 

@@ -4,7 +4,7 @@ import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   Button,
   Card,
@@ -115,6 +115,8 @@ const Tickets = ({ client, globalFilters }) => {
       setLoadingTurns(false);
       setTurns(toSet);
     };
+
+    console.log(globalFilters);
 
     getTurns();
   }, [client, globalFilters]);
