@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Timeline, Typography, Empty, Spin, Select } from 'antd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import { GET_HISTORY_PRICES, GET_ROCKS } from './graphql/queries';

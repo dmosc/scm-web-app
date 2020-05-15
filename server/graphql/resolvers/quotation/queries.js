@@ -1,5 +1,5 @@
 import { join } from 'path';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { format } from '../../../../src/utils/functions';
 import { Quotation } from '../../../mongo-db/models';
 import { createPDF } from '../../../utils/pdfs';

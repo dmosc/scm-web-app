@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const createWorkbook = () => {
   const workbook = new ExcelJS.Workbook();

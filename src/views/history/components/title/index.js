@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Button, DatePicker, Input, Select, Typography } from 'antd';
 import { FiltersContainer, HeadContainer, InputContainer, TitleContainer } from './elements';
 import { GET_PRODUCTS, GET_REPORT } from './graphql/queries';
@@ -99,14 +99,33 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
           <RangePicker
             style={{ marginRight: 0 }}
             ranges={{
-              'De hoy': [moment(), moment().add(1, 'day')],
-              'De ayer': [moment().subtract(1, 'day'), moment()],
-              'De este mes': [moment().startOf('month'), moment().endOf('month')],
+              'De hoy': [
+                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .add(1, 'day')
+              ],
+              'De ayer': [
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .subtract(1, 'day'),
+                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+              ],
+              'De este mes': [
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .startOf('month'),
+                moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  .endOf('month')
+              ],
               'Del mes pasado': [
                 moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .startOf('month')
                   .subtract(1, 'month'),
                 moment()
+                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
                   .subtract(1, 'month')
               ]

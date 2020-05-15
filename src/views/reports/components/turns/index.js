@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { format } from 'utils/functions';
 import PropTypes from 'prop-types';
 import {

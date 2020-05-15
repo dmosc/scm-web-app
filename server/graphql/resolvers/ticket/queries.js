@@ -2,7 +2,7 @@ import { ApolloError } from 'apollo-server';
 import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { format } from '../../../../src/utils/functions';
 import { createWorkbook, createWorksheet } from '../../../utils/reports';
 import { ClientPrice, Ticket } from '../../../mongo-db/models';

@@ -8,8 +8,12 @@ import Layout from 'components/layout/main';
 import { useAuth } from 'components/providers/withAuth';
 import TopBarProgress from 'react-topbar-progress-indicator';
 import Auth from 'views/auth';
+import moment from 'moment-timezone';
 import 'moment/locale/es';
 import './App.css';
+
+// Set every
+moment.tz.setDefault('America/Monterrey');
 
 LogRocket.init(LOG_ROCKET_ID);
 
