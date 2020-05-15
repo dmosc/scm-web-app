@@ -57,6 +57,7 @@
     "graphql-upload": "^10.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash.clonedeep": "^4.5.0",
+    "logrocket": "^1.0.7",
     "migrate-mongo": "^7.1.0",
     "moment": "^2.24.0",
     "mongoose": "^5.8.1",

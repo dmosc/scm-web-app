@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { LOG_ROCKET_ID } from 'config';
 import PropTypes from 'prop-types';
+import LogRocket from 'logrocket';
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import Loadable from 'react-loadable';
 import Layout from 'components/layout/main';
@@ -8,6 +10,8 @@ import TopBarProgress from 'react-topbar-progress-indicator';
 import Auth from 'views/auth';
 import 'moment/locale/es';
 import './App.css';
+
+LogRocket.init(LOG_ROCKET_ID);
 
 /* webpackChunkName: "Dashboard" */
 const Dashboard = Loadable({
@@ -142,6 +146,11 @@ const App = ({
   } = useAuth();
 
   if (isLoader && !collapsed) setCollapsed(true);
+
+  LogRocket.identify(user.id, {
+    username: user.username,
+    email: user.email
+  });
 
   return (
     <Switch>
