@@ -68,6 +68,12 @@ import quotationQueries from './quotation/queries';
 // ProductRate
 import productRateMutations from './product-rate/mutations';
 import productRateQueries from './product-rate/queries';
+// ClientSubscription
+import clientSubscriptionMutations from './client-subscription/mutations';
+import clientSubscriptionQueries from './client-subscription/queries';
+// ClientSubscriptionWarning
+import clientSubscriptionWarningMutations from './client-subscription-warning/mutations';
+import clientSubscriptionWarningQueries from './client-subscription-warning/queries';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -93,7 +99,9 @@ const resolvers = {
     ...machineDieselLoadQueries,
     ...tankDieselLoadQueries,
     ...quotationQueries,
-    ...productRateQueries
+    ...productRateQueries,
+    ...clientSubscriptionQueries,
+    ...clientSubscriptionWarningQueries
   },
   Mutation: {
     ...userMutations,
@@ -118,6 +126,8 @@ const resolvers = {
     ...tankDieselLoadMutations,
     ...quotationMutations,
     ...productRateMutations,
+    ...clientSubscriptionMutations,
+    ...clientSubscriptionWarningMutations,
     ...uploaders // AWS
   },
   Subscription: {

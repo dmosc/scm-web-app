@@ -16,6 +16,7 @@ type Client {
   balance: Float!
   depositHistory: [Deposit!]!
   defaultCreditDays: Int!
+  hasSubscription: Boolean!
 }
 
 type ClientPendingBill {
