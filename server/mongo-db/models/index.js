@@ -19,3 +19,5 @@ export { default as MachineDieselLoad } from './machine-diesel-load';
 export { default as TankDieselLoad } from './tank-diesel-load';
 export { default as Quotation } from './quotation';
 export { default as ProductRate } from './product-rate';
+export { default as ClientSubscription } from './client-subscription';
+export { default as ClientSubscriptionWarning } from './client-subscription-warning';

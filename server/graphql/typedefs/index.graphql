@@ -20,6 +20,8 @@
 # import * from "store.graphql"
 # import * from "quotation.graphql"
 # import * from "product-rate.graphql"
+# import * from "client-subscription.graphql"
+# import * from "client-subscription-warning.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -192,6 +194,13 @@ type Query {
   quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, ACCOUNTANT])
   # ProductRate
   productRate: ProductRate @auth(roles: [ADMIN])
+  # ClientSubscription
+  clientSubscriptions(filters: ClientSubscriptionFilters!): [ClientSubscription!]
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  # ClientSubscriptionWarning
+  clientSubscriptionWarning(id: ID!): ClientSubscriptionWarning
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
 }
 
 type Mutation {
@@ -285,6 +294,16 @@ type Mutation {
   quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
   # ProductRate
   productRate(rate: Float!): ProductRate @auth(roles: [ADMIN])
+  # ClientSubscription
+  clientSubscription(clientSubscription: ClientSubscriptionInput!): ClientSubscription
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  clientSubscriptionEdit(clientSubscription: ClientSubscriptionEditInput!): ClientSubscription
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  clientSubscriptionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  # ClientSubscriptionWarning
+  clientSubscriptionWarningResolve(
+    clientSubscriptionWarning: ClientSubscriptionWarningResolve!
+  ): ClientSubscriptionWarning @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!

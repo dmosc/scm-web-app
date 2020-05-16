@@ -206,7 +206,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant) && (
+        {(isAdmin || isManager || isAccountant) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
@@ -219,6 +219,12 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               <Link to="/ventas/cotizaciones">
                 <Icon type="file-protect" />
                 <span>Cotizaciones</span>
+              </Link>
+            </Item>
+            <Item key="ventas/seguimiento">
+              <Link to="/ventas/seguimiento">
+                <Icon type="eye" />
+                <span>Seguimiento</span>
               </Link>
             </Item>
           </SubMenu>

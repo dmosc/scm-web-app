@@ -67,6 +67,7 @@
     "mongoose-transactions": "^1.1.4",
     "mongoose-unique-validator": "^2.0.3",
     "mysql2": "^2.0.2",
+    "node-cron": "^2.0.3",
     "nodemon": "^2.0.1",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",

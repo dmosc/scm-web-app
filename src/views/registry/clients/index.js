@@ -14,6 +14,7 @@ import NewForm from './components/new-client-form';
 import SpecialPrices from './components/special-prices';
 import Stores from './components/stores';
 import CreditBalance from './components/credit-balance';
+import ClientSubscription from './components/client-subscription';
 
 const { confirm } = Modal;
 
@@ -23,6 +24,7 @@ const Clients = ({ client }) => {
   const [clients, setClients] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
   const [currentClient, setCurrentClient] = useState(null);
+  const [currentClientSubscription, setCurrentClientSubscription] = useState();
   const [currentClientPrices, setCurrentClientPrices] = useState();
   const [currentClientCredit, setCurrentClientCredit] = useState();
   const [currentClientStores, setCurrentClientStores] = useState();
@@ -134,9 +136,24 @@ const Clients = ({ client }) => {
         <Row>
           <Tooltip placement="top" title="Editar">
             <Button
-              style={{ marginRight: 5 }}
               onClick={() => setCurrentClient(row)}
+              style={{ marginRight: 5 }}
               icon="edit"
+              size="small"
+            />
+          </Tooltip>
+          <Tooltip
+            placement="top"
+            title={
+              row.hasSubscription ? 'Ya existe una subscripción activa' : 'Seguimiento de cliente'
+            }
+          >
+            <Button
+              onClick={() => setCurrentClientSubscription(row)}
+              style={{ marginRight: 5 }}
+              disabled={row.hasSubscription}
+              type="primary"
+              icon="eye"
               size="small"
             />
           </Tooltip>
@@ -196,6 +213,19 @@ const Clients = ({ client }) => {
           dataSource={clients.map(clientMapped => ({ ...clientMapped, key: shortid.generate() }))}
         />
       </Card>
+      {currentClient && (
+        <ClientEditForm
+          onClientEdit={onClientEdit}
+          setCurrentClient={setCurrentClient}
+          currentClient={currentClient}
+        />
+      )}
+      {currentClientSubscription && (
+        <ClientSubscription
+          close={() => setCurrentClientSubscription(undefined)}
+          currentClient={currentClientSubscription}
+        />
+      )}
       {currentClientPrices && (
         <SpecialPrices
           close={() => setCurrentClientPrices(undefined)}
@@ -212,13 +242,6 @@ const Clients = ({ client }) => {
         <Stores
           close={() => setCurrentClientStores(undefined)}
           currentClient={currentClientStores}
-        />
-      )}
-      {currentClient && (
-        <ClientEditForm
-          onClientEdit={onClientEdit}
-          setCurrentClient={setCurrentClient}
-          currentClient={currentClient}
         />
       )}
       {isNewClientModalOpen && (
