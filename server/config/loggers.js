@@ -18,6 +18,15 @@ const auroraDB = new Signale({
   }
 });
 
+const cronjobs = new Signale({
+  interactive: true,
+  scope: 'cronjobs',
+  config: {
+    displayTimestamp: true,
+    displayDate: true
+  }
+});
+
 const seeder = new Signale({
   interactive: true,
   scope: 'db:seed',
@@ -44,4 +53,4 @@ const api = new Signale({
   }
 });
 
-export { mongoDB, auroraDB, seeder, dropper, api };
+export { mongoDB, auroraDB, cronjobs, seeder, dropper, api };
