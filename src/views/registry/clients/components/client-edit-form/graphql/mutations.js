@@ -14,6 +14,7 @@ const EDIT_CLIENT = gql`
       CFDIuse
       cellphone
       defaultCreditDays
+      hasSubscription
       address {
         country
         state

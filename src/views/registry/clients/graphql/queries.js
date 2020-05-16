@@ -14,6 +14,7 @@ const GET_CLIENTS = gql`
       CFDIuse
       cellphone
       defaultCreditDays
+      hasSubscription
       address {
         country
         state
