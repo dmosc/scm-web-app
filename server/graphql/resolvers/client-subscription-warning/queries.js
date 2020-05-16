@@ -3,7 +3,7 @@ import { ClientSubscriptionWarning } from '../../../mongo-db/models';
 
 const clientSubscriptionWarningQueries = {
   clientSubscriptionWarning: authenticated(async (_, args) => {
-    return ClientSubscriptionWarning.findOne({ subscription: args.id }).populate(
+    return ClientSubscriptionWarning.findOne({ subscription: args.id, resolvedBy: { $exists: false } }).populate(
       'subscription resolvedBy'
     );
   }),
