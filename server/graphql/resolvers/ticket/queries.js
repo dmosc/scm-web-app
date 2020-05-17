@@ -4,8 +4,8 @@ import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format } from '../../../../src/utils/functions';
-import { createWorkbook, createWorksheet } from '../../../utils/reports';
-import { ClientPrice, Ticket } from '../../../mongo-db/models';
+import { createWorkbook, createWorksheet, columnToLetter } from '../../../utils/reports';
+import { ClientPrice, Ticket, Rock } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
 import { createPDF } from '../../../utils/pdfs';
@@ -1060,7 +1060,158 @@ const ticketQueries = {
         'base64'
       )}`;
     }
-  )
+  ),
+  ticketsAuxiliarySalesXLS: async (_, { month = moment(), workingDays, workingDaysPassed }) => {
+    const $match = {
+      out: {
+        $gte: new Date(moment(month).startOf('month')),
+        $lte: new Date(moment(month).endOf('month'))
+      },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true }
+    };
+
+    const [products, byRockAndDay, byDay] = await Promise.all([
+      // Get all rocks to reconstruct columns
+      Rock.find(),
+      // Get totalWeight by rock and for each day of the month
+      Ticket.aggregate([
+        {
+          $match
+        },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        {
+          $group: {
+            _id: {
+              day: { $dayOfMonth: '$out' },
+              rock: '$product'
+            },
+            totalWeight: { $sum: '$totalWeight' }
+          }
+        }
+      ]),
+      // Get totalWeight by rock and for each day of the month
+      Ticket.aggregate([
+        {
+          $match
+        },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        {
+          $group: {
+            _id: { $dayOfMonth: '$out' },
+            totalWeight: { $sum: '$totalWeight' },
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
+          }
+        }
+      ])
+    ]);
+
+    const workbook = createWorkbook();
+
+    const rockColumns = products.map(({ name }) => ({ header: name, key: name }));
+
+    const columns = [
+      {
+        header: 'DIA',
+        key: 'day'
+      },
+      ...rockColumns,
+      {
+        header: 'TOTAL TON',
+        key: 'totalWeight'
+      },
+      {
+        header: 'VENTAS NETAS',
+        key: 'netSales'
+      },
+      {
+        header: 'PRECIO PROMEDIO',
+        alignment: { wrapText: true },
+        key: 'avgPrice'
+      },
+      {
+        header: 'PRECIO PROMEDIO (SIN BASES,DESP, C 5/8, A4 PP, G3/4 PP)',
+        alignment: { wrapText: true },
+        key: 'avgPriceExcluded'
+      },
+      {
+        header: 'Total M3',
+        key: 'totalM3'
+      }
+    ];
+
+    const worksheet = createWorksheet(
+      workbook,
+      {
+        name: 'AuxiliarVentas',
+        columns,
+        date: new Date(),
+        title: `Auxiliar de ventas de ${moment(month).format('MMMM Y')}`
+      },
+      {
+        pageSetup: { fitToPage: true, orientation: 'landscape' }
+      }
+    );
+
+    const dayRows = [];
+    for (let i = 0; i < 31; i++) dayRows.push({});
+
+    byRockAndDay.forEach(({ _id, totalWeight }) => {
+      dayRows[_id.day][_id.rock[0].name] = totalWeight;
+    });
+
+    byDay.forEach(({ _id: day, total, totalWeight }) => {
+      dayRows[day].totalWeight = totalWeight;
+      dayRows[day].netSales = total;
+      dayRows[day].avgPrice = total / totalWeight;
+    });
+
+    dayRows.forEach((row, index) => {
+      worksheet.addRow({ ...row, day: index + 1 });
+    });
+
+    // Calculate total formulaes
+    const totalWeightCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number);
+    const lastProductCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number - 1);
+    const netSalesCellLetter = columnToLetter(worksheet.getColumn('netSales').number);
+
+    worksheet.eachRow(row => {
+      // Less than 7 is header
+      if (row.number >= 7) {
+        const totalWeightCell = row.getCell('totalWeight');
+        const netSalesCell = row.getCell('netSales');
+        const avgPriceCell = row.getCell('avgPrice');
+
+        if (totalWeightCell.value) {
+          avgPriceCell.value = {
+            formula: `${netSalesCellLetter}${row.number}/${totalWeightCellLetter}${row.number}`,
+            result: netSalesCell.value / totalWeightCell.value
+          };
+        }
+
+        totalWeightCell.value = {
+          // Will always be B since A is for Days
+          formula: `SUMA(B${row.number}:${lastProductCellLetter}${row.number})`,
+          result: totalWeightCell.value || 0
+        };
+      }
+    });
+
+    // Set default styles for the entire sheet
+    worksheet.eachRow(row => {
+      row.eachCell((cell, colNumber) => {
+        // eslint-disable-next-line no-param-reassign
+        const cel = row.getCell(colNumber);
+        cel.font = { size: 9 };
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+      'base64'
+    )}`;
+  }
 };
 
 export default ticketQueries;

@@ -109,6 +109,12 @@ type Query {
     billType: TicketBillType
     paymentType: TicketPaymentType
   ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ticketsAuxiliarySalesXLS(
+    month: Date
+    workingDays: Int!
+    workingDaysPassed: Int! 
+  ): String!
+  #  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Bill
   bill(id: ID, folio: String): Bill
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])

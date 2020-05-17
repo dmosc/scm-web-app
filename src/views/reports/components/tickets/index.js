@@ -116,8 +116,6 @@ const Tickets = ({ client, globalFilters }) => {
       setTurns(toSet);
     };
 
-    console.log(globalFilters);
-
     getTurns();
   }, [client, globalFilters]);
 
