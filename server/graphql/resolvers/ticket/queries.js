@@ -1233,7 +1233,7 @@ const ticketQueries = {
     const totalWeightCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number);
     const lastProductCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number - 1);
     const netSalesCellLetter = columnToLetter(worksheet.getColumn('netSales').number);
-    const avgPriceColumnLetter = columnToLetter(worksheet.getColumn('avgPrice').number);
+    const avgPriceCellLetter = columnToLetter(worksheet.getColumn('avgPrice').number);
 
     // Calculate total formulaes
     worksheet.eachRow(row => {
@@ -1284,7 +1284,7 @@ const ticketQueries = {
 
     forecastRow.totalWeight = (totalTotalWeight[0].totalWeight / workingDaysPassed) * workingDays;
     forecastRow.netSales = (totalTotalSales[0].total / workingDaysPassed) * workingDays;
-    forecastRow.avgPrice = forecastRow.totalWeight / forecastRow.netSales;
+    forecastRow.avgPrice = forecastRow.netSales / forecastRow.totalWeight;
 
     worksheet.addRow(forecastRow);
 
@@ -1314,6 +1314,7 @@ const ticketQueries = {
     });
 
     const workingDaysPassedRow = worksheet.getRow(worksheet.rowCount);
+    workingDaysPassedRow.getCell('avgPrice').fill = solidFill('FF6600');
 
     worksheet.addRow({
       totalWeight: 'Días hábiles del mes',
@@ -1321,6 +1322,62 @@ const ticketQueries = {
     });
 
     const workingDaysRow = worksheet.getRow(worksheet.rowCount);
+    workingDaysRow.getCell('avgPrice').fill = solidFill('FF6600');
+
+    // Empty space row
+    worksheet.addRow({});
+
+    worksheet.addRow({
+      totalWeight: 'Promedio Vta Diaria',
+      avgPrice: totalTotalWeight[0].totalWeight / workingDaysPassed
+    });
+
+    const dailyAvgSalesRow = worksheet.getRow(worksheet.rowCount);
+    const dailyAvgSalesCell = dailyAvgSalesRow.getCell('avgPrice');
+    dailyAvgSalesCell.fill = solidFill('CCFFFF');
+    dailyAvgSalesCell.value = {
+      formula: `${totalWeightCellLetter}${parsedAccumulatedRow.number}/${avgPriceCellLetter}${workingDaysPassedRow.number}`,
+      value: dailyAvgSalesCell.value
+    };
+
+    worksheet.addRow({
+      totalWeight: 'Tendencia Vta',
+      avgPrice: (totalTotalWeight[0].totalWeight / workingDaysPassed) * workingDays
+    });
+
+    const salesForecastRow = worksheet.getRow(worksheet.rowCount);
+    const salesForecastCell = salesForecastRow.getCell('avgPrice');
+    salesForecastCell.fill = solidFill('CCFFFF');
+    salesForecastCell.value = {
+      formula: `${avgPriceCellLetter}${dailyAvgSalesRow.number}*${avgPriceCellLetter}${workingDaysRow.number}`,
+      value: salesForecastCell.value
+    };
+
+    worksheet.addRow({
+      totalWeight: 'Promedio $$ Diario',
+      avgPrice: forecastRow.netSales / workingDays
+    });
+
+    const dailyAvgMoneyRow = worksheet.getRow(worksheet.rowCount);
+    const dailyAvgMoneyCell = dailyAvgMoneyRow.getCell('avgPrice');
+    dailyAvgMoneyCell.fill = solidFill('CCFFFF');
+    dailyAvgMoneyCell.value = {
+      formula: `${netSalesCellLetter}${parsedForecastRow.number}/${avgPriceCellLetter}${workingDaysRow.number}`,
+      value: dailyAvgMoneyCell.value
+    };
+
+    worksheet.addRow({
+      totalWeight: 'Tendencia en pesos $$',
+      avgPrice: (forecastRow.netSales / workingDays) * workingDays
+    });
+
+    const forecastInMoneyRow = worksheet.getRow(worksheet.rowCount);
+    const forecastInMoneyCell = forecastInMoneyRow.getCell('avgPrice');
+    forecastInMoneyCell.fill = solidFill('CCFFFF');
+    forecastInMoneyCell.value = {
+      formula: `${avgPriceCellLetter}${dailyAvgMoneyRow.number}*${avgPriceCellLetter}${workingDaysRow.number}`,
+      value: forecastInMoneyCell.value
+    };
 
     // Style accumulated row and generate formulaes
     for (let column = 1; column <= worksheet.columnCount; column++) {
@@ -1351,12 +1408,19 @@ const ticketQueries = {
       cell.font = { bold: true };
 
       if (column > 1 && cell.value) {
-        cell.value = {
-          formula: `${columnToLetter(column)}${
-            parsedAccumulatedRow.number
-          }/$${avgPriceColumnLetter}$${workingDaysPassedRowNumber}*$${avgPriceColumnLetter}$${workingDaysRowNumber}`,
-          result: cell.value || 0
-        };
+        if (column === worksheet.getColumn('avgPrice').number) {
+          cell.value = {
+            formula: `${netSalesCellLetter}${parsedForecastRow.number}/${totalWeightCellLetter}${parsedForecastRow.number}`,
+            result: cell.value || 0
+          };
+        } else {
+          cell.value = {
+            formula: `${columnToLetter(column)}${
+              parsedAccumulatedRow.number
+            }/$${avgPriceCellLetter}$${workingDaysPassedRowNumber}*$${avgPriceCellLetter}$${workingDaysRowNumber}`,
+            result: cell.value || 0
+          };
+        }
       }
     }
 
@@ -1366,9 +1430,9 @@ const ticketQueries = {
       cell.fill = solidFill('FFFF99');
       if (column > 1 && cell.value) {
         cell.value = {
-          formula: `$${columnToLetter(column)}${parsedForecastRow.number}/${totalWeightCellLetter}$${
+          formula: `$${columnToLetter(column)}${
             parsedForecastRow.number
-          }`,
+          }/${totalWeightCellLetter}$${parsedForecastRow.number}`,
           result: cell.value || 0
         };
       }
@@ -1380,12 +1444,24 @@ const ticketQueries = {
       for (let col = 1; col <= worksheet.columnCount; col++) {
         const cell = actualRow.getCell(col);
         cell.font = { ...cell.font, size: 9 };
-        cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' }
-        };
+
+        if (row <= worksheet.rowCount - 8) {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+        }
+
+        if (
+          (col === worksheet.getColumn('totalWeight').number ||
+            col === worksheet.getColumn('avgPrice').number) &&
+          row > headerRows &&
+          row <= headerRows + moment(month).daysInMonth()
+        ) {
+          cell.fill = solidFill('3366FF');
+        }
       }
     }
 
