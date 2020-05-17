@@ -13,8 +13,8 @@ const SalesReport = ({ client }) => {
   const [loadingSalesAuxiliary, setLoadingSalesAuxiliary] = useState(false);
   const [month, setMonth] = useState(moment().startOf('month'));
   const [workingDays, setWorkingDays] = useState({
-    total: 0,
-    passed: 0
+    total: moment().daysInMonth(),
+    passed: 1
   });
 
   const downloadSalesAuxiliary = async () => {
@@ -59,7 +59,7 @@ const SalesReport = ({ client }) => {
           <InputNumber
             value={workingDays.total}
             onChange={total => setWorkingDays({ ...workingDays, total })}
-            min={0}
+            min={1}
           />
         </InputContainer>
         <InputContainer>
@@ -67,7 +67,7 @@ const SalesReport = ({ client }) => {
           <InputNumber
             value={workingDays.passed}
             onChange={passed => setWorkingDays({ ...workingDays, passed })}
-            min={0}
+            min={1}
           />
         </InputContainer>
         <Button

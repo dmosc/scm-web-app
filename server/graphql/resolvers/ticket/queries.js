@@ -1,10 +1,17 @@
+/* eslint-disable no-param-reassign */
 import { ApolloError } from 'apollo-server';
 import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format } from '../../../../src/utils/functions';
-import { createWorkbook, createWorksheet, columnToLetter } from '../../../utils/reports';
+import {
+  createWorkbook,
+  createWorksheet,
+  columnToLetter,
+  headerRows,
+  solidFill
+} from '../../../utils/reports';
 import { ClientPrice, Ticket, Rock } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -1071,7 +1078,14 @@ const ticketQueries = {
       outTruckImage: { $exists: true }
     };
 
-    const [products, byRockAndDay, byDay] = await Promise.all([
+    const [
+      products,
+      byRockAndDay,
+      byDay,
+      byRock,
+      totalTotalWeight,
+      totalTotalSales
+    ] = await Promise.all([
       // Get all rocks to reconstruct columns
       Rock.find(),
       // Get totalWeight by rock and for each day of the month
@@ -1103,6 +1117,43 @@ const ticketQueries = {
             total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
           }
         }
+      ]),
+      // Get totalWeight by rock
+      Ticket.aggregate([
+        {
+          $match
+        },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        {
+          $group: {
+            _id: '$product',
+            totalWeight: { $sum: '$totalWeight' }
+          }
+        }
+      ]),
+      // Get total weight for every product in the month
+      Ticket.aggregate([
+        {
+          $match
+        },
+        {
+          $group: {
+            _id: null,
+            totalWeight: { $sum: '$totalWeight' }
+          }
+        }
+      ]),
+      // Get total sales for every product in the month
+      Ticket.aggregate([
+        {
+          $match
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
+          }
+        }
       ])
     ]);
 
@@ -1113,7 +1164,8 @@ const ticketQueries = {
     const columns = [
       {
         header: 'DIA',
-        key: 'day'
+        key: 'day',
+        width: 15
       },
       ...rockColumns,
       {
@@ -1126,12 +1178,10 @@ const ticketQueries = {
       },
       {
         header: 'PRECIO PROMEDIO',
-        alignment: { wrapText: true },
         key: 'avgPrice'
       },
       {
         header: 'PRECIO PROMEDIO (SIN BASES,DESP, C 5/8, A4 PP, G3/4 PP)',
-        alignment: { wrapText: true },
         key: 'avgPriceExcluded'
       },
       {
@@ -1153,8 +1203,17 @@ const ticketQueries = {
       }
     );
 
+    // Style title
+    worksheet.getRow(headerRows).eachCell((cell, colNumber) => {
+      if (colNumber < 2 || colNumber >= worksheet.getColumn('netSales').number) {
+        cell.fill = solidFill('C0C0C0');
+      } else {
+        cell.fill = solidFill('FFFF99');
+      }
+    });
+
     const dayRows = [];
-    for (let i = 0; i < 31; i++) dayRows.push({});
+    for (let i = 0; i < moment(month).daysInMonth(); i++) dayRows.push({});
 
     byRockAndDay.forEach(({ _id, totalWeight }) => {
       dayRows[_id.day][_id.rock[0].name] = totalWeight;
@@ -1170,14 +1229,16 @@ const ticketQueries = {
       worksheet.addRow({ ...row, day: index + 1 });
     });
 
-    // Calculate total formulaes
+    // Get importan columns
     const totalWeightCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number);
     const lastProductCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number - 1);
     const netSalesCellLetter = columnToLetter(worksheet.getColumn('netSales').number);
+    const avgPriceColumnLetter = columnToLetter(worksheet.getColumn('avgPrice').number);
 
+    // Calculate total formulaes
     worksheet.eachRow(row => {
       // Less than 7 is header
-      if (row.number >= 7) {
+      if (row.number > headerRows) {
         const totalWeightCell = row.getCell('totalWeight');
         const netSalesCell = row.getCell('netSales');
         const avgPriceCell = row.getCell('avgPrice');
@@ -1187,24 +1248,146 @@ const ticketQueries = {
             formula: `${netSalesCellLetter}${row.number}/${totalWeightCellLetter}${row.number}`,
             result: netSalesCell.value / totalWeightCell.value
           };
+          totalWeightCell.value = {
+            // Will always be B since A is for Days
+            formula: `SUMA(B${row.number}:${lastProductCellLetter}${row.number})`,
+            result: totalWeightCell.value || 0
+          };
         }
-
-        totalWeightCell.value = {
-          // Will always be B since A is for Days
-          formula: `SUMA(B${row.number}:${lastProductCellLetter}${row.number})`,
-          result: totalWeightCell.value || 0
-        };
       }
     });
 
-    // Set default styles for the entire sheet
-    worksheet.eachRow(row => {
-      row.eachCell((cell, colNumber) => {
-        // eslint-disable-next-line no-param-reassign
-        const cel = row.getCell(colNumber);
-        cel.font = { size: 9 };
-      });
+    // Add accumulated row
+    const accumulatedRow = {
+      day: 'ACUMULADO'
+    };
+
+    byRock.forEach(({ _id, totalWeight }) => {
+      accumulatedRow[_id[0].name] = totalWeight;
     });
+
+    accumulatedRow.totalWeight = totalTotalWeight[0].totalWeight;
+    accumulatedRow.netSales = totalTotalSales[0].total;
+
+    worksheet.addRow(accumulatedRow);
+
+    const parsedAccumulatedRow = worksheet.getRow(worksheet.rowCount);
+
+    // Add forecast rowtotalTotalWeight
+    const forecastRow = {
+      day: 'TENDENCIA'
+    };
+
+    byRock.forEach(({ _id, totalWeight }) => {
+      forecastRow[_id[0].name] = (totalWeight / workingDaysPassed) * workingDays;
+    });
+
+    forecastRow.totalWeight = (totalTotalWeight[0].totalWeight / workingDaysPassed) * workingDays;
+    forecastRow.netSales = (totalTotalSales[0].total / workingDaysPassed) * workingDays;
+    forecastRow.avgPrice = forecastRow.totalWeight / forecastRow.netSales;
+
+    worksheet.addRow(forecastRow);
+
+    const parsedForecastRow = worksheet.getRow(worksheet.rowCount);
+
+    // Add percentage row
+    const percentageRow = {
+      day: '% Producto'
+    };
+
+    byRock.forEach(({ _id }) => {
+      percentageRow[_id[0].name] = forecastRow[_id[0].name] / forecastRow.totalWeight;
+    });
+
+    percentageRow.totalWeight = forecastRow.totalWeight / forecastRow.totalWeight;
+
+    worksheet.addRow(percentageRow);
+
+    const parsedPercentageRow = worksheet.getRow(worksheet.rowCount);
+
+    // Empty space row
+    worksheet.addRow({});
+
+    worksheet.addRow({
+      totalWeight: 'Días transcurridos hábiles (efectivos)',
+      avgPrice: workingDaysPassed
+    });
+
+    const workingDaysPassedRow = worksheet.getRow(worksheet.rowCount);
+
+    worksheet.addRow({
+      totalWeight: 'Días hábiles del mes',
+      avgPrice: workingDays
+    });
+
+    const workingDaysRow = worksheet.getRow(worksheet.rowCount);
+
+    // Style accumulated row and generate formulaes
+    for (let column = 1; column <= worksheet.columnCount; column++) {
+      const cell = parsedAccumulatedRow.getCell(column);
+      cell.fill = solidFill('FFFF99');
+      if (column > 1 && cell.value) {
+        cell.value = {
+          formula: `SUMA(${columnToLetter(column)}${headerRows + 1}:${columnToLetter(
+            column
+          )}${headerRows + moment(month).daysInMonth()})`,
+          result: cell.value || 0
+        };
+      }
+    }
+
+    const accumulatedAvgPrice = parsedAccumulatedRow.getCell('avgPrice');
+    accumulatedAvgPrice.value = {
+      formula: `${netSalesCellLetter}${parsedAccumulatedRow.number}/${totalWeightCellLetter}${parsedAccumulatedRow.number}`,
+      result: accumulatedAvgPrice.value
+    };
+
+    // Style forecast row and generate formulaes
+    const workingDaysPassedRowNumber = workingDaysPassedRow.number;
+    const workingDaysRowNumber = workingDaysRow.number;
+    for (let column = 1; column <= worksheet.columnCount; column++) {
+      const cell = parsedForecastRow.getCell(column);
+      cell.fill = solidFill('FFFF99');
+      cell.font = { bold: true };
+
+      if (column > 1 && cell.value) {
+        cell.value = {
+          formula: `${columnToLetter(column)}${
+            parsedAccumulatedRow.number
+          }/$${avgPriceColumnLetter}$${workingDaysPassedRowNumber}*$${avgPriceColumnLetter}$${workingDaysRowNumber}`,
+          result: cell.value || 0
+        };
+      }
+    }
+
+    // Style percentage row and generate formulaes
+    for (let column = 1; column <= worksheet.columnCount; column++) {
+      const cell = parsedPercentageRow.getCell(column);
+      cell.fill = solidFill('FFFF99');
+      if (column > 1 && cell.value) {
+        cell.value = {
+          formula: `$${columnToLetter(column)}${parsedForecastRow.number}/${totalWeightCellLetter}$${
+            parsedForecastRow.number
+          }`,
+          result: cell.value || 0
+        };
+      }
+    }
+
+    // Style the entire sheet
+    for (let row = headerRows; row <= worksheet.rowCount; row++) {
+      const actualRow = worksheet.getRow(row);
+      for (let col = 1; col <= worksheet.columnCount; col++) {
+        const cell = actualRow.getCell(col);
+        cell.font = { ...cell.font, size: 9 };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      }
+    }
 
     const buffer = await workbook.xlsx.writeBuffer();
 

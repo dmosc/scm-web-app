@@ -100,32 +100,32 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
             style={{ marginRight: 0 }}
             ranges={{
               'De hoy': [
-                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .add(1, 'day')
               ],
               'De ayer': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(1, 'day'),
-                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
               ],
               'De este mes': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .startOf('month'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
               ],
               'Del mes pasado': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .startOf('month')
                   .subtract(1, 'month'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
                   .subtract(1, 'month')
               ]
