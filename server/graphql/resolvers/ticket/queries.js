@@ -1071,7 +1071,7 @@ const ticketQueries = {
   ticketsAuxiliarySalesXLS: async (_, { month = moment(), workingDays, workingDaysPassed }) => {
     const $match = {
       out: {
-        $gte: new Date(moment(month).startOf('month')),
+        $gte: new Date(moment(month)?.startOf('month')),
         $lte: new Date(moment(month).endOf('month'))
       },
       totalPrice: { $exists: true },
@@ -1216,13 +1216,13 @@ const ticketQueries = {
     for (let i = 0; i < moment(month).daysInMonth(); i++) dayRows.push({});
 
     byRockAndDay.forEach(({ _id, totalWeight }) => {
-      dayRows[_id.day][_id.rock[0].name] = totalWeight;
+      dayRows[_id.day - 1][_id.rock[0].name] = totalWeight;
     });
 
     byDay.forEach(({ _id: day, total, totalWeight }) => {
-      dayRows[day].totalWeight = totalWeight;
-      dayRows[day].netSales = total;
-      dayRows[day].avgPrice = total / totalWeight;
+      dayRows[day - 1].totalWeight = totalWeight;
+      dayRows[day - 1].netSales = total;
+      dayRows[day - 1].avgPrice = total / totalWeight;
     });
 
     dayRows.forEach((row, index) => {

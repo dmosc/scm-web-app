@@ -114,7 +114,7 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
               'De este mes': [
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month'),
+                  ?.startOf('month'),
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
@@ -122,7 +122,7 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
               'Del mes pasado': [
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month')
+                  ?.startOf('month')
                   .subtract(1, 'month'),
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })

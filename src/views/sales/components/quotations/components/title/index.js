@@ -62,7 +62,7 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
               'De este mes': [
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month'),
+                  ?.startOf('month'),
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
@@ -70,7 +70,7 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
               'Del mes pasado': [
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month')
+                  ?.startOf('month')
                   .subtract(1, 'month'),
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
@@ -103,7 +103,7 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
               'De este mes': [
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month'),
+                  ?.startOf('month'),
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
@@ -111,7 +111,7 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
               'Del mes pasado': [
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month')
+                  ?.startOf('month')
                   .subtract(1, 'month'),
                 moment()
                   ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })

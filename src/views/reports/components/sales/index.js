@@ -11,7 +11,7 @@ const { MonthPicker } = DatePicker;
 
 const SalesReport = ({ client }) => {
   const [loadingSalesAuxiliary, setLoadingSalesAuxiliary] = useState(false);
-  const [month, setMonth] = useState(moment().startOf('month'));
+  const [month, setMonth] = useState(moment()?.startOf('month'));
   const [workingDays, setWorkingDays] = useState({
     total: moment().daysInMonth(),
     passed: 1
@@ -50,7 +50,7 @@ const SalesReport = ({ client }) => {
           <Text type="secondary">Mes seleccionado</Text>
           <MonthPicker
             value={month}
-            onChange={date => setMonth(date.startOf('month'))}
+            onChange={date => setMonth(date?.startOf('month'))}
             placeholder="Select month"
           />
         </InputContainer>

@@ -56,7 +56,7 @@ const TitleSection = ({ globalFilters, setGlobalFilters, hideDateFilter }) => {
                 'De este mes': [
                   moment()
                     ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                    .startOf('month'),
+                    ?.startOf('month'),
                   moment()
                     ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                     .endOf('month')
@@ -64,7 +64,7 @@ const TitleSection = ({ globalFilters, setGlobalFilters, hideDateFilter }) => {
                 'Del mes pasado': [
                   moment()
                     ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                    .startOf('month')
+                    ?.startOf('month')
                     .subtract(1, 'month'),
                   moment()
                     ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
