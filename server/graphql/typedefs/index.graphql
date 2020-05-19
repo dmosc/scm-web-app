@@ -112,7 +112,8 @@ type Query {
   ticketsAuxiliarySalesXLS(
     month: Date
     workingDays: Int!
-    workingDaysPassed: Int! 
+    workingDaysPassed: Int!
+    excluded: [ID]
   ): String!
   #  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Bill

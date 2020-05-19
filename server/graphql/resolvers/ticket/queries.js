@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
-import { format } from '../../../../src/utils/functions';
+import { format, list } from '../../../../src/utils/functions';
 import {
   createWorkbook,
   createWorksheet,
@@ -1068,7 +1068,10 @@ const ticketQueries = {
       )}`;
     }
   ),
-  ticketsAuxiliarySalesXLS: async (_, { month = moment(), workingDays, workingDaysPassed }) => {
+  ticketsAuxiliarySalesXLS: async (
+    _,
+    { month = moment(), workingDays, workingDaysPassed, excluded = [] }
+  ) => {
     const $match = {
       out: {
         $gte: new Date(moment(month)?.startOf('month')),
@@ -1079,13 +1082,19 @@ const ticketQueries = {
     };
 
     const [
+      excludedProducts,
       products,
       byRockAndDay,
       byDay,
+      excludedByDay,
+      notExcludedByDay,
       byRock,
-      totalTotalWeight,
-      totalTotalSales
+      totals,
+      excludedTotals,
+      notExcludedTotals
     ] = await Promise.all([
+      // Get excluded rocks to list them
+      Rock.find({ _id: { $in: excluded } }),
       // Get all rocks to reconstruct columns
       Rock.find(),
       // Get totalWeight by rock and for each day of the month
@@ -1104,10 +1113,44 @@ const ticketQueries = {
           }
         }
       ]),
-      // Get totalWeight by rock and for each day of the month
+      // Get totalWeight and total sales of every product by day of the month
       Ticket.aggregate([
         {
           $match
+        },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        {
+          $group: {
+            _id: { $dayOfMonth: '$out' },
+            totalWeight: { $sum: '$totalWeight' },
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
+          }
+        }
+      ]),
+      // Get totalWeight and total sales of excluded products by day of the month
+      Ticket.aggregate([
+        {
+          $match: {
+            ...$match,
+            product: { $in: excluded.map(id => Types.ObjectId(id)) }
+          }
+        },
+        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+        {
+          $group: {
+            _id: { $dayOfMonth: '$out' },
+            totalWeight: { $sum: '$totalWeight' },
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
+          }
+        }
+      ]),
+      // Get totalWeight and total sales of not excluded products by day of the month
+      Ticket.aggregate([
+        {
+          $match: {
+            ...$match,
+            product: { $nin: excluded.map(id => Types.ObjectId(id)) }
+          }
         },
         { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
         {
@@ -1131,7 +1174,7 @@ const ticketQueries = {
           }
         }
       ]),
-      // Get total weight for every product in the month
+      // Get total weight and total asles for every product in the month
       Ticket.aggregate([
         {
           $match
@@ -1139,18 +1182,39 @@ const ticketQueries = {
         {
           $group: {
             _id: null,
-            totalWeight: { $sum: '$totalWeight' }
+            totalWeight: { $sum: '$totalWeight' },
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
           }
         }
       ]),
-      // Get total sales for every product in the month
+      // Get total weight and total asles for every product in the month
       Ticket.aggregate([
         {
-          $match
+          $match: {
+            ...$match,
+            product: { $in: excluded.map(id => Types.ObjectId(id)) }
+          }
         },
         {
           $group: {
             _id: null,
+            totalWeight: { $sum: '$totalWeight' },
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
+          }
+        }
+      ]),
+      // Get total weight and total asles for every product in the month
+      Ticket.aggregate([
+        {
+          $match: {
+            ...$match,
+            product: { $nin: excluded.map(id => Types.ObjectId(id)) }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalWeight: { $sum: '$totalWeight' },
             total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
           }
         }
@@ -1170,23 +1234,53 @@ const ticketQueries = {
       ...rockColumns,
       {
         header: 'TOTAL TON',
-        key: 'totalWeight'
+        key: 'totalWeight',
+        width: 15
       },
       {
         header: 'VENTAS NETAS',
-        key: 'netSales'
+        key: 'netSales',
+        width: 15
       },
       {
         header: 'PRECIO PROMEDIO',
-        key: 'avgPrice'
+        key: 'avgPrice',
+        width: 15
       },
       {
-        header: 'PRECIO PROMEDIO (SIN BASES,DESP, C 5/8, A4 PP, G3/4 PP)',
-        key: 'avgPriceExcluded'
+        header: 'TOTAL M3',
+        key: 'totalM3',
+        width: 15
       },
       {
-        header: 'Total M3',
-        key: 'totalM3'
+        header: 'TON LIMPIAS *',
+        key: 'totalWeightNotExcluded',
+        width: 15
+      },
+      {
+        header: 'IMPORTE LIMPIO *',
+        key: 'netSalesNotExcluded',
+        width: 15
+      },
+      {
+        header: 'PRECIO PROMEDIO LIMPIO *',
+        key: 'avgPriceNotExcluded',
+        width: 15
+      },
+      {
+        header: 'TON SUCIAS *',
+        key: 'totalWeightExcluded',
+        width: 15
+      },
+      {
+        header: 'IMPORTE SUCIAS *',
+        key: 'netSalesExcluded',
+        width: 15
+      },
+      {
+        header: 'PRECIO PROMEDIO SUCIO *',
+        key: 'avgPriceExcluded',
+        width: 15
       }
     ];
 
@@ -1204,12 +1298,15 @@ const ticketQueries = {
     );
 
     // Style title
-    worksheet.getRow(headerRows).eachCell((cell, colNumber) => {
+    const titleRow = worksheet.getRow(headerRows);
+    titleRow.height = 25;
+    titleRow.eachCell((cell, colNumber) => {
       if (colNumber < 2 || colNumber >= worksheet.getColumn('netSales').number) {
         cell.fill = solidFill('C0C0C0');
       } else {
         cell.fill = solidFill('FFFF99');
       }
+      cell.alignment = { wrapText: true, horizontal: 'center' };
     });
 
     const dayRows = [];
@@ -1222,17 +1319,42 @@ const ticketQueries = {
     byDay.forEach(({ _id: day, total, totalWeight }) => {
       dayRows[day - 1].totalWeight = totalWeight;
       dayRows[day - 1].netSales = total;
+      dayRows[day - 1].totalM3 = totalWeight ? totalWeight / 1.52 : undefined;
       dayRows[day - 1].avgPrice = total / totalWeight;
+    });
+
+    excludedByDay.forEach(({ _id: day, total, totalWeight }) => {
+      dayRows[day - 1].totalWeightExcluded = totalWeight;
+      dayRows[day - 1].netSalesExcluded = total;
+      dayRows[day - 1].avgPriceExcluded = total / totalWeight;
+    });
+
+    notExcludedByDay.forEach(({ _id: day, total, totalWeight }) => {
+      dayRows[day - 1].totalWeightNotExcluded = totalWeight;
+      dayRows[day - 1].netSalesNotExcluded = total;
+      dayRows[day - 1].avgPriceNotExcluded = total / totalWeight;
     });
 
     dayRows.forEach((row, index) => {
       worksheet.addRow({ ...row, day: index + 1 });
     });
 
-    // Get importan columns
-    const totalWeightCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number);
+    // Get important columns
     const lastProductCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number - 1);
+    const totalWeightCellLetter = columnToLetter(worksheet.getColumn('totalWeight').number);
+    const totalWeightExcludedCellLetter = columnToLetter(
+      worksheet.getColumn('totalWeightExcluded').number
+    );
+    const totalWeightNotExcludedCellLetter = columnToLetter(
+      worksheet.getColumn('totalWeightNotExcluded').number
+    );
     const netSalesCellLetter = columnToLetter(worksheet.getColumn('netSales').number);
+    const netSalesExcludedCellLetter = columnToLetter(
+      worksheet.getColumn('netSalesExcluded').number
+    );
+    const netSalesNotExcludedCellLetter = columnToLetter(
+      worksheet.getColumn('netSalesNotExcluded').number
+    );
     const avgPriceCellLetter = columnToLetter(worksheet.getColumn('avgPrice').number);
 
     // Calculate total formulaes
@@ -1242,6 +1364,7 @@ const ticketQueries = {
         const totalWeightCell = row.getCell('totalWeight');
         const netSalesCell = row.getCell('netSales');
         const avgPriceCell = row.getCell('avgPrice');
+        const totalM3Cell = row.getCell('totalM3');
 
         if (totalWeightCell.value) {
           avgPriceCell.value = {
@@ -1252,6 +1375,10 @@ const ticketQueries = {
             // Will always be B since A is for Days
             formula: `SUMA(B${row.number}:${lastProductCellLetter}${row.number})`,
             result: totalWeightCell.value || 0
+          };
+          totalM3Cell.value = {
+            formula: `${totalWeightCellLetter}${row.number}/1.52`,
+            result: totalM3Cell.value || 0
           };
         }
       }
@@ -1266,14 +1393,19 @@ const ticketQueries = {
       accumulatedRow[_id[0].name] = totalWeight;
     });
 
-    accumulatedRow.totalWeight = totalTotalWeight[0].totalWeight;
-    accumulatedRow.netSales = totalTotalSales[0].total;
+    accumulatedRow.totalWeight = totals[0].totalWeight;
+    accumulatedRow.totalWeightExcluded = excludedTotals[0].totalWeight;
+    accumulatedRow.totalWeightNotExcluded = notExcludedTotals[0].totalWeight;
+    accumulatedRow.totalM3 = totals[0].totalWeight / 1.52;
+    accumulatedRow.netSales = totals[0].total;
+    accumulatedRow.netSalesExcluded = excludedTotals[0].total;
+    accumulatedRow.netSalesNotExcluded = notExcludedTotals[0].total;
 
     worksheet.addRow(accumulatedRow);
 
     const parsedAccumulatedRow = worksheet.getRow(worksheet.rowCount);
 
-    // Add forecast rowtotalTotalWeight
+    // Add forecast row
     const forecastRow = {
       day: 'TENDENCIA'
     };
@@ -1282,9 +1414,20 @@ const ticketQueries = {
       forecastRow[_id[0].name] = (totalWeight / workingDaysPassed) * workingDays;
     });
 
-    forecastRow.totalWeight = (totalTotalWeight[0].totalWeight / workingDaysPassed) * workingDays;
-    forecastRow.netSales = (totalTotalSales[0].total / workingDaysPassed) * workingDays;
+    forecastRow.totalWeight = (totals[0].totalWeight / workingDaysPassed) * workingDays;
+    forecastRow.totalWeightExcluded =
+      (excludedTotals[0].totalWeight / workingDaysPassed) * workingDays;
+    forecastRow.totalWeightNotExcluded =
+      (notExcludedTotals[0].totalWeight / workingDaysPassed) * workingDays;
+    forecastRow.totalM3 = (totals[0].totalWeight / 1.52 / workingDaysPassed) * workingDays;
+    forecastRow.netSales = (totals[0].total / workingDaysPassed) * workingDays;
+    forecastRow.netSalesExcluded = (excludedTotals[0].total / workingDaysPassed) * workingDays;
+    forecastRow.netSalesNotExcluded =
+      (notExcludedTotals[0].total / workingDaysPassed) * workingDays;
     forecastRow.avgPrice = forecastRow.netSales / forecastRow.totalWeight;
+    forecastRow.avgPriceExcluded = forecastRow.netSalesExcluded / forecastRow.totalWeightExcluded;
+    forecastRow.avgPriceNotExcluded =
+      forecastRow.netSalesNotExcluded / forecastRow.totalWeightNotExcluded;
 
     worksheet.addRow(forecastRow);
 
@@ -1300,15 +1443,25 @@ const ticketQueries = {
     });
 
     percentageRow.totalWeight = forecastRow.totalWeight / forecastRow.totalWeight;
+    percentageRow.totalWeightExcluded = forecastRow.totalWeightExcluded / forecastRow.totalWeight;
+    percentageRow.totalWeightNotExcluded =
+      forecastRow.totalWeightNotExcluded / forecastRow.totalWeight;
+    percentageRow.totalWeight = forecastRow.totalWeight / forecastRow.totalWeight;
+    percentageRow.netSales = forecastRow.netSales / forecastRow.netSales;
+    percentageRow.netSalesExcluded = forecastRow.netSalesExcluded / forecastRow.netSales;
+    percentageRow.netSalesNotExcluded = forecastRow.netSalesNotExcluded / forecastRow.netSales;
 
     worksheet.addRow(percentageRow);
 
     const parsedPercentageRow = worksheet.getRow(worksheet.rowCount);
 
-    // Empty space row
     worksheet.addRow({});
 
+    // Add reference day cells
     worksheet.addRow({
+      day: `* Los productos excluídos (sucios) son: ${list(
+        excludedProducts.map(({ name }) => name)
+      )}`,
       totalWeight: 'Días transcurridos hábiles (efectivos)',
       avgPrice: workingDaysPassed
     });
@@ -1324,12 +1477,12 @@ const ticketQueries = {
     const workingDaysRow = worksheet.getRow(worksheet.rowCount);
     workingDaysRow.getCell('avgPrice').fill = solidFill('FF6600');
 
-    // Empty space row
     worksheet.addRow({});
 
+    // Add global indicators
     worksheet.addRow({
       totalWeight: 'Promedio Vta Diaria',
-      avgPrice: totalTotalWeight[0].totalWeight / workingDaysPassed
+      avgPrice: totals[0].totalWeight / workingDaysPassed
     });
 
     const dailyAvgSalesRow = worksheet.getRow(worksheet.rowCount);
@@ -1342,7 +1495,7 @@ const ticketQueries = {
 
     worksheet.addRow({
       totalWeight: 'Tendencia Vta',
-      avgPrice: (totalTotalWeight[0].totalWeight / workingDaysPassed) * workingDays
+      avgPrice: (totals[0].totalWeight / workingDaysPassed) * workingDays
     });
 
     const salesForecastRow = worksheet.getRow(worksheet.rowCount);
@@ -1394,9 +1547,19 @@ const ticketQueries = {
     }
 
     const accumulatedAvgPrice = parsedAccumulatedRow.getCell('avgPrice');
+    const accumulatedAvgPriceExcluded = parsedAccumulatedRow.getCell('avgPriceExcluded');
+    const accumulatedAvgPriceNotExcluded = parsedAccumulatedRow.getCell('avgPriceNotExcluded');
     accumulatedAvgPrice.value = {
       formula: `${netSalesCellLetter}${parsedAccumulatedRow.number}/${totalWeightCellLetter}${parsedAccumulatedRow.number}`,
       result: accumulatedAvgPrice.value
+    };
+    accumulatedAvgPriceExcluded.value = {
+      formula: `${netSalesExcludedCellLetter}${parsedAccumulatedRow.number}/${totalWeightExcludedCellLetter}${parsedAccumulatedRow.number}`,
+      result: accumulatedAvgPriceExcluded.value
+    };
+    accumulatedAvgPriceNotExcluded.value = {
+      formula: `${netSalesNotExcludedCellLetter}${parsedAccumulatedRow.number}/${totalWeightNotExcludedCellLetter}${parsedAccumulatedRow.number}`,
+      result: accumulatedAvgPriceNotExcluded.value
     };
 
     // Style forecast row and generate formulaes
@@ -1411,6 +1574,16 @@ const ticketQueries = {
         if (column === worksheet.getColumn('avgPrice').number) {
           cell.value = {
             formula: `${netSalesCellLetter}${parsedForecastRow.number}/${totalWeightCellLetter}${parsedForecastRow.number}`,
+            result: cell.value || 0
+          };
+        } else if (column === worksheet.getColumn('avgPriceExcluded').number) {
+          cell.value = {
+            formula: `${netSalesExcludedCellLetter}${parsedForecastRow.number}/${totalWeightExcludedCellLetter}${parsedForecastRow.number}`,
+            result: cell.value || 0
+          };
+        } else if (column === worksheet.getColumn('avgPriceNotExcluded').number) {
+          cell.value = {
+            formula: `${netSalesNotExcludedCellLetter}${parsedForecastRow.number}/${totalWeightNotExcludedCellLetter}${parsedForecastRow.number}`,
             result: cell.value || 0
           };
         } else {
@@ -1438,6 +1611,22 @@ const ticketQueries = {
       }
     }
 
+    const percentageNetSalesCell = parsedPercentageRow.getCell('netSales');
+    const percentageNetSalesExcludedCell = parsedPercentageRow.getCell('netSalesExcluded');
+    const percentageNetSalesNotExcludedCell = parsedPercentageRow.getCell('netSalesNotExcluded');
+    percentageNetSalesCell.value = {
+      formula: `${netSalesCellLetter}${parsedForecastRow.number}/${netSalesCellLetter}${parsedForecastRow.number}`,
+      result: percentageNetSalesCell.value.value
+    };
+    percentageNetSalesExcludedCell.value = {
+      formula: `${netSalesExcludedCellLetter}${parsedForecastRow.number}/${netSalesCellLetter}${parsedForecastRow.number}`,
+      result: percentageNetSalesExcludedCell.value.result
+    };
+    percentageNetSalesNotExcludedCell.value = {
+      formula: `${netSalesNotExcludedCellLetter}${parsedForecastRow.number}/${netSalesCellLetter}${parsedForecastRow.number}`,
+      result: percentageNetSalesNotExcludedCell.value.result
+    };
+
     // Style the entire sheet
     for (let row = headerRows; row <= worksheet.rowCount; row++) {
       const actualRow = worksheet.getRow(row);
@@ -1454,13 +1643,17 @@ const ticketQueries = {
           };
         }
 
-        if (
-          (col === worksheet.getColumn('totalWeight').number ||
-            col === worksheet.getColumn('avgPrice').number) &&
-          row > headerRows &&
-          row <= headerRows + moment(month).daysInMonth()
-        ) {
-          cell.fill = solidFill('3366FF');
+        if (row > headerRows && row <= headerRows + moment(month).daysInMonth()) {
+          if (
+            col === worksheet.getColumn('totalWeight').number ||
+            col === worksheet.getColumn('avgPrice').number ||
+            col === worksheet.getColumn('avgPriceExcluded').number ||
+            col === worksheet.getColumn('avgPriceNotExcluded').number
+          ) {
+            cell.fill = solidFill('3366FF');
+          } else if (col === worksheet.getColumn('totalM3').number) {
+            cell.fill = solidFill('99CC00');
+          }
         }
       }
     }
