@@ -204,6 +204,12 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 Turnos
               </Link>
             </Item>
+            <Item key="reportes/ventas">
+              <Link to="/reportes/ventas">
+                <Icon type="dollar" />
+                Ventas
+              </Link>
+            </Item>
           </SubMenu>
         )}
         {(isAdmin || isManager || isAccountant) && (

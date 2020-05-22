@@ -46,8 +46,8 @@ const History = ({ client }) => {
     } else {
       setFilters({
         ...filters,
-        start: start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
-        end: end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        start: start?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+        end: end?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
       });
     }
   };

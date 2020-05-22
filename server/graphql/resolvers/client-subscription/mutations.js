@@ -19,7 +19,7 @@ const clientSubscriptionMutations = {
         minutes: 0,
         seconds: 0
       });
-    else clientSubscription.start = moment().set({ hours: 0, minutes: 0, seconds: 0 });
+    else clientSubscription.start = moment()?.set({ hours: 0, minutes: 0, seconds: 0 });
 
     clientSubscription.end = moment(clientSubscription.start)
       .add(clientSubscription.days, 'days')
@@ -50,7 +50,7 @@ const clientSubscriptionMutations = {
         minutes: 0,
         seconds: 0
       });
-    else clientSubscription.start = moment().set({ hours: 0, minutes: 0, seconds: 0 });
+    else clientSubscription.start = moment()?.set({ hours: 0, minutes: 0, seconds: 0 });
 
     clientSubscription.end = moment(clientSubscription.start)
       .add(clientSubscription.days, 'days')

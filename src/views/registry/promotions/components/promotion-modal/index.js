@@ -138,8 +138,8 @@ const PromotionModal = ({
         if (promotionToSet.dates) {
           const [start, end] = promotionToSet.dates;
 
-          promotionToSet.start = start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-          promotionToSet.end = end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+          promotionToSet.start = start?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+          promotionToSet.end = end?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
           delete promotionToSet.dates;
         }
@@ -265,27 +265,27 @@ const PromotionModal = ({
               style={{ width: '58%', marginRight: 15 }}
               ranges={{
                 'Una semana': [
-                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
                   moment()
-                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                     .add(1, 'week')
                 ],
                 'Dos semanas': [
-                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
                   moment()
-                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                     .add(2, 'week')
                 ],
                 'Un mes': [
-                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
                   moment()
-                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                     .add(1, 'month')
                 ],
                 'Tres meses': [
-                  moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
                   moment()
-                    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                     .add(3, 'month')
                 ]
               }}

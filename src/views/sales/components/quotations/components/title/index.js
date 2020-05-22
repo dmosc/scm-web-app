@@ -17,8 +17,8 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
       handleFilterChange(key, { start: null, end: null });
     } else {
       handleFilterChange(key, {
-        start: start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
-        end: end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        start: start?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+        end: end?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
       });
     }
   };
@@ -47,33 +47,33 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
             ranges={{
               'De hoy': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(1, 'day'),
-                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
               ],
               'De ayer': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(2, 'day'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(1, 'day')
               ],
               'De este mes': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month'),
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.startOf('month'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
               ],
               'Del mes pasado': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month')
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.startOf('month')
                   .subtract(1, 'month'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
                   .subtract(1, 'month')
               ]
@@ -88,33 +88,33 @@ const TableTitle = ({ handleFilterChange, toggleNewQuotation }) => {
             ranges={{
               'De hoy': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(1, 'day'),
-                moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
               ],
               'De ayer': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(2, 'day'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .subtract(1, 'day')
               ],
               'De este mes': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month'),
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.startOf('month'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
               ],
               'Del mes pasado': [
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-                  .startOf('month')
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.startOf('month')
                   .subtract(1, 'month'),
                 moment()
-                  .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                  ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
                   .endOf('month')
                   .subtract(1, 'month')
               ]

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { withAuth } from 'components/providers/withAuth';
 import { useDebounce } from 'use-lodash-debounce';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import TopBarProgress from 'react-topbar-progress-indicator';
 import Loadable from 'react-loadable';
 import { ReportsContainer } from './elements';
 import TitleSection from './components/title-section';
+import Sales from './components/sales';
 
 /* webpackChunkName: "Global" */
 const Global = Loadable({
@@ -43,7 +45,7 @@ const Turns = Loadable({
   loading: TopBarProgress
 });
 
-const Reports = () => {
+const Reports = ({ location }) => {
   const [globalFilters, setGlobalFilters] = useState({
     start: null,
     end: null
@@ -52,7 +54,11 @@ const Reports = () => {
 
   return (
     <ReportsContainer>
-      <TitleSection setGlobalFilters={setGlobalFilters} globalFilters={globalFilters} />
+      <TitleSection
+        hideDateFilter={location.pathname.includes('ventas')}
+        setGlobalFilters={setGlobalFilters}
+        globalFilters={globalFilters}
+      />
       <Switch>
         <Route
           path="/reportes/global"
@@ -78,10 +84,15 @@ const Reports = () => {
           path="/reportes/turnos"
           render={() => <Turns globalFilters={debouncedGlobalFilters} />}
         />
+        <Route path="/reportes/ventas" render={() => <Sales />} />
         <Redirect to="/reportes/global" />
       </Switch>
     </ReportsContainer>
   );
 };
 
-export default withAuth(Reports);
+Reports.propTypes = {
+  location: PropTypes.object.isRequired
+};
+
+export default withRouter(withAuth(Reports));
