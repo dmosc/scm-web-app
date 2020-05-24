@@ -139,7 +139,6 @@ const Quotations = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={quotations.map(userMapped => ({ ...userMapped, key: shortid.generate() }))}
         />

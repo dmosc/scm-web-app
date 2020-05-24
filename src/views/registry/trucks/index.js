@@ -123,7 +123,7 @@ const Trucks = ({ client }) => {
       render: ({ businessName }) => businessName
     },
     {
-      title: 'Weight',
+      title: 'Peso (tons)',
       dataIndex: 'weight',
       key: 'weight',
       align: 'center'
@@ -181,7 +181,6 @@ const Trucks = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={trucks.map(truckMapped => ({ ...truckMapped, key: shortid.generate() }))}
         />

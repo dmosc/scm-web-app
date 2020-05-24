@@ -98,7 +98,6 @@ const ClientsGroups = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={clientsGroups.map(clientsGroupMapped => ({
             ...clientsGroupMapped,

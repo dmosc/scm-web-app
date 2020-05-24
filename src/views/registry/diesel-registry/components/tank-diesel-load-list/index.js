@@ -72,7 +72,6 @@ const TankDieselLoadList = ({ tab, isModalOpen, setIsModalOpen, client }) => {
         loading={loading}
         columns={columns}
         size="small"
-        scroll={{ x: true, y: true }}
         pagination={{ defaultPageSize: 20 }}
         dataSource={tankDieselLoads.map(tankDieselLoad => ({
           ...tankDieselLoad,

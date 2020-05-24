@@ -208,7 +208,6 @@ const Clients = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={clients.map(clientMapped => ({ ...clientMapped, key: shortid.generate() }))}
         />
