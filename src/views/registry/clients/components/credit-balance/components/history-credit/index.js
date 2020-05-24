@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Timeline, Typography, Empty, Spin } from 'antd';
 import { isUnlimited } from 'utils/constants/credit';
+import { format } from 'utils/functions';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
@@ -47,7 +48,9 @@ const HistoryCredit = ({ client, currentClient }) => {
               </Text>
               <Text type="warning">aplicó</Text> un cambio al límite de crédito de{' '}
               {currentClient.businessName}, ahora es:{' '}
-              <Text code>{isUnlimited(creditLimit) ? 'Ilimitado' : `${creditLimit}MXN`}</Text>
+              <Text code>
+                {isUnlimited(creditLimit) ? 'Ilimitado' : `${format.currency(creditLimit)}MXN`}
+              </Text>
             </Item>
           ))}
         </Timeline>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
+import { format } from 'utils/functions';
 import { isUnlimited } from 'utils/constants/credit';
 import {
   Progress,
@@ -225,7 +226,7 @@ const CreditStatus = ({ client, currentClient }) => {
                     Saldo {balance >= 0 ? 'a favor: ' : 'en contra: '}
                   </Text>
                   <Tag style={{ marginLeft: 5 }} color={balance >= 0 ? 'blue' : 'orange'}>
-                    ${Math.abs(balance)}MXN
+                    {format.currency(Math.abs(balance))}MXN
                   </Tag>
                   <Tooltip placement="top" title="Añadir al balance">
                     <Button size="small" onClick={() => toggleAddBalance(true)} icon="plus" />
@@ -276,7 +277,7 @@ const CreditStatus = ({ client, currentClient }) => {
                     style={{ marginLeft: 5 }}
                     color={isUnlimited(creditLimit) ? 'green' : 'blue'}
                   >
-                    {isUnlimited(creditLimit) ? 'Ilimitado' : `$${creditLimit}MXN`}
+                    {isUnlimited(creditLimit) ? 'Ilimitado' : `${format.currency(creditLimit)}MXN`}
                   </Tag>
                   {!isUnlimited(creditLimit) && (
                     <Tooltip placement="top" title="Editar límite de crédito">
