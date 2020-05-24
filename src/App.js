@@ -196,7 +196,7 @@ const App = ({
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route exact path="/registros/usuarios" component={Users} />
           )}
-          {(isAdmin || isAccountant) && <Route path="/ventas" component={Sales} />}
+          {(isAdmin || isManager || isAccountant) && <Route path="/ventas" component={Sales} />}
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route path="/reportes" component={Reports} />
           )}

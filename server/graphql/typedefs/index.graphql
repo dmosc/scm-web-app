@@ -196,9 +196,9 @@ type Query {
   tankDieselLoads(filters: TankDieselLoadFilters!): [TankDieselLoad!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Quotation
-  quotation(id: ID!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
-  quotationPDF(id: ID!): String! @auth(roles: [ADMIN, ACCOUNTANT])
-  quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, ACCOUNTANT])
+  quotation(id: ID!): Quotation @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
+  quotationPDF(id: ID!): String! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
+  quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
   # ProductRate
   productRate: ProductRate @auth(roles: [ADMIN])
   # ClientSubscription
@@ -216,7 +216,7 @@ type Mutation {
   login(user: UserLogin!): String!
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
-  client(client: ClientInput!): Client @auth(roles: [ADMIN, CASHIER])
+  client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER, CASHIER])
   clientAddToBalance(client: ID!, toAdd: Float!): Client
     @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
@@ -298,7 +298,7 @@ type Mutation {
   tankDieselLoad(tankDieselLoad: TankDieselLoadInput!): TankDieselLoad
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Quotation
-  quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, ACCOUNTANT])
+  quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
   # ProductRate
   productRate(rate: Float!): ProductRate @auth(roles: [ADMIN])
   # ClientSubscription
