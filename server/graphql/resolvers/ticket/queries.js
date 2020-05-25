@@ -1221,6 +1221,24 @@ const ticketQueries = {
       ])
     ]);
 
+    // IDK Why but sometimes this aggregate array its empty when no data.
+    // This is just to prevent formulaes to explode :v
+    if (notExcludedTotals.length === 0) {
+      notExcludedTotals.push({
+        _id: null,
+        totalWeight: 0,
+        total: 0
+      });
+    }
+    
+    if (excludedTotals.length === 0) {
+      excludedTotals.push({
+        _id: null,
+        totalWeight: 0,
+        total: 0
+      });
+    }
+
     const workbook = createWorkbook();
 
     const rockColumns = products.map(({ name }) => ({ header: name, key: name }));
@@ -1409,7 +1427,6 @@ const ticketQueries = {
     const forecastRow = {
       day: 'TENDENCIA'
     };
-
     byRock.forEach(({ _id, totalWeight }) => {
       forecastRow[_id[0].name] = (totalWeight / workingDaysPassed) * workingDays;
     });
