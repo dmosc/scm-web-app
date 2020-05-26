@@ -24,45 +24,9 @@ const Ticket = new Schema({
   bill: { type: Boolean, required: true, default: false },
   isBilled: { type: Boolean, required: true, default: false },
   usersInvolved: {
-    guard: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: false,
-      validate: {
-        validator: async id => {
-          const { role } = await User.findById(id);
-
-          return role === 'GUARD' || role === 'ADMIN';
-        },
-        message: 'User role must be of type GUARD!'
-      }
-    },
-    loader: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: false,
-      validate: {
-        validator: async id => {
-          const { role } = await User.findById(id);
-
-          return role === 'LOADER' || role === 'ADMIN';
-        },
-        message: 'User role must be of type LOADER!'
-      }
-    },
-    cashier: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: false,
-      validate: {
-        validator: async id => {
-          const { role } = await User.findById(id);
-
-          return role === 'CASHIER' || role === 'ADMIN';
-        },
-        message: 'User role must be of type CASHIER!'
-      }
-    }
+    guard: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+    loader: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+    cashier: { type: Schema.Types.ObjectId, ref: 'User', required: false }
   },
   turn: { type: Schema.Types.ObjectId, ref: 'Turn', required: false }
 });
