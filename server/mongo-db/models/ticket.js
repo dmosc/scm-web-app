@@ -1,7 +1,6 @@
 import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
 import disable from 'mongoose-disable';
-import User from './user';
 
 const Ticket = new Schema({
   folio: { type: String, required: false },

@@ -12,7 +12,7 @@ const CreditBalance = ({ currentClient, close }) => {
 
   return (
     <Modal
-      title={`Precios especiales de ${currentClient.businessName}`}
+      title={`Crédito y balance de ${currentClient.businessName}`}
       visible
       cancelButtonProps={{ style: { display: 'none' } }}
       onCancel={close}

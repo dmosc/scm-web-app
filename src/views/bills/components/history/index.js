@@ -122,7 +122,6 @@ const History = ({ client }) => {
           columns={columns}
           title={() => <Title handleFilterChange={handleFilterChange} />}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={bills.map(billMapped => ({ ...billMapped, key: shortid.generate() }))}
         />

@@ -9,12 +9,6 @@ import { ReportsContainer } from './elements';
 import TitleSection from './components/title-section';
 import Sales from './components/sales';
 
-/* webpackChunkName: "Global" */
-const Global = Loadable({
-  loader: () => import('./components/global'),
-  loading: TopBarProgress
-});
-
 /* webpackChunkName: "Products" */
 const Products = Loadable({
   loader: () => import('./components/products'),
@@ -30,12 +24,6 @@ const Tickets = Loadable({
 /* webpackChunkName: "Clients" */
 const Clients = Loadable({
   loader: () => import('./components/clients'),
-  loading: TopBarProgress
-});
-
-/* webpackChunkName: "Trucks" */
-const Trucks = Loadable({
-  loader: () => import('./components/trucks'),
   loading: TopBarProgress
 });
 
@@ -61,10 +49,6 @@ const Reports = ({ location }) => {
       />
       <Switch>
         <Route
-          path="/reportes/global"
-          render={() => <Global globalFilters={debouncedGlobalFilters} />}
-        />
-        <Route
           path="/reportes/productos"
           render={() => <Products globalFilters={debouncedGlobalFilters} />}
         />
@@ -75,10 +59,6 @@ const Reports = ({ location }) => {
         <Route
           path="/reportes/clientes"
           render={() => <Clients globalFilters={debouncedGlobalFilters} />}
-        />
-        <Route
-          path="/reportes/camiones"
-          render={() => <Trucks globalFilters={debouncedGlobalFilters} />}
         />
         <Route
           path="/reportes/turnos"

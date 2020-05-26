@@ -168,12 +168,6 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               </span>
             }
           >
-            <Item key="reportes/global">
-              <Link to="/reportes/global">
-                <Icon type="area-chart" />
-                Global
-              </Link>
-            </Item>
             <Item key="reportes/productos">
               <Link to="/reportes/productos">
                 <Icon type="block" />
@@ -190,12 +184,6 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               <Link to="/reportes/clientes">
                 <Icon type="usergroup-add" />
                 Clientes
-              </Link>
-            </Item>
-            <Item key="reportes/camiones">
-              <Link to="/reportes/camiones">
-                <Icon type="car" />
-                Camiones
               </Link>
             </Item>
             <Item key="reportes/turnos">

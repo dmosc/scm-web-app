@@ -41,7 +41,8 @@ const clientSubscriptionMutations = {
   clientSubscriptionEdit: authenticated(async (_, args) => {
     const clientSubscription = await ClientSubscription.findByIdAndUpdate(
       args.clientSubscription.id,
-      { ...args.clientSubscription }
+      { ...args.clientSubscription },
+      { new: true }
     );
 
     if (args.clientSubscription.start)
