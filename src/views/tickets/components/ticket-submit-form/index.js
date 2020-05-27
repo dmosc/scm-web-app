@@ -426,15 +426,6 @@ const TicketSubmitForm = ({
             )}
           </Select>
         </Form.Item>
-        <Row>
-          <Text disabled>{total >= 0 ? `Subtotal: ${format.currency(total - tax)} MXN` : '-'}</Text>
-        </Row>
-        <Row>
-          <Text disabled>{total >= 0 ? `Tax: ${format.currency(tax)} MXN` : '-'}</Text>
-        </Row>
-        <Row>
-          <Title level={4}>{`Total: ${format.currency(total)} MXN`}</Title>
-        </Row>
       </Form>
     </Modal>
   );
