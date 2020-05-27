@@ -1230,7 +1230,7 @@ const ticketQueries = {
         total: 0
       });
     }
-    
+
     if (excludedTotals.length === 0) {
       excludedTotals.push({
         _id: null,

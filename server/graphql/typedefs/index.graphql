@@ -81,8 +81,9 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, MANAGER])
-  notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
-  loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER])
+  notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]!
+    @auth(roles: [ADMIN, LOADER, MANAGER, MANAGER, SUPPORT])
+  loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER, SUPPORT])
   ticketsPendingToBill(client: ID!, type: TicketBillType!): [Ticket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   ticketsToBillSummary(tickets: [ID!]!, client: ID!): BillSummary!
@@ -203,11 +204,11 @@ type Query {
   productRate: ProductRate @auth(roles: [ADMIN])
   # ClientSubscription
   clientSubscriptions(filters: ClientSubscriptionFilters!): [ClientSubscription!]
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscriptionWarning
   clientSubscriptionWarning(id: ID!): ClientSubscriptionWarning
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
 }
 
 type Mutation {
@@ -216,11 +217,11 @@ type Mutation {
   login(user: UserLogin!): String!
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
-  client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER, CASHIER])
+  client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientAddToBalance(client: ID!, toAdd: Float!): Client
     @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
-  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, CASHIER])
+  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   # Client Price
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client Credit Limit
@@ -249,9 +250,9 @@ type Mutation {
   # Bill
   bill(bill: BillInput!): Bill @auth(roles: [ADMIN, ACCOUNTANT])
   # Truck
-  truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER])
-  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER])
-  truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER])
+  truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT])
+  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT])
+  truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, SUPPORT])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
   rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN])
@@ -284,9 +285,9 @@ type Mutation {
   promotionDisable(id: ID!): Boolean! @auth(roles: [ADMIN])
   promotionEnable(id: ID!): Boolean! @auth(roles: [ADMIN])
   # Store
-  store(store: StoreInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  storeEdit(store: StoreEditInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  storeDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  store(store: StoreInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  storeEdit(store: StoreEditInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  storeDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # Machine
   machine(machine: MachineInput!): Machine @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   machineEdit(machine: MachineEditInput!): Machine
@@ -303,14 +304,14 @@ type Mutation {
   productRate(rate: Float!): ProductRate @auth(roles: [ADMIN])
   # ClientSubscription
   clientSubscription(clientSubscription: ClientSubscriptionInput!): ClientSubscription
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   clientSubscriptionEdit(clientSubscription: ClientSubscriptionEditInput!): ClientSubscription
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  clientSubscriptionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  clientSubscriptionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscriptionWarning
   clientSubscriptionWarningResolve(
     clientSubscriptionWarning: ClientSubscriptionWarningResolve!
-  ): ClientSubscriptionWarning @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  ): ClientSubscriptionWarning @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
