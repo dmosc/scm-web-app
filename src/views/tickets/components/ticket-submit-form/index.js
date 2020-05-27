@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { format } from 'utils/functions';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
-import { Form, InputNumber, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd';
+import { Form, InputNumber, message, Modal, Radio, Select, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
 import {
   GET_CREDIT_LIMIT,
@@ -241,7 +240,9 @@ const TicketSubmitForm = ({
                 <Text underline>Tipo de pago:</Text>
                 <Text strong> {bill ? 'CRÉDITO' : 'CONTADO'}</Text>
               </Paragraph>
-              <Paragraph>Al continuar, aceptas que no podrás cambiar los datos de la boleta</Paragraph>
+              <Paragraph>
+                Al continuar, aceptas que no podrás cambiar los datos de la boleta
+              </Paragraph>
             </div>
           ),
           okText: 'Continuar',

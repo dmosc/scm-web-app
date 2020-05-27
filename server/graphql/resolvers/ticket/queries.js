@@ -1106,7 +1106,7 @@ const ticketQueries = {
         {
           $group: {
             _id: {
-              day: { $dayOfMonth: '$out' },
+              day: { $dayOfMonth: { date: '$out', timezone: 'America/Monterrey' } },
               rock: '$product'
             },
             totalWeight: { $sum: '$totalWeight' }
@@ -1121,7 +1121,7 @@ const ticketQueries = {
         { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
         {
           $group: {
-            _id: { $dayOfMonth: '$out' },
+            _id: { $dayOfMonth: { date: '$out', timezone: 'America/Monterrey' } },
             totalWeight: { $sum: '$totalWeight' },
             total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
           }
@@ -1138,7 +1138,7 @@ const ticketQueries = {
         { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
         {
           $group: {
-            _id: { $dayOfMonth: '$out' },
+            _id: { $dayOfMonth: { date: '$out', timezone: 'America/Monterrey' } },
             totalWeight: { $sum: '$totalWeight' },
             total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
           }
@@ -1155,7 +1155,7 @@ const ticketQueries = {
         { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
         {
           $group: {
-            _id: { $dayOfMonth: '$out' },
+            _id: { $dayOfMonth: { date: '$out', timezone: 'America/Monterrey' } },
             totalWeight: { $sum: '$totalWeight' },
             total: { $sum: { $subtract: ['$totalPrice', '$tax'] } }
           }
