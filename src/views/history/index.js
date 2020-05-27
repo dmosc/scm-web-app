@@ -4,11 +4,11 @@ import { useDebounce } from 'use-lodash-debounce';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { format } from 'utils/functions';
-import { Button, notification, Table, Tag, Typography } from 'antd';
+import { format, printPDF } from 'utils/functions';
+import { Button, notification, Table, Tag, Typography, Row, Tooltip } from 'antd';
 import Title from './components/title';
 import { Card, HistoryContainer, TableContainer } from './elements';
-import { GET_HISTORY_TICKETS } from './graphql/queries';
+import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
 
 const { Text } = Typography;
 
@@ -50,6 +50,19 @@ const History = ({ client }) => {
         end: end?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
       });
     }
+  };
+
+  const downloadPDF = async folio => {
+    const {
+      data: { ticketPDF }
+    } = await client.query({
+      query: GET_PDF,
+      variables: {
+        idOrFolio: folio
+      }
+    });
+
+    await printPDF(ticketPDF);
   };
 
   useEffect(() => {
@@ -209,7 +222,25 @@ const History = ({ client }) => {
       width: 120,
       fixed: 'right',
       render: total => <Tag>{format.currency(total)}</Tag>
-    }
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      align: 'right',
+      fixed: 'right',
+      render: row => (
+        <Row>
+          <Tooltip placement="top" title="Imprimir">
+            <Button
+              onClick={() => downloadPDF(row.folio)}
+              type="primary"
+              icon="printer"
+              size="small"
+            />
+          </Tooltip>
+        </Row>
+      )
+    },
   ];
 
   return (

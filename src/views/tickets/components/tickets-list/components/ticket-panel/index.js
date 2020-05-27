@@ -102,7 +102,7 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
     } = await client.query({
       query: GET_PDF,
       variables: {
-        id: ticket.id
+        idOrFolio: ticket.id
       }
     });
 

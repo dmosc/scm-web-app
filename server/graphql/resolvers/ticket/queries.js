@@ -18,7 +18,7 @@ import authenticated from '../../middleware/authenticated';
 import { createPDF } from '../../../utils/pdfs';
 
 const ticketQueries = {
-  ticket: authenticated(async (_, args) => {
+  ticket: authenticated(async (_, { args }) => {
     const { id } = args;
     const ticket = await Ticket.findById(id).populate([
       {
@@ -50,8 +50,16 @@ const ticketQueries = {
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
   }),
-  ticketPDF: async (_, { id }) => {
-    const ticket = await Ticket.findOne({ _id: id }).populate(
+  ticketPDF: async (_, { idOrFolio }) => {
+    const query = {};
+
+    if (Types.ObjectId.isValid(idOrFolio)) {
+      query._id = idOrFolio;
+    } else {
+      query.folio = idOrFolio;
+    }
+
+    const ticket = await Ticket.findOne(query).populate(
       'client store product truck usersInvolved.cashier'
     );
 

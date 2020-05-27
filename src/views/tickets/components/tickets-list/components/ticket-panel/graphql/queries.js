@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost';
 
 const GET_PDF = gql`
-  query ticketPDF($id: ID!) {
-    ticketPDF(id: $id)
+  query ticketPDF($idOrFolio: String!) {
+    ticketPDF(idOrFolio: $idOrFolio)
   }
 `;
 
