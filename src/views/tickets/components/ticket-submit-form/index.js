@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { format } from 'utils/functions';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
-import { Form, InputNumber, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd';
+import { Form, InputNumber, message, Modal, Radio, Select, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
 import {
   GET_CREDIT_LIMIT,
@@ -15,7 +14,7 @@ import {
 
 const { Option } = Select;
 const { Group } = Radio;
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 const { confirm } = Modal;
 
 const TicketSubmitForm = ({

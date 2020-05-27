@@ -98,6 +98,7 @@ const ticketQueries = {
                     headerRows: 1,
                     body: [
                       ['Remisionado'],
+                      [ticket.client.businessName],
                       [
                         address.street
                           ? `${address.street} #${address.extNumber} ${address.municipality}, ${address.state}`
