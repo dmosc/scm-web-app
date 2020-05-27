@@ -246,7 +246,7 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
         <Button
           size="small"
           type="primary"
-          disabled={!ticket.outTruckImage}
+          disabled={!ticket.outTruckImage || ticket.totalPrice}
           onClick={() => setCurrent(ticket, 'submit')}
           icon="money-collect"
         >

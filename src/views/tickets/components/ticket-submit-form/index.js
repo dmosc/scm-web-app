@@ -15,7 +15,8 @@ import {
 
 const { Option } = Select;
 const { Group } = Radio;
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
+const { confirm } = Modal;
 
 const TicketSubmitForm = ({
   currentTicket,
@@ -227,27 +228,50 @@ const TicketSubmitForm = ({
           return;
         }
 
-        try {
-          await client.mutate({
-            mutation: TICKET_SUBMIT,
-            variables: {
-              ticket: {
-                id,
-                driver: driver[0],
-                weight: formWeight,
-                credit: creditBill,
-                bill: formBill,
-                promotion
-              }
-            }
-          });
+        confirm({
+          title: '¿Continuar?',
+          content: (
+            <div>
+              <Paragraph>Se han seleccionado las siguientes opciones en la boleta:</Paragraph>
+              <Paragraph>
+                <Text underline>Tipo de boleta:</Text>
+                <Text strong> {bill ? 'FACTURA' : 'REMISION'}</Text>
+              </Paragraph>
+              <Paragraph>
+                <Text underline>Tipo de pago:</Text>
+                <Text strong> {bill ? 'CRÉDITO' : 'CONTADO'}</Text>
+              </Paragraph>
+              <Paragraph>Al continuar, aceptas que no podrás cambiar los datos de la boleta</Paragraph>
+            </div>
+          ),
+          okText: 'Continuar',
+          cancelText: 'Cancelar',
+          okType: 'primary',
+          onOk: async () => {
+            try {
+              await client.mutate({
+                mutation: TICKET_SUBMIT,
+                variables: {
+                  ticket: {
+                    id,
+                    driver: driver[0],
+                    weight: formWeight,
+                    credit: creditBill,
+                    bill: formBill,
+                    promotion
+                  }
+                }
+              });
 
-          form.resetFields();
-          setCurrent();
-          message.success('¡La información ha sido actualizada correctamente!');
-        } catch (error) {
-          message.error('¡Ha habido un error modificando la información!');
-        }
+              form.resetFields();
+              setCurrent();
+              message.success('¡La información ha sido actualizada correctamente!');
+            } catch (error) {
+              message.error('¡Ha habido un error modificando la información!');
+            }
+          },
+          onCancel: () => {}
+        });
       }
     );
   };
