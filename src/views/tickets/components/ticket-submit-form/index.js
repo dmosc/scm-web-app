@@ -14,7 +14,7 @@ import {
 
 const { Option } = Select;
 const { Group } = Radio;
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 const { confirm } = Modal;
 
 const TicketSubmitForm = ({

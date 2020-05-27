@@ -6,7 +6,7 @@ import { Empty, Form, List, message, Spin } from 'antd';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
 import TicketImageForm from './components/ticket-image-form';
-import TicketSubmitForm from './components/ticket-submit-form/index';
+import TicketSubmitForm from './components/ticket-submit-form';
 import TurnInitForm from './components/turn-init-form';
 import TurnEndForm from './components/turn-end-form';
 import TicketsList from './components/tickets-list';
