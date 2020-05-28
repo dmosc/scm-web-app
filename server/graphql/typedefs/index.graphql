@@ -76,7 +76,8 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   tickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  ticketPDF(idOrFolio: String!): String! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  ticketPDF(idOrFolio: String!): String!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   activeTickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
@@ -201,7 +202,8 @@ type Query {
   quotationPDF(id: ID!): String! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
   quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
   # ProductRate
-  productRate: ProductRate @auth(roles: [ADMIN])
+  productRate: ProductRate
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscription
   clientSubscriptions(filters: ClientSubscriptionFilters!): [ClientSubscription!]
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
