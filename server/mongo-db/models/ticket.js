@@ -3,7 +3,7 @@ import softDelete from 'mongoose-delete';
 import disable from 'mongoose-disable';
 
 const Ticket = new Schema({
-  folio: { type: String, required: false },
+  folio: { type: String, required: false, index: true },
   driver: { type: String, required: false },
   client: { type: Schema.Types.ObjectId, ref: 'Client', required: false },
   truck: { type: Schema.Types.ObjectId, ref: 'Truck', required: false },

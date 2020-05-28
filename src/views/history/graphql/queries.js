@@ -25,4 +25,10 @@ const GET_HISTORY_TICKETS = gql`
   }
 `;
 
-export { GET_HISTORY_TICKETS };
+const GET_PDF = gql`
+  query ticketPDF($idOrFolio: String!) {
+    ticketPDF(idOrFolio: $idOrFolio)
+  }
+`;
+
+export { GET_HISTORY_TICKETS, GET_PDF };
