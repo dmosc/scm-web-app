@@ -10,6 +10,7 @@ type Rock {
 type RockSalesReport {
   rocks: [RockSalesSummary!]!
   total: Float!
+  totalWeight: Float!
 }
 
 type RockSalesSummary {

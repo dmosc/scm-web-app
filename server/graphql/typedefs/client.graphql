@@ -29,6 +29,8 @@ type ClientsSummary {
   upfront: Float
   credit: Float
   total: Float
+  upfrontWeight: Float
+  creditWeight: Float
 }
 
 type ClientTurnSummary {

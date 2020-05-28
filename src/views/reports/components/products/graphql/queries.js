@@ -31,6 +31,7 @@ const GET_ROCK_SALES = gql`
         total
       }
       total
+      totalWeight
     }
   }
 `;

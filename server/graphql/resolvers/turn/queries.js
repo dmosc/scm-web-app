@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
 import { format } from '../../../../src/utils/functions';
 import { Ticket, Turn } from '../../../mongo-db/models';
-import { createWorksheet, createWorkbook } from '../../../utils/reports';
+import { createWorkbook, createWorksheet } from '../../../utils/reports';
 import periods from '../../../../src/utils/enums/periods';
 import authenticated from '../../middleware/authenticated';
 
@@ -86,18 +86,26 @@ const turnQueries = {
       { $project: { _id: 0, info: '$_id', count: '$count', tickets: '$tickets' } }
     ]);
 
-    if (clients.length === 0) return { clients, upfront: 0, credit: 0, total: 0 };
+    if (clients.length === 0)
+      return { clients, upfront: 0, credit: 0, total: 0, upfrontWeight: 0, creditWeight: 0 };
 
     let upfront = 0;
     let credit = 0;
     let total = 0;
+    let upfrontWeight = 0;
+    let creditWeight = 0;
     for (const client of clients) {
       const { tickets } = client;
       for (const ticket of tickets) {
-        if (ticket.credit) credit += ticket.totalPrice;
-        else upfront += ticket.totalPrice;
+        if (ticket.credit) {
+          credit += ticket.totalPrice - ticket.tax;
+          creditWeight += ticket.totalWeight;
+        } else {
+          upfront += ticket.totalPrice - ticket.tax;
+          upfrontWeight += ticket.totalWeight;
+        }
 
-        total += ticket.totalPrice;
+        total += ticket.totalPrice - ticket.tax;
       }
     }
 
@@ -120,7 +128,7 @@ const turnQueries = {
       }
     }
 
-    return { clients, upfront, credit, total };
+    return { clients, upfront, credit, total, upfrontWeight, creditWeight };
   }),
   turnSummaryXLS: authenticated(async (_, { uniqueId, ticketType }) => {
     const turn = await Turn.findOne({ uniqueId });

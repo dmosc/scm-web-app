@@ -4,6 +4,8 @@ import { format } from 'utils/functions';
 import { useDebounce } from 'use-lodash-debounce';
 import moment from 'moment-timezone';
 import {
+  Bar,
+  BarChart,
   Cell,
   Legend,
   Pie,
@@ -11,28 +13,26 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
-  BarChart,
-  Bar
+  YAxis
 } from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import {
-  Statistic,
-  Icon,
+  Button,
   Card,
   Col,
-  Select,
-  Typography,
-  Tag,
-  Spin,
-  Empty,
-  Button,
   Collapse,
-  Row
+  Empty,
+  Icon,
+  Row,
+  Select,
+  Spin,
+  Statistic,
+  Tag,
+  Typography
 } from 'antd';
-import { GET_TURNS, GET_CLIENTS, GET_SUMMARY, GET_SUMMARY_XLS } from './graphql/queries';
-import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
+import { GET_CLIENTS, GET_SUMMARY, GET_SUMMARY_XLS, GET_TURNS } from './graphql/queries';
+import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -276,6 +276,7 @@ const Turns = ({ client, globalFilters }) => {
         />
       ) : (
         <>
+          <Text disabled>* Valores no incluyen IVA</Text>
           <Card>
             <Col span={5}>
               <Statistic
@@ -285,6 +286,9 @@ const Turns = ({ client, globalFilters }) => {
                 suffix="MXN"
                 prefix={<Icon type="rise" />}
               />
+              <Text disabled>{`${(
+                clientsSummary?.upfrontWeight + clientsSummary?.creditWeight || 0
+              ).toFixed(2)} tons`}</Text>
             </Col>
             <Col span={5}>
               <Statistic
@@ -293,6 +297,7 @@ const Turns = ({ client, globalFilters }) => {
                 value={format.currency(clientsSummary?.upfront || 0)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(clientsSummary?.upfrontWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
             <Col span={5}>
               <Statistic
@@ -301,6 +306,7 @@ const Turns = ({ client, globalFilters }) => {
                 value={format.currency(clientsSummary?.credit || 0)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(clientsSummary?.creditWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
             <Col span={3}>
               <Statistic

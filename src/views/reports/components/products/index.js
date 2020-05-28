@@ -300,6 +300,7 @@ const ProductSales = ({ client, globalFilters }) => {
           </Select>
         </InputContainer>
       </FiltersContainer>
+      <Text disabled>* Valores no incluyen IVA</Text>
       <Card>
         <Col span={12}>
           <Statistic
@@ -309,6 +310,7 @@ const ProductSales = ({ client, globalFilters }) => {
             suffix="MXN"
             prefix={<Icon type="rise" />}
           />
+          <Text disabled>{`${(productSalesReport?.totalWeight || 0).toFixed(2)} tons`}</Text>
         </Col>
         <Col span={12}>
           <Statistic

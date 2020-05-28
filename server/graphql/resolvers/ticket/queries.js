@@ -6,13 +6,13 @@ import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format, list } from '../../../../src/utils/functions';
 import {
+  columnToLetter,
   createWorkbook,
   createWorksheet,
-  columnToLetter,
   headerRows,
   solidFill
 } from '../../../utils/reports';
-import { ClientPrice, Ticket, Rock } from '../../../mongo-db/models';
+import { ClientPrice, Rock, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
 import { createPDF } from '../../../utils/pdfs';
@@ -622,18 +622,26 @@ const ticketQueries = {
         { $project: { _id: 0, info: '$_id', count: '$count', tickets: '$tickets' } }
       ]);
 
-      if (clients.length === 0) return { clients, upfront: 0, credit: 0, total: 0 };
+      if (clients.length === 0)
+        return { clients, upfront: 0, credit: 0, total: 0, upfrontWeight: 0, creditWeight: 0 };
 
       let upfront = 0;
       let credit = 0;
       let total = 0;
+      let upfrontWeight = 0;
+      let creditWeight = 0;
       for (const client of clients) {
         const { tickets } = client;
         for (const ticket of tickets) {
-          if (ticket.credit) credit += ticket.totalPrice;
-          else upfront += ticket.totalPrice;
+          if (ticket.credit) {
+            credit += ticket.totalPrice - ticket.tax;
+            creditWeight += ticket.totalWeight;
+          } else {
+            upfront += ticket.totalPrice - ticket.tax;
+            upfrontWeight += ticket.totalWeight;
+          }
 
-          total += ticket.totalPrice;
+          total += ticket.totalPrice - ticket.tax;
         }
       }
 
@@ -656,7 +664,7 @@ const ticketQueries = {
         }
       }
 
-      return { clients, upfront, credit, total };
+      return { clients, upfront, credit, total, upfrontWeight, creditWeight };
     }
   ),
   ticketsSummaryByClientXLS: authenticated(

@@ -83,24 +83,41 @@ const rockQueries = {
                 outTruckImage: '$outTruckImage'
               }
             },
-            total: { $sum: '$totalPrice' }
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+            totalWeight: { $sum: '$totalWeight' }
           }
         },
-        { $project: { _id: 0, rock: '$_id', tickets: '$tickets', total: '$total' } }
+        {
+          $project: {
+            _id: 0,
+            rock: '$_id',
+            tickets: '$tickets',
+            total: '$total',
+            totalWeight: '$totalWeight'
+          }
+        }
       ]);
 
-      const rocks = allRocksSummary.map(({ rock, tickets, total }) => ({
+      const rocks = allRocksSummary.map(({ rock, tickets, total, totalWeight }) => ({
         rock: { ...rock[0], id: rock[0]._id },
         tickets,
-        total
+        total,
+        totalWeight
       }));
+
       const total = rocks.reduce((innerTotal, rock) => {
         // eslint-disable-next-line no-param-reassign
         innerTotal += rock.total;
         return innerTotal;
       }, 0);
 
-      return { rocks, total };
+      const totalWeight = rocks.reduce((innerTotal, rock) => {
+        // eslint-disable-next-line no-param-reassign
+        innerTotal += rock.totalWeight;
+        return innerTotal;
+      }, 0);
+
+      return { rocks, total, totalWeight };
     }
   ),
   rockMonthSalesReport: authenticated(
