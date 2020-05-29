@@ -5,7 +5,7 @@ import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { format, printPDF } from 'utils/functions';
-import { Button, notification, Table, Tag, Typography, Row, Tooltip } from 'antd';
+import { Button, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
 import Title from './components/title';
 import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
@@ -240,7 +240,7 @@ const History = ({ client }) => {
           </Tooltip>
         </Row>
       )
-    },
+    }
   ];
 
   return (

@@ -1,9 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
-import { Form, InputNumber, message, Modal, Radio, Select, Tag, Tooltip, Typography } from 'antd';
+import {
+  Form,
+  Icon,
+  InputNumber,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
 import {
   GET_CREDIT_LIMIT,
@@ -27,7 +38,6 @@ const TicketSubmitForm = ({
 }) => {
   const [productRate, setProductRate] = useState(null);
   const [drivers, setDrivers] = useState([]);
-  const [weight, setWeight] = useState(0);
   const [modifiedWeight, setModifiedWeight] = useState(0);
   const [total, setTotal] = useState(0);
   const [filteredPromotions, setFilteredPromotions] = useState([]);
@@ -38,9 +48,48 @@ const TicketSubmitForm = ({
   const [creditLimit, setCreditLimit] = useState();
   const [bill, setBill] = useState(false);
   const [credit, setCredit] = useState(false);
-  const [isSocket, setIsSocket] = useState();
+  const [isSocket, setIsSocket] = useState(false);
   const [isStable, setIsStable] = useState(true);
   const { setFieldsValue } = form;
+
+  const calculateTotal = useCallback(async () => {
+    const TAX = 0.16;
+
+    const currentPromotion = currentTicket.promotion
+      ? [currentTicket.promotion]
+      : currentTicketPromotions.filter(({ id }) => promotion === id);
+
+    const price =
+      currentPromotion.length > 0
+        ? currentPromotion[0].product.price
+        : specialPrice
+        ? specialPrice.price
+        : currentTicket.product.price;
+
+    const percentageProductRate = productRate?.rate && !isSocket ? 1 + productRate?.rate / 100 : 1;
+    const modifiedWeightToSet = (
+      (modifiedWeight - currentTicket.truck.weight) *
+      percentageProductRate
+    ).toFixed(2);
+    const taxToSet = bill ? modifiedWeightToSet * price * TAX : 0;
+    const totalToSet = (modifiedWeightToSet * price + taxToSet).toFixed(2);
+
+    if (totalToSet > 0) {
+      setTotal(parseFloat(totalToSet));
+      setModifiedWeight(currentTicket.truck.weight + parseFloat(modifiedWeightToSet));
+    } else {
+      setTotal(0);
+    }
+  }, [
+    modifiedWeight,
+    currentTicket,
+    currentTicketPromotions,
+    promotion,
+    isSocket,
+    bill,
+    specialPrice,
+    productRate
+  ]);
 
   useEffect(() => {
     let socket;
@@ -54,11 +103,13 @@ const TicketSubmitForm = ({
           socket.on('weight', data => {
             setIsStable(data[data.length - 1] === 'S');
             const weightToSet =
-              (Number(data.substring(0, data.length - 1)) / 1000) * percentageProductRate;
-            setFieldsValue({
-              weight: weightToSet
-            });
-            setWeight(weightToSet);
+              (Number(data.substring(0, data.length - 1)) / 1000 - currentTicket.truck.weight) *
+              percentageProductRate;
+
+            if (isStable) {
+              setModifiedWeight(weightToSet + currentTicket.truck.weight);
+              calculateTotal();
+            }
           });
         }
       } catch (err) {
@@ -73,7 +124,7 @@ const TicketSubmitForm = ({
         socket.close();
       }
     };
-  }, [setFieldsValue, productRate]);
+  }, [setFieldsValue, productRate, isStable, currentTicket, calculateTotal]);
 
   useEffect(() => {
     const getProductRate = async () => {
@@ -157,49 +208,6 @@ const TicketSubmitForm = ({
 
     setFilteredPromotions(filteredPromotionsToSet);
   }, [bill, credit, currentTicketPromotions]);
-
-  useEffect(() => {
-    const calculateTotal = async () => {
-      const TAX = 0.16;
-
-      const currentPromotion = currentTicket.promotion
-        ? [currentTicket.promotion]
-        : currentTicketPromotions.filter(({ id }) => promotion === id);
-
-      const price =
-        currentPromotion.length > 0
-          ? currentPromotion[0].product.price
-          : specialPrice
-          ? specialPrice.price
-          : currentTicket.product.price;
-
-      const percentageProductRate = productRate?.rate ? 1 + productRate?.rate / 100 : 1;
-      const modifiedWeightToSet = (
-        (weight - currentTicket.truck.weight) *
-        percentageProductRate
-      ).toFixed(2);
-      const taxToSet = bill ? modifiedWeightToSet * price * TAX : 0;
-      const totalToSet = (modifiedWeightToSet * price + taxToSet).toFixed(2);
-
-      if (totalToSet > 0) {
-        setTotal(parseFloat(totalToSet));
-        setModifiedWeight(currentTicket.truck.weight + parseFloat(modifiedWeightToSet));
-      } else {
-        setTotal(0);
-      }
-    };
-
-    if (!isSocket) calculateTotal(); // Only calculate if weight is not connected!
-  }, [
-    weight,
-    bill,
-    currentTicket,
-    currentTicketPromotions,
-    productRate,
-    promotion,
-    specialPrice,
-    isSocket
-  ]);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -339,31 +347,24 @@ const TicketSubmitForm = ({
                 </Select>
               )}
         </Form.Item>
-        <Form.Item
-          extra={isSocket ? 'Pesa conectada' : 'No se ha encontrado ninguna pesa. Ingresar manual'}
-        >
-          {form.getFieldDecorator('weight', {
-            initialValue: currentTicket.weight || currentTicket.truck.weight,
-            rules: [
-              {
-                type: 'number',
-                required: true,
-                message: '¡Toneladas en báscula son requeridas!'
-              },
-              {
-                type: 'number',
-                min: Number(currentTicket.truck.weight),
-                message: 'El peso registrado es menor al peso original del camión'
-              }
-            ]
-          })(
+        <Form.Item extra={!isSocket && 'No se ha encontrado ninguna pesa. Ingresar manual'}>
+          {(isSocket && (
+            <>
+              <Text disabled style={{ marginRight: 10 }}>
+                Báscula conectada
+              </Text>
+              <Icon type="check-square" theme="twoTone" />
+            </>
+          )) || (
             <InputNumber
               style={{ width: '100%' }}
               placeholder="Toneladas registrados en báscula"
               min={0}
-              readOnly={isSocket}
               step={0.01}
-              onChange={value => setWeight(value)}
+              onChange={value => {
+                setModifiedWeight(value);
+                calculateTotal();
+              }}
             />
           )}
         </Form.Item>
