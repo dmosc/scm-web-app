@@ -44,12 +44,13 @@ const TicketsSelect = ({
         onSelectChange={(selectedTicketsToSet, targetTicketsToSet) =>
           setSelectedTickets([...selectedTicketsToSet, ...targetTicketsToSet])
         }
-        render={({ folio, totalPrice, out, product: { name } }) => (
+        render={({ folio, totalPrice, out, product: { name }, turn: { uniqueId } }) => (
           <>
             <Tag>{moment(out).format('YYYY/MM/DD')}</Tag>
             <Tag>{folio}</Tag>
             <Tag>{name}</Tag>
             <Tag>{totalPrice}</Tag>
+            <Tag>{`T${uniqueId}`}</Tag>
           </>
         )}
       />

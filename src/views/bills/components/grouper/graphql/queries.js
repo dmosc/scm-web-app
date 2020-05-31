@@ -24,6 +24,10 @@ const GET_CLIENT_TICKETS_PENDING_TO_BILL = gql`
         id
         name
       }
+      turn {
+        id
+        uniqueId
+      }
     }
   }
 `;
