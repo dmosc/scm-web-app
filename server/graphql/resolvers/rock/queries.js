@@ -121,61 +121,60 @@ const rockQueries = {
     }
   ),
   rockSalesReportInRange: authenticated(async (_, { filters: { range } }) => {
-      const start = new Date(range.start);
-      const end = new Date(range.end);
+    const start = new Date(range.start);
+    const end = new Date(range.end);
 
-      const $match = {
-        turn: { $exists: true },
-        totalPrice: { $exists: true },
-        outTruckImage: { $exists: true },
-        out: { $gte: start, $lte: end }
-      };
+    const $match = {
+      turn: { $exists: true },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true },
+      out: { $gte: start, $lte: end }
+    };
 
-      const allRocksSummary = await Ticket.aggregate([
-        {
-          $match
-        },
-        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
-        {
-          $group: {
-            _id: '$product',
-            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
-            totalWeight: { $sum: '$totalWeight' }
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            rock: '$_id',
-            tickets: '$tickets',
-            total: '$total',
-            totalWeight: '$totalWeight'
-          }
+    const allRocksSummary = await Ticket.aggregate([
+      {
+        $match
+      },
+      { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+      {
+        $group: {
+          _id: '$product',
+          total: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+          totalWeight: { $sum: '$totalWeight' }
         }
-      ]);
+      },
+      {
+        $project: {
+          _id: 0,
+          rock: '$_id',
+          tickets: '$tickets',
+          total: '$total',
+          totalWeight: '$totalWeight'
+        }
+      }
+    ]);
 
-      const rocks = allRocksSummary.map(({ rock, tickets, total, totalWeight }) => ({
-        rock: { ...rock[0], id: rock[0]._id },
-        tickets,
-        total,
-        totalWeight
-      }));
+    const rocks = allRocksSummary.map(({ rock, tickets, total, totalWeight }) => ({
+      rock: { ...rock[0], id: rock[0]._id },
+      tickets,
+      total,
+      totalWeight
+    }));
 
-      const total = rocks.reduce((innerTotal, rock) => {
-        // eslint-disable-next-line no-param-reassign
-        innerTotal += rock.total;
-        return innerTotal;
-      }, 0);
+    const total = rocks.reduce((innerTotal, rock) => {
+      // eslint-disable-next-line no-param-reassign
+      innerTotal += rock.total;
+      return innerTotal;
+    }, 0);
 
-      const totalWeight = rocks.reduce((innerTotal, rock) => {
-        // eslint-disable-next-line no-param-reassign
-        innerTotal += rock.totalWeight;
-        return innerTotal;
-      }, 0);
+    const totalWeight = rocks.reduce((innerTotal, rock) => {
+      // eslint-disable-next-line no-param-reassign
+      innerTotal += rock.totalWeight;
+      return innerTotal;
+    }, 0);
 
-      return { rocks, total, totalWeight };
-    }
-  ),
+    return { rocks, total, totalWeight };
+  }),
   rockMonthSalesReport: authenticated(
     async (
       _,

@@ -39,10 +39,7 @@ const clientQueries = {
     const { start, end } = range;
     const clients = await Client.find({
       deleted: false,
-      $and: [
-        { createdAt: { $gte: start } },
-        { createdAt: { $lte: end } }
-      ]
+      $and: [{ createdAt: { $gte: start } }, { createdAt: { $lte: end } }]
     })
       .populate('trucks stores depositHistory.depositedBy')
       .limit(limit || Number.MAX_SAFE_INTEGER);

@@ -16,8 +16,8 @@ type RockSalesReport {
 type RockSalesSummary {
   rock: Rock!
   tickets: [Ticket!]!
-    totalWeight: Float!
-    total: Float!
+  totalWeight: Float!
+  total: Float!
 }
 
 type RockMonthSalesReport {
@@ -59,14 +59,14 @@ input RockFilters {
 }
 
 input RockSalesReportFilters {
-    rocks: [ID]!
-    start: Date
-    end: Date
-    type: Boolean
-    paymentType: TicketPaymentType
-    turn: ID
+  rocks: [ID]!
+  start: Date
+  end: Date
+  type: Boolean
+  paymentType: TicketPaymentType
+  turn: ID
 }
 
 input RockSalesReportInRangeFilters {
-    range: DateRange!
+  range: DateRange!
 }
