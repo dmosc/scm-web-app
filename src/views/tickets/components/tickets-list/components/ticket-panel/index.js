@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { printPDF } from 'utils/functions';
 import { withApollo } from 'react-apollo';
+import { useAuth } from 'components/providers/withAuth';
 import {
   Button,
+  Col,
+  Divider,
   message,
   Modal,
-  Select,
-  Tabs,
-  Statistic,
-  Col,
   Row,
-  Typography,
-  Divider
+  Select,
+  Statistic,
+  Tabs,
+  Typography
 } from 'antd';
 import { Actions } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET, SET_STORE_TO_TICKET } from './graphql/mutations';
@@ -26,6 +27,8 @@ const { Text, Title, Paragraph } = Typography;
 const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCurrent }) => {
   const [tab, setTab] = useState('client');
   const [downloadingPDF, setDownloadingPDF] = useState(false);
+
+  const { isAdmin, isManager, isSupport } = useAuth();
 
   const addTicketToTurn = async ticketToAdd => {
     const { id } = turn;
@@ -270,16 +273,18 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
         >
           Agregar a turno
         </Button>
-        <Button
-          style={{ marginLeft: 'auto' }}
-          size="small"
-          onClick={() => handleCancel(ticket.id)}
-          type="danger"
-          ghost
-          icon="close"
-        >
-          Cancelar
-        </Button>
+        {(isAdmin || isManager || isSupport) && (
+          <Button
+            style={{ marginLeft: 'auto' }}
+            size="small"
+            onClick={() => handleCancel(ticket.id)}
+            type="danger"
+            ghost
+            icon="close"
+          >
+            Cancelar
+          </Button>
+        )}
       </Actions>
       {ticket.client.stores.length > 0 && (
         <Select

@@ -15,7 +15,7 @@ const { Panel } = Collapse;
 const { Title } = Typography;
 
 const TicketList = ({ client, turnActive, setCurrent, loading, error, data, refetchTurn }) => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isManager, isSupport } = useAuth();
   const [loadingProductRate, setLoadingProductRate] = useState(false);
   const [productRate, setProductRate] = useState(null);
   const [isCancelDrawerOpen, toggleCancelDrawer] = useState(false);
@@ -132,17 +132,19 @@ const TicketList = ({ client, turnActive, setCurrent, loading, error, data, refe
               />
             </>
           )}
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item onClick={() => toggleCancelDrawer(true)}>Ver cancelados</Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type="link">
-              Opciones <Icon type="down" />
-            </Button>
-          </Dropdown>
+          {(isAdmin || isManager || isSupport) && (
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item onClick={() => toggleCancelDrawer(true)}>Ver cancelados</Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type="link">
+                Opciones <Icon type="down" />
+              </Button>
+            </Dropdown>
+          )}
         </div>
       </TitleContainer>
       {activeTickets?.length !== 0 && (

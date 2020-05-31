@@ -83,8 +83,7 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   activeTickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
-    @auth(roles: [ADMIN, CASHIER, MANAGER])
+  disabledTickets(filters: DisabledTicketFilters!): [Ticket!]! @auth(roles: [ADMIN, MANAGER])
   notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, LOADER, MANAGER, MANAGER, SUPPORT])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER, SUPPORT])
@@ -261,8 +260,8 @@ type Mutation {
     @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
   ticketSetStore(ticket: ID!, store: ID): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
   ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
-  ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
-  ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
+  ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Bill
   bill(bill: BillInput!): Bill @auth(roles: [ADMIN, ACCOUNTANT])
   # Truck
