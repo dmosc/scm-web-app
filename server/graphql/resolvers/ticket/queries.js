@@ -301,7 +301,7 @@ const ticketQueries = {
       throw new ApolloError('¡Ha habido un error cargando las boletas por facturar del cliente!');
     else return ticketsPendingToBill;
   }),
-  ticketsToBillSummary: authenticated(async (_, { tickets: ticketIds, client }) => {
+  ticketsToBillSummary: authenticated(async (_, { tickets: ticketIds, client, turnToBill }) => {
     const productSummary = await Ticket.aggregate([
       {
         $match: {
@@ -317,8 +317,7 @@ const ticketQueries = {
           _id: '$product',
           totalWeight: { $sum: '$totalWeight' },
           subtotal: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
-          tax: { $sum: '$tax' },
-          total: { $sum: '$totalPrice' }
+          tax: { $sum: '$tax' }
         }
       },
       {
@@ -327,8 +326,7 @@ const ticketQueries = {
           product: '$_id',
           weight: '$totalWeight',
           subtotal: '$subtotal',
-          tax: '$tax',
-          total: '$total'
+          tax: '$tax'
         }
       }
     ]);
@@ -340,13 +338,7 @@ const ticketQueries = {
     let price;
 
     for (let i = 0; i < productSummary.length; i++) {
-      const {
-        product,
-        weight,
-        subtotal: productSubtotal,
-        tax: productTax,
-        total: productTotal
-      } = productSummary[i];
+      const { product, weight, subtotal: productSubtotal, tax: productTax } = productSummary[i];
 
       // eslint-disable-next-line no-await-in-loop
       const specialPrice = await ClientPrice.find({ client, rock: product[0]._id }).sort({
@@ -356,11 +348,16 @@ const ticketQueries = {
       if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product[0].price;
       else price = specialPrice[0].price;
 
-      subtotal += productSubtotal;
-      tax += productTax;
-      total += productTotal;
+      const subtotalToAdd = turnToBill ? productSubtotal / 1.16 : productSubtotal;
+      const taxToAdd = turnToBill ? subtotalToAdd * 0.16 : productTax;
 
-      products.push({ product: product[0], price, weight, total: productTotal });
+      price = turnToBill ? (subtotalToAdd / weight).toFixed(2) : price;
+
+      subtotal += subtotalToAdd;
+      tax += taxToAdd;
+      total += subtotalToAdd + taxToAdd;
+
+      products.push({ product: product[0], price, weight, total: subtotalToAdd });
     }
 
     if (!productSummary)

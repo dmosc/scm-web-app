@@ -89,7 +89,7 @@ type Query {
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER, SUPPORT])
   ticketsPendingToBill(client: ID!, type: TicketBillType!): [Ticket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  ticketsToBillSummary(tickets: [ID!]!, client: ID!): BillSummary!
+  ticketsToBillSummary(tickets: [ID!]!, client: ID!, turnToBill: Boolean!): BillSummary!
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
