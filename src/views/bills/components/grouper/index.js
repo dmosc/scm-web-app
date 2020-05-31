@@ -69,7 +69,7 @@ const Grouper = ({ client }) => {
   return (
     <>
       <BillsContainer>
-        <Container title="Clientes con boletas pendientes" width="35%" height="75vh">
+        <Container title="Clientes con boletas pendientes" width="30%" height="75vh">
           <ClientsList
             clients={clients}
             currentClient={currentClient}
