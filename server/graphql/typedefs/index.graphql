@@ -150,6 +150,10 @@ type Query {
     @auth(roles: [ADMIN, MANAGER])
   rockMonthSalesReport(filters: RockSalesReportFilters!): RockMonthSalesReport!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  rockSalesReportCleanAndDirty(
+    filters: RockSalesReportCleanAndDirtyFilters!
+    dirty: [ID!]!
+  ): RockSalesReportCleanAndDirty! @auth(roles: [ADMIN, MANAGER])
   # Post
   post(id: ID!): Post @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   posts(filters: PostFilters!): [Post!]!

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
-import { Modal, Button, Card, Form, List, message, Progress, Tooltip, Typography, Tag } from 'antd';
+import { Button, Form, List, message, Modal, Progress, Row, Tag, Tooltip, Typography } from 'antd';
 import NewGoal from './components/new-goal';
 import { GET_GOALS_SUMMARY } from './graphql/queries';
 import { DELETE_GOAL } from './graphql/mutations';
@@ -51,49 +51,55 @@ const Goals = ({ client }) => {
 
   return (
     <>
-      <Card>
-        <List
-          size="small"
-          style={{ height: '30vh', overflow: 'scroll' }}
-          dataSource={goalsSummary}
-          renderItem={goalSummary => (
-            <List.Item
-              actions={[
-                <Tooltip placement="top" title="Eliminar">
-                  <Button
-                    style={{ marginRight: 5 }}
-                    onClick={() => deleteGoal(goalSummary.goal)}
-                    type="danger"
-                    icon="delete"
-                    size="small"
-                  />
-                </Tooltip>
-              ]}
-              key={goalSummary.goal?.id}
-            >
-              <List.Item.Meta />
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+      <List
+        size="small"
+        style={{ height: '30vh', overflow: 'scroll' }}
+        bordered
+        dataSource={goalsSummary}
+        renderItem={goalSummary => (
+          <List.Item
+            actions={[
+              <Tooltip placement="top" title="Eliminar">
+                <Button
+                  style={{ marginRight: 5 }}
+                  onClick={() => deleteGoal(goalSummary.goal)}
+                  type="danger"
+                  icon="delete"
+                  size="small"
+                />
+              </Tooltip>
+            ]}
+            key={goalSummary.goal?.id}
+          >
+            <Row>
+              <Row>
                 <Tooltip title={goalSummary?.goal?.rocks.map(rock => rock.name).join(', ')}>
                   <Text
                     strong
                   >{`${goalSummary?.goal.name} [${goalSummary?.goal.rocks.length}]`}</Text>
                 </Tooltip>
+              </Row>
+              <Row>
                 <Text disabled>{`${moment(goalSummary?.goal.start).format('ll')} - ${moment(
                   goalSummary?.goal.end
                 ).format('ll')}`}</Text>
-                <Tag>{`${(goalSummary?.tons).toFixed(2)}/${(goalSummary?.goal.tons).toFixed(
-                  2
-                )} tons`}</Tag>
+              </Row>
+              <Row>
+                <Tag>
+                  {`${(goalSummary?.tons).toFixed(2)}/${(goalSummary?.goal.tons).toFixed(2)} tons`}
+                </Tag>
+              </Row>
+              <Row>
                 <Progress
                   percent={parseFloat(
                     ((goalSummary?.tons / goalSummary?.goal.tons) * 100).toFixed(2)
                   )}
                 />
-              </div>
-            </List.Item>
-          )}
-        />
-      </Card>
+              </Row>
+            </Row>
+          </List.Item>
+        )}
+      />
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button style={{ marginTop: 5 }} onClick={() => setIsModalOpen(true)}>
           Crear

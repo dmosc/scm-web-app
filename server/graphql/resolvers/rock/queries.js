@@ -252,7 +252,76 @@ const rockQueries = {
 
       return { monthSummary };
     }
-  )
+  ),
+  rockSalesReportCleanAndDirty: authenticated(async (_, { filters: { range }, dirty = [] }) => {
+    const start = new Date(range.start);
+    const end = new Date(range.end);
+
+    const $match = {
+      turn: { $exists: true },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true },
+      out: { $gte: start, $lte: end }
+    };
+
+    const [cleanSummary, dirtySummary] = await Promise.all([
+      Ticket.aggregate([
+        {
+          $match: { ...$match, product: { $nin: [...dirty.map(rock => Types.ObjectId(rock))] } }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+            totalWeight: { $sum: '$totalWeight' }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            total: '$total',
+            totalWeight: '$totalWeight'
+          }
+        }
+      ]),
+      Ticket.aggregate([
+        {
+          $match: { ...$match, product: { $in: [...dirty.map(rock => Types.ObjectId(rock))] } }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+            totalWeight: { $sum: '$totalWeight' }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            total: '$total',
+            totalWeight: '$totalWeight'
+          }
+        }
+      ])
+    ]);
+
+    let cleanResults;
+    let dirtyResults;
+
+    if (cleanSummary.length === 1) {
+      cleanResults = { ...cleanSummary[0] };
+    } else {
+      cleanResults = { total: 0, totalWeight: 0 };
+    }
+
+    if (dirtySummary.length === 1) {
+      dirtyResults = { ...dirtySummary[0] };
+    } else {
+      dirtyResults = { total: 0, totalWeight: 0 };
+    }
+
+    return { clean: cleanResults, dirty: dirtyResults };
+  })
 };
 
 export default rockQueries;

@@ -7,18 +7,14 @@ import { GET_CLIENTS } from './graphql/queries';
 
 const { Text } = Typography;
 
-const NewClients = ({ client }) => {
+const NewClients = ({ client, range }) => {
   const [clients, setClients] = useState([]);
-  const [filters] = useState({
-    limit: 10,
-    range: { start: moment().startOf('week'), end: moment().endOf('week') }
-  });
 
   useEffect(() => {
     const getClients = async () => {
       const { data, errors } = await client.query({
         query: GET_CLIENTS,
-        variables: { filters }
+        variables: { filters: { range } }
       });
 
       if (!errors) {
@@ -29,13 +25,11 @@ const NewClients = ({ client }) => {
     };
 
     getClients();
-  }, [client, filters]);
+  }, [client, range]);
 
   return (
     <>
-      <Text disabled>{`De ${filters.range.start.format('ll')} a ${filters.range.end.format(
-        'll'
-      )}`}</Text>
+      <Text disabled>{`De ${range.start.format('ll')} a ${range.end.format('ll')}`}</Text>
       <List
         style={{ height: '30vh', overflow: 'scroll' }}
         dataSource={clients}
@@ -54,7 +48,8 @@ const NewClients = ({ client }) => {
 };
 
 NewClients.propTypes = {
-  client: PropTypes.object.isRequired
+  client: PropTypes.object.isRequired,
+  range: PropTypes.object.isRequired
 };
 
 export default withApollo(NewClients);
