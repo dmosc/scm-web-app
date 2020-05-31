@@ -13,6 +13,16 @@ type RockSalesReport {
   totalWeight: Float!
 }
 
+type CleanOrDirtyRockSalesReport {
+  total: Float!
+  totalWeight: Float!
+}
+
+type RockSalesReportCleanAndDirty {
+  clean: CleanOrDirtyRockSalesReport!
+  dirty: CleanOrDirtyRockSalesReport!
+}
+
 type RockSalesSummary {
   rock: Rock!
   tickets: [Ticket!]!
@@ -68,5 +78,9 @@ input RockSalesReportFilters {
 }
 
 input RockSalesReportInRangeFilters {
+  range: DateRange!
+}
+
+input RockSalesReportCleanAndDirtyFilters {
   range: DateRange!
 }

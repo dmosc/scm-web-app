@@ -38,7 +38,8 @@ const TicketSubmitForm = ({
 }) => {
   const [productRate, setProductRate] = useState(null);
   const [drivers, setDrivers] = useState([]);
-  const [modifiedWeight, setModifiedWeight] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [modifiedWeight, setModifiedWeight] = useState(undefined);
   const [total, setTotal] = useState(0);
   const [filteredPromotions, setFilteredPromotions] = useState([]);
   const [promotion, setPromotion] = useState(currentTicket?.promotion?.id);
@@ -66,22 +67,28 @@ const TicketSubmitForm = ({
         ? specialPrice.price
         : currentTicket.product.price;
 
-    const percentageProductRate = productRate?.rate && !isSocket ? 1 + productRate?.rate / 100 : 1;
-    const modifiedWeightToSet = (
-      (modifiedWeight - currentTicket.truck.weight) *
-      percentageProductRate
-    ).toFixed(2);
-    const taxToSet = bill ? modifiedWeightToSet * price * TAX : 0;
-    const totalToSet = (modifiedWeightToSet * price + taxToSet).toFixed(2);
+    let modifiedWeightToSet;
+    let taxToSet;
+    let totalToSet;
+    const percentageProductRate = productRate?.rate ? 1 + productRate?.rate / 100 : 1;
 
-    if (totalToSet > 0) {
-      setTotal(parseFloat(totalToSet));
+    if (!isSocket) {
+      // If weight was entered manually
+      modifiedWeightToSet = ((weight - currentTicket.truck.weight) * percentageProductRate).toFixed(
+        2
+      );
+      taxToSet = bill ? modifiedWeightToSet * price * TAX : 0;
+      totalToSet = (modifiedWeightToSet * price + taxToSet).toFixed(2);
       setModifiedWeight(currentTicket.truck.weight + parseFloat(modifiedWeightToSet));
     } else {
-      setTotal(0);
+      const netWeight = (weight - currentTicket.truck.weight).toFixed(2);
+      taxToSet = bill ? netWeight * price * TAX : 0;
+      totalToSet = (netWeight * price + taxToSet).toFixed(2);
     }
+
+    setTotal(parseFloat(totalToSet));
   }, [
-    modifiedWeight,
+    weight,
     currentTicket,
     currentTicketPromotions,
     promotion,
@@ -105,7 +112,7 @@ const TicketSubmitForm = ({
             const weightToSet =
               (Number(data.substring(0, data.length - 1)) / 1000 - currentTicket.truck.weight) *
               percentageProductRate;
-            setModifiedWeight(weightToSet + currentTicket.truck.weight);
+            setWeight(weightToSet + currentTicket.truck.weight);
           });
         }
       } catch (err) {
@@ -120,7 +127,7 @@ const TicketSubmitForm = ({
         socket.close();
       }
     };
-  }, [setFieldsValue, productRate, currentTicket]);
+  }, [setFieldsValue, productRate, currentTicket, calculateTotal]);
 
   useEffect(() => {
     if (isStable) {
@@ -230,6 +237,8 @@ const TicketSubmitForm = ({
         return;
       }
 
+      const weightToSubmit = modifiedWeight ? modifiedWeight : weight;
+
       confirm({
         title: '¿Continuar?',
         content: (
@@ -251,7 +260,7 @@ const TicketSubmitForm = ({
               <Text style={{ marginRight: 5 }} strong>
                 Peso neto:
               </Text>
-              <Tag>{`${(modifiedWeight - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
+              <Tag>{`${(weightToSubmit - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
             </Paragraph>
             <Paragraph>
               <Text style={{ marginRight: 5 }} strong>
@@ -275,7 +284,7 @@ const TicketSubmitForm = ({
                 ticket: {
                   id,
                   driver: driver[0],
-                  weight: modifiedWeight,
+                  weight: weightToSubmit,
                   credit: creditBill,
                   bill: formBill,
                   promotion
@@ -363,10 +372,7 @@ const TicketSubmitForm = ({
               placeholder="Toneladas registrados en báscula"
               min={0}
               step={0.01}
-              onChange={value => {
-                setModifiedWeight(value);
-                calculateTotal();
-              }}
+              onChange={value => setWeight(value)}
             />
           )}
         </Form.Item>
