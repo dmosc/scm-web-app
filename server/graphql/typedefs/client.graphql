@@ -17,6 +17,7 @@ type Client {
   depositHistory: [Deposit!]!
   defaultCreditDays: Int!
   hasSubscription: Boolean!
+  createdAt: Date
 }
 
 type ClientPendingBill {
@@ -104,6 +105,12 @@ input AddressInput {
 input ClientFilters {
   limit: Int
   search: String
+  range: DateRange
+}
+
+input ClientsCreatedInRangeFilters {
+  limit: Int
+  range: DateRange!
 }
 
 # Enums

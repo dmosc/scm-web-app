@@ -145,6 +145,13 @@ type TicketsSummary {
   creditWeight: Float
 }
 
+type TicketsInRangeSummary {
+  clients: [ClientTurnSummary!]
+  upfront: Float
+  credit: Float
+  total: Float
+}
+
 enum TicketBillType {
   BILL
   REMISSION

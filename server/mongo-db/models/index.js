@@ -21,3 +21,4 @@ export { default as Quotation } from './quotation';
 export { default as ProductRate } from './product-rate';
 export { default as ClientSubscription } from './client-subscription';
 export { default as ClientSubscriptionWarning } from './client-subscription-warning';
+export { default as Goal } from './goal';
