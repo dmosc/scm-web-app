@@ -118,7 +118,27 @@ const billMutations = {
         return e;
       }
     }
-  )
+  ),
+  billDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const bill = await Bill.findById(id);
+
+      await Bill.deleteById(id, userRequesting.id);
+      await Ticket.updateMany(
+        {
+          folio: { $in: [...bill.folios] },
+          turn: { $exists: true },
+          isBilled: true,
+          disabled: false
+        },
+        { isBilled: false }
+      );
+
+      return true;
+    } catch (e) {
+      return e;
+    }
+  })
 };
 
 export default billMutations;

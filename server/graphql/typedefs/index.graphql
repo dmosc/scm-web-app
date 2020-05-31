@@ -263,7 +263,8 @@ type Mutation {
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Bill
-  bill(bill: BillInput!): Bill @auth(roles: [ADMIN, ACCOUNTANT])
+  bill(bill: BillInput!): Bill @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
+  billDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT])
   truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT])
