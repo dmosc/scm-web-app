@@ -49,7 +49,8 @@ const Client = User.discriminator(
     balance: { type: Number, required: true, default: 0 },
     depositHistory: { type: [Deposit], default: [] },
     defaultCreditDays: { type: Number, required: true, default: 0 },
-    hasSubscription: { type: Boolean, required: true, default: false }
+    hasSubscription: { type: Boolean, required: true, default: false },
+    createdAt: { type: Date, required: true, default: Date.now }
   })
 );
 

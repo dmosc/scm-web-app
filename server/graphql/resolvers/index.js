@@ -74,6 +74,9 @@ import clientSubscriptionQueries from './client-subscription/queries';
 // ClientSubscriptionWarning
 import clientSubscriptionWarningMutations from './client-subscription-warning/mutations';
 import clientSubscriptionWarningQueries from './client-subscription-warning/queries';
+// Goal
+import goalMutations from './goal/mutations';
+import goalQueries from './goal/queries';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -101,7 +104,8 @@ const resolvers = {
     ...quotationQueries,
     ...productRateQueries,
     ...clientSubscriptionQueries,
-    ...clientSubscriptionWarningQueries
+    ...clientSubscriptionWarningQueries,
+    ...goalQueries
   },
   Mutation: {
     ...userMutations,
@@ -128,6 +132,7 @@ const resolvers = {
     ...productRateMutations,
     ...clientSubscriptionMutations,
     ...clientSubscriptionWarningMutations,
+    ...goalMutations,
     ...uploaders // AWS
   },
   Subscription: {

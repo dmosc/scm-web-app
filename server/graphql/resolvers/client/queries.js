@@ -35,6 +35,19 @@ const clientQueries = {
 
     return clients;
   }),
+  clientsCreatedIn: authenticated(async (_, { filters: { limit, range } }) => {
+    const { start, end } = range;
+    const clients = await Client.find({
+      deleted: false,
+      $and: [{ createdAt: { $gte: start } }, { createdAt: { $lte: end } }]
+    })
+      .populate('trucks stores depositHistory.depositedBy')
+      .limit(limit || Number.MAX_SAFE_INTEGER);
+
+    if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
+
+    return clients;
+  }),
   clientsPendingTicketsToBill: authenticated(async () => {
     const clients = await Ticket.aggregate([
       {

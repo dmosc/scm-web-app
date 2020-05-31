@@ -105,11 +105,7 @@ const TicketSubmitForm = ({
             const weightToSet =
               (Number(data.substring(0, data.length - 1)) / 1000 - currentTicket.truck.weight) *
               percentageProductRate;
-
-            if (isStable) {
-              setModifiedWeight(weightToSet + currentTicket.truck.weight);
-              calculateTotal();
-            }
+            setModifiedWeight(weightToSet + currentTicket.truck.weight);
           });
         }
       } catch (err) {
@@ -124,7 +120,13 @@ const TicketSubmitForm = ({
         socket.close();
       }
     };
-  }, [setFieldsValue, productRate, isStable, currentTicket, calculateTotal]);
+  }, [setFieldsValue, productRate, currentTicket]);
+
+  useEffect(() => {
+    if (isStable) {
+      calculateTotal();
+    }
+  }, [isStable, calculateTotal]);
 
   useEffect(() => {
     const getProductRate = async () => {

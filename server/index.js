@@ -36,8 +36,11 @@ const { AURORA_DB_NAME } = AWS_CONFIG;
         cronjobs.await('Executing cronjobs');
         Object.keys(tasks).forEach(async task => {
           const result = await tasks[task]();
-          if (result) cronjobs.success(`✅  Completed task ${task}`);
-          else cronjobs.error(`❌  Failed task ${task}`);
+          if (result) {
+            cronjobs.success(`✅  Completed task ${task}`);
+          } else {
+            cronjobs.error(`❌  Failed task ${task}`);
+          }
         });
       },
       { scheduled: true, timezone: 'America/Monterrey' }

@@ -22,6 +22,7 @@
 # import * from "product-rate.graphql"
 # import * from "client-subscription.graphql"
 # import * from "client-subscription-warning.graphql"
+# import * from "goal.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -40,6 +41,8 @@ type Query {
   # Client
   client(id: ID!): Client @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clients(filters: ClientFilters!): [Client!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsCreatedIn(filters: ClientsCreatedInRangeFilters!): [Client!]!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientsXLS(filters: ClientFilters!): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   clientsPendingTicketsToBill: [ClientPendingBill!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
@@ -143,6 +146,8 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   rockSalesReport(filters: RockSalesReportFilters!): RockSalesReport!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  rockSalesReportInRange(filters: RockSalesReportInRangeFilters!): RockSalesReport!
+    @auth(roles: [ADMIN, MANAGER])
   rockMonthSalesReport(filters: RockSalesReportFilters!): RockMonthSalesReport!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Post
@@ -211,6 +216,11 @@ type Query {
   clientSubscriptionWarning(id: ID!): ClientSubscriptionWarning
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  # Goal
+  goal(id: ID!): Goal @auth(roles: [ADMIN, MANAGER])
+  goals: [Goal!] @auth(roles: [ADMIN, MANAGER])
+  goalSummary(id: ID!): GoalSummary @auth(roles: [ADMIN, MANAGER])
+  goalsSummary: [GoalSummary!] @auth(roles: [ADMIN, MANAGER])
 }
 
 type Mutation {
@@ -314,6 +324,9 @@ type Mutation {
   clientSubscriptionWarningResolve(
     clientSubscriptionWarning: ClientSubscriptionWarningResolve!
   ): ClientSubscriptionWarning @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  # Goal
+  goal(goal: GoalInput!): Goal! @auth(roles: [ADMIN, MANAGER])
+  goalDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   # Misc
   fileUpload(file: String!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
