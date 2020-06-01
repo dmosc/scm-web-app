@@ -6,6 +6,7 @@ input DateRange {
 # AWS
 enum s3FolderKey {
   trucks
+  blast_files
 }
 
 enum order {
