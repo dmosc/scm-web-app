@@ -11,9 +11,9 @@ export const S3Upload = params =>
   );
 
 const uploaders = {
-  fileUpload: async (_, { file: { originFileObj }, folderKey, id }) => {
+  fileUpload: async (_, { file, folderKey, id }) => {
     try {
-      const { createReadStream, filename } = await originFileObj;
+      const { createReadStream, filename } = await file;
 
       const stream = createReadStream();
       const indexOfExtension = filename.lastIndexOf('.');

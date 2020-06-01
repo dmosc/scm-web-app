@@ -1,4 +1,4 @@
-import { GraphQLUpload } from 'graphql-upload';
+import { GraphQLUpload } from 'apollo-upload-server';
 // User
 import userQueries from './user/queries';
 import userMutations from './user/mutations';
@@ -87,6 +87,7 @@ import blastQueries from './blast/queries';
 import uploaders from './aws/uploaders';
 
 const resolvers = {
+  Upload: GraphQLUpload,
   Query: {
     ...userQueries,
     ...clientQueries,
@@ -150,8 +151,7 @@ const resolvers = {
     ...postSubscriptions,
     ...messageSubscriptions,
     ...turnSubscriptions
-  },
-  Upload: GraphQLUpload
+  }
 };
 
 export default resolvers;

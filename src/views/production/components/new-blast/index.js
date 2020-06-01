@@ -2,7 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import { useAuth } from 'components/providers/withAuth';
-import { Button, DatePicker, Divider, Form, Icon, InputNumber, List, message, Modal, Select, Tag, Typography, Upload } from 'antd';
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Icon,
+  InputNumber,
+  List,
+  message,
+  Modal,
+  Select,
+  Tag,
+  Typography,
+  Upload
+} from 'antd';
 import { NewBlastProductForm } from './elements';
 import { FILE_UPLOAD, REGISTER_BLAST } from './graphql/mutations';
 import { GET_BLAST_PRODUCTS } from './graphql/queries';
@@ -12,7 +26,14 @@ const { Text } = Typography;
 const { Option } = Select;
 const { Dragger } = Upload;
 
-const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastModal, setBlasts }) => {
+const NewBlast = ({
+  form,
+  client,
+  blasts,
+  isNewBlastModalOpen,
+  toggleNewBlastModal,
+  setBlasts
+}) => {
   const [loading, setLoading] = useState(false);
   const [stagedBlastProducts, setStagedBlastProducts] = useState([]);
   const [blastProducts, setBlastProducts] = useState([]);
@@ -47,7 +68,9 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
   }, [client]);
 
   useEffect(() => {
-    const filteredRocksToSet = blastProducts.filter(({ id }) => !stagedBlastProducts.some(({ rock }) => rock === id));
+    const filteredRocksToSet = blastProducts.filter(
+      ({ id }) => !stagedBlastProducts.some(({ rock }) => rock === id)
+    );
 
     setFilteredBlastProducts(filteredRocksToSet);
   }, [blastProducts, stagedBlastProducts]);
@@ -70,7 +93,11 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
         quantity
       }
     ]);
-    setNewBlastProductForm({ currentBlastProductIndex: undefined, price: undefined, quantity: undefined });
+    setNewBlastProductForm({
+      currentBlastProductIndex: undefined,
+      price: undefined,
+      quantity: undefined
+    });
   };
 
   const removeBlastProduct = index => {
@@ -80,6 +107,7 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
   };
 
   const uploadFile = async file => {
+    console.log(file);
     const { data, errors } = await client.mutate({
       mutation: FILE_UPLOAD,
       variables: { file, folderKey: 'blast_files', id: user.id }
@@ -92,22 +120,32 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
     }
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     setLoading(true);
+
+    console.log(documents);
+    await uploadFile(documents[0]);
+    return;
 
     e.preventDefault();
     form.validateFields(async (err, { date, tons }) => {
       if (!err) {
-        const { data: { blast }, errors } = await client.mutate({
+        const {
+          data: { blast },
+          errors
+        } = await client.mutate({
           mutation: REGISTER_BLAST,
           variables: {
-            blast:
-              {
-                date,
-                tons,
-                products: stagedBlastProducts.map(({ product, price, quantity }) => ({ product, price, quantity })),
-                documents
-              }
+            blast: {
+              date,
+              tons,
+              products: stagedBlastProducts.map(({ product, price, quantity }) => ({
+                product,
+                price,
+                quantity
+              })),
+              documents
+            }
           }
         });
 
@@ -150,9 +188,7 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
                 message: 'La fecha de ejecución es requerida!'
               }
             ]
-          })(
-            <DatePicker/>
-          )}
+          })(<DatePicker />)}
         </Form.Item>
         <Form.Item>
           <Divider orientation="left">Toneladas registradas</Divider>
@@ -170,7 +206,7 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
               min={0}
               step={0.1}
               placeholder="Ingrese toneladas"
-              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               parser={value => value.replace(/\$\s?|(,*)/g, '')}
             />
@@ -181,7 +217,9 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
       <NewBlastProductForm onSubmit={addBlastProduct}>
         <Select
           allowClear
-          onChange={currentBlastProductIndex => setNewBlastProductForm({ ...newBlastProductForm, currentBlastProductIndex })}
+          onChange={currentBlastProductIndex =>
+            setNewBlastProductForm({ ...newBlastProductForm, currentBlastProductIndex })
+          }
           value={
             typeof newBlastProductForm.currentBlastProductIndex === 'number'
               ? newBlastProductForm.currentBlastProductIndex
@@ -247,10 +285,13 @@ const NewBlast = ({ form, client, blasts, isNewBlastModalOpen, toggleNewBlastMod
         name="file"
         multiple={true}
         style={{ marginTop: 20 }}
-        onChange={({ file }) => setDocuments([...documents, file])}
+        onChange={({ file, fileList }) => {
+          // console.log(file, fileList);
+          setDocuments([...documents, file.originFileObj]);
+        }}
       >
         <p className="ant-upload-drag-icon">
-          <Icon type="cloud-upload"/>
+          <Icon type="cloud-upload" />
         </p>
         <p className="ant-upload-text">Seleccione o arrastre archivos asociados a la voladura</p>
       </Dragger>
