@@ -92,7 +92,7 @@ const ticketMutations = {
     if (ticketExists.length !== 0) throw new Error(`¡El camión ${plates} ya está activo!`);
 
     try {
-      const truck = await Truck.findOne({ plates, client: newTicket.client });
+      const truck = await Truck.findOne({ plates, client: newTicket.client, deleted: false });
       const product = await Rock.findById(productId);
       const client = await Client.findById(newTicket.client);
 
