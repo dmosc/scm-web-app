@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { Button, Form, message, Row, Table, Tooltip, Typography } from 'antd';
+import { Button, Form, List, message, Popover, Row, Table, Tag, Tooltip, Typography } from 'antd';
 import { Card, TableContainer } from './elements';
 import Title from './components/title';
 import NewBlastProduct from './components/new-blast-product';
@@ -50,13 +50,64 @@ const Production = ({ client }) => {
       title: 'Productos',
       dataIndex: 'products',
       key: 'products',
-      render: () => <Text>Ver</Text>
+      render: products => {
+        const structure = (
+          <List
+            size="small"
+            bordered
+            dataSource={products}
+            renderItem={({ product, price, quantity }) => (
+              <List.Item>
+                <List.Item.Meta
+                  title={product.name}
+                  description={
+                    <>
+                      <Tag>{`PPU: $${price}`}</Tag>
+                      <Tag>{`Unidades: ${quantity}`}</Tag>
+                    </>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        );
+
+        return (
+          <Popover content={structure} title="Productos">
+            <Tag color="green" style={{ cursor: 'pointer' }}>
+              Ver
+            </Tag>
+          </Popover>
+        );
+      }
     },
     {
       title: 'Documentos',
       dataIndex: 'documents',
       key: 'documents',
-      render: () => <Text>Ver</Text>
+      render: documents => {
+        const structure = (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {documents.length > 0 ? (
+              documents.map(document => (
+                <a href={document} key={document}>
+                  {document.substring(document.lastIndexOf('/') + 1)}
+                </a>
+              ))
+            ) : (
+              <Text strong>No hay documentos</Text>
+            )}
+          </div>
+        );
+
+        return (
+          <Popover content={structure} title="Documentos">
+            <Tag color="blue" style={{ cursor: 'pointer' }}>
+              Ver
+            </Tag>
+          </Popover>
+        );
+      }
     },
     {
       title: 'Toneladas',

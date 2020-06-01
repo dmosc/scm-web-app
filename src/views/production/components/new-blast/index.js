@@ -2,21 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import { useAuth } from 'components/providers/withAuth';
-import {
-  Button,
-  DatePicker,
-  Divider,
-  Form,
-  Icon,
-  InputNumber,
-  List,
-  message,
-  Modal,
-  Select,
-  Tag,
-  Typography,
-  Upload
-} from 'antd';
+import { Button, DatePicker, Divider, Form, Icon, InputNumber, List, message, Modal, Select, Tag, Tooltip, Typography, Upload } from 'antd';
 import { NewBlastProductForm } from './elements';
 import { FILE_UPLOAD, REGISTER_BLAST } from './graphql/mutations';
 import { GET_BLAST_PRODUCTS } from './graphql/queries';
@@ -107,25 +93,36 @@ const NewBlast = ({
   };
 
   const uploadFile = async file => {
-    console.log(file);
-    const { data, errors } = await client.mutate({
+    const {
+      data: { fileUpload },
+      errors
+    } = await client.mutate({
       mutation: FILE_UPLOAD,
       variables: { file, folderKey: 'blast_files', id: user.id }
     });
 
     if (errors) {
-      console.log(errors);
-    } else {
-      console.log(data);
+      message.error(`Hubo un error intentando subir el archivo ${file.name}`);
+      return undefined;
     }
+
+    return fileUpload;
   };
 
   const handleSubmit = async e => {
-    setLoading(true);
+    if (stagedBlastProducts.length === 0) {
+      message.error('Una voladura requiere al menos 1 producto');
+      return;
+    }
 
-    console.log(documents);
-    await uploadFile(documents[0]);
-    return;
+    setLoading(true);
+    const links = [];
+    for (const document of documents) {
+      // eslint-disable-next-line no-await-in-loop
+      const link = await uploadFile(document);
+
+      if (link) links.push(link);
+    }
 
     e.preventDefault();
     form.validateFields(async (err, { date, tons }) => {
@@ -144,7 +141,7 @@ const NewBlast = ({
                 price,
                 quantity
               })),
-              documents
+              documents: links
             }
           }
         });
@@ -228,9 +225,11 @@ const NewBlast = ({
           style={{ flexBasis: '60%', width: '100%', marginRight: 5 }}
           placeholder="Productos disponibles"
         >
-          {filteredBlastProducts.map(({ id, name }, index) => (
+          {filteredBlastProducts.map(({ id, name, description }, index) => (
             <Option style={{ display: 'flex' }} key={id} value={index}>
-              <Text style={{ marginRight: 'auto' }}>{name}</Text>
+              <Tooltip title={description}>
+                <Text style={{ marginRight: 'auto' }}>{name}</Text>
+              </Tooltip>
             </Option>
           ))}
         </Select>
@@ -285,13 +284,13 @@ const NewBlast = ({
         name="file"
         multiple={true}
         style={{ marginTop: 20 }}
-        onChange={({ file, fileList }) => {
-          // console.log(file, fileList);
-          setDocuments([...documents, file.originFileObj]);
-        }}
+        beforeUpload={() => false}
+        onChange={({ fileList }) =>
+          setDocuments(fileList.map(({ originFileObj }) => originFileObj))
+        }
       >
         <p className="ant-upload-drag-icon">
-          <Icon type="cloud-upload" />
+          <Icon type="cloud-upload"/>
         </p>
         <p className="ant-upload-text">Seleccione o arrastre archivos asociados a la voladura</p>
       </Dragger>
