@@ -39,7 +39,7 @@ const truckQueries = {
     return trucks;
   }),
   similarTrucks: authenticated(async (_, { plates }) => {
-    const trucks = await Truck.find({ deleted: false, plates: new RegExp(plates, 'i') }).populate(
+    const trucks = await Truck.find({ deleted: false, plates: plates.toUpperCase() }).populate(
       'client'
     );
 
