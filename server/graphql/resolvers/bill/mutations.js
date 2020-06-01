@@ -97,7 +97,7 @@ const billMutations = {
         tax,
         total,
         creditDays,
-        bill: isBill
+        bill: isBill || turnToBill
       });
       if (store) bill.store = store;
 
