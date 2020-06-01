@@ -6,7 +6,12 @@ import { REGISTER_BLAST_PRODUCT } from './graphql/mutations';
 
 const { TextArea } = Input;
 
-const NewBlastProduct = ({ form, client, isNewBlastProductModalOpen, toggleNewBlastProductModal }) => {
+const NewBlastProduct = ({
+  form,
+  client,
+  isNewBlastProductModalOpen,
+  toggleNewBlastProductModal
+}) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = e => {
@@ -15,7 +20,10 @@ const NewBlastProduct = ({ form, client, isNewBlastProductModalOpen, toggleNewBl
     e.preventDefault();
     form.validateFields(async (err, { name, description }) => {
       if (!err) {
-        const { data: { blastProduct }, errors } = await client.mutate({
+        const {
+          data: { blastProduct },
+          errors
+        } = await client.mutate({
           mutation: REGISTER_BLAST_PRODUCT,
           variables: { blastProduct: { name, description } }
         });
@@ -58,7 +66,7 @@ const NewBlastProduct = ({ form, client, isNewBlastProductModalOpen, toggleNewBl
             ]
           })(
             <Input
-              prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Nombre del producto"
             />
           )}
@@ -67,7 +75,11 @@ const NewBlastProduct = ({ form, client, isNewBlastProductModalOpen, toggleNewBl
           {form.getFieldDecorator('description', {
             rules: [{ required: true, message: '¡Un título es necesario!' }]
           })(
-            <TextArea allowClear placeholder="Descripción del producto" autoSize={{ minRows: 4, maxRows: 6 }}/>
+            <TextArea
+              allowClear
+              placeholder="Descripción del producto"
+              autoSize={{ minRows: 4, maxRows: 6 }}
+            />
           )}
         </Form.Item>
       </Form>

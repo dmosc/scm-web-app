@@ -1,4 +1,5 @@
 import path from 'path';
+import moment from 'moment-timezone';
 import S3 from '../../../clients/aws/s3';
 import { S3_BUCKET } from '../../../config';
 
@@ -16,8 +17,7 @@ const uploaders = {
       const { createReadStream, filename } = await file;
 
       const stream = createReadStream();
-      const indexOfExtension = filename.lastIndexOf('.');
-      const newFilename = Date.now() + filename.substring(indexOfExtension);
+      const newFilename = `${filename}_${moment().format('DD-MM-YY')}`;
 
       const S3Path = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
 

@@ -1,17 +1,17 @@
 # Types
 type BlastProduct {
-    id: ID!
-    name: String!
-    description: String!
+  id: ID!
+  name: String!
+  description: String!
 }
 
 # Inputs
 input BlastProductInput {
-    name: String!
-    description: String!
+  name: String!
+  description: String!
 }
 
 input BlastProductFilters {
-    limit: Int
-    search: String
+  limit: Int
+  search: String
 }
