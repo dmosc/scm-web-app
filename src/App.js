@@ -197,27 +197,27 @@ const App = ({
             <Route exact path="/registros/maquinas" component={Machines} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/registros/diesel" component={DieselRegistry}/>
+            <Route exact path="/registros/diesel" component={DieselRegistry} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/registros/usuarios" component={Users}/>
+            <Route exact path="/registros/usuarios" component={Users} />
           )}
-          {(isAdmin || isManager || isAccountant) && <Route path="/ventas" component={Sales}/>}
+          {(isAdmin || isManager || isAccountant) && <Route path="/ventas" component={Sales} />}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route path="/reportes" component={Reports}/>
+            <Route path="/reportes" component={Reports} />
           )}
           {(isAdmin || isSupport || isManager) && (
-            <Route exact path="/produccion" component={Production}/>
+            <Route exact path="/produccion" component={Production} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/historial" component={History}/>
+            <Route exact path="/historial" component={History} />
           )}
-          {(isAdmin || isAccountant || isManager) && <Route path="/facturas" component={Bills}/>}
+          {(isAdmin || isAccountant || isManager) && <Route path="/facturas" component={Bills} />}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
-            <Route exact path="/mensajes" component={Messages}/>
+            <Route exact path="/mensajes" component={Messages} />
           )}
           {(isAdmin || isGuard || isSupport || isManager) && (
-            <Route exact path="/accesos" component={Access}/>
+            <Route exact path="/accesos" component={Access} />
           )}
           {(isAdmin || isLoader || isSupport || isManager) && (
             <Route exact path="/cargas" component={Load} />

@@ -13,8 +13,7 @@ const blastProductQueries = {
     const blastProducts = await BlastProduct.find({
       deleted: false,
       name: new RegExp(search, 'i')
-    })
-      .limit(limit || Number.MAX_SAFE_INTEGER);
+    }).limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!blastProducts) throw new Error('¡No ha sido posible cargar los productos!');
 

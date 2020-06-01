@@ -98,7 +98,8 @@ const NewBlast = ({
       errors
     } = await client.mutate({
       mutation: FILE_UPLOAD,
-      variables: { file, folderKey: 'blast_files', id: user.id }
+      variables: { file, folderKey: 'blast_files', id: user.id },
+      credentials: 'include'
     });
 
     if (errors) {

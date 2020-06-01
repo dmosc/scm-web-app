@@ -216,10 +216,10 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscription
   clientSubscriptions(filters: ClientSubscriptionFilters!): [ClientSubscription!]
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscriptionWarning
   clientSubscriptionWarning(id: ID!): ClientSubscriptionWarning
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # Goal
   goal(id: ID!): Goal @auth(roles: [ADMIN, MANAGER])
@@ -228,7 +228,8 @@ type Query {
   goalsSummary: [GoalSummary!] @auth(roles: [ADMIN, MANAGER])
   # Blast Product
   blastProduct(id: ID!): BlastProduct @auth(roles: [ADMIN, MANAGER, SUPPORT])
-  blastProducts(filters: BlastProductFilters!): [BlastProduct!] @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  blastProducts(filters: BlastProductFilters!): [BlastProduct!]
+    @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(id: ID!): Blast @auth(roles: [ADMIN, MANAGER, SUPPORT])
   blasts(filters: BlastFilters!): [Blast!] @auth(roles: [ADMIN, MANAGER, SUPPORT])
@@ -330,7 +331,7 @@ type Mutation {
   clientSubscription(clientSubscription: ClientSubscriptionInput!): ClientSubscription
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   clientSubscriptionEdit(clientSubscription: ClientSubscriptionEditInput!): ClientSubscription
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   clientSubscriptionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscriptionWarning
   clientSubscriptionWarningResolve(
@@ -340,13 +341,14 @@ type Mutation {
   goal(goal: GoalInput!): Goal! @auth(roles: [ADMIN, MANAGER])
   goalDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   # Blast Product
-  blastProduct(blastProduct: BlastProductInput!): BlastProduct! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  blastProduct(blastProduct: BlastProductInput!): BlastProduct!
+    @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(blast: BlastInput!): Blast! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
-  @auth(roles: [ADMIN, CASHIER, GUARD])
+    @auth(roles: [ADMIN, CASHIER, GUARD])
 }
 
 type Subscription {

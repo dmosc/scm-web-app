@@ -19,11 +19,7 @@ const TableTitle = ({ toggleNewBlastModal, toggleNewBlastProductModal }) => {
       >
         Voladura
       </Button>
-      <Button
-        type="primary"
-        icon="plus"
-        onClick={() => toggleNewBlastProductModal(true)}
-      >
+      <Button type="primary" icon="plus" onClick={() => toggleNewBlastProductModal(true)}>
         Producto
       </Button>
     </TitleContainer>
