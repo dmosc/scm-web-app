@@ -240,16 +240,24 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read" />
+                <Icon type="read"/>
                 Registros
               </Link>
             </Item>
           </SubMenu>
         )}
+        {(isAdmin || isSupport || isManager) && (
+          <Item key="produccion">
+            <Link to="/produccion">
+              <Icon type="experiment"/>
+              <span>Producción</span>
+            </Link>
+          </Item>
+        )}
         {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="historial">
             <Link to="/historial">
-              <Icon type="history" />
+              <Icon type="history"/>
               <span>Historial</span>
             </Link>
           </Item>
