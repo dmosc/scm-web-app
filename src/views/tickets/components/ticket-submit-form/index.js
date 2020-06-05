@@ -260,7 +260,7 @@ const TicketSubmitForm = ({
               <Text style={{ marginRight: 5 }} strong>
                 Peso neto:
               </Text>
-              <Tag>{`${(weightToSubmit - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
+              <Tag>{`${(weight - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
             </Paragraph>
             <Paragraph>
               <Text style={{ marginRight: 5 }} strong>
