@@ -30,4 +30,14 @@ const PostContent = styled.div`
   flex-grow: 1;
 `;
 
-export { PostsListContainer, PostContainer, PostContent };
+const ImagesContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const FilesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export { PostsListContainer, PostContainer, PostContent, ImagesContainer, FilesContainer };

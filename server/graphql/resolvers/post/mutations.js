@@ -2,7 +2,7 @@ import { Post } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 import uploaders from '../aws/uploaders';
 
-const { fileUploader } = uploaders;
+const { fileUpload } = uploaders;
 
 const postMutations = {
   post: authenticated(async (_, { post }, { req: { userRequesting } }) => {
@@ -19,14 +19,14 @@ const postMutations = {
     const newPost = new Post({ author: userRequesting.id, ...postToCreate });
 
     const attachmentsUpload = attachments.map(file =>
-      fileUploader(_, { file, folderKey: 'posts', id: newPost.id })
+      fileUpload(_, { file, folderKey: 'posts', id: newPost.id })
     );
     newPost.attachments = await Promise.all(attachmentsUpload);
 
     const galleryUpload = gallery.map(file =>
-      fileUploader(_, { file, folderKey: 'posts', id: newPost.id })
+      fileUpload(_, { file, folderKey: 'posts', id: newPost.id })
     );
-    newPost.attachments = await Promise.all(galleryUpload);
+    newPost.gallery = await Promise.all(galleryUpload);
 
     await newPost.save();
 

@@ -5,9 +5,17 @@ import md5 from 'md5';
 import moment from 'moment';
 import shortid from 'shortid';
 import { Typography, Avatar, Skeleton, Empty } from 'antd';
-import { PostsListContainer, PostContainer, PostContent } from './elements';
+import {
+  PostsListContainer,
+  PostContainer,
+  PostContent,
+  ImagesContainer,
+  FilesContainer
+} from './elements';
 import { GET_POSTS } from './graphql/queries';
 import AddPostModal from './components/add-post-modal';
+import ImagePreview from './components/image-preview';
+import FilePreview from './components/file-preview';
 
 const { Paragraph, Text } = Typography;
 
@@ -61,7 +69,8 @@ const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
               }}
               size="large"
             >
-              {post.author.firstName[0]?.toUpperCase()} {post.author.lastName[0]?.toUpperCase()}
+              {post.author.firstName[0]?.toUpperCase()}
+              {post.author.lastName[0]?.toUpperCase()}
             </Avatar>
             <PostContent>
               <Text strong>{post.title}</Text>
@@ -71,6 +80,20 @@ const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
               <Paragraph fontSize="0.85rem" ellipsis={{ rows: 2, expandable: true }}>
                 {post.content}
               </Paragraph>
+              {post.gallery?.length > 0 && (
+                <ImagesContainer>
+                  {post.gallery.map(image => (
+                    <ImagePreview key={image} src={image} />
+                  ))}
+                </ImagesContainer>
+              )}
+              {post.attachments?.length > 0 && (
+                <FilesContainer>
+                  {post.attachments.map(file => (
+                    <FilePreview key={file} src={file} />
+                  ))}
+                </FilesContainer>
+              )}
             </PostContent>
           </PostContainer>
         </Skeleton>

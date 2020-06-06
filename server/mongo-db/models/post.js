@@ -6,7 +6,7 @@ const Post = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   attachments: { type: [String], default: [] },
-  galler: { type: [String], default: [] },
+  gallery: { type: [String], default: [] },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date }
 });
