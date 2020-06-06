@@ -76,7 +76,8 @@ type Query {
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   tickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
-  ticketPDF(idOrFolio: String!): String! @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  ticketPDF(idOrFolio: String!): String!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   activeTickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   disabledTickets(filters: DisabledTicketFilters!): [Ticket!]!
@@ -88,7 +89,17 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
   ticketsToBillSummary(tickets: [ID!]!, client: ID!): BillSummary!
     @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
-  archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
+  archivedTickets(
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+    paymentType: TicketPaymentType
+    clientIds: [ID]
+    truckId: ID
+    productId: ID
+    folio: String
+  ): [Ticket!]!
+  archivedTicketsAurora(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
