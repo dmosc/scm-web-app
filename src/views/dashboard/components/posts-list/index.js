@@ -1,59 +1,58 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { withApollo } from 'react-apollo';
 import md5 from 'md5';
-import { graphql } from '@apollo/react-hoc';
-import { Typography, Avatar } from 'antd';
+import moment from 'moment';
+import shortid from 'shortid';
+import { Typography, Avatar, Skeleton, Empty } from 'antd';
 import { PostsListContainer, PostContainer, PostContent } from './elements';
 import { GET_POSTS } from './graphql/queries';
-import { NEW_POSTS } from './graphql/subscriptions';
+import AddPostModal from './components/add-post-modal';
 
 const { Paragraph, Text } = Typography;
 
-class PostsList extends Component {
-  componentDidMount = () => {
-    const {
-      data: { subscribeToMore }
-    } = this.props;
+const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
+  const [posts, setPosts] = useState(
+    new Array(4).fill({
+      author: { username: '', firstName: '', lastName: '' },
+      title: '',
+      content: ''
+    })
+  );
+  const [loading, setLoading] = useState(true);
 
-    if (!this.unsubscribeToPosts) this.unsubscribeToPosts = this.subscribeToPosts(subscribeToMore);
+  useEffect(() => {
+    const getPosts = async () => {
+      const {
+        data: { posts: postsToSet }
+      } = await client.query({
+        query: GET_POSTS,
+        variables: {
+          filters: {
+            pageSize: 20
+          }
+        }
+      });
+
+      setPosts(postsToSet);
+      setLoading(false);
+    };
+
+    getPosts();
+  }, [client, loading]);
+
+  const addPost = newPost => {
+    setPosts([newPost, ...posts]);
   };
 
-  componentWillUnmount = () => {
-    this.unsubscribeToPosts();
-  };
-
-  subscribeToPosts = subscribeToMore => {
-    return subscribeToMore({
-      document: NEW_POSTS,
-      updateQuery: (prev, { subscriptionData: { data } }) => {
-        const { posts: oldPosts } = prev;
-        const { newPost } = data;
-        if (!newPost) return prev;
-
-        for (let i = 0; i < oldPosts.length; i++) if (newPost.id === oldPosts[i].id) return prev;
-
-        const posts = [newPost, ...oldPosts];
-
-        return { posts };
-      }
-    });
-  };
-
-  render() {
-    const { data } = this.props;
-
-    const { loading, error, posts } = data;
-
-    if (loading) return <div>Cargando posts recientes...</div>;
-    if (error) return <div>¡No se han podido cargar lost posts!</div>;
-
-    return (
-      <PostsListContainer>
-        {posts.map(post => (
+  return (
+    <PostsListContainer>
+      {posts.map(post => (
+        <Skeleton key={shortid.generate()} loading={loading} avatar active>
           <PostContainer>
             <Avatar
               style={{
-                background: `#${md5(post.username).substring(0, 6)}`,
+                background: `#${md5(post.author.username).substring(0, 6)}`,
                 verticalAlign: 'middle',
                 minWidth: 40,
                 minHeight: 40,
@@ -62,26 +61,32 @@ class PostsList extends Component {
               }}
               size="large"
             >
-              {post.username[0].toUpperCase()}
+              {post.author.firstName[0]?.toUpperCase()} {post.author.lastName[0]?.toUpperCase()}
             </Avatar>
             <PostContent>
-              <Text style={{ fontSize: '1.2rem' }} strong>
-                {post.title}
+              <Text strong>{post.title}</Text>
+              <Text style={{ fontSize: '0.6rem', marginBottom: 10 }} type="secondary">
+                {post.author.firstName} {post.author.lastName} - {moment(post.createdAt).fromNow()}
               </Text>
-              <Text style={{ margin: '5px 0' }} type="secondary">
-                {post.username}
-              </Text>
-              <Paragraph ellipsis={{ rows: 2, expandable: true }}>{post.content}</Paragraph>
+              <Paragraph fontSize="0.85rem" ellipsis={{ rows: 2, expandable: true }}>
+                {post.content}
+              </Paragraph>
             </PostContent>
           </PostContainer>
-        ))}
-      </PostsListContainer>
-    );
-  }
-}
-
-PostsList.propTypes = {
-  data: PropTypes.object.isRequired
+        </Skeleton>
+      ))}
+      {posts.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+      {isAddPostModalOpen && (
+        <AddPostModal addPost={addPost} onClose={() => toggleAddPostModal(false)} />
+      )}
+    </PostsListContainer>
+  );
 };
 
-export default graphql(GET_POSTS, { options: () => ({ variables: { filters: {} } }) })(PostsList);
+PostsList.propTypes = {
+  client: PropTypes.object.isRequired,
+  toggleAddPostModal: PropTypes.func.isRequired,
+  isAddPostModalOpen: PropTypes.bool.isRequired
+};
+
+export default withApollo(PostsList);

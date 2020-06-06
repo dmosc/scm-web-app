@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DatePicker, Typography, Card } from 'antd';
+import { DatePicker, Typography, Card, Button } from 'antd';
 import moment from 'moment-timezone';
 import { useAuth } from 'components/providers/withAuth';
 import PostsList from './components/posts-list';
@@ -13,6 +13,7 @@ const { RangePicker } = DatePicker;
 const { Text } = Typography;
 
 const Dashboard = () => {
+  const [isAddPostModalOpen, toggleAddPostModal] = useState(false);
   const [range, setRange] = useState({
     start: moment().startOf('month'),
     end: moment().endOf('month')
@@ -41,8 +42,20 @@ const Dashboard = () => {
 
   return (
     <GeneralContainer>
-      <Card title="Posts recientes">
-        <PostsList />
+      <Card
+        title="Posts recientes"
+        extra={
+          (isAdmin || isManager) && (
+            <Button onClick={() => toggleAddPostModal(true)} type="primary" icon="plus">
+              Añadir
+            </Button>
+          )
+        }
+      >
+        <PostsList
+          toggleAddPostModal={toggleAddPostModal}
+          isAddPostModalOpen={isAddPostModalOpen}
+        />
       </Card>
       {(isAdmin || isManager) && (
         <div>

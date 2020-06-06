@@ -28,7 +28,9 @@ const postMutations = {
     );
     newPost.attachments = await Promise.all(galleryUpload);
 
-    return newPost.save();
+    await newPost.save();
+
+    return Post.findOne({ _id: newPost.id }).populate('author');
   })
 };
 

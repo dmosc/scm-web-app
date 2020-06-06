@@ -11,7 +11,8 @@ const postQueries = {
           updatedAt = {},
           page = 1,
           pageSize = Number.MAX_SAFE_INTEGER,
-          author
+          author,
+          createdOrder = 'desc'
         }
       }
     ) => {
@@ -34,6 +35,7 @@ const postQueries = {
       const posts = await Post.find(query)
         .skip(pageSize * (page - 1))
         .limit(pageSize)
+        .sort({ createdAt: createdOrder })
         .populate('author');
 
       if (!posts) throw new Error('¡Ha habido un error cargando los posts!');
