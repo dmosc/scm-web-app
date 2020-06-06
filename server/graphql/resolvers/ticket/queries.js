@@ -379,9 +379,7 @@ const ticketQueries = {
         out: {
           $gte: new Date(range.start || '1970-01-01T00:00:00.000Z'),
           $lte: new Date(range.end || '2100-12-31T00:00:00.000Z')
-        },
-        totalPrice: { $exists: true },
-        outTruckImage: { $exists: true }
+        }
       };
 
       if (folio) query.folio = new RegExp(folio, 'i');
