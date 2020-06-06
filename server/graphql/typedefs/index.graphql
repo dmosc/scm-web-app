@@ -166,7 +166,6 @@ type Query {
     dirty: [ID!]!
   ): RockSalesReportCleanAndDirty! @auth(roles: [ADMIN, MANAGER])
   # Post
-  post(id: ID!): Post @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   posts(filters: PostFilters!): [Post!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Message
@@ -367,7 +366,6 @@ type Subscription {
   activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
   notLoadedActiveTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
   loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
-  newPost: Post! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT])
   newMessage: Message! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT])
   turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
 }

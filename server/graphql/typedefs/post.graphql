@@ -1,18 +1,26 @@
 type Post {
-  id: Int!
-  username: String!
+  id: ID!
+  author: User!
   title: String!
   content: String!
+  attachments: [String]
+  gallery: [String]
   createdAt: Date!
   updatedAt: Date
 }
 
 input PostInput {
-  username: String!
   title: String!
   content: String!
+  attachments: [Upload]
+  gallery: [Upload]
 }
 
 input PostFilters {
-  limit: Int
+  createdAt: DateRange
+  updatedAt: DateRange
+  page: Int
+  pageSize: Int
+  author: ID
+  order: order
 }
