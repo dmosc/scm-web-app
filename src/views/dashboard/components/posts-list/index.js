@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import md5 from 'md5';
 import { graphql } from '@apollo/react-hoc';
-import { Typography } from 'antd';
-import { PostsListContainer } from './elements';
+import { Typography, Avatar } from 'antd';
+import { PostsListContainer, PostContainer, PostContent } from './elements';
 import { GET_POSTS } from './graphql/queries';
 import { NEW_POSTS } from './graphql/subscriptions';
 
-const { Title, Paragraph, Text } = Typography;
+const { Paragraph, Text } = Typography;
 
 class PostsList extends Component {
   componentDidMount = () => {
@@ -48,22 +50,38 @@ class PostsList extends Component {
     return (
       <PostsListContainer>
         {posts.map(post => (
-          <div
-            key={post.id}
-            style={{
-              borderBottom: '1px solid lightGrey',
-              padding: 5,
-              margin: 5
-            }}
-          >
-            <Title level={4}>{post.title}</Title>
-            <Paragraph ellipsis={{ rows: 2, expandable: true }}>{post.content}</Paragraph>
-            <Text mark>{post.username}</Text>
-          </div>
+          <PostContainer>
+            <Avatar
+              style={{
+                background: `#${md5(post.username).substring(0, 6)}`,
+                verticalAlign: 'middle',
+                minWidth: 40,
+                minHeight: 40,
+                marginRight: 15,
+                marginTop: 3
+              }}
+              size="large"
+            >
+              {post.username[0].toUpperCase()}
+            </Avatar>
+            <PostContent>
+              <Text style={{ fontSize: '1.2rem' }} strong>
+                {post.title}
+              </Text>
+              <Text style={{ margin: '5px 0' }} type="secondary">
+                {post.username}
+              </Text>
+              <Paragraph ellipsis={{ rows: 2, expandable: true }}>{post.content}</Paragraph>
+            </PostContent>
+          </PostContainer>
         ))}
       </PostsListContainer>
     );
   }
 }
+
+PostsList.propTypes = {
+  data: PropTypes.object.isRequired
+};
 
 export default graphql(GET_POSTS, { options: () => ({ variables: { filters: {} } }) })(PostsList);
