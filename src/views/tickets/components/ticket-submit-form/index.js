@@ -97,6 +97,7 @@ const TicketSubmitForm = ({
               (Number(data.substring(0, data.length - 1)) / 1000 - currentTicket.truck.weight) *
               percentageProductRate;
             setWeight(weightToSet + currentTicket.truck.weight);
+            setModifiedWeight(undefined);
           });
         }
       } catch (err) {
@@ -244,7 +245,7 @@ const TicketSubmitForm = ({
               <Text style={{ marginRight: 5 }} strong>
                 Peso neto:
               </Text>
-              <Tag>{`${(weight - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
+              <Tag>{`${(weightToSubmit - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
             </Paragraph>
             <Paragraph>
               <Text style={{ marginRight: 5 }} strong>
@@ -268,7 +269,7 @@ const TicketSubmitForm = ({
                 ticket: {
                   id,
                   driver: driver[0],
-                  weight,
+                  weight: weightToSubmit,
                   credit: creditBill,
                   bill: formBill,
                   promotion
