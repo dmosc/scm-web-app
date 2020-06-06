@@ -1028,6 +1028,10 @@ const ticketQueries = {
           key: 'credit'
         },
         {
+          header: 'Tipo de boleta',
+          key: 'ticketType'
+        },
+        {
           header: 'Status',
           key: 'status'
         }
@@ -1072,6 +1076,7 @@ const ticketQueries = {
           tax: format.number(ticket.tax || 0),
           totalPrice: format.number(ticket.totalPrice),
           credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
+          ticketType: ticket.tax > 0 ? 'FACTURA' : 'REMISIÓN',
           status: !ticket.isBilled ? '<Por facturar>' : ticket.tax ? '<Remisionada>' : '<Facturada>'
         };
 
