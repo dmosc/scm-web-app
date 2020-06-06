@@ -210,11 +210,11 @@ const App = ({
             <Route exact path="/produccion" component={Production} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/historial" component={History} />
+            <Route exact path="/historial" component={History}/>
           )}
-          {(isAdmin || isAccountant || isManager) && <Route path="/facturas" component={Bills} />}
+          {(isAdmin || isAccountant || isManager || isCashier) && <Route path="/facturas" component={Bills}/>}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
-            <Route exact path="/mensajes" component={Messages} />
+            <Route exact path="/mensajes" component={Messages}/>
           )}
           {(isAdmin || isGuard || isSupport || isManager) && (
             <Route exact path="/accesos" component={Access} />
