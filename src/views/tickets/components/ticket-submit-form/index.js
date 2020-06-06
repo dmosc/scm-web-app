@@ -3,25 +3,9 @@ import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
-import {
-  Form,
-  Icon,
-  InputNumber,
-  message,
-  Modal,
-  Radio,
-  Select,
-  Tag,
-  Tooltip,
-  Typography
-} from 'antd';
+import { Form, Icon, InputNumber, message, Modal, Radio, Select, Tag, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import {
-  GET_CREDIT_LIMIT,
-  GET_PRODUCT_RATE,
-  GET_SPECIAL_PRICE,
-  GET_TRUCK_DRIVERS
-} from './graphql/queries';
+import { GET_CREDIT_LIMIT, GET_PRODUCT_RATE, GET_SPECIAL_PRICE, GET_TRUCK_DRIVERS } from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -284,7 +268,7 @@ const TicketSubmitForm = ({
                 ticket: {
                   id,
                   driver: driver[0],
-                  weight: weightToSubmit,
+                  weight,
                   credit: creditBill,
                   bill: formBill,
                   promotion
