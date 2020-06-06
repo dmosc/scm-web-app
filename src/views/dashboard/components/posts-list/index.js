@@ -4,7 +4,8 @@ import { withApollo } from 'react-apollo';
 import md5 from 'md5';
 import moment from 'moment';
 import shortid from 'shortid';
-import { Typography, Avatar, Skeleton, Empty } from 'antd';
+import { useAuth } from 'components/providers/withAuth/index';
+import { Typography, Avatar, Skeleton, Empty, Button, Popconfirm, message } from 'antd';
 import {
   PostsListContainer,
   PostContainer,
@@ -13,6 +14,7 @@ import {
   FilesContainer
 } from './elements';
 import { GET_POSTS } from './graphql/queries';
+import { DELETE_POST } from './graphql/mutations';
 import AddPostModal from './components/add-post-modal';
 import ImagePreview from './components/image-preview';
 import FilePreview from './components/file-preview';
@@ -20,6 +22,7 @@ import FilePreview from './components/file-preview';
 const { Paragraph, Text } = Typography;
 
 const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
+  const { user, isAdmin } = useAuth();
   const [posts, setPosts] = useState(
     new Array(4).fill({
       author: { username: '', firstName: '', lastName: '' },
@@ -53,9 +56,27 @@ const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
     setPosts([newPost, ...posts]);
   };
 
+  const deletePost = async (id, idx) => {
+    const { errors } = await client.mutate({
+      mutation: DELETE_POST,
+      variables: {
+        id
+      }
+    });
+
+    if (errors) {
+      message.error(errors[0].message);
+    } else {
+      message.success('El post ha sido eliminado');
+      const newPosts = [...posts];
+      newPosts.splice(idx, 1);
+      setPosts(newPosts);
+    }
+  };
+
   return (
     <PostsListContainer>
-      {posts.map(post => (
+      {posts.map((post, index) => (
         <Skeleton key={shortid.generate()} loading={loading} avatar active>
           <PostContainer>
             <Avatar
@@ -73,10 +94,31 @@ const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
               {post.author.lastName[0]?.toUpperCase()}
             </Avatar>
             <PostContent>
-              <Text strong>{post.title}</Text>
-              <Text style={{ fontSize: '0.6rem', marginBottom: 10 }} type="secondary">
-                {post.author.firstName} {post.author.lastName} - {moment(post.createdAt).fromNow()}
-              </Text>
+              <div style={{ display: 'flex' }}>
+                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Text strong>{post.title}</Text>
+                  <Text style={{ fontSize: '0.6rem', marginBottom: 10 }} type="secondary">
+                    {post.author.firstName} {post.author.lastName} -{' '}
+                    {moment(post.createdAt).fromNow()}
+                  </Text>
+                </div>
+                {(isAdmin || user.id === post.author.id) && (
+                  <Popconfirm
+                    title="¿Seguro que quieres eliminar este post?"
+                    okText="Sí"
+                    cancelText="No"
+                    onConfirm={() => deletePost(post.id, index)}
+                  >
+                    <Button
+                      style={{ fontSize: '0.8rem' }}
+                      type="danger"
+                      ghost
+                      shape="circle"
+                      icon="delete"
+                    />
+                  </Popconfirm>
+                )}
+              </div>
               <Paragraph fontSize="0.85rem" ellipsis={{ rows: 2, expandable: true }}>
                 {post.content}
               </Paragraph>

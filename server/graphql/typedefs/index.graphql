@@ -295,6 +295,7 @@ type Mutation {
   folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
   # Post
   post(post: PostInput!): Post @auth(roles: [ADMIN, MANAGER])
+  postDelete(id: ID!): Boolean @auth(roles: [ADMIN, MANAGER])
   # Message
   message(message: MessageInput!): Message
     @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])

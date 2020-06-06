@@ -31,6 +31,14 @@ const postMutations = {
     await newPost.save();
 
     return Post.findOne({ _id: newPost.id }).populate('author');
+  }),
+  postDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      await Post.deleteById(id, userRequesting.id);
+      return true;
+    } catch (e) {
+      return e;
+    }
   })
 };
 
