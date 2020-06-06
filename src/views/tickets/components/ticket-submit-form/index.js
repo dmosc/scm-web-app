@@ -3,25 +3,9 @@ import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { isUnlimited } from 'utils/constants/credit';
-import {
-  Form,
-  Icon,
-  InputNumber,
-  message,
-  Modal,
-  Radio,
-  Select,
-  Tag,
-  Tooltip,
-  Typography
-} from 'antd';
+import { Form, Icon, InputNumber, message, Modal, Radio, Select, Tag, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import {
-  GET_CREDIT_LIMIT,
-  GET_PRODUCT_RATE,
-  GET_SPECIAL_PRICE,
-  GET_TRUCK_DRIVERS
-} from './graphql/queries';
+import { GET_CREDIT_LIMIT, GET_PRODUCT_RATE, GET_SPECIAL_PRICE, GET_TRUCK_DRIVERS } from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -113,6 +97,7 @@ const TicketSubmitForm = ({
               (Number(data.substring(0, data.length - 1)) / 1000 - currentTicket.truck.weight) *
               percentageProductRate;
             setWeight(weightToSet + currentTicket.truck.weight);
+            setModifiedWeight(undefined);
           });
         }
       } catch (err) {
@@ -260,7 +245,7 @@ const TicketSubmitForm = ({
               <Text style={{ marginRight: 5 }} strong>
                 Peso neto:
               </Text>
-              <Tag>{`${(weight - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
+              <Tag>{`${(weightToSubmit - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
             </Paragraph>
             <Paragraph>
               <Text style={{ marginRight: 5 }} strong>
