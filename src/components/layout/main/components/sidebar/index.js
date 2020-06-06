@@ -217,17 +217,17 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="ventas/seguimiento">
               <Link to="/ventas/seguimiento">
-                <Icon type="eye" />
+                <Icon type="eye"/>
                 <span>Seguimiento</span>
               </Link>
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant || isManager) && (
+        {(isAdmin || isAccountant || isManager || isCashier) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="file-text" />
+                <Icon type="file-text"/>
                 <span>Facturas</span>
               </span>
             }
@@ -238,12 +238,12 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 <span>Agrupador</span>
               </Link>
             </Item>
-            <Item key="facturas/registros">
+            {(!isCashier) && <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read" />
+                <Icon type="read"/>
                 Registros
               </Link>
-            </Item>
+            </Item>}
           </SubMenu>
         )}
         {(isAdmin || isAccountant || isSupport || isManager) && (

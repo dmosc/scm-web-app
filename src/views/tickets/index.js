@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withAuth } from 'components/providers/withAuth';
 import { graphql, withApollo } from '@apollo/react-hoc';
-import { Empty, Form, List, message, Spin } from 'antd';
+import { Button, Empty, Form, List, message, Spin } from 'antd';
 import Container from 'components/common/container';
 import ListContainer from 'components/common/list';
+import { printPDF } from 'utils/functions';
 import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form';
 import TurnInitForm from './components/turn-init-form';
 import TurnEndForm from './components/turn-end-form';
 import TicketsList from './components/tickets-list';
-import { GET_TICKET_PROMOTIONS, TURN_ACTIVE } from './graphql/queries';
+import { GET_PDF, GET_TICKET_PROMOTIONS, TURN_ACTIVE } from './graphql/queries';
 import { TURN_UPDATE } from './graphql/subscriptions';
 import TicketsContainer from './elements';
 
@@ -18,7 +19,8 @@ class Tickets extends Component {
   state = {
     currentTicket: null,
     currentTicketPromotions: [],
-    currentForm: null
+    currentForm: null,
+    downloadingPDF: false
   };
 
   componentDidMount = async () => {
@@ -69,13 +71,30 @@ class Tickets extends Component {
     this.setState({ currentTicket, currentTicketPromotions, currentForm });
   };
 
+  downloadPDF = async folio => {
+    const { client } = this.props;
+    this.setState({ downloadingPDF: true });
+
+    const {
+      data: { ticketPDF }
+    } = await client.query({
+      query: GET_PDF,
+      variables: {
+        idOrFolio: folio
+      }
+    });
+
+    await printPDF(ticketPDF);
+    this.setState({ downloadingPDF: false });
+  };
+
   render() {
     const {
       data,
       auth: { user }
     } = this.props;
 
-    const { currentTicket, currentTicketPromotions, currentForm } = this.state;
+    const { currentTicket, currentTicketPromotions, currentForm, downloadingPDF } = this.state;
 
     const { loading, error, turnActive, refetch } = data;
 
@@ -105,8 +124,17 @@ class Tickets extends Component {
                 dataSource={turnActive.folios}
                 size="small"
                 renderItem={folio => (
-                  <List.Item>
-                    <List.Item.Meta title={folio} />
+                  <List.Item
+                    actions={[
+                      <Button
+                        size="small"
+                        onClick={() => this.downloadPDF(folio)}
+                        disabled={downloadingPDF}
+                        icon="printer"
+                      />
+                    ]}
+                  >
+                    <List.Item.Meta title={folio}/>
                   </List.Item>
                 )}
               />
