@@ -3,12 +3,16 @@ import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
-import { printPDF, format } from 'utils/functions';
+import { useAuth } from 'components/providers/withAuth';
+import { format, printPDF } from 'utils/functions';
 import shortid from 'shortid';
-import { notification, Table, Tag, Row, Tooltip, Button } from 'antd';
+import { Button, Modal, notification, Row, Table, Tag, Tooltip } from 'antd';
 import Title from './components/title';
 import { Card, TableContainer } from './elements';
 import { GET_BILLS, GET_PDF } from './graphql/queries';
+import { DELETE_BILL } from './graphql/mutations';
+
+const { confirm } = Modal;
 
 const History = ({ client }) => {
   const [loading, setLoading] = useState(true);
@@ -16,10 +20,34 @@ const History = ({ client }) => {
   const [filters, setFilters] = useState({ search: '' });
   const debouncedFilters = useDebounce(filters, 1000);
 
+  const { isAdmin, isManager, isAccountant } = useAuth();
+
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
 
     setFilters(filtersToSet);
+  };
+
+  const deleteBill = billToDelete => {
+    confirm({
+      title: '¿Estás seguro de que deseas eliminar esta factura?',
+      content:
+        'Una vez eliminada ya no sera posible recuperarla, y sus boletas asociadas regresarán a estar disponibles para agrupar.',
+      okType: 'danger',
+      onOk: async () => {
+        await client.mutate({
+          mutation: DELETE_BILL,
+          variables: { id: billToDelete.id }
+        });
+
+        setBills(bills.filter(({ id }) => id !== billToDelete.id));
+
+        notification.open({
+          message: `La factura ${billToDelete.folio} ha sido removida`
+        });
+      },
+      onCancel: () => {}
+    });
   };
 
   useEffect(() => {
@@ -107,8 +135,19 @@ const History = ({ client }) => {
       render: row => (
         <Row>
           <Tooltip placement="top" title="Imprimir">
-            <Button onClick={() => downloadPDF(row)} type="primary" icon="printer" size="small" />
+            <Button
+              style={{ marginRight: 5 }}
+              onClick={() => downloadPDF(row)}
+              type="primary"
+              icon="printer"
+              size="small"
+            />
           </Tooltip>
+          {(isAdmin || isManager || isAccountant) && (
+            <Tooltip placement="top" title="Eliminar">
+              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small" />
+            </Tooltip>
+          )}
         </Row>
       )
     }

@@ -215,6 +215,7 @@ const Turns = ({ client, globalFilters }) => {
         </div>
       ) : (
         <>
+          <Text disabled>* Valores no incluyen IVA</Text>
           <Card>
             <Title level={4}>Turno: {turn.uniqueId}</Title>
             <Col span={12}>
@@ -259,6 +260,9 @@ const Turns = ({ client, globalFilters }) => {
                 suffix="MXN"
                 prefix={<Icon type="rise" />}
               />
+              <Text disabled>{`${(summary?.upfrontWeight + summary?.creditWeight || 0).toFixed(
+                2
+              )} tons`}</Text>
             </Col>
             <Col span={6}>
               <Statistic
@@ -267,6 +271,7 @@ const Turns = ({ client, globalFilters }) => {
                 value={format.currency(summary?.upfront)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(summary?.upfrontWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
             <Col span={6}>
               <Statistic
@@ -275,6 +280,7 @@ const Turns = ({ client, globalFilters }) => {
                 value={format.currency(summary?.credit)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(summary?.creditWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
             <Col span={6}>
               <Statistic

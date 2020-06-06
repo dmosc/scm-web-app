@@ -271,6 +271,7 @@ const Tickets = ({ client, globalFilters }) => {
         </div>
       ) : (
         <>
+          <Text disabled>* Valores no incluyen IVA</Text>
           <Card>
             <Row>
               <Col span={8}>
@@ -281,6 +282,9 @@ const Tickets = ({ client, globalFilters }) => {
                   suffix="MXN"
                   prefix={<Icon type="rise" />}
                 />
+                <Text disabled>{`${(
+                  ticketsSummary?.upfrontWeight + ticketsSummary?.creditWeight || 0
+                ).toFixed(2)} tons`}</Text>
               </Col>
               <Col span={8}>
                 <Statistic
@@ -289,6 +293,7 @@ const Tickets = ({ client, globalFilters }) => {
                   value={format.currency(ticketsSummary?.upfront || 0)}
                   suffix="MXN"
                 />
+                <Text disabled>{`${(ticketsSummary?.upfrontWeight || 0).toFixed(2)} tons`}</Text>
               </Col>
               <Col span={8}>
                 <Statistic
@@ -297,6 +302,7 @@ const Tickets = ({ client, globalFilters }) => {
                   value={format.currency(ticketsSummary?.credit || 0)}
                   suffix="MXN"
                 />
+                <Text disabled>{`${(ticketsSummary?.creditWeight || 0).toFixed(2)} tons`}</Text>
               </Col>
             </Row>
             <Row style={{ marginTop: 20 }}>

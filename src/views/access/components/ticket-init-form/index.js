@@ -2,31 +2,19 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import Webcam from 'react-webcam';
-import {
-  Form,
-  Row,
-  Col,
-  Modal,
-  Button,
-  Input,
-  Icon,
-  notification,
-  Select,
-  List,
-  message
-} from 'antd';
+import { Button, Col, Form, Icon, Input, List, message, Modal, notification, Row } from 'antd';
 import {
   FormContainer,
+  HiddenForm,
   ImageContainer,
   PreviewImageContainer,
   ProductContainer,
   ProductList,
-  HiddenForm
+  TruckContainer,
+  TruckList
 } from './elements';
 import { REGISTER_TICKET_INIT } from './graphql/mutations';
-import { GET_ROCKS, GET_SIMILAR_TRUCKS, DECIPHER_PLATES } from './graphql/queries';
-
-const { Option } = Select;
+import { DECIPHER_PLATES, GET_ROCKS, GET_SIMILAR_TRUCKS } from './graphql/queries';
 
 const TicketInit = ({ client, user }) => {
   const camRef = React.createRef();
@@ -295,18 +283,20 @@ const TicketInit = ({ client, user }) => {
         onOk={initializeTicket}
         onCancel={cancelTicket}
       >
-        <Select
-          showSearch
-          defaultValue={trucks[0]?.client.id}
-          onChange={ticketClientToSet => setTicketClient(ticketClientToSet)}
-          style={{ width: '100%' }}
-        >
-          {trucks?.map(truck => (
-            <Option key={truck.client.id} value={truck.client.id}>
-              {truck.client.businessName}
-            </Option>
-          ))}
-        </Select>
+        <TruckList
+          size="small"
+          dataSource={trucks}
+          renderItem={truck => (
+            <List.Item style={{ border: 'none' }}>
+              <TruckContainer
+                color={truck.client.id === ticketClient ? '#1890FF' : undefined}
+                onClick={() => setTicketClient(truck.client.id)}
+              >
+                {truck.client.businessName}
+              </TruckContainer>
+            </List.Item>
+          )}
+        />
       </Modal>
     </FormContainer>
   );

@@ -1,4 +1,4 @@
-import { GraphQLUpload } from 'graphql-upload';
+import { GraphQLUpload } from 'apollo-upload-server';
 // User
 import userQueries from './user/queries';
 import userMutations from './user/mutations';
@@ -74,10 +74,20 @@ import clientSubscriptionQueries from './client-subscription/queries';
 // ClientSubscriptionWarning
 import clientSubscriptionWarningMutations from './client-subscription-warning/mutations';
 import clientSubscriptionWarningQueries from './client-subscription-warning/queries';
+// Goal
+import goalMutations from './goal/mutations';
+import goalQueries from './goal/queries';
+// Blast Product
+import blastProductMutations from './blast-product/mutations';
+import blastProductQueries from './blast-product/queries';
+// Blast
+import blastMutations from './blast/mutations';
+import blastQueries from './blast/queries';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
 const resolvers = {
+  Upload: GraphQLUpload,
   Query: {
     ...userQueries,
     ...clientQueries,
@@ -101,7 +111,10 @@ const resolvers = {
     ...quotationQueries,
     ...productRateQueries,
     ...clientSubscriptionQueries,
-    ...clientSubscriptionWarningQueries
+    ...clientSubscriptionWarningQueries,
+    ...goalQueries,
+    ...blastProductQueries,
+    ...blastQueries
   },
   Mutation: {
     ...userMutations,
@@ -128,6 +141,9 @@ const resolvers = {
     ...productRateMutations,
     ...clientSubscriptionMutations,
     ...clientSubscriptionWarningMutations,
+    ...goalMutations,
+    ...blastProductMutations,
+    ...blastMutations,
     ...uploaders // AWS
   },
   Subscription: {
@@ -135,8 +151,7 @@ const resolvers = {
     ...postSubscriptions,
     ...messageSubscriptions,
     ...turnSubscriptions
-  },
-  Upload: GraphQLUpload
+  }
 };
 
 export default resolvers;

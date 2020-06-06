@@ -1,0 +1,33 @@
+# Inputs
+type Blast {
+  id: ID!
+  date: Date!
+  products: [DefinedBlastProduct!]!
+  documents: [String!]
+  tons: Float!
+  createdBy: User!
+}
+
+type DefinedBlastProduct {
+  product: BlastProduct!
+  price: Float!
+  quantity: Float!
+}
+
+# Inputs
+input BlastInput {
+  date: Date!
+  products: [DefinedBlastProductInput!]!
+  documents: [String!]
+  tons: Float!
+}
+
+input DefinedBlastProductInput {
+  product: ID!
+  price: Float!
+  quantity: Float!
+}
+
+input BlastFilters {
+  limit: Int
+}

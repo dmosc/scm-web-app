@@ -113,6 +113,12 @@ const Sales = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Production" */
+const Production = Loadable({
+  loader: () => import('./views/production'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "History" */
 const History = Loadable({
   loader: () => import('./views/history'),
@@ -200,12 +206,15 @@ const App = ({
           {(isAdmin || isAccountant || isSupport || isManager) && (
             <Route path="/reportes" component={Reports} />
           )}
-          {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/historial" component={History} />
+          {(isAdmin || isSupport || isManager) && (
+            <Route exact path="/produccion" component={Production} />
           )}
-          {(isAdmin || isAccountant || isManager) && <Route path="/facturas" component={Bills} />}
+          {(isAdmin || isAccountant || isSupport || isManager) && (
+            <Route exact path="/historial" component={History}/>
+          )}
+          {(isAdmin || isAccountant || isManager || isCashier) && <Route path="/facturas" component={Bills}/>}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
-            <Route exact path="/mensajes" component={Messages} />
+            <Route exact path="/mensajes" component={Messages}/>
           )}
           {(isAdmin || isGuard || isSupport || isManager) && (
             <Route exact path="/accesos" component={Access} />

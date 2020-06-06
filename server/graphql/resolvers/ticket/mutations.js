@@ -5,7 +5,6 @@ import {
   ClientCreditLimit,
   ClientPrice,
   Folio,
-  ProductRate,
   Promotion,
   Rock,
   Ticket,
@@ -93,7 +92,7 @@ const ticketMutations = {
     if (ticketExists.length !== 0) throw new Error(`¡El camión ${plates} ya está activo!`);
 
     try {
-      const truck = await Truck.findOne({ plates, client: newTicket.client });
+      const truck = await Truck.findOne({ plates, client: newTicket.client, deleted: false });
       const product = await Rock.findById(productId);
       const client = await Client.findById(newTicket.client);
 
@@ -290,13 +289,8 @@ const ticketMutations = {
       { new: false }
     ).select('name count');
 
-    const productRate = await ProductRate.findOne({});
-    const percentageProductRate = productRate?.rate ? 1 + productRate?.rate / 100 : 1;
-
     newTicket.folio = folio.name.toString() + folio.count.toString();
-    newTicket.totalWeight =
-      (newTicket.weight - newTicket.truck.weight).toFixed(2) * percentageProductRate;
-    newTicket.weight = (newTicket.totalWeight + newTicket.truck.weight).toFixed(2);
+    newTicket.totalWeight = (newTicket.weight - newTicket.truck.weight).toFixed(2);
 
     let price;
     const specialPrice = await ClientPrice.find({

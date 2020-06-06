@@ -141,6 +141,15 @@ type TicketsSummary {
   upfront: Float
   credit: Float
   total: Float
+  upfrontWeight: Float
+  creditWeight: Float
+}
+
+type TicketsInRangeSummary {
+  clients: [ClientTurnSummary!]
+  upfront: Float
+  credit: Float
+  total: Float
 }
 
 enum TicketBillType {

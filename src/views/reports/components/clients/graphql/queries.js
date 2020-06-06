@@ -56,6 +56,8 @@ const GET_SUMMARY = gql`
       upfront
       credit
       total
+      upfrontWeight
+      creditWeight
     }
   }
 `;

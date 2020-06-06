@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
-import { ClientSubscription, ClientSubscriptionWarning, Ticket } from '../../mongo-db/models';
+import { ClientSubscription, ClientSubscriptionWarning, Goal, Ticket } from '../../mongo-db/models';
 
 const tasks = {
   clientSubscriptionUpdate: async () => {
@@ -60,6 +60,32 @@ const tasks = {
           }
 
           promises.push(ClientSubscription.findByIdAndUpdate(results.subscription, update));
+        }
+      }
+
+      await Promise.all(promises);
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  },
+  goalsUpdate: async () => {
+    try {
+      const goals = await Goal.find({ deleted: false });
+
+      const promises = [];
+      for (let i = 0; i < goals.length; i++) {
+        const goal = goals[i];
+        const end = new Date(goal.end);
+
+        if (end.getTime() <= new Date().getTime()) {
+          const update = {
+            start: moment().startOf(goal.period),
+            end: moment().endOf(goal.period)
+          };
+
+          promises.push(Goal.findByIdAndUpdate(goal.id, update));
         }
       }
 

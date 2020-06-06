@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 
-// This is beacause the three queries using this type are intimately related
+// This is because the three queries using this type are intimately related
 // This will enforce consistency between them
 const turnData = `
   id
@@ -70,6 +70,8 @@ const GET_TURN_SUMMARY = gql`
       upfront
       credit
       total
+      upfrontWeight
+      creditWeight
     }
   }
 `;
