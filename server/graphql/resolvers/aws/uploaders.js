@@ -18,7 +18,9 @@ const uploaders = {
 
       const stream = createReadStream();
       const extensionIndex = filename.lastIndexOf('.');
-      const newFilename = `${filename.substring(0, extensionIndex)}_${moment().format('DD-MM-YY')}` + filename.substring(extensionIndex);
+      const newFilename = `${filename.substring(0, extensionIndex)}_${moment().format(
+        'DD-MM-YY'
+      )}${filename.substring(extensionIndex)}`;
 
       const S3Path = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
 

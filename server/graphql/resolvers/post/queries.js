@@ -16,7 +16,7 @@ const postQueries = {
         }
       }
     ) => {
-      const query = {};
+      const query = { deleted: false };
 
       if (createdAt)
         query.createdAt = {
