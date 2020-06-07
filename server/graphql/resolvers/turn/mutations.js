@@ -40,6 +40,11 @@ const turnMutations = {
         { new: true }
       ).populate('user');
 
+      // Save who ends turn
+      turn.user = userRequesting.id;
+
+      await turn.save();
+
       if (!turn) return new Error('¡No ha sido posible encontrar el turno!');
 
       const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate([
