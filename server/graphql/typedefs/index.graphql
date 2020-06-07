@@ -90,10 +90,20 @@ type Query {
     @auth(roles: [ADMIN, LOADER, MANAGER, MANAGER, SUPPORT])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER, SUPPORT])
   ticketsPendingToBill(client: ID!, type: TicketBillType!): [Ticket!]!
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER])
   ticketsToBillSummary(tickets: [ID!]!, client: ID!, turnToBill: Boolean!): BillSummary!
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER])
-  archivedTickets(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER])
+  archivedTickets(
+    range: DateRange
+    turnId: ID
+    billType: TicketBillType
+    paymentType: TicketPaymentType
+    clientIds: [ID]
+    truckId: ID
+    productId: ID
+    folio: String
+  ): [Ticket!]!
+  archivedTicketsAurora(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
@@ -156,7 +166,6 @@ type Query {
     dirty: [ID!]!
   ): RockSalesReportCleanAndDirty! @auth(roles: [ADMIN, MANAGER])
   # Post
-  post(id: ID!): Post @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   posts(filters: PostFilters!): [Post!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Message
@@ -286,6 +295,7 @@ type Mutation {
   folio(folio: FolioInput!): Folio @auth(roles: [ADMIN])
   # Post
   post(post: PostInput!): Post @auth(roles: [ADMIN, MANAGER])
+  postDelete(id: ID!): Boolean @auth(roles: [ADMIN, MANAGER])
   # Message
   message(message: MessageInput!): Message
     @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -357,7 +367,6 @@ type Subscription {
   activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
   notLoadedActiveTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
   loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
-  newPost: Post! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT])
   newMessage: Message! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT])
   turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
 }

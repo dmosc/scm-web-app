@@ -55,7 +55,7 @@ class Chat extends Component {
     if (error) return <div>¡No se han podido cargar los mensajes!</div>;
 
     return (
-      <div>
+      <div style={{ width: '100%' }}>
         <ChatContainer>
           <ScrollableContext>
             {messages.map(message => (

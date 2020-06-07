@@ -14,17 +14,22 @@ const { Text } = Typography;
 
 const History = ({ client }) => {
   const [filters, setFilters] = useState({
-    search: '',
-    start: null,
-    end: null,
-    date: null,
-    type: null,
-    product: ''
+    range: {
+      start: null,
+      end: null
+    },
+    turnId: '',
+    billType: null,
+    paymentType: null,
+    clientIds: [],
+    truckId: '',
+    productId: '',
+    folio: ''
   });
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
   const [results, setResults] = useState(0);
-  const debouncedFilters = useDebounce(filters, 1000);
+  const debouncedFolio = useDebounce(filters.folio, 500);
 
   const handleFilterChange = (key, value) => {
     // eslint-disable-next-line no-param-reassign
@@ -38,27 +43,22 @@ const History = ({ client }) => {
     const start = dates[0];
     const end = dates[1];
 
-    // This is a special case when 'De hoy' filter is set
-    // and, since start and end are equal, nothing is returned
-    // because nothing is between to equal dates
-    if (start && end && start.toString() === end.toString()) {
-      setFilters({ ...filters, start: null, end: null, date: start });
-    } else {
-      setFilters({
-        ...filters,
-        start: start?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
-        end: end?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-      });
-    }
+    setFilters({
+      ...filters,
+      range: {
+        start,
+        end
+      }
+    });
   };
 
-  const downloadPDF = async folio => {
+  const downloadPDF = async id => {
     const {
       data: { ticketPDF }
     } = await client.query({
       query: GET_PDF,
       variables: {
-        idOrFolio: folio
+        idOrFolio: id
       }
     });
 
@@ -73,12 +73,29 @@ const History = ({ client }) => {
           data: { archivedTickets }
         } = await client.query({
           query: GET_HISTORY_TICKETS,
-          variables: { filters: debouncedFilters }
+          variables: {
+            range: filters.range,
+            turnId: filters.turnId,
+            billType: filters.billType,
+            paymentType: filters.paymentType,
+            clientIds: filters.clientIds.map(composedId => composedId.split(':')[1]),
+            truckId: filters.truckId,
+            productId: filters.productId,
+            folio: debouncedFolio,
+            client: filters.client
+          }
         });
 
         const archivedTicketsToSet = archivedTickets.map(ticket => ({
           ...ticket,
-          subtotal: ticket.total - ticket.tax
+          subtotal: ticket.totalPrice - ticket.tax,
+          businessName: ticket.client.businessName,
+          rfc: ticket.client.rfc,
+          plates: ticket.truck.plates,
+          truckWeight: ticket.truck.weight,
+          product: ticket.product.name,
+          price: format.currency(ticket.totalPrice / ticket.weight),
+          client: `${ticket.client.firstName} ${ticket.client.lastName}`
         }));
 
         setTickets(archivedTicketsToSet);
@@ -92,7 +109,18 @@ const History = ({ client }) => {
     };
 
     getData();
-  }, [debouncedFilters, client]);
+  }, [
+    filters.range,
+    filters.turnId,
+    filters.billType,
+    filters.paymentType,
+    filters.clientIds,
+    filters.truckId,
+    filters.productId,
+    debouncedFolio,
+    filters.client,
+    client
+  ]);
 
   const columns = [
     {
@@ -104,14 +132,14 @@ const History = ({ client }) => {
     },
     {
       title: 'Fecha',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'out',
+      key: 'out',
       width: 130,
       fixed: 'left',
-      render: createdAt => (
+      render: out => (
         <>
-          <Tag color="geekblue">{moment(createdAt).format('DD/MM/YYYY')}</Tag>
-          <Tag color="purple">{moment(createdAt).format('HH:MM A')}</Tag>
+          <Tag color="geekblue">{moment(out).format('DD/MM/YYYY')}</Tag>
+          <Tag color="purple">{moment(out).format('HH:MM A')}</Tag>
         </>
       )
     },
@@ -189,14 +217,14 @@ const History = ({ client }) => {
     },
     {
       title: 'Peso bruto',
-      dataIndex: 'totalWeight',
-      key: 'totalWeight',
+      dataIndex: 'weight',
+      key: 'weight',
       width: 100
     },
     {
       title: 'Peso neto',
-      dataIndex: 'tons',
-      key: 'tons',
+      dataIndex: 'totalWeight',
+      key: 'totalWeight',
       width: 100
     },
     {
@@ -217,8 +245,8 @@ const History = ({ client }) => {
     },
     {
       title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
+      dataIndex: 'totalPrice',
+      key: 'totalPrice',
       width: 120,
       fixed: 'right',
       render: total => <Tag>{format.currency(total)}</Tag>
@@ -232,7 +260,7 @@ const History = ({ client }) => {
         <Row>
           <Tooltip placement="top" title="Imprimir">
             <Button
-              onClick={() => downloadPDF(row.folio)}
+              onClick={() => downloadPDF(row.id)}
               type="primary"
               icon="printer"
               size="small"
@@ -266,7 +294,7 @@ const History = ({ client }) => {
               let total = 0;
 
               ticketsToAdd.forEach(
-                ({ subtotal: ticketSubtotal, tax: ticketTax, total: ticketTotal }) => {
+                ({ subtotal: ticketSubtotal, tax: ticketTax, totalPrice: ticketTotal }) => {
                   subtotal += ticketSubtotal;
                   tax += ticketTax;
                   total += ticketTotal;

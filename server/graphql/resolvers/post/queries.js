@@ -1,26 +1,48 @@
-import { Post } from '../../../sequelize-db/models';
+import { Post } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const postQueries = {
-  post: authenticated(async (_, args) => {
-    const { id } = args;
-    const post = await Post.findByPk(id);
+  posts: authenticated(
+    async (
+      _,
+      {
+        filters: {
+          createdAt = {},
+          updatedAt = {},
+          page = 1,
+          pageSize = Number.MAX_SAFE_INTEGER,
+          author,
+          createdOrder = 'desc'
+        }
+      }
+    ) => {
+      const query = { deleted: false };
 
-    if (!post) throw new Error('¡No se ha podido encontrar el post!');
+      if (createdAt)
+        query.createdAt = {
+          $gte: new Date(createdAt.start || '1970-01-01T00:00:00.000Z'),
+          $lte: new Date(createdAt.end || '2100-12-31T00:00:00.000Z')
+        };
 
-    return post;
-  }),
-  posts: authenticated(async (_, { filters: { limit } }) => {
-    const posts = await Post.findAll({
-      attributes: ['id', 'username', 'title', 'content', 'createdAt'],
-      limit: limit ? limit : 50,
-      order: [['createdAt', 'DESC']]
-    });
+      if (updatedAt)
+        query.createdAt = {
+          $gte: new Date(createdAt.start || '1970-01-01T00:00:00.000Z'),
+          $lte: new Date(createdAt.end || '2100-12-31T00:00:00.000Z')
+        };
 
-    if (!posts) throw new Error('¡Ha habido un error cargando los posts!');
+      if (author) query.author = author;
 
-    return posts;
-  })
+      const posts = await Post.find(query)
+        .skip(pageSize * (page - 1))
+        .limit(pageSize)
+        .sort({ createdAt: createdOrder })
+        .populate('author');
+
+      if (!posts) throw new Error('¡Ha habido un error cargando los posts!');
+
+      return posts;
+    }
+  )
 };
 
 export default postQueries;

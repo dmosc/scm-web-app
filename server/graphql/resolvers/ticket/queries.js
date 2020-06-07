@@ -373,6 +373,37 @@ const ticketQueries = {
   archivedTickets: authenticated(
     async (
       _,
+      { range = {}, turnId, billType, paymentType, productId, clientIds, truckId, folio }
+    ) => {
+      const query = {
+        out: {
+          $gte: new Date(range.start || '1970-01-01T00:00:00.000Z'),
+          $lte: new Date(range.end || '2100-12-31T00:00:00.000Z')
+        }
+      };
+
+      if (folio) query.folio = new RegExp(folio, 'i');
+      if (turnId) query.turn = turnId;
+      if (clientIds && clientIds.length > 0) query.client = { $in: clientIds };
+      if (truckId) query.truck = truckId;
+      if (productId) query.product = productId;
+
+      if (billType) {
+        if (billType === 'BILL') query.tax = { $gt: 0 };
+        if (billType === 'REMISSION') query.tax = { $eq: 0 };
+      }
+
+      if (paymentType) {
+        if (paymentType === 'CASH') query.credit = false;
+        if (paymentType === 'CREDIT') query.credit = true;
+      }
+
+      return Ticket.find(query).populate('client product truck');
+    }
+  ),
+  archivedTicketsAurora: authenticated(
+    async (
+      _,
       { filters: { limit, offset, search: oldSearch, start, end, date, type, product } }
     ) => {
       const search = `%${oldSearch}%`;
@@ -997,6 +1028,10 @@ const ticketQueries = {
           key: 'credit'
         },
         {
+          header: 'Tipo de boleta',
+          key: 'ticketType'
+        },
+        {
           header: 'Status',
           key: 'status'
         }
@@ -1041,6 +1076,7 @@ const ticketQueries = {
           tax: format.number(ticket.tax || 0),
           totalPrice: format.number(ticket.totalPrice),
           credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
+          ticketType: ticket.tax > 0 ? 'FACTURA' : 'REMISIÓN',
           status: !ticket.isBilled ? '<Por facturar>' : ticket.tax ? '<Remisionada>' : '<Facturada>'
         };
 

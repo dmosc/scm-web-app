@@ -246,10 +246,18 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>}
           </SubMenu>
         )}
+        {(isAdmin || isManager || isSupport) && (
+          <Item key="produccion">
+            <Link to="/produccion">
+              <Icon type="experiment"/>
+              <span>Producción</span>
+            </Link>
+          </Item>
+        )}
         {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="historial">
             <Link to="/historial">
-              <Icon type="history" />
+              <Icon type="history"/>
               <span>Historial</span>
             </Link>
           </Item>

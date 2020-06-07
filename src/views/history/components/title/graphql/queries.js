@@ -9,9 +9,19 @@ const GET_REPORT = gql`
 const GET_PRODUCTS = gql`
   query rocks($filters: RockFilters!) {
     rocks(filters: $filters) {
+      id
       name
     }
   }
 `;
 
-export { GET_REPORT, GET_PRODUCTS };
+const GET_CLIENTS = gql`
+  query clients($filters: ClientFilters!) {
+    clients(filters: $filters) {
+      id
+      businessName
+    }
+  }
+`;
+
+export { GET_REPORT, GET_PRODUCTS, GET_CLIENTS };

@@ -32,7 +32,6 @@ import folioMutations from './folio/mutations';
 // Post
 import postMutations from './post/mutations';
 import postQueries from './post/queries';
-import postSubscriptions from './post/subscriptions';
 // Message
 import messageMutations from './message/mutations';
 import messageQueries from './message/queries';
@@ -148,7 +147,6 @@ const resolvers = {
   },
   Subscription: {
     ...ticketSubscriptions,
-    ...postSubscriptions,
     ...messageSubscriptions,
     ...turnSubscriptions
   }

@@ -1,69 +1,157 @@
-import React, { Component } from 'react';
-import { graphql } from '@apollo/react-hoc';
-import { Typography } from 'antd';
-import { PostsListContainer } from './elements';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { withApollo } from 'react-apollo';
+import md5 from 'md5';
+import moment from 'moment';
+import shortid from 'shortid';
+import { useAuth } from 'components/providers/withAuth/index';
+import { Typography, Avatar, Skeleton, Empty, Button, Popconfirm, message } from 'antd';
+import {
+  PostsListContainer,
+  PostContainer,
+  PostContent,
+  ImagesContainer,
+  FilesContainer
+} from './elements';
 import { GET_POSTS } from './graphql/queries';
-import { NEW_POSTS } from './graphql/subscriptions';
+import { DELETE_POST } from './graphql/mutations';
+import AddPostModal from './components/add-post-modal';
+import ImagePreview from './components/image-preview';
+import FilePreview from './components/file-preview';
 
-const { Title, Paragraph, Text } = Typography;
+const { Paragraph, Text } = Typography;
 
-class PostsList extends Component {
-  componentDidMount = () => {
-    const {
-      data: { subscribeToMore }
-    } = this.props;
+const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
+  const { user, isAdmin } = useAuth();
+  const [posts, setPosts] = useState(
+    new Array(4).fill({
+      author: { username: '', firstName: '', lastName: '' },
+      title: '',
+      content: ''
+    })
+  );
+  const [loading, setLoading] = useState(true);
 
-    if (!this.unsubscribeToPosts) this.unsubscribeToPosts = this.subscribeToPosts(subscribeToMore);
+  useEffect(() => {
+    const getPosts = async () => {
+      const {
+        data: { posts: postsToSet }
+      } = await client.query({
+        query: GET_POSTS,
+        variables: {
+          filters: {
+            pageSize: 20
+          }
+        }
+      });
+
+      setPosts(postsToSet);
+      setLoading(false);
+    };
+
+    getPosts();
+  }, [client, loading]);
+
+  const addPost = newPost => {
+    setPosts([newPost, ...posts]);
   };
 
-  componentWillUnmount = () => {
-    this.unsubscribeToPosts();
-  };
-
-  subscribeToPosts = subscribeToMore => {
-    return subscribeToMore({
-      document: NEW_POSTS,
-      updateQuery: (prev, { subscriptionData: { data } }) => {
-        const { posts: oldPosts } = prev;
-        const { newPost } = data;
-        if (!newPost) return prev;
-
-        for (let i = 0; i < oldPosts.length; i++) if (newPost.id === oldPosts[i].id) return prev;
-
-        const posts = [newPost, ...oldPosts];
-
-        return { posts };
+  const deletePost = async (id, idx) => {
+    const { errors } = await client.mutate({
+      mutation: DELETE_POST,
+      variables: {
+        id
       }
     });
+
+    if (errors) {
+      message.error(errors[0].message);
+    } else {
+      message.success('El post ha sido eliminado');
+      const newPosts = [...posts];
+      newPosts.splice(idx, 1);
+      setPosts(newPosts);
+    }
   };
 
-  render() {
-    const { data } = this.props;
+  return (
+    <PostsListContainer>
+      {posts.map((post, index) => (
+        <Skeleton key={shortid.generate()} loading={loading} avatar active>
+          <PostContainer>
+            <Avatar
+              style={{
+                background: `#${md5(post.author.username).substring(0, 6)}`,
+                verticalAlign: 'middle',
+                minWidth: 40,
+                minHeight: 40,
+                marginRight: 15,
+                marginTop: 3
+              }}
+              size="large"
+            >
+              {post.author.firstName[0]?.toUpperCase()}
+              {post.author.lastName[0]?.toUpperCase()}
+            </Avatar>
+            <PostContent>
+              <div style={{ display: 'flex' }}>
+                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Text strong>{post.title}</Text>
+                  <Text style={{ fontSize: '0.6rem', marginBottom: 10 }} type="secondary">
+                    {post.author.firstName} {post.author.lastName} -{' '}
+                    {moment(post.createdAt).fromNow()}
+                  </Text>
+                </div>
+                {(isAdmin || user.id === post.author.id) && (
+                  <Popconfirm
+                    title="¿Seguro que quieres eliminar este post?"
+                    okText="Sí"
+                    cancelText="No"
+                    onConfirm={() => deletePost(post.id, index)}
+                  >
+                    <Button
+                      style={{ fontSize: '0.8rem' }}
+                      type="danger"
+                      ghost
+                      shape="circle"
+                      icon="delete"
+                    />
+                  </Popconfirm>
+                )}
+              </div>
+              <Paragraph fontSize="0.85rem" ellipsis={{ rows: 2, expandable: true }}>
+                {post.content}
+              </Paragraph>
+              {post.gallery?.length > 0 && (
+                <ImagesContainer>
+                  {post.gallery.map(image => (
+                    <ImagePreview key={image} src={image} />
+                  ))}
+                </ImagesContainer>
+              )}
+              {post.attachments?.length > 0 && (
+                <FilesContainer>
+                  {post.attachments.map(file => (
+                    <FilePreview key={file} src={file} />
+                  ))}
+                </FilesContainer>
+              )}
+            </PostContent>
+          </PostContainer>
+        </Skeleton>
+      ))}
+      {posts.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+      {isAddPostModalOpen && (
+        <AddPostModal addPost={addPost} onClose={() => toggleAddPostModal(false)} />
+      )}
+    </PostsListContainer>
+  );
+};
 
-    const { loading, error, posts } = data;
+PostsList.propTypes = {
+  client: PropTypes.object.isRequired,
+  toggleAddPostModal: PropTypes.func.isRequired,
+  isAddPostModalOpen: PropTypes.bool.isRequired
+};
 
-    if (loading) return <div>Cargando posts recientes...</div>;
-    if (error) return <div>¡No se han podido cargar lost posts!</div>;
-
-    return (
-      <PostsListContainer>
-        {posts.map(post => (
-          <div
-            key={post.id}
-            style={{
-              borderBottom: '1px solid lightGrey',
-              padding: 5,
-              margin: 5
-            }}
-          >
-            <Title level={4}>{post.title}</Title>
-            <Paragraph ellipsis={{ rows: 2, expandable: true }}>{post.content}</Paragraph>
-            <Text mark>{post.username}</Text>
-          </div>
-        ))}
-      </PostsListContainer>
-    );
-  }
-}
-
-export default graphql(GET_POSTS, { options: () => ({ variables: { filters: {} } }) })(PostsList);
+export default withApollo(PostsList);
