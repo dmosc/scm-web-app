@@ -198,6 +198,12 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 Ventas
               </Link>
             </Item>
+            <Item key="reportes/tiempos">
+              <Link to="/reportes/tiempos">
+                <Icon type="clock-circle" />
+                Tiempos
+              </Link>
+            </Item>
           </SubMenu>
         )}
         {(isAdmin || isManager || isAccountant) && (

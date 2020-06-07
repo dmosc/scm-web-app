@@ -59,6 +59,12 @@ type ArchiveTicket {
   updatedAt: Date!
 }
 
+type TicketTimes {
+  min: Int!
+  max: Int!
+  avg: Int!
+}
+
 # Inputs
 input TicketInput {
   plates: String!

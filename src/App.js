@@ -12,6 +12,9 @@ import moment from 'moment-timezone';
 import 'moment/locale/es';
 import './App.css';
 
+// Routes with subroutes
+import Reports from './views/reports';
+
 // Set every
 moment.tz.setDefault('America/Monterrey');
 
@@ -98,12 +101,6 @@ const Machines = Loadable({
 /* webpackChunkName: "DieselRegistry" */
 const DieselRegistry = Loadable({
   loader: () => import('./views/registry/diesel-registry'),
-  loading: TopBarProgress
-});
-
-/* webpackChunkName: "History" */
-const Reports = Loadable({
-  loader: () => import('./views/reports'),
   loading: TopBarProgress
 });
 
@@ -210,11 +207,13 @@ const App = ({
             <Route exact path="/produccion" component={Production} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/historial" component={History}/>
+            <Route exact path="/historial" component={History} />
           )}
-          {(isAdmin || isAccountant || isManager || isCashier) && <Route path="/facturas" component={Bills}/>}
+          {(isAdmin || isAccountant || isManager || isCashier) && (
+            <Route path="/facturas" component={Bills} />
+          )}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
-            <Route exact path="/mensajes" component={Messages}/>
+            <Route exact path="/mensajes" component={Messages} />
           )}
           {(isAdmin || isGuard || isSupport || isManager) && (
             <Route exact path="/accesos" component={Access} />
