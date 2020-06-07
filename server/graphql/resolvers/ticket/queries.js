@@ -1731,7 +1731,7 @@ const ticketQueries = {
       'base64'
     )}`;
   },
-  ticketMaxTime: authenticated(async (_, { date, turnId, rocks }) => {
+  ticketTimes: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
@@ -1742,7 +1742,8 @@ const ticketQueries = {
     };
 
     if (turnId) $match.turn = Types.ObjectId(turnId);
-    if (rocks && rocks.length > 0) $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
+    if (rocks && rocks.length > 0)
+      $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
 
     const tickets = await Ticket.aggregate([
       {
@@ -1751,14 +1752,20 @@ const ticketQueries = {
       {
         $group: {
           _id: null,
+          minTime: { $min: { $subtract: ['$out', '$in'] } },
+          avgTime: { $avg: { $subtract: ['$out', '$in'] } },
           maxTime: { $max: { $subtract: ['$out', '$in'] } }
         }
       }
     ]);
 
-    return tickets[0]?.maxTime || 0;
+    return {
+      max: tickets[0]?.maxTime || 0,
+      min: tickets[0]?.minTime || 0,
+      avg: parseInt(tickets[0]?.avgTime, 10) || 0
+    };
   }),
-  ticketMinTime: authenticated(async (_, { date, turnId, rocks }) => {
+  ticketTimesXLS: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
@@ -1769,21 +1776,189 @@ const ticketQueries = {
     };
 
     if (turnId) $match.turn = Types.ObjectId(turnId);
-    if (rocks && rocks.length > 0) $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
+    if (rocks && rocks.length > 0)
+      $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
 
-    const tickets = await Ticket.aggregate([
-      {
-        $match
-      },
-      {
-        $group: {
-          _id: null,
-          minTime: { $min: { $subtract: ['$out', '$in'] } }
+    const [products, globalTimes, timesByProduct, ticketList] = await Promise.all([
+      Rock.find(),
+      Ticket.aggregate([
+        {
+          $match
+        },
+        {
+          $group: {
+            _id: null,
+            minTime: { $min: { $subtract: ['$out', '$in'] } },
+            avgTime: { $avg: { $subtract: ['$out', '$in'] } },
+            maxTime: { $max: { $subtract: ['$out', '$in'] } }
+          }
         }
-      }
+      ]),
+      Ticket.aggregate([
+        {
+          $match
+        },
+        {
+          $group: {
+            _id: '$product',
+            minTime: { $min: { $subtract: ['$out', '$in'] } },
+            avgTime: { $avg: { $subtract: ['$out', '$in'] } },
+            maxTime: { $max: { $subtract: ['$out', '$in'] } },
+            totalWeight: { $sum: '$totalWeight' }
+          }
+        }
+      ]),
+      Ticket.aggregate([
+        {
+          $match
+        },
+        {
+          $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' }
+        },
+        {
+          $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' }
+        },
+        {
+          $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' }
+        },
+        {
+          $unwind: '$client'
+        },
+        {
+          $unwind: '$truck'
+        },
+        {
+          $unwind: '$product'
+        },
+        { $addFields: { productArray: [{ k: { $toString: '$product._id' }, v: '$totalWeight' }] } },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: [
+                { $arrayToObject: '$productArray' },
+                {
+                  date: {
+                    $dateToString: {
+                      format: '%Y-%m-%d',
+                      date: '$out',
+                      timezone: 'America/Monterrey'
+                    }
+                  },
+                  folio: '$folio',
+                  plates: '$truck.plates',
+                  clientUniqueId: '$client.uniqueId',
+                  businessName: '$client.businessName',
+                  in: {
+                    $dateToString: {
+                      format: '%H:%M:%S',
+                      date: '$in',
+                      timezone: 'America/Monterrey'
+                    }
+                  },
+                  out: {
+                    $dateToString: {
+                      format: '%H:%M:%S',
+                      date: '$out',
+                      timezone: 'America/Monterrey'
+                    }
+                  },
+                  timeIn: { $subtract: ['$out', '$in'] }
+                }
+              ]
+            }
+          }
+        }
+      ])
     ]);
 
-    return tickets[0]?.minTime || 0;
+    const workbook = createWorkbook();
+
+    const rockColumns = products.map(({ id, name }) => ({ header: name, key: id }));
+
+    const columns = [
+      {
+        header: 'Fecha',
+        key: 'date',
+        width: 15
+      },
+      {
+        header: 'Folio',
+        key: 'folio',
+        width: 15
+      },
+      {
+        header: 'Placas',
+        key: 'plates',
+        width: 15
+      },
+      {
+        header: 'Código de cliente',
+        key: 'clientUniqueId',
+        width: 15
+      },
+      {
+        header: 'Cliente',
+        key: 'businessName',
+        width: 35
+      },
+      {
+        header: 'Entrada',
+        key: 'in',
+        width: 15
+      },
+      {
+        header: 'Salida',
+        key: 'out',
+        width: 15
+      },
+      {
+        header: 'Estadía',
+        key: 'timeIn',
+        width: 15
+      },
+      ...rockColumns
+    ];
+
+    const worksheet = createWorksheet(
+      workbook,
+      {
+        name: 'ReporteTiempos',
+        columns,
+        date: new Date(),
+        title: `Reporte de tiempos del ${moment(date.start || '1970-01-01T00:00:00.000Z').format(
+          'MMMM Y'
+        )} al ${moment(date.end || '2100-12-31T00:00:00.000Z').format('MMMM Y')}`
+      },
+      {
+        pageSetup: { fitToPage: true, orientation: 'landscape' }
+      }
+    );
+
+    ticketList.forEach(ticket => {
+      ticket.timeIn = format.time(ticket.timeIn);
+      worksheet.addRow(ticket);
+    });
+
+    const weightsRow = { in: 'Suma de pesos' };
+    const avgTimes = { in: 'Tiempo promedio', timeIn: format.time(globalTimes[0]?.avgTime) };
+    const maxTimes = { in: 'Tiempo máximo', timeIn: format.time(globalTimes[0]?.maxTime) };
+    const minTimes = { in: 'Tiempo mínimo', timeIn: format.time(globalTimes[0]?.minTime) };
+    timesByProduct.forEach(({ _id, totalWeight, avgTime, maxTime, minTime }) => {
+      weightsRow[_id] = totalWeight;
+      avgTimes[_id] = format.time(avgTime);
+      maxTimes[_id] = format.time(maxTime);
+      minTimes[_id] = format.time(minTime);
+    });
+    worksheet.addRow(weightsRow);
+    worksheet.addRow(avgTimes);
+    worksheet.addRow(maxTimes);
+    worksheet.addRow(minTimes);
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+      'base64'
+    )}`;
   })
 };
 

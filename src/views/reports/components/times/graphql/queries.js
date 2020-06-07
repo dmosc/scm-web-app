@@ -31,14 +31,6 @@ const TURN_BY_UNIQUE_ID = gql`
   }
 `;
 
-const GET_MOST_RECENTLY_ENDED_TURN = gql`
-  query turnMostRecentlyEnded {
-    turnMostRecentlyEnded {
-      ${turnData}
-    }
-  }
-`;
-
 const GET_ROCKS = gql`
   query rocks($filters: RockFilters!) {
     rocks(filters: $filters) {
@@ -52,9 +44,18 @@ const GET_ROCKS = gql`
 
 const GET_TIMES = gql`
   query times($date: DateRange, $turnId: ID, $rocks: [ID]) {
-    ticketMaxTime(date: $date, turnId: $turnId, rocks: $rocks)
-    ticketMinTime(date: $date, turnId: $turnId, rocks: $rocks)
+    ticketTimes(date: $date, turnId: $turnId, rocks: $rocks) {
+      max
+      min
+      avg
+    }
   }
 `;
 
-export { GET_ROCKS, TURN_BY_UNIQUE_ID, GET_MOST_RECENTLY_ENDED_TURN, GET_TURNS, GET_TIMES };
+const GET_TIMES_XLS = gql`
+  query times($date: DateRange, $turnId: ID, $rocks: [ID]) {
+    ticketTimesXLS(date: $date, turnId: $turnId, rocks: $rocks)
+  }
+`;
+
+export { GET_ROCKS, TURN_BY_UNIQUE_ID, GET_TURNS, GET_TIMES, GET_TIMES_XLS };

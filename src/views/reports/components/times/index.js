@@ -4,14 +4,14 @@ import moment from 'moment-timezone';
 import { format } from 'utils/functions';
 import periods from 'utils/enums/periods';
 import { withApollo } from 'react-apollo';
-import { Typography, Select, Tag, Card, Col, Statistic, Icon, Spin, message } from 'antd';
+import { Typography, Select, Tag, Card, Col, Statistic, Icon, Spin, Button, message } from 'antd';
 import { FiltersContainer, InputContainer } from './elements';
 import {
   GET_ROCKS,
-  GET_MOST_RECENTLY_ENDED_TURN,
   TURN_BY_UNIQUE_ID,
   GET_TURNS,
-  GET_TIMES
+  GET_TIMES,
+  GET_TIMES_XLS
 } from './graphql/queries';
 
 const { Text } = Typography;
@@ -23,6 +23,7 @@ const SalesReport = ({ client, globalFilters }) => {
   const [loading, setLoading] = useState(false);
   const [turnUniqueId, setTurnUniqueId] = useState();
   const [rockIds, setRockIds] = useState([]);
+  const [loadingReport, setLoadingReport] = useState(false);
   const [turns, setTurns] = useState([]);
   const [turn, setTurn] = useState({});
   const [times, setTimes] = useState({
@@ -35,7 +36,7 @@ const SalesReport = ({ client, globalFilters }) => {
     const getTimes = async () => {
       setLoading(true);
       const {
-        data: { ticketMaxTime, ticketMinTime }
+        data: { ticketTimes }
       } = await client.query({
         query: GET_TIMES,
         variables: {
@@ -47,10 +48,7 @@ const SalesReport = ({ client, globalFilters }) => {
           rocks: rockIds
         }
       });
-      setTimes({
-        max: ticketMaxTime,
-        min: ticketMinTime
-      });
+      setTimes(ticketTimes);
       setLoading(false);
     };
 
@@ -80,14 +78,7 @@ const SalesReport = ({ client, globalFilters }) => {
 
   useEffect(() => {
     const getTurn = async () => {
-      if (!turnUniqueId) {
-        const {
-          data: { turnMostRecentlyEnded }
-        } = await client.query({
-          query: GET_MOST_RECENTLY_ENDED_TURN
-        });
-        setTurn(turnMostRecentlyEnded);
-      } else {
+      if (turnUniqueId) {
         const {
           data: { turnByUniqueId }
         } = await client.query({
@@ -119,6 +110,35 @@ const SalesReport = ({ client, globalFilters }) => {
 
     getRocks();
   }, [client]);
+
+  const downloadReport = async () => {
+    setLoadingReport(true);
+
+    const {
+      data: { ticketTimesXLS }
+    } = await client.query({
+      query: GET_TIMES_XLS,
+      variables: {
+        date: {
+          start: globalFilters.start,
+          end: globalFilters.end
+        },
+        turnId: turn.id,
+        rocks: rockIds
+      }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(ticketTimesXLS);
+    link.download = `CLIENTES-${new Date().toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    setLoadingReport(false);
+  };
 
   return (
     <>
@@ -171,6 +191,15 @@ const SalesReport = ({ client, globalFilters }) => {
             ))}
           </Select>
         </InputContainer>
+        <Button
+          style={{ marginLeft: 'auto', marginTop: 20 }}
+          loading={loadingReport}
+          type="primary"
+          icon="file-excel"
+          onClick={downloadReport}
+        >
+          {(loadingReport && 'Generando...') || 'Descargar reporte'}
+        </Button>
       </FiltersContainer>
       {loading ? (
         <div style={{ display: 'flex', alingItems: 'center', justifyContent: 'center' }}>
@@ -178,7 +207,7 @@ const SalesReport = ({ client, globalFilters }) => {
         </div>
       ) : (
         <Card>
-          <Col span={12}>
+          <Col span={8}>
             <Statistic
               valueStyle={{ color: '#3f8600' }}
               title="Mínimo"
@@ -187,11 +216,20 @@ const SalesReport = ({ client, globalFilters }) => {
               prefix={<Icon type="clock-circle" />}
             />
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Statistic
-              valueStyle={{ color: '#30CEE7' }}
+              valueStyle={{ color: '#FF4F64' }}
               title="Máximo"
               value={format.time(times.max)}
+              suffix="hh:mm:ss"
+              prefix={<Icon type="clock-circle" />}
+            />
+          </Col>
+          <Col span={8}>
+            <Statistic
+              valueStyle={{ color: '#30CEE7' }}
+              title="Promedio"
+              value={format.time(times.avg)}
               suffix="hh:mm:ss"
               prefix={<Icon type="clock-circle" />}
             />
