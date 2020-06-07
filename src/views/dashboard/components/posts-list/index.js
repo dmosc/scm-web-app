@@ -119,9 +119,7 @@ const PostsList = ({ client, toggleAddPostModal, isAddPostModalOpen }) => {
                   </Popconfirm>
                 )}
               </div>
-              <Paragraph fontSize="0.85rem" ellipsis={{ rows: 2, expandable: true }}>
-                {post.content}
-              </Paragraph>
+              <Paragraph fontSize="0.85rem">{post.content}</Paragraph>
               {post.gallery?.length > 0 && (
                 <ImagesContainer>
                   {post.gallery.map(image => (
