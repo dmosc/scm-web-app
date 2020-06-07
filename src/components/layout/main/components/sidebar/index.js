@@ -244,12 +244,12 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 <span>Agrupador</span>
               </Link>
             </Item>
-            {(!isCashier) && <Item key="facturas/registros">
+            <Item key="facturas/registros">
               <Link to="/facturas/registros">
                 <Icon type="read"/>
                 Registros
               </Link>
-            </Item>}
+            </Item>
           </SubMenu>
         )}
         {(isAdmin || isManager || isSupport) && (
