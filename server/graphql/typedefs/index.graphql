@@ -130,8 +130,7 @@ type Query {
     workingDays: Int!
     workingDaysPassed: Int!
     excluded: [ID]
-  ): String!
-   @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   ticketTimes(date: DateRange, turnId: ID, rocks: [ID]): TicketTimes!
   ticketTimesXLS(date: DateRange, turnId: ID, rocks: [ID]): String!
   # Bill
@@ -273,7 +272,7 @@ type Mutation {
   ticketEdit(ticket: TicketEditInput!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   ticketInit(ticket: TicketInitInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
   ticketProductLoad(ticket: TicketProductLoadInput!): Ticket!
   @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
   ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
