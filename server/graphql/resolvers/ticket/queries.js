@@ -1730,7 +1730,61 @@ const ticketQueries = {
     return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
       'base64'
     )}`;
-  }
+  },
+  ticketMaxTime: authenticated(async (_, { date, turnId, rocks }) => {
+    const $match = {
+      out: {
+        $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
+        $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
+      },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true }
+    };
+
+    if (turnId) $match.turn = Types.ObjectId(turnId);
+    if (rocks && rocks.length > 0) $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
+
+    const tickets = await Ticket.aggregate([
+      {
+        $match
+      },
+      {
+        $group: {
+          _id: null,
+          maxTime: { $max: { $subtract: ['$out', '$in'] } }
+        }
+      }
+    ]);
+
+    return tickets[0]?.maxTime || 0;
+  }),
+  ticketMinTime: authenticated(async (_, { date, turnId, rocks }) => {
+    const $match = {
+      out: {
+        $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
+        $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
+      },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true }
+    };
+
+    if (turnId) $match.turn = Types.ObjectId(turnId);
+    if (rocks && rocks.length > 0) $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
+
+    const tickets = await Ticket.aggregate([
+      {
+        $match
+      },
+      {
+        $group: {
+          _id: null,
+          minTime: { $min: { $subtract: ['$out', '$in'] } }
+        }
+      }
+    ]);
+
+    return tickets[0]?.minTime || 0;
+  })
 };
 
 export default ticketQueries;

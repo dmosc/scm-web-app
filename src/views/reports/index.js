@@ -33,6 +33,12 @@ const Turns = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "Times" */
+const Times = Loadable({
+  loader: () => import('./components/times'),
+  loading: TopBarProgress
+});
+
 const Reports = ({ location }) => {
   const [globalFilters, setGlobalFilters] = useState({
     start: null,
@@ -65,6 +71,10 @@ const Reports = ({ location }) => {
           render={() => <Turns globalFilters={debouncedGlobalFilters} />}
         />
         <Route path="/reportes/ventas" render={() => <Sales />} />
+        <Route
+          path="/reportes/tiempos"
+          render={() => <Times globalFilters={debouncedGlobalFilters} />}
+        />
         <Redirect to="/reportes/global" />
       </Switch>
     </ReportsContainer>

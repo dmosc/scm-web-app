@@ -131,7 +131,9 @@ type Query {
     workingDaysPassed: Int!
     excluded: [ID]
   ): String!
-  #  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+   @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ticketMaxTime(date: DateRange, turnId: ID, rocks: [ID]): Int!
+  ticketMinTime(date: DateRange, turnId: ID, rocks: [ID]): Int!
   # Bill
   bill(id: ID, folio: String): Bill
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
