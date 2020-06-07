@@ -15,10 +15,8 @@ const turnMutations = {
 
     const turn = new Turn({ ...args.turn });
     turn.uniqueId = (uniqueId || 1000) + 1;
-    const start = new Date();
-    const offset = start.getTimezoneOffset() / 60;
 
-    turn.start = start.setHours(start.getHours() - offset);
+    turn.start = new Date();
 
     try {
       await turn.save();
@@ -35,12 +33,10 @@ const turnMutations = {
       const {
         turn: { id }
       } = args;
-      const end = new Date();
-      const offset = end.getTimezoneOffset() / 60;
 
       const turn = await Turn.findOneAndUpdate(
         { _id: id },
-        { end: end.setHours(end.getHours() - offset) },
+        { end: new Date() },
         { new: true }
       ).populate('user');
 
