@@ -38,4 +38,19 @@ const CollapseContainer = styled(Collapse)`
   }
 `;
 
-export { Column, ColumnTitle, CollapseContainer };
+const TimesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  ${props => props.theme.media.lg`
+    flex-direction: row;
+    justify-content: space-around;
+  `}
+`;
+
+const Time = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export { Column, ColumnTitle, CollapseContainer, TimesContainer, Time };
