@@ -28,7 +28,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "aes-js": "^3.1.2",
-    "antd": "^3.26.3",
+    "antd": "3.26.16",
     "apollo-boost": "^0.4.4",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",

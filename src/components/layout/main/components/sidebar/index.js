@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { useAuth } from 'components/providers/withAuth';
+import { sizes } from 'theme';
 import { Menu, Sider } from './elements';
 
 const { Item, SubMenu, ItemGroup } = Menu;
 
 const Sidebar = ({ history, location, collapsed, onCollapse }) => {
   const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport } = useAuth();
+  const [isLg, toggleLg] = useState(window.innerWidth > sizes.lg);
+
+  const updateWidth = () => {
+    toggleLg(window.innerWidth > sizes.lg);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWidth);
+
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   return (
-    <Sider theme="light" collapsible collapsed={collapsed} onCollapse={onCollapse}>
+    <Sider
+      breakpoint="lg"
+      collapsedWidth={isLg ? '80' : '0'}
+      theme="light"
+      collapsed={collapsed}
+      collapsible
+      onCollapse={onCollapse}
+    >
       <Menu
         theme="light"
         defaultSelectedKeys={history.location.pathname.toLowerCase()}
@@ -223,7 +242,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="ventas/seguimiento">
               <Link to="/ventas/seguimiento">
-                <Icon type="eye"/>
+                <Icon type="eye" />
                 <span>Seguimiento</span>
               </Link>
             </Item>
@@ -233,7 +252,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="file-text"/>
+                <Icon type="file-text" />
                 <span>Facturas</span>
               </span>
             }
@@ -246,7 +265,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read"/>
+                <Icon type="read" />
                 Registros
               </Link>
             </Item>
@@ -255,7 +274,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
         {(isAdmin || isManager || isSupport) && (
           <Item key="produccion">
             <Link to="/produccion">
-              <Icon type="experiment"/>
+              <Icon type="experiment" />
               <span>Producción</span>
             </Link>
           </Item>
@@ -263,7 +282,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
         {(isAdmin || isAccountant || isSupport || isManager) && (
           <Item key="historial">
             <Link to="/historial">
-              <Icon type="history"/>
+              <Icon type="history" />
               <span>Historial</span>
             </Link>
           </Item>

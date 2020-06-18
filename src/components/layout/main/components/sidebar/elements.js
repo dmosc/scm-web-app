@@ -9,7 +9,6 @@ const Menu = styled(CommonMenu)`
 
 const Sider = styled(Layout.Sider)`
   max-height: 100vh;
-  overflow: scroll;
 `;
 
 export { Menu, Sider };
