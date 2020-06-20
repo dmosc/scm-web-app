@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import { Col, Collapse, Tag } from 'antd';
+import { Col, Collapse, Tag, Typography } from 'antd';
+
+const { Title } = Typography;
 
 const Column = styled(Col)`
   display: flex;
@@ -53,4 +55,10 @@ const Time = styled.div`
   flex-direction: column;
 `;
 
-export { Column, ColumnTitle, CollapseContainer, TimesContainer, Time };
+const TitleTime = styled(Title)`
+  ${props => props.theme.media.lg`
+    font-size: 1.4rem !important;
+  `}
+`;
+
+export { Column, ColumnTitle, CollapseContainer, TimesContainer, Time, TitleTime };
