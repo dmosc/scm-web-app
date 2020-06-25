@@ -5,14 +5,8 @@ import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format, list } from '../../../../src/utils/functions';
-import {
-  columnToLetter,
-  createWorkbook,
-  createWorksheet,
-  headerRows,
-  solidFill
-} from '../../../utils/reports';
-import { ClientPrice, Rock, Ticket } from '../../../mongo-db/models';
+import { columnToLetter, createWorkbook, createWorksheet, headerRows, solidFill } from '../../../utils/reports';
+import { Rock, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
 import { createPDF } from '../../../utils/pdfs';
@@ -301,7 +295,7 @@ const ticketQueries = {
       throw new ApolloError('¡Ha habido un error cargando las boletas por facturar del cliente!');
     else return ticketsPendingToBill;
   }),
-  ticketsToBillSummary: authenticated(async (_, { tickets: ticketIds, client, turnToBill }) => {
+  ticketsToBillSummary: authenticated(async (_, { tickets: ticketIds, turnToBill }) => {
     const productSummary = await Ticket.aggregate([
       {
         $match: {
@@ -340,18 +334,10 @@ const ticketQueries = {
     for (let i = 0; i < productSummary.length; i++) {
       const { product, weight, subtotal: productSubtotal, tax: productTax } = productSummary[i];
 
-      // eslint-disable-next-line no-await-in-loop
-      const specialPrice = await ClientPrice.find({ client, rock: product[0]._id }).sort({
-        addedAt: 'descending'
-      });
-
-      if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product[0].price;
-      else price = specialPrice[0].price;
-
       const subtotalToAdd = turnToBill ? productSubtotal / 1.16 : productSubtotal;
       const taxToAdd = turnToBill ? subtotalToAdd * 0.16 : productTax;
 
-      price = turnToBill ? (subtotalToAdd / weight).toFixed(2) : price;
+      price = (subtotalToAdd / weight).toFixed(2);
 
       subtotal += subtotalToAdd;
       tax += taxToAdd;

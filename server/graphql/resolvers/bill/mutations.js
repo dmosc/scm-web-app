@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { Bill, ClientPrice, Folio, Ticket } from '../../../mongo-db/models';
+import { Bill, Folio, Ticket } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const billMutations = {
@@ -58,18 +58,10 @@ const billMutations = {
           tax: productTax
         } = productSummary[i];
 
-        // eslint-disable-next-line no-await-in-loop
-        const specialPrice = await ClientPrice.find({ client, rock: product[0]._id }).sort({
-          addedAt: 'descending'
-        });
-
-        if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product[0].price;
-        else price = specialPrice[0].price;
-
         const subtotalToAdd = !isBill && turnToBill ? productSubtotal / 1.16 : productSubtotal;
         const taxToAdd = !isBill && turnToBill ? subtotalToAdd * 0.16 : productTax;
 
-        price = turnToBill ? (subtotalToAdd / weight).toFixed(2) : price;
+        price = (subtotalToAdd / weight).toFixed(2);
 
         tax += taxToAdd;
         total += subtotalToAdd + taxToAdd;
