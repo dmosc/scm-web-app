@@ -51,23 +51,12 @@ const TicketSubmitForm = ({
         ? specialPrice.price
         : currentTicket.product.price;
 
-    let modifiedWeightToSet;
-    let taxToSet;
-    let totalToSet;
-    const percentageProductRate = productRate?.rate ? 1 + productRate?.rate / 100 : 1;
+    const netWeight = (weight - currentTicket.truck.weight).toFixed(2);
+    const taxToSet = bill ? netWeight * price * TAX : 0;
+    const totalToSet = (netWeight * price + taxToSet).toFixed(2);
 
-    if (!isSocket) {
-      // If weight was entered manually
-      modifiedWeightToSet = ((weight - currentTicket.truck.weight) * percentageProductRate).toFixed(
-        2
-      );
-      taxToSet = bill ? modifiedWeightToSet * price * TAX : 0;
-      totalToSet = (modifiedWeightToSet * price + taxToSet).toFixed(2);
-      setModifiedWeight(currentTicket.truck.weight + parseFloat(modifiedWeightToSet));
-    } else {
-      const netWeight = (weight - currentTicket.truck.weight).toFixed(2);
-      taxToSet = bill ? netWeight * price * TAX : 0;
-      totalToSet = (netWeight * price + taxToSet).toFixed(2);
+    if (!isSocket) { // If weight is entered manually
+      setModifiedWeight(currentTicket.truck.weight + parseFloat(netWeight));
     }
 
     setTotal(parseFloat(totalToSet));
@@ -78,8 +67,7 @@ const TicketSubmitForm = ({
     promotion,
     isSocket,
     bill,
-    specialPrice,
-    productRate
+    specialPrice
   ]);
 
   useEffect(() => {
