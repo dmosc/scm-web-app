@@ -38,61 +38,61 @@ directive @auth(roles: [Role]) on FIELD_DEFINITION
 
 type Query {
   # User
-  user(id: ID!): User @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
-  users(filters: UserFilters!): [User!]! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  user(id: ID!): User @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
+  users(filters: UserFilters!): [User!]! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
   # Client
-  client(id: ID!): Client @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  clients(filters: ClientFilters!): [Client!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  client(id: ID!): Client @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
+  clients(filters: ClientFilters!): [Client!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   clientsCreatedIn(filters: ClientsCreatedInRangeFilters!): [Client!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  clientsXLS(filters: ClientFilters!): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
+  clientsXLS(filters: ClientFilters!): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   clientsPendingTicketsToBill: [ClientPendingBill!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, CASHIER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   # Client Price
   clientPricesByClient(client: ID!): [ClientPrice!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   clientPriceByClient(client: ID!, rock: ID!): ClientPrice
-    @auth(roles: [ADMIN, ACCOUNTANT, CASHIER, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, CASHIER, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   clientPriceHistoryByClient(client: ID!, rock: ID): [ClientPrice!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   # Client Credit Limit
   clientCreditLimit(client: ID!): ClientCreditLimit
-    @auth(roles: [ADMIN, ACCOUNTANT, CASHIER, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, CASHIER, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   clientCreditLimitHistory(client: ID!): [ClientCreditLimit!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   clientsSummary(
     clientIds: [ID]!
     range: DateRange
     turnId: ID
     billType: TicketBillType
-  ): ClientsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): ClientsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   clientsSummaryXLS(
     clientIds: [ID]!
     range: DateRange
     turnId: ID
     billType: TicketBillType
-  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   # ClientsGroup
-  clientsGroup(id: ID!): ClientsGroup @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  clientsGroup(id: ID!): ClientsGroup @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, SALES])
   clientsGroups(filters: ClientsGroupFilters!): [ClientsGroup!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, SALES])
   # Ticket
   ticket(id: ID!): Ticket
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   tickets(filters: TicketFilters!): [Ticket!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketPDF(idOrFolio: String!): String!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   activeTickets(filters: TicketFilters!): [Ticket!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   disabledTickets(filters: DisabledTicketFilters!): [Ticket!]! @auth(roles: [ADMIN, MANAGER])
   notLoadedActiveTickets(filters: TicketFilters!): [Ticket!]!
     @auth(roles: [ADMIN, LOADER, MANAGER, MANAGER, SUPPORT])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER, SUPPORT])
   ticketsPendingToBill(client: ID!, type: TicketBillType!): [Ticket!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER])
-  ticketsToBillSummary(tickets: [ID!]!, client: ID!, turnToBill: Boolean!): BillSummary!
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+  ticketsToBillSummary(tickets: [ID!]!, turnToBill: Boolean!): BillSummary!
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   archivedTickets(
     range: DateRange
     turnId: ID
@@ -106,131 +106,131 @@ type Query {
   archivedTicketsAurora(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   archivedTicketsXLS(filters: ArchivedTicketFilters!): String!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   ticketsSummary(
     range: DateRange
     turnId: ID
     billType: TicketBillType
     paymentType: TicketPaymentType
-  ): TicketsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): TicketsSummary! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
   ticketsSummaryByClientXLS(
     range: DateRange
     turnId: ID
     billType: TicketBillType
     paymentType: TicketPaymentType
-  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
   ticketsSummaryByDateXLS(
     range: DateRange
     turnId: ID
     billType: TicketBillType
     paymentType: TicketPaymentType
-  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
   ticketsAuxiliarySalesXLS(
     month: Date
     workingDays: Int!
     workingDaysPassed: Int!
     excluded: [ID]
-  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, SALES, TREASURER])
   ticketTimes(date: DateRange, turnId: ID, rocks: [ID]): TicketTimes!
   ticketTimesXLS(date: DateRange, turnId: ID, rocks: [ID]): String!
   # Bill
   bill(id: ID, folio: String): Bill
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, TREASURER])
   billPDF(id: ID, folio: String): String!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, TREASURER])
   bills(filters: BillFilters!): [Bill!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, TREASURER])
   # Truck
   truck(id: ID, plates: String, client: ID!): Truck
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   trucks(filters: TruckFilters!): [Truck!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   similarTrucks(plates: String!): [Truck!]
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
-  truckQRCode(id: ID): String! @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  truckQRCode(id: ID): String! @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD, COLLECTOR, COLLECTOR_AUX])
   truckDecipherPlates(cipheredPlates: String!): String!
-    @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD])
+  @auth(roles: [ADMIN, LOADER, SUPPORT, MANAGER, GUARD, COLLECTOR, COLLECTOR_AUX])
   trucksXLS(filters: TruckFilters!): String!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # Rock
-  rock(id: ID!): Rock @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  rock(id: ID!): Rock @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   rocks(filters: RockFilters!): [Rock!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   rockSalesReport(filters: RockSalesReportFilters!): RockSalesReport!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   rockSalesReportInRange(filters: RockSalesReportInRangeFilters!): RockSalesReport!
     @auth(roles: [ADMIN, MANAGER])
   rockMonthSalesReport(filters: RockSalesReportFilters!): RockMonthSalesReport!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   rockSalesReportCleanAndDirty(
     filters: RockSalesReportCleanAndDirtyFilters!
     dirty: [ID!]!
   ): RockSalesReportCleanAndDirty! @auth(roles: [ADMIN, MANAGER])
   # Post
   posts(filters: PostFilters!): [Post!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   # Message
-  message(id: ID!): Message @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  message(id: ID!): Message @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   messages(filters: MessageFilters!): [Message!]!
-    @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   # Turn
-  turn(id: ID!): Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  turn(id: ID!): Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   turns(filters: TurnFilters!): [Turn!]!
-    @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnActive: Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
+  turnActive: Turn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   turnSummary(uniqueId: Int!, ticketType: TicketPaymentType): TurnSummary!
-    @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   turnSummaryXLS(uniqueId: Int!, ticketType: TicketPaymentType): String!
-    @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnMostRecentlyEnded: Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
-  turnByUniqueId(uniqueId: Int!): Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+  turnMostRecentlyEnded: Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+  turnByUniqueId(uniqueId: Int!): Turn! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   # Price request
-  priceRequest(id: ID!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  priceRequest(id: ID!): PriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   priceRequests(filters: PriceRequestFilters!): [PriceRequest!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   # Product price request
-  rockPriceRequest(id: ID!): RockPriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  rockPriceRequest(id: ID!): RockPriceRequest @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   rockPriceRequests(filters: RockPriceRequestFilters!): [RockPriceRequest!]!
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   # Promotion
   promotion(id: ID!): Promotion
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   promotions(filters: PromotionFilters!): [Promotion!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   promotionsForTicket(ticket: ID!): [Promotion!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   # Store
-  store(id: ID!): Store @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
-  stores(client: ID!): [Store!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  store(id: ID!): Store @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
+  stores(client: ID!): [Store!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   # Machine
   machine(id: ID!): Machine
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   machines(filters: MachineFilters!): [Machine!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Machine Diesel Load
   machineDieselLoad(id: ID!): MachineDieselLoad
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   machineDieselLoads(filters: MachineDieselLoadFilters!): [MachineDieselLoad!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Tank Diesel Load
   tankDieselLoad(id: ID!): TankDieselLoad
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   tankDieselLoads(filters: TankDieselLoadFilters!): [TankDieselLoad!]!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Quotation
-  quotation(id: ID!): Quotation @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
-  quotationPDF(id: ID!): String! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
-  quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
+  quotation(id: ID!): Quotation @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, SALES])
+  quotationPDF(id: ID!): String! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, SALES])
+  quotations(filters: QuotationFilters): [Quotation!]! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, SALES])
   # ProductRate
   productRate: ProductRate
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # ClientSubscription
   clientSubscriptions(filters: ClientSubscriptionFilters!): [ClientSubscription!]
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   # ClientSubscriptionWarning
   clientSubscriptionWarning(id: ID!): ClientSubscriptionWarning
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
-  clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
+  clientSubscriptionWarningCount: Int! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, SALES])
   # Goal
   goal(id: ID!): Goal @auth(roles: [ADMIN, MANAGER])
   goals: [Goal!] @auth(roles: [ADMIN, MANAGER])
@@ -239,7 +239,7 @@ type Query {
   # Blast Product
   blastProduct(id: ID!): BlastProduct @auth(roles: [ADMIN, MANAGER, SUPPORT])
   blastProducts(filters: BlastProductFilters!): [BlastProduct!]
-    @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(id: ID!): Blast @auth(roles: [ADMIN, MANAGER, SUPPORT])
   blasts(filters: BlastFilters!): [Blast!] @auth(roles: [ADMIN, MANAGER, SUPPORT])
@@ -251,43 +251,43 @@ type Mutation {
   login(user: UserLogin!): String!
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
-  client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
+  client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
   clientAddToBalance(client: ID!, toAdd: Float!): Client
-    @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
-  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
-  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
+  @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
+  clientEdit(client: ClientEditInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
+  clientDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
   # Client Price
-  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  clientPrice(clientPrice: ClientPriceInput!): ClientPrice! @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # Client Credit Limit
   clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
-    @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # ClientsGroup
   clientsGroup(clientsGroup: ClientsGroupInput!): ClientsGroup
-    @auth(roles: [ADMIN, MANAGER, CASHIER])
+  @auth(roles: [ADMIN, MANAGER, CASHIER])
   clientsGroupEdit(clientsGroup: ClientsGroupEditInput!): ClientsGroup
-    @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Ticket
   ticket(ticket: TicketInput!): Ticket
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketEdit(ticket: TicketEditInput!): Ticket
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketInit(ticket: TicketInitInput!): Ticket!
-    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketProductLoad(ticket: TicketProductLoadInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT])
-  ticketSetStore(ticket: ID!, store: ID): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
-  ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  ticketSetStore(ticket: ID!, store: ID): Boolean! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Bill
-  bill(bill: BillInput!): Bill @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER])
-  billDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER])
+  bill(bill: BillInput!): Bill @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+  billDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   # Truck
-  truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT])
-  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT])
-  truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, SUPPORT])
+  truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  truckEdit(truck: TruckEditInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
   rockEdit(rock: RockEditInput!): Rock @auth(roles: [ADMIN])
@@ -299,75 +299,75 @@ type Mutation {
   postDelete(id: ID!): Boolean @auth(roles: [ADMIN, MANAGER])
   # Message
   message(message: MessageInput!): Message
-    @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Turn
-  turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER])
-  turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER])
-  turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER])
+  turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, COLLECTOR, COLLECTOR_AUX])
+  turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, COLLECTOR, COLLECTOR_AUX])
+  turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, COLLECTOR, COLLECTOR_AUX])
   # Price Request
   priceRequest(priceRequest: PriceRequestInput!): PriceRequest
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   priceRequestEdit(priceRequest: PriceRequestEditInput!): PriceRequest
-    @auth(roles: [ADMIN, ACCOUNTANT])
+  @auth(roles: [ADMIN, ACCOUNTANT])
   # Rock price request
   rockPriceRequest(rockPriceRequest: RockPriceRequestInput!): RockPriceRequest
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   rockPriceRequestEdit(rockPriceRequest: RockPriceRequestEditInput!): RockPriceRequest
-    @auth(roles: [ADMIN, ACCOUNTANT])
+  @auth(roles: [ADMIN, ACCOUNTANT])
   # Promotion
-  promotion(promotion: PromotionInput!): Promotion @auth(roles: [ADMIN])
-  promotionEdit(promotion: PromotionEditInput!): Promotion @auth(roles: [ADMIN])
-  promotionDelete(id: ID!): Boolean! @auth(roles: [ADMIN])
-  promotionDisable(id: ID!): Boolean! @auth(roles: [ADMIN])
-  promotionEnable(id: ID!): Boolean! @auth(roles: [ADMIN])
+  promotion(promotion: PromotionInput!): Promotion @auth(roles: [ADMIN, COLLECTOR, SALES])
+  promotionEdit(promotion: PromotionEditInput!): Promotion @auth(roles: [ADMIN, COLLECTOR, SALES])
+  promotionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, COLLECTOR, SALES])
+  promotionDisable(id: ID!): Boolean! @auth(roles: [ADMIN, COLLECTOR, SALES])
+  promotionEnable(id: ID!): Boolean! @auth(roles: [ADMIN, COLLECTOR, SALES])
   # Store
-  store(store: StoreInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
-  storeEdit(store: StoreEditInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
-  storeDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  store(store: StoreInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  storeEdit(store: StoreEditInput!): Store @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  storeDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # Machine
   machine(machine: MachineInput!): Machine @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   machineEdit(machine: MachineEditInput!): Machine
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Machine Diesel Load
   machineDieselLoad(machineDieselLoad: MachineDieselLoadInput!): MachineDieselLoad
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Tank Diesel Load
   tankDieselLoad(tankDieselLoad: TankDieselLoadInput!): TankDieselLoad
-    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   # Quotation
-  quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, MANAGER, ACCOUNTANT])
+  quotation(quotation: QuotationInput!): Quotation @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, SALES])
   # ProductRate
   productRate(rate: Float!): ProductRate @auth(roles: [ADMIN])
   # ClientSubscription
   clientSubscription(clientSubscription: ClientSubscriptionInput!): ClientSubscription
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
   clientSubscriptionEdit(clientSubscription: ClientSubscriptionEditInput!): ClientSubscription
-    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
-  clientSubscriptionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
+  clientSubscriptionDelete(id: ID!): Boolean! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
   # ClientSubscriptionWarning
   clientSubscriptionWarningResolve(
     clientSubscriptionWarning: ClientSubscriptionWarningResolve!
-  ): ClientSubscriptionWarning @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT])
+  ): ClientSubscriptionWarning @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
   # Goal
   goal(goal: GoalInput!): Goal! @auth(roles: [ADMIN, MANAGER])
   goalDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER])
   # Blast Product
   blastProduct(blastProduct: BlastProductInput!): BlastProduct!
-    @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(blast: BlastInput!): Blast! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
-    @auth(roles: [ADMIN, CASHIER, GUARD])
+  @auth(roles: [ADMIN, CASHIER, GUARD, COLLECTOR, COLLECTOR_AUX])
 }
 
 type Subscription {
-  newTicket: Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
-  ticketUpdate: Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, LOADER])
-  activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
-  notLoadedActiveTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
-  loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER])
-  newMessage: Message! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT])
-  turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT])
+  newTicket: Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  ticketUpdate: Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, LOADER, COLLECTOR, COLLECTOR_AUX])
+  activeTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER, COLLECTOR, COLLECTOR_AUX])
+  notLoadedActiveTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER, COLLECTOR, COLLECTOR_AUX])
+  loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER, COLLECTOR, COLLECTOR_AUX])
+  newMessage: Message! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT, COLLECTOR, COLLECTOR_AUX, SALES])
+  turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
 }

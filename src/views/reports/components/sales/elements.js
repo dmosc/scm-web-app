@@ -11,6 +11,23 @@ const FiltersContainer = styled.div`
   display: flex;
   width: 100%;
   margin-bottom: 20px;
+
+  .limitedSelect {
+    width: 120px;
+  }
+
+  ${props => props.theme.media.lg`
+    flex-direction: column;
+
+    .limitedSelect {
+      width: initial;
+      margin-bottom: 20px;
+    }
+
+    .ant-calendar-picker {
+      margin-bottom: 10px;
+    }
+  `}
 `;
 
 const InputContainer = styled.div`

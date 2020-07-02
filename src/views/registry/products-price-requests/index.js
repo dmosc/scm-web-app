@@ -12,7 +12,7 @@ const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const ProductPriceRequests = ({ client }) => {
-  const { isAdmin, isAccountant, isManager } = useAuth();
+  const { isAdmin, isAccountant, isManager, isCollector, isCollectorAux, isSales } = useAuth();
   const [isRequestModalOpen, toggleNewRequestModal] = useState(false);
   const [priceRequests, setPriceRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ const ProductPriceRequests = ({ client }) => {
       <ListContainer>
         <TitleContainer>
           <Title level={3}>Lista de solicitudes</Title>
-          {(isAdmin || isAccountant || isManager) && (
+          {(isAdmin || isAccountant || isManager || isCollector || isCollectorAux || isSales) && (
             <Button onClick={() => toggleNewRequestModal(true)} type="primary" icon="form">
               Crear solicitud
             </Button>

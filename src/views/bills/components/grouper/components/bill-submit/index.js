@@ -2,18 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  Checkbox,
-  Form,
-  Icon,
-  InputNumber,
-  List,
-  message,
-  Select,
-  Tag,
-  Typography
-} from 'antd';
+import { Button, Checkbox, Form, Icon, InputNumber, List, message, Select, Tag, Typography } from 'antd';
 import ListContainer from 'components/common/list';
 import { GET_BILL_SUMMARY, GET_CLIENT } from './graphql/queries';
 import { REGISTER_BILL } from './graphql/mutations';
@@ -48,7 +37,7 @@ const BillSubmit = ({
           data: { ticketsToBillSummary }
         } = await client.query({
           query: GET_BILL_SUMMARY,
-          variables: { tickets: targetTickets, client: currentClient, turnToBill }
+          variables: { tickets: targetTickets, turnToBill }
         });
 
         setBillSummary(ticketsToBillSummary);

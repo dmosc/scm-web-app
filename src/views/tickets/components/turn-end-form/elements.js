@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import { Col, Collapse, Tag } from 'antd';
+import { Col, Collapse, Tag, Typography } from 'antd';
+
+const { Title } = Typography;
 
 const Column = styled(Col)`
   display: flex;
@@ -38,4 +40,25 @@ const CollapseContainer = styled(Collapse)`
   }
 `;
 
-export { Column, ColumnTitle, CollapseContainer };
+const TimesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  ${props => props.theme.media.lg`
+    flex-direction: row;
+    justify-content: space-around;
+  `}
+`;
+
+const Time = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const TitleTime = styled(Title)`
+  ${props => props.theme.media.lg`
+    font-size: 1.4rem !important;
+  `}
+`;
+
+export { Column, ColumnTitle, CollapseContainer, TimesContainer, Time, TitleTime };

@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withAuth } from 'components/providers/withAuth';
 import { graphql, withApollo } from '@apollo/react-hoc';
-import { Button, Empty, Form, List, message, Spin } from 'antd';
-import Container from 'components/common/container';
-import ListContainer from 'components/common/list';
+import { Button, Empty, Form, message, Spin, Card, List } from 'antd';
 import { printPDF } from 'utils/functions';
 import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form';
@@ -13,7 +11,7 @@ import TurnEndForm from './components/turn-end-form';
 import TicketsList from './components/tickets-list';
 import { GET_PDF, GET_TICKET_PROMOTIONS, TURN_ACTIVE } from './graphql/queries';
 import { TURN_UPDATE } from './graphql/subscriptions';
-import TicketsContainer from './elements';
+import { TicketsContainer, StyledList } from './elements';
 
 class Tickets extends Component {
   state = {
@@ -105,43 +103,36 @@ class Tickets extends Component {
 
     return (
       <TicketsContainer>
-        <Container
-          width="20%"
-          height={turnActive && !turnActive.end ? '70vh' : null}
-          justifycontent="center"
-          alignitems="center"
-        >
+        <Card>
           {turnActive && !turnActive.end ? (
             <TurnEndRegisterForm turnActive={turnActive} />
           ) : (
             <TurnInitRegisterForm user={user} />
           )}
           {turnActive && !turnActive.end && (
-            <ListContainer height="25vh">
-              <List
-                loading={false}
-                itemLayout="horizontal"
-                dataSource={turnActive.folios}
-                size="small"
-                renderItem={folio => (
-                  <List.Item
-                    actions={[
-                      <Button
-                        size="small"
-                        onClick={() => this.downloadPDF(folio)}
-                        disabled={downloadingPDF}
-                        icon="printer"
-                      />
-                    ]}
-                  >
-                    <List.Item.Meta title={folio}/>
-                  </List.Item>
-                )}
-              />
-            </ListContainer>
+            <StyledList
+              loading={false}
+              itemLayout="horizontal"
+              dataSource={turnActive.folios}
+              size="small"
+              renderItem={folio => (
+                <List.Item
+                  actions={[
+                    <Button
+                      size="small"
+                      onClick={() => this.downloadPDF(folio)}
+                      disabled={downloadingPDF}
+                      icon="printer"
+                    />
+                  ]}
+                >
+                  <List.Item.Meta title={folio} />
+                </List.Item>
+              )}
+            />
           )}
-        </Container>
-        <Container justifycontent="center" alignitems="center">
+        </Card>
+        <Card>
           {error ? (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           ) : loading ? (
@@ -171,7 +162,7 @@ class Tickets extends Component {
                 currentForm={currentForm}
               />
             ))}
-        </Container>
+        </Card>
       </TicketsContainer>
     );
   }

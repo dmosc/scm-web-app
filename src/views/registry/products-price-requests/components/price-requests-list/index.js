@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from 'components/providers/withAuth';
 import { withApollo } from 'react-apollo';
 import moment from 'moment-timezone';
-import { List, Typography, Tag, Row, Col, Button, message, Modal } from 'antd';
+import { Button, Col, List, message, Modal, Row, Tag, Typography } from 'antd';
 import PropTypes from 'prop-types';
 import { Content, Title } from './elements';
 import { EDIT_PRICE_REQUEST } from './graphql/mutations';
@@ -74,7 +74,6 @@ const PriceRequestsList = ({ loading, priceRequests, updateFather, client }) => 
               </Text>
               {status === 'PENDING' && isAdmin && (
                 <>
-                  {/* <Button style={{ marginRight: 5 }} icon="edit" size="small" /> */}
                   {!isAccountant && (
                     <>
                       <Button

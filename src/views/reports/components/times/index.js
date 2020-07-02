@@ -147,7 +147,7 @@ const SalesReport = ({ client, globalFilters }) => {
           <Text type="secondary">Turno</Text>
           <Select
             allowClear
-            style={{ minWidth: 650 }}
+            className="turnFilter"
             placeholder="ID del turno"
             onChange={value => setTurnUniqueId(value)}
             notFoundContent={null}
@@ -180,7 +180,7 @@ const SalesReport = ({ client, globalFilters }) => {
           <Select
             mode="multiple"
             allowClear
-            style={{ width: 500 }}
+            className="productSelect"
             onChange={rockList => setRockIds(rockList)}
             placeholder="Todos"
           >
@@ -192,7 +192,7 @@ const SalesReport = ({ client, globalFilters }) => {
           </Select>
         </InputContainer>
         <Button
-          style={{ marginLeft: 'auto', marginTop: 20 }}
+          style={{ marginLeft: 5, marginTop: 20 }}
           loading={loadingReport}
           type="primary"
           icon="file-excel"
@@ -207,7 +207,7 @@ const SalesReport = ({ client, globalFilters }) => {
         </div>
       ) : (
         <Card>
-          <Col span={8}>
+          <Col span={24} xl={8}>
             <Statistic
               valueStyle={{ color: '#3f8600' }}
               title="Mínimo"
@@ -216,7 +216,7 @@ const SalesReport = ({ client, globalFilters }) => {
               prefix={<Icon type="clock-circle" />}
             />
           </Col>
-          <Col span={8}>
+          <Col span={24} xl={8}>
             <Statistic
               valueStyle={{ color: '#FF4F64' }}
               title="Máximo"
@@ -225,7 +225,7 @@ const SalesReport = ({ client, globalFilters }) => {
               prefix={<Icon type="clock-circle" />}
             />
           </Col>
-          <Col span={8}>
+          <Col span={24} xl={8}>
             <Statistic
               valueStyle={{ color: '#30CEE7' }}
               title="Promedio"

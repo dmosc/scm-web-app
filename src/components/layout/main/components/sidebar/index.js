@@ -1,33 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { useAuth } from 'components/providers/withAuth';
+import { sizes } from 'theme';
 import { Menu, Sider } from './elements';
 
 const { Item, SubMenu, ItemGroup } = Menu;
 
 const Sidebar = ({ history, location, collapsed, onCollapse }) => {
-  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport } = useAuth();
+  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport, isCollector, isCollectorAux, isSales, isTreasurer, isAuditor } = useAuth();
+  const [isLg, toggleLg] = useState(window.innerWidth > sizes.lg);
+
+  const updateWidth = () => {
+    toggleLg(window.innerWidth > sizes.lg);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWidth);
+
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   return (
-    <Sider theme="light" collapsible collapsed={collapsed} onCollapse={onCollapse}>
+    <Sider
+      breakpoint="lg"
+      collapsedWidth={isLg ? '80' : '0'}
+      theme="light"
+      collapsed={collapsed}
+      collapsible
+      onCollapse={onCollapse}
+    >
       <Menu
         theme="light"
         defaultSelectedKeys={history.location.pathname.toLowerCase()}
         selectedKeys={history.location.pathname.toLowerCase()}
         mode="inline"
       >
-        <Item key="dashboard">
+        {!isAuditor && <Item key="dashboard">
           <Link to="/dashboard">
-            <Icon type="dashboard" />
+            <Icon type="dashboard"/>
             <span>Dashboard</span>
           </Link>
-        </Item>
-        {(isAdmin || isGuard || isSupport || isManager) && (
+        </Item>}
+        {(isAdmin || isGuard || isSupport || isManager || isCashier || isCollector || isCollectorAux) && (
           <Item key="accesos">
             <Link to="/accesos">
-              <Icon type="key" />
+              <Icon type="key"/>
               <span>Accesos</span>
             </Link>
           </Item>
@@ -35,41 +54,41 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
         {(isAdmin || isLoader || isSupport || isManager) && (
           <Item key="cargas">
             <Link to="/cargas">
-              <Icon type="funnel-plot" />
+              <Icon type="funnel-plot"/>
               <span>Cargas</span>
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier || isSupport || isManager) && (
+        {(isAdmin || isCashier || isSupport || isManager || isCollector || isCollectorAux) && (
           <Item key={location.pathname === '/boletas' ? 'boletas' : undefined}>
             <Link to="/boletas">
-              <Icon type="unordered-list" />
+              <Icon type="unordered-list"/>
               <span>Boletas</span>
             </Link>
           </Item>
         )}
-        {(isAdmin || isAccountant || isSupport || isManager) && (
+        {(isAdmin || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="cloud-upload" />
+                <Icon type="cloud-upload"/>
                 <span>Registros</span>
               </span>
             }
           >
             <ItemGroup title="Clientes">
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin || isAccountant || isSupport || isManager || isCollector || isCollectorAux) && (
                 <Item key="registros/clientes">
                   <Link to="/registros/clientes">
-                    <Icon type="user" />
+                    <Icon type="user"/>
                     Clientes
                   </Link>
                 </Item>
               )}
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin || isAccountant || isSupport || isManager || isCollector || isCollectorAux) && (
                 <Item key="registros/peticiones-clientes">
                   <Link to="/registros/peticiones-clientes">
-                    <Icon type="form" />
+                    <Icon type="form"/>
                     Peticiones
                   </Link>
                 </Item>
@@ -83,11 +102,11 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 </Item>
               )}
             </ItemGroup>
-            {(isAdmin || isAccountant || isSupport || isManager) && (
+            {(isAdmin || isAccountant || isSupport || isManager || isCollector || isCollectorAux) && (
               <ItemGroup title="Camiones">
                 <Item key="registros/camiones">
                   <Link to="/registros/camiones">
-                    <Icon type="car" />
+                    <Icon type="car"/>
                     Camiones
                   </Link>
                 </Item>
@@ -104,28 +123,28 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               </ItemGroup>
             )}
             <ItemGroup title="Productos">
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin || isAccountant || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
                 <Item key="registros/productos">
                   <Link to="/registros/productos">
-                    <Icon type="block" />
+                    <Icon type="block"/>
                     Productos
                   </Link>
                 </Item>
               )}
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin || isAccountant || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
                 <Item key="registros/peticiones-productos">
                   <Link to="/registros/peticiones-productos">
-                    <Icon type="form" />
+                    <Icon type="form"/>
                     Peticiones
                   </Link>
                 </Item>
               )}
             </ItemGroup>
             <ItemGroup title="Promociones">
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin || isAccountant || isSupport || isManager || isCollector || isSales) && (
                 <Item key="registros/promociones">
                   <Link to="/registros/promociones">
-                    <Icon type="scissor" />
+                    <Icon type="scissor"/>
                     Promociones
                   </Link>
                 </Item>
@@ -151,7 +170,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/aceite">
                   <Link to="/registros/aceite">
-                    <Icon type="deployment-unit" />
+                    <Icon type="deployment-unit"/>
                     Aceite
                   </Link>
                 </Item>
@@ -159,58 +178,63 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </ItemGroup>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant || isSupport || isManager) && (
+        {(isAdmin || isAccountant || isSupport || isManager || isCashier || isCollector || isCollectorAux || isSales || isTreasurer || isAuditor) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="line-chart" />
+                <Icon type="line-chart"/>
                 <span>Reportes</span>
               </span>
             }
           >
+            {(isAdmin || isManager || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer) &&
             <Item key="reportes/productos">
               <Link to="/reportes/productos">
-                <Icon type="block" />
+                <Icon type="block"/>
                 Productos
               </Link>
-            </Item>
+            </Item>}
+            {(isAdmin || isManager || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer || isAuditor) &&
             <Item key="reportes/boletas">
               <Link to="/reportes/boletas">
-                <Icon type="unordered-list" />
+                <Icon type="unordered-list"/>
                 Boletas
               </Link>
-            </Item>
+            </Item>}
+            {(isAdmin || isManager || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer) &&
             <Item key="reportes/clientes">
               <Link to="/reportes/clientes">
-                <Icon type="usergroup-add" />
+                <Icon type="usergroup-add"/>
                 Clientes
               </Link>
-            </Item>
+            </Item>}
+            {(isAdmin || isManager || isCashier || isCollector || isCollectorAux || isAccountant || isTreasurer) &&
             <Item key="reportes/turnos">
               <Link to="/reportes/turnos">
-                <Icon type="file-done" />
+                <Icon type="file-done"/>
                 Turnos
               </Link>
-            </Item>
+            </Item>}
+            {(isAdmin || isManager || isSales || isAccountant || isTreasurer) &&
             <Item key="reportes/ventas">
               <Link to="/reportes/ventas">
-                <Icon type="dollar" />
+                <Icon type="dollar"/>
                 Ventas
               </Link>
-            </Item>
-            <Item key="reportes/tiempos">
+            </Item>}
+            {(isAdmin || isManager || isSales || isAccountant || isTreasurer) && <Item key="reportes/tiempos">
               <Link to="/reportes/tiempos">
-                <Icon type="clock-circle" />
+                <Icon type="clock-circle"/>
                 Tiempos
               </Link>
-            </Item>
+            </Item>}
           </SubMenu>
         )}
-        {(isAdmin || isManager || isAccountant) && (
+        {(isAdmin || isManager || isSales) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="dollar" />
+                <Icon type="dollar"/>
                 <span>Ventas</span>
               </span>
             }
@@ -229,7 +253,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant || isManager || isCashier) && (
+        {(isAdmin || isAccountant || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
@@ -246,7 +270,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read"/>
+                <Icon type="read" />
                 Registros
               </Link>
             </Item>
@@ -260,7 +284,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Link>
           </Item>
         )}
-        {(isAdmin || isAccountant || isSupport || isManager) && (
+        {(isAdmin || isAccountant || isSupport || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
           <Item key="historial">
             <Link to="/historial">
               <Icon type="history"/>

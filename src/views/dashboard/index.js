@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DatePicker, Typography, Card, Button } from 'antd';
+import { DatePicker, Card, Typography, Button } from 'antd';
 import moment from 'moment-timezone';
 import { useAuth } from 'components/providers/withAuth';
 import PostsList from './components/posts-list';
@@ -7,7 +7,7 @@ import SalesSummary from './components/sales-summary';
 import NewClients from './components/new-clients';
 import ProductsSummary from './components/products-summary';
 import Goals from './components/goals';
-import { InputContainer, GeneralContainer, GraphsContainer } from './elements';
+import { PostsCard, InputContainer, GeneralContainer, GraphsContainer } from './elements';
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -42,7 +42,7 @@ const Dashboard = () => {
 
   return (
     <GeneralContainer>
-      <Card
+      <PostsCard
         title="Posts recientes"
         extra={
           (isAdmin || isManager) && (
@@ -56,7 +56,7 @@ const Dashboard = () => {
           toggleAddPostModal={toggleAddPostModal}
           isAddPostModalOpen={isAddPostModalOpen}
         />
-      </Card>
+      </PostsCard>
       {(isAdmin || isManager) && (
         <div>
           <InputContainer>

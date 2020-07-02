@@ -40,7 +40,12 @@ const AuthProvider = ({ children, client }) => {
         isCashier: tokenPayload.role === 'CASHIER',
         isAccountant: tokenPayload.role === 'ACCOUNTANT',
         isManager: tokenPayload.role === 'MANAGER',
-        isSupport: tokenPayload.role === 'SUPPORT'
+        isSupport: tokenPayload.role === 'SUPPORT',
+        isCollector: tokenPayload.role === 'COLLECTOR',
+        isCollectorAux: tokenPayload.role === 'COLLECTOR_AUX',
+        isSales: tokenPayload.role === 'SALES',
+        isTreasurer: tokenPayload.role === 'TREASURER',
+        isAuditor: tokenPayload.role === 'AUDITOR'
       }}
     >
       {children}

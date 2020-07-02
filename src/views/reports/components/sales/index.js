@@ -84,6 +84,7 @@ const SalesReport = ({ client }) => {
         <InputContainer>
           <Text type="secondary">Días hábiles del mes</Text>
           <InputNumber
+            className="limitedSelect"
             value={workingDays.total}
             onChange={total => setWorkingDays({ ...workingDays, total })}
             min={1}
@@ -92,6 +93,7 @@ const SalesReport = ({ client }) => {
         <InputContainer>
           <Text type="secondary">Días hábiles transcurridos</Text>
           <InputNumber
+            className="limitedSelect"
             value={workingDays.passed}
             onChange={passed => setWorkingDays({ ...workingDays, passed })}
             min={1}
@@ -118,7 +120,7 @@ const SalesReport = ({ client }) => {
           </Select>
         </InputContainer>
         <Button
-          style={{ marginLeft: 'auto', marginTop: 20 }}
+          style={{ marginLeft: 5, marginTop: 20 }}
           loading={loadingSalesAuxiliary}
           type="primary"
           icon="file-excel"
