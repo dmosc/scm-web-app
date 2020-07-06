@@ -15,7 +15,7 @@ const Turn = new Schema({
       validator: function validator(id) {
         return id >= 1000000;
       },
-      message: 'Ids de clientes tienen que ser mayores a 1000000'
+      message: 'Ids de clientes turnos que ser mayores a 1000000'
     }
   }
 });

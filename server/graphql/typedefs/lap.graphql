@@ -1,0 +1,25 @@
+# Types
+type Lap {
+    id: ID!
+    start: Date!
+    end: Date
+    tons: Int!
+    driver: User!
+    machine: Machine!
+    turn: ProductionTurn
+    observations: [Observation!]
+}
+
+# Inputs
+input LapInitInput {
+    tons: Int!
+    machine: ID!
+}
+
+input LapEndInput {
+    id: ID!
+}
+
+input LapCancelInput {
+    id: ID!
+}

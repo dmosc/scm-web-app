@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { withApollo } from 'react-apollo';
-import { Button, Drawer, Form, Icon, Input, InputNumber, notification, Select } from 'antd';
 import PropTypes from 'prop-types';
+import machineTypes from 'utils/enums/machines';
+import { Button, Drawer, Form, Icon, Input, InputNumber, notification, Select } from 'antd';
 import { REGISTER_MACHINE } from './graphql/mutations';
+
+const { Option } = Select;
 
 const NewForm = ({ client, form, visible, toggleNewMachineModal, machines, setMachines }) => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +16,7 @@ const NewForm = ({ client, form, visible, toggleNewMachineModal, machines, setMa
     form.validateFields(
       async (
         err,
-        { name, plates, brand, model, drivers, averageHorometer, standardHorometerDeviation }
+        { name, type, plates, brand, model, averageHorometer, standardHorometerDeviation }
       ) => {
         if (!err) {
           const {
@@ -23,10 +26,10 @@ const NewForm = ({ client, form, visible, toggleNewMachineModal, machines, setMa
             variables: {
               machine: {
                 name,
+                type,
                 plates,
                 brand,
                 model,
-                drivers,
                 averageHorometer,
                 standardHorometerDeviation
               }
@@ -68,9 +71,27 @@ const NewForm = ({ client, form, visible, toggleNewMachineModal, machines, setMa
             ]
           })(
             <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>}
               placeholder="Nombre de referencia"
             />
+          )}
+        </Form.Item>
+        <Form.Item>
+          {form.getFieldDecorator('type', {
+            rules: [
+              {
+                required: true,
+                message: 'Un tipo de máquina es requerido!'
+              }
+            ]
+          })(
+            <Select placeholder="Tipo de máquina">
+              {machineTypes.map(option => (
+                <Option key={option} value={option}>
+                  {`${option}`}
+                </Option>
+              ))}
+            </Select>
           )}
         </Form.Item>
         <Form.Item>
@@ -115,23 +136,6 @@ const NewForm = ({ client, form, visible, toggleNewMachineModal, machines, setMa
             <Input
               prefix={<Icon type="unordered-list" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Modelo"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {form.getFieldDecorator('drivers', {
-            rules: [
-              {
-                required: true,
-                message: 'Ingrese 1 o más nombres de conductores'
-              }
-            ]
-          })(
-            <Select
-              placeholder="Conductor(es) del camión"
-              mode="tags"
-              maxTagCount={1}
-              tokenSeparators={[',']}
             />
           )}
         </Form.Item>
