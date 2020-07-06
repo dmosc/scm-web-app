@@ -82,6 +82,17 @@ import blastProductQueries from './blast-product/queries';
 // Blast
 import blastMutations from './blast/mutations';
 import blastQueries from './blast/queries';
+// ProductionTurn
+import productionTurnMutations from './production-turn/mutations';
+import productionTurnQueries from './production-turn/queries';
+import productionTurnSubscriptions from './production-turn/subscriptions';
+// Lap
+import lapMutations from './lap/mutations';
+import lapQueries from './lap/queries';
+import lapSubscriptions from './lap/subscriptions';
+// Observation
+import observationMutations from './observation/mutations';
+import observationQueries from './observation/queries';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -113,7 +124,10 @@ const resolvers = {
     ...clientSubscriptionWarningQueries,
     ...goalQueries,
     ...blastProductQueries,
-    ...blastQueries
+    ...blastQueries,
+    ...productionTurnQueries,
+    ...lapQueries,
+    ...observationQueries
   },
   Mutation: {
     ...userMutations,
@@ -143,12 +157,17 @@ const resolvers = {
     ...goalMutations,
     ...blastProductMutations,
     ...blastMutations,
+    ...productionTurnMutations,
+    ...lapMutations,
+    ...observationMutations,
     ...uploaders // AWS
   },
   Subscription: {
     ...ticketSubscriptions,
     ...messageSubscriptions,
-    ...turnSubscriptions
+    ...turnSubscriptions,
+    ...productionTurnSubscriptions,
+    ...lapSubscriptions
   }
 };
 

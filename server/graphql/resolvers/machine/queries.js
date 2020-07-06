@@ -16,10 +16,10 @@ const machineQueries = {
       deleted: false,
       $or: [
         { name: { $in: [new RegExp(search, 'i')] } },
+        { type: { $in: [new RegExp(search, 'i')] } },
         { plates: { $in: [new RegExp(search, 'i')] } },
         { brand: { $in: [new RegExp(search, 'i')] } },
-        { model: { $in: [new RegExp(search, 'i')] } },
-        { drivers: { $in: [new RegExp(search, 'i')] } }
+        { model: { $in: [new RegExp(search, 'i')] } }
       ]
     }).limit(limit || Number.MAX_SAFE_INTEGER);
 

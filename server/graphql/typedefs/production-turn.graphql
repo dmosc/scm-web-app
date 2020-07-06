@@ -1,0 +1,27 @@
+# Types
+type ProductionTurn {
+    id: ID!
+    folio: String!
+    start: Date!
+    end: Date
+    laps: [Lap!]
+}
+
+type ProductionTurnSummary {
+    totalLaps: Int!
+    tons: Float!
+    effectiveMinutes: Float!
+    totalMinutes: Float!
+    laps: [Lap!]
+}
+
+# Inputs
+input ProductionTurnFilters {
+    limit: Int
+    end: Date
+    start: Date
+}
+
+input ProductionTurnEndInput {
+    id: ID!
+}

@@ -25,6 +25,9 @@
 # import * from "goal.graphql"
 # import * from "blast.graphql"
 # import * from "blast-product.graphql"
+# import * from "production-turn.graphql"
+# import * from "lap.graphql"
+# import * from "observation.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -243,6 +246,18 @@ type Query {
   # Blast
   blast(id: ID!): Blast @auth(roles: [ADMIN, MANAGER, SUPPORT])
   blasts(filters: BlastFilters!): [Blast!] @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # ProductionTurn
+  productionTurn(id: ID!): ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
+  productionTurns(filters: ProductionTurnFilters!): [ProductionTurn!]!
+  @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
+  productionTurnSummary(id: ID!): ProductionTurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
+  productionTurnActive: ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
+  # Lap
+  lapActive: Lap @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  activeLaps: [Lap!]! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # Observations
+  observationActive(lap: ID!): Observation @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  observationsFromLap(lap: ID!): [Observation!]! @auth(roles: [ADMIN, MANAGER, SUPPORT])
 }
 
 type Mutation {
@@ -356,6 +371,16 @@ type Mutation {
   @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(blast: BlastInput!): Blast! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # ProductionTurn
+  productionTurnInit: ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  productionTurnEnd(productionTurn: ProductionTurnEndInput!): ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # Lap
+  lapInit(lap: LapInitInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  lapEnd(lap: LapEndInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  lapCancel(lap: LapCancelInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # Observation
+  observationInit(observation: ObservationInitInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  observationEnd(observation: ObservationEndInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
@@ -370,4 +395,7 @@ type Subscription {
   loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER, COLLECTOR, COLLECTOR_AUX])
   newMessage: Message! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT, COLLECTOR, COLLECTOR_AUX, SALES])
   turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  productionTurnUpdate: ProductionTurn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  lapUpdate: Lap! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  activeLaps: [Lap!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
 }
