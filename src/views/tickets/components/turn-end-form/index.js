@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
 import { format } from 'utils/functions';
 import { withApollo } from 'react-apollo';
-import { Form, Drawer, Collapse, Button, Tag, Typography, Row, Icon, notification } from 'antd';
+import { Button, Collapse, Drawer, Form, Icon, notification, Row, Tag, Typography } from 'antd';
 import periods from 'utils/enums/periods';
 import { sizes } from 'theme';
-import {
-  CollapseContainer,
-  Column,
-  ColumnTitle,
-  TimesContainer,
-  Time,
-  TitleTime
-} from './elements';
+import { CollapseContainer, Column, ColumnTitle, Time, TimesContainer, TitleTime } from './elements';
 import { END_TURN } from './graphql/mutations';
 import { GET_REPORT, GET_TURN_SUMMARY } from './graphql/queries';
 
@@ -148,7 +141,6 @@ class TurnEndForm extends Component {
             onClose={this.toggleSummary}
           >
             <Row
-              style={{ margin: 10, padding: 20 }}
               type="flex"
               justify="space-around"
               align="middle"

@@ -9,7 +9,7 @@ import { Menu, Sider } from './elements';
 const { Item, SubMenu, ItemGroup } = Menu;
 
 const Sidebar = ({ history, location, collapsed, onCollapse }) => {
-  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport, isCollector, isCollectorAux, isSales, isTreasurer, isAuditor } = useAuth();
+  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport, isCollector, isCollectorAux, isSales, isTreasurer, isAuditor, isDriver } = useAuth();
   const [isLg, toggleLg] = useState(window.innerWidth > sizes.lg);
 
   const updateWidth = () => {
@@ -270,19 +270,34 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read" />
+                <Icon type="read"/>
                 Registros
               </Link>
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isManager || isSupport) && (
-          <Item key="produccion">
-            <Link to="/produccion">
-              <Icon type="experiment"/>
-              <span>Producción</span>
-            </Link>
-          </Item>
+        {(isAdmin || isManager || isSupport || isDriver) && (
+          <SubMenu
+            title={
+              <span className="submenu-title-wrapper">
+                <Icon type="experiment"/>
+                <span>Producción</span>
+              </span>
+            }
+          >
+            {(!isDriver) && <Item key="produccion/voladuras">
+              <Link to="/produccion/voladuras">
+                <Icon type="rocket"/>
+                Voladuras
+              </Link>
+            </Item>}
+            <Item key="produccion/viajes">
+              <Link to="/produccion/viajes">
+                <Icon type="pull-request"/>
+                Viajes
+              </Link>
+            </Item>
+          </SubMenu>
         )}
         {(isAdmin || isAccountant || isSupport || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
           <Item key="historial">

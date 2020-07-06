@@ -11,7 +11,8 @@ const roles = [
   'COLLECTOR_AUX',
   'SALES',
   'TREASURER',
-  'AUDITOR'
+  'AUDITOR',
+  'DRIVER'
 ];
 
 export default roles;
