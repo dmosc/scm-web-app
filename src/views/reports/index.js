@@ -5,6 +5,7 @@ import { useDebounce } from 'use-lodash-debounce';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import TopBarProgress from 'react-topbar-progress-indicator';
 import Loadable from 'react-loadable';
+import moment from 'moment';
 import { ReportsContainer } from './elements';
 import TitleSection from './components/title-section';
 import Sales from './components/sales';
@@ -41,8 +42,8 @@ const Times = Loadable({
 
 const Reports = ({ location }) => {
   const [globalFilters, setGlobalFilters] = useState({
-    start: null,
-    end: null
+    start: moment().subtract(1, 'month'),
+    end: moment()
   });
   const debouncedGlobalFilters = useDebounce(globalFilters, 1000);
 

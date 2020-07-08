@@ -5,7 +5,13 @@ import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format, list } from '../../../../src/utils/functions';
-import { columnToLetter, createWorkbook, createWorksheet, headerRows, solidFill } from '../../../utils/reports';
+import {
+  columnToLetter,
+  createWorkbook,
+  createWorksheet,
+  headerRows,
+  solidFill
+} from '../../../utils/reports';
 import { Rock, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -1717,6 +1723,57 @@ const ticketQueries = {
       'base64'
     )}`;
   },
+  ticketTimesSummary: authenticated(async (_, { date = {}, turnId, rocks, folioSearch }) => {
+    const $match = {
+      out: {
+        $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
+        $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
+      },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true }
+    };
+
+    if (turnId) $match.turn = Types.ObjectId(turnId);
+    if (rocks && rocks.length > 0)
+      $match.product = { $in: rocks.map(rockId => Types.ObjectId(rockId)) };
+    if (folioSearch) $match.folio = new RegExp(folioSearch, 'i');
+
+    const tickets = await Ticket.aggregate([
+      {
+        $match
+      },
+      {
+        $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' }
+      },
+      {
+        $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' }
+      },
+      {
+        $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' }
+      },{
+        $unwind: '$client'
+      },
+      {
+        $unwind: '$truck'
+      },
+      {
+        $unwind: '$product'
+      },
+      {
+        $addFields: {
+          id: { $toString: '$_id' },
+          'product.id': { $toString: '$product._id' },
+          'client.id': { $toString: '$client._id' },
+          'truck.id': { $toString: '$truck._id' },
+          time: { $subtract: ['$out', '$in'] }
+        }
+      }
+    ]);
+
+    console.log(tickets);
+
+    return tickets;
+  }),
   ticketTimes: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
       out: {

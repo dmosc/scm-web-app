@@ -134,6 +134,7 @@ type Query {
     workingDaysPassed: Int!
     excluded: [ID]
   ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, SALES, TREASURER])
+  ticketTimesSummary(date: DateRange, turnId: ID, rocks: [ID], folioSearch: String): [Ticket!]!
   ticketTimes(date: DateRange, turnId: ID, rocks: [ID]): TicketTimes!
   ticketTimesXLS(date: DateRange, turnId: ID, rocks: [ID]): String!
   # Bill

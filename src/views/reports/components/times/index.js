@@ -2,11 +2,27 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import { format } from 'utils/functions';
+import shortid from 'shortid';
+import { useDebounce } from 'use-lodash-debounce';
 import periods from 'utils/enums/periods';
 import { withApollo } from 'react-apollo';
-import { Typography, Select, Tag, Card, Col, Statistic, Icon, Spin, Button, message } from 'antd';
-import { FiltersContainer, InputContainer } from './elements';
 import {
+  Typography,
+  Select,
+  Tag,
+  Card,
+  Col,
+  Table,
+  Statistic,
+  Icon,
+  Spin,
+  Button,
+  message
+} from 'antd';
+import { FiltersContainer, InputContainer } from './elements';
+import Title from './components/title';
+import {
+  GET_TICKET_TIMES,
   GET_ROCKS,
   TURN_BY_UNIQUE_ID,
   GET_TURNS,
@@ -17,15 +33,28 @@ import {
 const { Text } = Typography;
 const { Option } = Select;
 
+const getColorTime = time => {
+  const mins = time / 1000 / 60;
+
+  if (mins < 13) return 'blue';
+  if (mins < 30) return 'green';
+  if (mins < 45) return 'orange';
+
+  return 'red';
+};
+
 const SalesReport = ({ client, globalFilters }) => {
   const [rocks, setRocks] = useState([]);
   const [loadingTurns, setLoadingTurns] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [turnUniqueId, setTurnUniqueId] = useState();
   const [rockIds, setRockIds] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [folioSearch, setFolioSearch] = useState('');
   const [loadingReport, setLoadingReport] = useState(false);
   const [turns, setTurns] = useState([]);
   const [turn, setTurn] = useState({});
+  const debouncedFolioSearch = useDebounce(folioSearch, 500);
   const [times, setTimes] = useState({
     max: 0,
     min: 0,
@@ -33,27 +62,46 @@ const SalesReport = ({ client, globalFilters }) => {
   });
 
   useEffect(() => {
-    const getTimes = async () => {
-      setLoading(true);
-      const {
-        data: { ticketTimes }
-      } = await client.query({
-        query: GET_TIMES,
-        variables: {
-          date: {
-            start: globalFilters.start,
-            end: globalFilters.end
-          },
-          turnId: turn.id,
-          rocks: rockIds
+    const getData = async () => {
+      const [
+        {
+          data: { ticketTimes }
+        },
+        {
+          data: { ticketTimesSummary }
         }
-      });
+      ] = await Promise.all([
+        client.query({
+          query: GET_TIMES,
+          variables: {
+            date: {
+              start: globalFilters.start,
+              end: globalFilters.end
+            },
+            turnId: turn.id,
+            rocks: rockIds
+          }
+        }),
+        client.query({
+          query: GET_TICKET_TIMES,
+          variables: {
+            date: {
+              start: globalFilters.start,
+              end: globalFilters.end
+            },
+            turnId: turn.id,
+            rocks: rockIds,
+            folioSearch: debouncedFolioSearch
+          }
+        })
+      ]);
+      setTickets(ticketTimesSummary);
       setTimes(ticketTimes);
       setLoading(false);
     };
 
-    getTimes();
-  }, [globalFilters, turn, rockIds, client]);
+    getData();
+  }, [globalFilters, turn, rockIds, client, debouncedFolioSearch]);
 
   useEffect(() => {
     const getTurns = async () => {
@@ -140,6 +188,57 @@ const SalesReport = ({ client, globalFilters }) => {
     setLoadingReport(false);
   };
 
+  const columns = [
+    {
+      title: 'Folio',
+      dataIndex: 'folio',
+      key: 'folio',
+      width: 80
+    },
+    {
+      title: 'Fecha',
+      dataIndex: 'out',
+      key: 'out',
+      width: 130,
+      render: out => (
+        <>
+          <Tag color="geekblue">{moment(out).format('DD/MM/YYYY')}</Tag>
+          <Tag color="purple">{moment(out).format('HH:MM A')}</Tag>
+        </>
+      )
+    },
+    {
+      title: 'Negocio',
+      dataIndex: 'businessName',
+      key: 'businessName',
+      width: 150
+    },
+    {
+      title: 'Placas',
+      dataIndex: 'plates',
+      key: 'plates',
+      width: 100
+    },
+    {
+      title: 'Producto',
+      dataIndex: 'product',
+      key: 'product',
+      width: 100
+    },
+    {
+      title: 'Tiempo',
+      dataIndex: 'time',
+      key: 'time',
+      sorter: (a, b) => a.time - b.time,
+      width: 100,
+      render: time => (
+        <>
+          <Tag color={getColorTime(time)}>{format.time(time)}</Tag>
+        </>
+      )
+    }
+  ];
+
   return (
     <>
       <FiltersContainer>
@@ -206,35 +305,60 @@ const SalesReport = ({ client, globalFilters }) => {
           <Spin />
         </div>
       ) : (
-        <Card>
-          <Col span={24} xl={8}>
-            <Statistic
-              valueStyle={{ color: '#3f8600' }}
-              title="Mínimo"
-              value={format.time(times.min)}
-              suffix="hh:mm:ss"
-              prefix={<Icon type="clock-circle" />}
+        <>
+          <Card>
+            <Col span={24} xl={8}>
+              <Statistic
+                valueStyle={{ color: '#3f8600' }}
+                title="Mínimo"
+                value={format.time(times.min)}
+                suffix="hh:mm:ss"
+                prefix={<Icon type="clock-circle" />}
+              />
+            </Col>
+            <Col span={24} xl={8}>
+              <Statistic
+                valueStyle={{ color: '#FF4F64' }}
+                title="Máximo"
+                value={format.time(times.max)}
+                suffix="hh:mm:ss"
+                prefix={<Icon type="clock-circle" />}
+              />
+            </Col>
+            <Col span={24} xl={8}>
+              <Statistic
+                valueStyle={{ color: '#30CEE7' }}
+                title="Promedio"
+                value={format.time(times.avg)}
+                suffix="hh:mm:ss"
+                prefix={<Icon type="clock-circle" />}
+              />
+            </Col>
+          </Card>
+          <Card bordered={false} style={{ marginTop: 20 }}>
+            <Table
+              loading={loading}
+              columns={columns}
+              title={() => (
+                <Title
+                  style={{ margin: 'auto 10px' }}
+                  folioSearch={folioSearch}
+                  setFolioSearch={setFolioSearch}
+                  results={tickets.length}
+                />
+              )}
+              size="small"
+              pagination={{ defaultPageSize: 40 }}
+              dataSource={tickets.map(ticket => ({
+                ...ticket,
+                businessName: ticket.client.businessName,
+                plates: ticket.truck.plates,
+                product: ticket.product.name,
+                key: shortid.generate()
+              }))}
             />
-          </Col>
-          <Col span={24} xl={8}>
-            <Statistic
-              valueStyle={{ color: '#FF4F64' }}
-              title="Máximo"
-              value={format.time(times.max)}
-              suffix="hh:mm:ss"
-              prefix={<Icon type="clock-circle" />}
-            />
-          </Col>
-          <Col span={24} xl={8}>
-            <Statistic
-              valueStyle={{ color: '#30CEE7' }}
-              title="Promedio"
-              value={format.time(times.avg)}
-              suffix="hh:mm:ss"
-              prefix={<Icon type="clock-circle" />}
-            />
-          </Col>
-        </Card>
+          </Card>
+        </>
       )}
     </>
   );

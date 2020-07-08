@@ -72,6 +72,7 @@ const TitleSection = ({ globalFilters, setGlobalFilters, hideDateFilter }) => {
                     .subtract(1, 'month')
                 ]
               }}
+              defaultValue={[moment().subtract(1, 'month'), moment()]}
               onChange={dates => handleDateFilterChange(dates)}
             />
           </InputContainer>
