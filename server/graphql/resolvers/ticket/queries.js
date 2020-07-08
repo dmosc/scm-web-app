@@ -1750,7 +1750,8 @@ const ticketQueries = {
       },
       {
         $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' }
-      },{
+      },
+      {
         $unwind: '$client'
       },
       {
@@ -1770,8 +1771,6 @@ const ticketQueries = {
       }
     ]);
 
-    console.log(tickets);
-
     return tickets;
   }),
   ticketTimes: authenticated(async (_, { date = {}, turnId, rocks }) => {
@@ -1781,7 +1780,8 @@ const ticketQueries = {
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
       },
       totalPrice: { $exists: true },
-      outTruckImage: { $exists: true }
+      outTruckImage: { $exists: true },
+      excludeFromTimeMetrics: { $ne: true }
     };
 
     if (turnId) $match.turn = Types.ObjectId(turnId);
@@ -1815,7 +1815,8 @@ const ticketQueries = {
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
       },
       totalPrice: { $exists: true },
-      outTruckImage: { $exists: true }
+      outTruckImage: { $exists: true },
+      excludeFromTimeMetrics: { $ne: true }
     };
 
     if (turnId) $match.turn = Types.ObjectId(turnId);

@@ -22,6 +22,7 @@ type Ticket {
   turn: Turn
   disabledAt: Date
   time: Int # This only works in ticketTimesSummary
+  excludeFromTimeMetrics: Boolean
 }
 
 type BillSummary {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import { format } from 'utils/functions';
-import shortid from 'shortid';
 import { useDebounce } from 'use-lodash-debounce';
 import periods from 'utils/enums/periods';
 import { withApollo } from 'react-apollo';
@@ -29,6 +28,7 @@ import {
   GET_TIMES,
   GET_TIMES_XLS
 } from './graphql/queries';
+import { UPDATE_EXCLUSION } from './graphql/mutations';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -44,6 +44,7 @@ const getColorTime = time => {
 };
 
 const SalesReport = ({ client, globalFilters }) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [rocks, setRocks] = useState([]);
   const [loadingTurns, setLoadingTurns] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ const SalesReport = ({ client, globalFilters }) => {
     avg: 0
   });
 
-  useEffect(() => {
+  const updateData = () => {
     const getData = async () => {
       const [
         {
@@ -101,7 +102,9 @@ const SalesReport = ({ client, globalFilters }) => {
     };
 
     getData();
-  }, [globalFilters, turn, rockIds, client, debouncedFolioSearch]);
+  };
+
+  useEffect(updateData, [globalFilters, turn, rockIds, client, debouncedFolioSearch]);
 
   useEffect(() => {
     const getTurns = async () => {
@@ -188,6 +191,25 @@ const SalesReport = ({ client, globalFilters }) => {
     setLoadingReport(false);
   };
 
+  const updateExcluded = async exclude => {
+    const { errors } = await client.mutate({
+      mutation: UPDATE_EXCLUSION,
+      variables: {
+        exclude,
+        tickets: selectedRowKeys
+      }
+    });
+
+    if (errors) {
+      message.error(errors[0].message);
+    } else {
+      setLoading(true);
+      await setSelectedRowKeys([]);
+      await updateData();
+      message.success('Se han actualizado correctamente los datos y boletas');
+    }
+  };
+
   const columns = [
     {
       title: 'Folio',
@@ -234,6 +256,19 @@ const SalesReport = ({ client, globalFilters }) => {
       render: time => (
         <>
           <Tag color={getColorTime(time)}>{format.time(time)}</Tag>
+        </>
+      )
+    },
+    {
+      title: 'Excluir de métricas',
+      dataIndex: 'excludeFromTimeMetrics',
+      key: 'excludeFromTimeMetrics',
+      width: 100,
+      render: excludeFromTimeMetrics => (
+        <>
+          <Tag color={excludeFromTimeMetrics ? 'purple' : 'blue'}>
+            {excludeFromTimeMetrics ? 'Yes' : 'No'}
+          </Tag>
         </>
       )
     }
@@ -345,16 +380,22 @@ const SalesReport = ({ client, globalFilters }) => {
                   folioSearch={folioSearch}
                   setFolioSearch={setFolioSearch}
                   results={tickets.length}
+                  updateExcluded={updateExcluded}
+                  areSelected={selectedRowKeys.length > 0}
                 />
               )}
               size="small"
+              rowSelection={{
+                selectedRowKeys,
+                onChange: setSelectedRowKeys
+              }}
               pagination={{ defaultPageSize: 40 }}
               dataSource={tickets.map(ticket => ({
                 ...ticket,
                 businessName: ticket.client.businessName,
                 plates: ticket.truck.plates,
                 product: ticket.product.name,
-                key: shortid.generate()
+                key: ticket.id
               }))}
             />
           </Card>

@@ -20,6 +20,7 @@ const GET_TICKET_TIMES = gql`
     ticketTimesSummary(date: $date, turnId: $turnId, rocks: $rocks, folioSearch: $folioSearch) {
       id
       folio
+      excludeFromTimeMetrics
       client {
         id
         businessName
