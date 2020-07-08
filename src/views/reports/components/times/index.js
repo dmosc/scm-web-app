@@ -267,7 +267,7 @@ const SalesReport = ({ client, globalFilters }) => {
       render: excludeFromTimeMetrics => (
         <>
           <Tag color={excludeFromTimeMetrics ? 'purple' : 'blue'}>
-            {excludeFromTimeMetrics ? 'Yes' : 'No'}
+            {excludeFromTimeMetrics ? 'Si' : 'No'}
           </Tag>
         </>
       )
@@ -314,6 +314,7 @@ const SalesReport = ({ client, globalFilters }) => {
           <Select
             mode="multiple"
             allowClear
+            style={{ minWidth: 200 }}
             className="productSelect"
             onChange={rockList => setRockIds(rockList)}
             placeholder="Todos"
