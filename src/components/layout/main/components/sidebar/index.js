@@ -9,7 +9,7 @@ import { Menu, Sider } from './elements';
 const { Item, SubMenu, ItemGroup } = Menu;
 
 const Sidebar = ({ history, location, collapsed, onCollapse }) => {
-  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport, isCollector, isCollectorAux, isSales, isTreasurer, isAuditor } = useAuth();
+  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport, isCollector, isCollectorAux, isSales, isTreasurer, isAuditor, isDriver } = useAuth();
   const [isLg, toggleLg] = useState(window.innerWidth > sizes.lg);
 
   const updateWidth = () => {
@@ -187,42 +187,42 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               </span>
             }
           >
-            {(isAdmin || isManager || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer) &&
+            {(isAdmin || isManager || isSupport || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer) &&
             <Item key="reportes/productos">
               <Link to="/reportes/productos">
                 <Icon type="block"/>
                 Productos
               </Link>
             </Item>}
-            {(isAdmin || isManager || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer || isAuditor) &&
+            {(isAdmin || isManager || isSupport || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer || isAuditor) &&
             <Item key="reportes/boletas">
               <Link to="/reportes/boletas">
                 <Icon type="unordered-list"/>
                 Boletas
               </Link>
             </Item>}
-            {(isAdmin || isManager || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer) &&
+            {(isAdmin || isManager || isSupport || isCollector || isCollectorAux || isSales || isAccountant || isTreasurer) &&
             <Item key="reportes/clientes">
               <Link to="/reportes/clientes">
                 <Icon type="usergroup-add"/>
                 Clientes
               </Link>
             </Item>}
-            {(isAdmin || isManager || isCashier || isCollector || isCollectorAux || isAccountant || isTreasurer) &&
+            {(isAdmin || isManager || isSupport || isCashier || isCollector || isCollectorAux || isAccountant || isTreasurer) &&
             <Item key="reportes/turnos">
               <Link to="/reportes/turnos">
                 <Icon type="file-done"/>
                 Turnos
               </Link>
             </Item>}
-            {(isAdmin || isManager || isSales || isAccountant || isTreasurer) &&
+            {(isAdmin || isManager || isSupport || isSales || isAccountant || isTreasurer) &&
             <Item key="reportes/ventas">
               <Link to="/reportes/ventas">
                 <Icon type="dollar"/>
                 Ventas
               </Link>
             </Item>}
-            {(isAdmin || isManager || isSales || isAccountant || isTreasurer) && <Item key="reportes/tiempos">
+            {(isAdmin || isManager || isSupport || isSales || isAccountant || isTreasurer) && <Item key="reportes/tiempos">
               <Link to="/reportes/tiempos">
                 <Icon type="clock-circle"/>
                 Tiempos
@@ -270,19 +270,34 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </Item>
             <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read" />
+                <Icon type="read"/>
                 Registros
               </Link>
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isManager || isSupport) && (
-          <Item key="produccion">
-            <Link to="/produccion">
-              <Icon type="experiment"/>
-              <span>Producción</span>
-            </Link>
-          </Item>
+        {(isAdmin || isManager || isSupport || isDriver) && (
+          <SubMenu
+            title={
+              <span className="submenu-title-wrapper">
+                <Icon type="experiment"/>
+                <span>Producción</span>
+              </span>
+            }
+          >
+            {(!isDriver) && <Item key="produccion/voladuras">
+              <Link to="/produccion/voladuras">
+                <Icon type="rocket"/>
+                Voladuras
+              </Link>
+            </Item>}
+            <Item key="produccion/viajes">
+              <Link to="/produccion/viajes">
+                <Icon type="pull-request"/>
+                Viajes
+              </Link>
+            </Item>
+          </SubMenu>
         )}
         {(isAdmin || isAccountant || isSupport || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
           <Item key="historial">

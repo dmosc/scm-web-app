@@ -26,6 +26,7 @@ enum Role {
   SALES
   TREASURER
   AUDITOR
+  DRIVER
 }
 
 # Inputs

@@ -20,7 +20,7 @@ const History = ({ client }) => {
   const [filters, setFilters] = useState({ search: '' });
   const debouncedFilters = useDebounce(filters, 1000);
 
-  const { isAdmin, isManager, isAccountant } = useAuth();
+  const { isAdmin, isManager, isAccountant, isCollector, isCollectorAux } = useAuth();
 
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
@@ -143,9 +143,9 @@ const History = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          {(isAdmin || isManager || isAccountant) && (
+          {(isAdmin || isManager || isAccountant || isCollector || isCollectorAux) && (
             <Tooltip placement="top" title="Eliminar">
-              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small" />
+              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small"/>
             </Tooltip>
           )}
         </Row>

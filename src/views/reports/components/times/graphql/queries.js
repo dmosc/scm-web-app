@@ -15,6 +15,29 @@ const turnData = `
   }
 `;
 
+const GET_TICKET_TIMES = gql`
+  query ticketTimesSummary($date: DateRange, $turnId: ID, $rocks: [ID], $folioSearch: String) {
+    ticketTimesSummary(date: $date, turnId: $turnId, rocks: $rocks, folioSearch: $folioSearch) {
+      id
+      folio
+      excludeFromTimeMetrics
+      client {
+        id
+        businessName
+      }
+      truck {
+        id
+        plates
+      }
+      product {
+        id
+        name
+      }
+      time
+    }
+  }
+`;
+
 const GET_TURNS = gql`
   query turns($filters: TurnFilters!) {
     turns(filters: $filters) {
@@ -58,4 +81,4 @@ const GET_TIMES_XLS = gql`
   }
 `;
 
-export { GET_ROCKS, TURN_BY_UNIQUE_ID, GET_TURNS, GET_TIMES, GET_TIMES_XLS };
+export { GET_ROCKS, TURN_BY_UNIQUE_ID, GET_TURNS, GET_TIMES, GET_TIMES_XLS, GET_TICKET_TIMES };

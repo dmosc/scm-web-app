@@ -97,7 +97,9 @@ const billQueries = {
             },
             {
               text: bill.folios.toString(),
-              style: 'invoiceBillingDetails'
+              style: 'invoiceBillingDetails',
+              width: '85%',
+              alignment: 'right'
             }
           ]
         },

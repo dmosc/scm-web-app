@@ -25,6 +25,9 @@
 # import * from "goal.graphql"
 # import * from "blast.graphql"
 # import * from "blast-product.graphql"
+# import * from "production-turn.graphql"
+# import * from "lap.graphql"
+# import * from "observation.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -38,7 +41,7 @@ directive @auth(roles: [Role]) on FIELD_DEFINITION
 
 type Query {
   # User
-  user(id: ID!): User @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR])
+  user(id: ID!): User @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
   users(filters: UserFilters!): [User!]! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
   # Client
   client(id: ID!): Client @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
@@ -131,6 +134,7 @@ type Query {
     workingDaysPassed: Int!
     excluded: [ID]
   ): String! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, SALES, TREASURER])
+  ticketTimesSummary(date: DateRange, turnId: ID, rocks: [ID], folioSearch: String): [Ticket!]!
   ticketTimes(date: DateRange, turnId: ID, rocks: [ID]): TicketTimes!
   ticketTimesXLS(date: DateRange, turnId: ID, rocks: [ID]): String!
   # Bill
@@ -204,9 +208,9 @@ type Query {
   stores(client: ID!): [Store!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   # Machine
   machine(id: ID!): Machine
-  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, DRIVER])
   machines(filters: MachineFilters!): [Machine!]!
-  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
+  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, DRIVER])
   # Machine Diesel Load
   machineDieselLoad(id: ID!): MachineDieselLoad
   @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
@@ -243,6 +247,18 @@ type Query {
   # Blast
   blast(id: ID!): Blast @auth(roles: [ADMIN, MANAGER, SUPPORT])
   blasts(filters: BlastFilters!): [Blast!] @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # ProductionTurn
+  productionTurn(id: ID!): ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, DRIVER])
+  productionTurns(filters: ProductionTurnFilters!): [ProductionTurn!]!
+  @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
+  productionTurnSummary(id: ID!): ProductionTurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
+  productionTurnActive: ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, DRIVER])
+  # Lap
+  lapActive: Lap @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  activeLaps: [Lap!]! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  # Observations
+  observationActive(lap: ID!): Observation @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  observationsFromLap(lap: ID!): [Observation!]! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
 }
 
 type Mutation {
@@ -281,6 +297,7 @@ type Mutation {
   ticketSubmit(ticket: TicketSubmitInput!): Ticket! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  ticketExcludeFromTimeMetrics(tickets: [ID!]!, exclude: Boolean!): Boolean!
   # Bill
   bill(bill: BillInput!): Bill @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   billDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
@@ -356,6 +373,16 @@ type Mutation {
   @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(blast: BlastInput!): Blast! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  # ProductionTurn
+  productionTurnInit: ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  productionTurnEnd(productionTurn: ProductionTurnEndInput!): ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  # Lap
+  lapInit(lap: LapInitInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  lapEnd(lap: LapEndInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  lapCancel(lap: LapCancelInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  # Observation
+  observationInit(observation: ObservationInitInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+  observationEnd(observation: ObservationEndInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
   # Misc
   fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
   imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
@@ -370,4 +397,7 @@ type Subscription {
   loadedTickets: [Ticket!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, GUARD, LOADER, COLLECTOR, COLLECTOR_AUX])
   newMessage: Message! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, ACCOUNTANT, COLLECTOR, COLLECTOR_AUX, SALES])
   turnUpdate: Turn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  productionTurnUpdate: ProductionTurn! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, DRIVER])
+  lapUpdate: Lap! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, DRIVER])
+  activeLaps: [Lap!]! @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, DRIVER])
 }

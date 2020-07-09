@@ -13,6 +13,7 @@ import 'moment/locale/es';
 import './App.css';
 // Routes with subroutes
 import Reports from './views/reports';
+import Production from './views/production';
 
 // Set every
 moment.tz.setDefault('America/Monterrey');
@@ -109,12 +110,6 @@ const Sales = Loadable({
   loading: TopBarProgress
 });
 
-/* webpackChunkName: "Production" */
-const Production = Loadable({
-  loader: () => import('./views/production'),
-  loading: TopBarProgress
-});
-
 /* webpackChunkName: "History" */
 const History = Loadable({
   loader: () => import('./views/history'),
@@ -152,6 +147,7 @@ const App = ({
     isSales,
     isTreasurer,
     isAuditor,
+    isDriver,
     token,
     user
   } = useAuth();
@@ -208,8 +204,8 @@ const App = ({
           {(!isGuard) && (
             <Route path="/reportes" component={Reports}/>
           )}
-          {(isAdmin || isSupport || isManager) && (
-            <Route exact path="/produccion" component={Production}/>
+          {(isAdmin || isSupport || isManager || isDriver) && (
+            <Route path="/produccion" component={Production}/>
           )}
           {(isAdmin || isAccountant || isSupport || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
             <Route exact path="/historial" component={History}/>
@@ -226,8 +222,9 @@ const App = ({
           {(isAdmin || isLoader || isSupport || isManager) && (
             <Route exact path="/cargas" component={Load}/>
           )}
-          {isGuard && <Redirect to="/accesos" />}
-          {isLoader && <Redirect to="/cargas" />}
+          {isGuard && <Redirect to="/accesos"/>}
+          {isDriver && <Redirect to="/produccion"/>}
+          {isLoader && <Redirect to="/cargas"/>}
           {!isGuard && <Redirect to="/dashboard" />}
         </Switch>
       </Layout>

@@ -388,6 +388,14 @@ const ticketMutations = {
     } catch (e) {
       return e;
     }
+  },
+  ticketExcludeFromTimeMetrics: async (_, { tickets, exclude }) => {
+    await Ticket.updateMany(
+      { _id: { $in: tickets } },
+      { $set: { excludeFromTimeMetrics: exclude } }
+    );
+
+    return true;
   }
 };
 

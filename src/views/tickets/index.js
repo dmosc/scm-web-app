@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withAuth } from 'components/providers/withAuth';
 import { graphql, withApollo } from '@apollo/react-hoc';
-import { Button, Empty, Form, message, Spin, Card, List } from 'antd';
+import { Button, Card, Empty, Form, List, message, Spin } from 'antd';
 import { printPDF } from 'utils/functions';
 import TicketImageForm from './components/ticket-image-form';
 import TicketSubmitForm from './components/ticket-submit-form';
@@ -11,7 +11,7 @@ import TurnEndForm from './components/turn-end-form';
 import TicketsList from './components/tickets-list';
 import { GET_PDF, GET_TICKET_PROMOTIONS, TURN_ACTIVE } from './graphql/queries';
 import { TURN_UPDATE } from './graphql/subscriptions';
-import { TicketsContainer, StyledList } from './elements';
+import { StyledList, TicketsContainer } from './elements';
 
 class Tickets extends Component {
   state = {
@@ -154,14 +154,14 @@ class Tickets extends Component {
               currentForm={currentForm}
             />
           )) ||
-            (currentForm === 'submit' && (
-              <TicketSubmitRegisterForm
-                setCurrent={this.setCurrent}
-                currentTicket={currentTicket}
-                currentTicketPromotions={currentTicketPromotions}
-                currentForm={currentForm}
-              />
-            ))}
+          (currentForm === 'submit' && (
+            <TicketSubmitRegisterForm
+              setCurrent={this.setCurrent}
+              currentTicket={currentTicket}
+              currentTicketPromotions={currentTicketPromotions}
+              currentForm={currentForm}
+            />
+          ))}
         </Card>
       </TicketsContainer>
     );
