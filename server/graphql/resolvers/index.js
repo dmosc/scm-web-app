@@ -93,6 +93,9 @@ import lapSubscriptions from './lap/subscriptions';
 // Observation
 import observationMutations from './observation/mutations';
 import observationQueries from './observation/queries';
+// BoreHole
+import boreHoleMutations from './bore-hole/mutations';
+import boreHoleQueries from './bore-hole/queries';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -127,7 +130,8 @@ const resolvers = {
     ...blastQueries,
     ...productionTurnQueries,
     ...lapQueries,
-    ...observationQueries
+    ...observationQueries,
+    ...boreHoleQueries
   },
   Mutation: {
     ...userMutations,
@@ -160,6 +164,7 @@ const resolvers = {
     ...productionTurnMutations,
     ...lapMutations,
     ...observationMutations,
+    ...boreHoleMutations,
     ...uploaders // AWS
   },
   Subscription: {

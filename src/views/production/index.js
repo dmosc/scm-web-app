@@ -16,6 +16,12 @@ const Trips = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "BoreHoles" */
+const BoreHoles = Loadable({
+  loader: () => import('./components/boreholes'),
+  loading: TopBarProgress
+});
+
 const Production = () => {
   const { isDriver } = useAuth();
   return (
@@ -23,6 +29,10 @@ const Production = () => {
       <Route
         path="/produccion/voladuras"
         render={() => <Blasts/>}
+      />
+      <Route
+        path="/produccion/barrenaciones"
+        render={() => <BoreHoles/>}
       />
       <Route
         path="/produccion/viajes"

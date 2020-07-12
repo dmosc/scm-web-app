@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Button, Form, List, message, Popover, Row, Table, Tag, Tooltip, Typography } from 'antd';
@@ -44,7 +45,8 @@ const Production = ({ client }) => {
     {
       title: 'Fecha',
       dataIndex: 'date',
-      key: 'date'
+      key: 'date',
+      render: date => moment(date).format('DD MMMM YYYY')
     },
     {
       title: 'Productos',
