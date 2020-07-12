@@ -291,6 +291,12 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
                 Voladuras
               </Link>
             </Item>}
+            {(!isDriver) && <Item key="produccion/barrenaciones">
+              <Link to="/produccion/barrenaciones">
+                <Icon type="fire"/>
+                Barrenaciones
+              </Link>
+            </Item>}
             <Item key="produccion/viajes">
               <Link to="/produccion/viajes">
                 <Icon type="pull-request"/>

@@ -28,3 +28,4 @@ export { default as BlastProduct } from './blast-product';
 export { default as ProductionTurn } from './production-turn';
 export { default as Lap } from './lap';
 export { default as Observation } from './observation';
+export { default as BoreHole } from './bore-hole';
