@@ -84,7 +84,6 @@
     "react-scripts": "3.4.0",
     "react-scrollable-feed": "^1.1.2",
     "react-topbar-progress-indicator": "^4.0.2",
-    "react-webcam": "^4.0.0",
     "recharts": "^2.0.0-beta.1",
     "sequelize": "^5.21.3",
     "shortid": "^2.2.15",

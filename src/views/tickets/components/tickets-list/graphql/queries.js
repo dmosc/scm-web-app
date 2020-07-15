@@ -62,7 +62,10 @@ const GET_TICKETS = gql`
       totalWeight
       totalPrice
       inTruckImage
+      inTruckImageLeft
+      inTruckImageRight
       outTruckImage
+      outTruckImageBack
     }
   }
 `;

@@ -17,7 +17,10 @@ type Ticket {
   out: Date
   load: Date
   inTruckImage: String
+  inTruckImageLeft: String
+  inTruckImageRight: String
   outTruckImage: String
+  outTruckImageBack: String
   bill: Boolean!
   turn: Turn
   disabledAt: Date
@@ -100,6 +103,8 @@ input TicketInitInput {
   client: ID!
   product: ID!
   inTruckImage: String!
+  inTruckImageLeft: String
+  inTruckImageRight: String
   folderKey: s3FolderKey!
   id: ID!
 }

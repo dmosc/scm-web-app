@@ -81,7 +81,15 @@ const ticketMutations = {
   }),
   ticketInit: authenticated(async (_, args, { req: { userRequesting }, pubsub }) => {
     const transaction = new Transaction();
-    const { plates, product: productId, inTruckImage: image, folderKey, id } = args.ticket;
+    const {
+      plates,
+      product: productId,
+      inTruckImage: imageTop,
+      inTruckImageLeft: imageLeft,
+      inTruckImageRight: imageRight,
+      folderKey,
+      id
+    } = args.ticket;
     const newTicket = new Ticket({ ...args.ticket });
 
     const ticketExists = await Ticket.aggregate([
@@ -104,7 +112,23 @@ const ticketMutations = {
       transaction.insert('Ticket', newTicket);
       await transaction.run();
 
-      newTicket.inTruckImage = await uploaders.imageUpload(_, { image, folderKey, id });
+      if (imageTop) {
+        newTicket.inTruckImage = await uploaders.imageUpload(_, { image: imageTop, folderKey, id });
+      }
+      if (imageLeft) {
+        newTicket.inTruckImageLeft = await uploaders.imageUpload(_, {
+          image: imageLeft,
+          folderKey,
+          id
+        });
+      }
+      if (imageRight) {
+        newTicket.inTruckImageRight = await uploaders.imageUpload(_, {
+          image: imageRight,
+          folderKey,
+          id
+        });
+      }
 
       await newTicket.save();
 
