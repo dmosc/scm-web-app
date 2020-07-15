@@ -181,12 +181,12 @@ const ticketMutations = {
     }
   }),
   ticketProductLoad: authenticated(async (_, args, { pubsub }) => {
-    const { id, outTruckImage } = args.ticket;
+    const { id, outTruckImage, outTruckImageBack } = args.ticket;
 
     try {
       const newTicket = await Ticket.findOneAndUpdate(
         { _id: id },
-        { outTruckImage },
+        { outTruckImage, outTruckImageBack },
         { new: true }
       );
 

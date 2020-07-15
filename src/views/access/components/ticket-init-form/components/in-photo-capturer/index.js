@@ -49,7 +49,7 @@ const InPhotoCapturer = ({ inTruckImages, setInTruckImages, visible, onCancel, h
 
       setTopPlayer(playerToSet);
     }
-  }, [visible, topPlayer, canvasTop]);
+  }, [topPlayer, canvasTop]);
 
   useEffect(() => {
     if (canvasRight && !rightPlayer) {

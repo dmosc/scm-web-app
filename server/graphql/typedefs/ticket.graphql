@@ -112,6 +112,7 @@ input TicketInitInput {
 input TicketProductLoadInput {
   id: ID!
   outTruckImage: String!
+  outTruckImageBack: String
 }
 
 input TicketSubmitInput {

@@ -1,24 +1,25 @@
 import styled from 'styled-components';
 
 const PreviewImageContainer = styled.div`
-  height: 36vh;
-  width: 48vh;
+  width: 100%;
+  min-height: 352.66px;
+  max-height: 352.66px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px dashed lightGrey;
   border-radius: 5px;
-  margin: 0px 5px;
+  margin: 10px auto;
 `;
 
 const ImageContainer = styled.img`
-  height: 36vh;
-  width: 48vh;
+  width: 100%;
+  min-height: 352.66px;
+  max-height: 352.66px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  margin: 0px 5px;
+  margin: 10px auto;
 `;
 
 export { PreviewImageContainer, ImageContainer };
