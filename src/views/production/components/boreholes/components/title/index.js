@@ -14,16 +14,13 @@ const TableTitle = ({ toggleNewBoreHoleModal, setSearch }) => {
       </Title>
       <SearchContainer>
         <Search
-          style={{ width: 400, margin: 'auto 10px' }}
+          style={{ margin: 'auto 10px' }}
+          className="search"
           allowClear
           placeholder="Buscar barrenación"
           onChange={({ target: { value } }) => setSearch(value)}
         />
-        <Button
-          type="primary"
-          icon="plus"
-          onClick={() => toggleNewBoreHoleModal(true)}
-        >
+        <Button type="primary" icon="plus" onClick={() => toggleNewBoreHoleModal(true)}>
           Barrenación
         </Button>
       </SearchContainer>

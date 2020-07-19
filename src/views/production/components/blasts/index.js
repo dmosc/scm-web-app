@@ -129,7 +129,7 @@ const Production = ({ client }) => {
       render: () => (
         <Row>
           <Tooltip placement="top" title="Eliminar">
-            <Button type="danger" icon="delete" size="small"/>
+            <Button type="danger" icon="delete" size="small" />
           </Tooltip>
         </Row>
       )

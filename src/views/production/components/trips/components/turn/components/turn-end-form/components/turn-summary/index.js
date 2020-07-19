@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
+import { sizes } from 'theme';
 import { Button, Collapse, Drawer, Icon, message, Row, Tag, Typography } from 'antd';
 import { CollapseContainer, Column, ColumnTitle } from './elements';
 import { END_PRODUCTION_TURN } from './graphql/mutations';
@@ -8,16 +9,34 @@ import { END_PRODUCTION_TURN } from './graphql/mutations';
 const { Panel } = Collapse;
 const { Title, Text } = Typography;
 
-const TurnSummary = ({ productionTurnSummary, productionTurn, showSummary, setShowSummary, setProductionTurn }) => {
+const TurnSummary = ({
+  productionTurnSummary,
+  productionTurn,
+  showSummary,
+  setShowSummary,
+  setProductionTurn
+}) => {
   const [loading, setLoading] = useState(false);
   const [productionTurnEnd] = useMutation(END_PRODUCTION_TURN);
+  const [isLg, setIsLg] = useState(window.innerWidth > sizes.lg);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setIsLg(window.innerWidth > sizes.lg);
+    };
+    window.removeEventListener('resize', updateWidth);
+
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   const handleSubmit = async e => {
     setLoading(true);
     e.preventDefault();
 
     try {
-      const { errors } = await productionTurnEnd({ variables: { productionTurn: { id: productionTurn.id } } });
+      const { errors } = await productionTurnEnd({
+        variables: { productionTurn: { id: productionTurn.id } }
+      });
 
       if (errors) {
         errors.forEach(error => message.error(error.message));
@@ -39,16 +58,11 @@ const TurnSummary = ({ productionTurnSummary, productionTurn, showSummary, setSh
   return (
     <Drawer
       title={`RESUMEN TURNO #${productionTurn.folio}`}
-      width="50%"
+      width={isLg ? '50%' : '100%'}
       visible={showSummary}
       onClose={() => setShowSummary(false)}
     >
-      <Row
-        type="flex"
-        justify="space-around"
-        align="middle"
-        gutter={{ xs: 8, sm: 16, md: 24 }}
-      >
+      <Row type="flex" justify="space-around" align="middle" gutter={{ xs: 8, sm: 16, md: 24 }}>
         <Column span={6}>
           <ColumnTitle color="#eb2f96">VIAJES</ColumnTitle>
           <Title level={4}>{productionTurnSummary.totalLaps}</Title>
@@ -68,9 +82,7 @@ const TurnSummary = ({ productionTurnSummary, productionTurn, showSummary, setSh
       </Row>
       <Row>
         <CollapseContainer
-          expandIcon={({ isActive }) => (
-            <Icon type="caret-right" rotate={isActive ? 90 : 0}/>
-          )}
+          expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
         >
           {productionTurnSummary.laps.map(lap => {
             const lapStart = new Date(lap.start);
@@ -81,16 +93,14 @@ const TurnSummary = ({ productionTurnSummary, productionTurn, showSummary, setSh
                 key={lap.id}
                 header={`${lapStart.toLocaleTimeString()} - ${lapEnd.toLocaleTimeString()}`}
                 extra={
-                  lap.tons === 0 ?
-                    <Tag color="red">Cancelada</Tag> :
-                    <Tag color="blue">
-                      {`${differenceInMinutes.toFixed(2)} minutos`}
-                    </Tag>
+                  lap.tons === 0 ? (
+                    <Tag color="red">Cancelada</Tag>
+                  ) : (
+                    <Tag color="blue">{`${differenceInMinutes.toFixed(2)} minutos`}</Tag>
+                  )
                 }
               >
-                <Row
-                  gutter={{ xs: 8, sm: 16, md: 24 }}
-                >
+                <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
                   <Column span={6}>
                     <Text code>MÁQUINA</Text>
                     <Title level={4}>{lap.machine.name}</Title>

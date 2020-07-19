@@ -20,6 +20,10 @@ const Card = styled(CommonCard)`
   .ant-pagination {
     margin-right: 10px !important;
   }
+
+  .ant-table-body {
+    overflow-x: scroll;
+  }
 `;
 
 export { TableContainer, Card };

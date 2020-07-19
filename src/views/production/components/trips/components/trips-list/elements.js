@@ -17,7 +17,7 @@ const Card = styled(CommonCard)`
 
 const TripsListContainer = styled.div`
   display: grid;
-  grid-template-rows: ${props => props.currentLap ? '1.5fr 2.5fr' : '4fr'};
+  grid-template-rows: ${props => (props.currentLap ? '1.5fr 2.5fr' : '4fr')};
   grid-gap: 30px;
   padding: 0 20px;
   width: 100%;
@@ -25,6 +25,10 @@ const TripsListContainer = styled.div`
   min-height: calc(100vh - 64px - 79px);
   height: calc(100vh - 64px - 79px);
   overflow-x: scroll;
+
+  ${props => props.theme.media.lg`
+    padding: 0px;
+  `}
 `;
 
 const TitleContainer = styled.div`
