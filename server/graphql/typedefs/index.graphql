@@ -29,6 +29,8 @@
 # import * from "lap.graphql"
 # import * from "observation.graphql"
 # import * from "bore-hole.graphql"
+# import * from "supply.graphql"
+# import * from "supply-transaction.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -263,6 +265,12 @@ type Query {
     # BoreHole
     boreHole(id: ID!): BoreHole @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
     boreHoles(filters: BoreHoleFilters!): [BoreHole!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Supply
+    supply(id: ID!): Supply @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplies(filters: SupplyFilters!): [Supply!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # SupplyTransaction
+    supplyTransactionsIn(filters: SupplyTransactionFilters!): [SupplyTransactionIn!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionsOut(filters: SupplyTransactionFilters!): [SupplyTransactionOut!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
 }
 
 type Mutation {
@@ -391,6 +399,15 @@ type Mutation {
     boreHole(boreHole: BoreHoleInput!): BoreHole! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
     boreHoleEdit(boreHole: BoreHoleEditInput!): BoreHole! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
     boreHoleDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Supply
+    supply(supply: SupplyInput!): Supply! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyEdit(supply: SupplyEditInput!): Supply! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Supply
+    supplyTransactionIn(supplyTransactionIn: SupplyTransactionInInput!): SupplyTransactionIn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionInDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionOut(supplyTransactionOut: SupplyTransactionOutInput!): SupplyTransactionOut! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionOutDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
     # Misc
     fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
     imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
