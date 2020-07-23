@@ -23,26 +23,6 @@ const FormContainer = styled.div`
   height: 73vh;
 `;
 
-const PreviewImageContainer = styled.div`
-  height: 15vw;
-  width: 20vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  margin-bottom: 10px;
-`;
-
-const ImageContainer = styled.img`
-  height: 15vw;
-  width: 20vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  margin-bottom: 10px;
-`;
-
 const ProductContainer = styled.div`
   width: 100%;
   height: fit-content;
@@ -96,8 +76,6 @@ const HiddenForm = styled.form`
 
 export {
   FormContainer,
-  PreviewImageContainer,
-  ImageContainer,
   ProductContainer,
   TruckContainer,
   PlatesInput,

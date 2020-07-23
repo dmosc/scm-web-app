@@ -287,8 +287,20 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
           >
             {(!isDriver) && <Item key="produccion/voladuras">
               <Link to="/produccion/voladuras">
-                <Icon type="rocket"/>
+                <Icon type="fire"/>
                 Voladuras
+              </Link>
+            </Item>}
+            {(!isDriver) && <Item key="produccion/barrenaciones">
+              <Link to="/produccion/barrenaciones">
+                <Icon type="rocket"/>
+                Barrenaciones
+              </Link>
+            </Item>}
+            {(!isDriver) && <Item key="produccion/suministros">
+              <Link to="/produccion/suministros">
+                <Icon type="bg-colors"/>
+                Suministros
               </Link>
             </Item>}
             <Item key="produccion/viajes">

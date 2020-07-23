@@ -28,6 +28,9 @@
 # import * from "production-turn.graphql"
 # import * from "lap.graphql"
 # import * from "observation.graphql"
+# import * from "bore-hole.graphql"
+# import * from "supply.graphql"
+# import * from "supply-transaction.graphql"
 # import * from "others.graphql"
 
 # Enums
@@ -249,16 +252,25 @@ type Query {
   blasts(filters: BlastFilters!): [Blast!] @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # ProductionTurn
   productionTurn(id: ID!): ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, DRIVER])
-  productionTurns(filters: ProductionTurnFilters!): [ProductionTurn!]!
-  @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
-  productionTurnSummary(id: ID!): ProductionTurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
-  productionTurnActive: ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, DRIVER])
-  # Lap
-  lapActive: Lap @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  activeLaps: [Lap!]! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  # Observations
-  observationActive(lap: ID!): Observation @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  observationsFromLap(lap: ID!): [Observation!]! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    productionTurns(filters: ProductionTurnFilters!): [ProductionTurn!]!
+    @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
+    productionTurnSummary(id: ID!): ProductionTurnSummary! @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
+    productionTurnActive: ProductionTurn @auth(roles: [ADMIN, CASHIER, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, DRIVER])
+    # Lap
+    lapActive: Lap @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    activeLaps: [Lap!]! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Observations
+    observationActive(lap: ID!): Observation @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    observationsFromLap(lap: ID!): [Observation!]! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # BoreHole
+    boreHole(id: ID!): BoreHole @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    boreHoles(filters: BoreHoleFilters!): [BoreHole!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Supply
+    supply(id: ID!): Supply @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplies(filters: SupplyFilters!): [Supply!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # SupplyTransaction
+    supplyTransactionsIn(filters: SupplyTransactionFilters!): [SupplyTransactionIn!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionsOut(filters: SupplyTransactionFilters!): [SupplyTransactionOut!] @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
 }
 
 type Mutation {
@@ -373,20 +385,33 @@ type Mutation {
   @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Blast
   blast(blast: BlastInput!): Blast! @auth(roles: [ADMIN, MANAGER, SUPPORT])
-  # ProductionTurn
-  productionTurnInit: ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  productionTurnEnd(productionTurn: ProductionTurnEndInput!): ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  # Lap
-  lapInit(lap: LapInitInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  lapEnd(lap: LapEndInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  lapCancel(lap: LapCancelInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  # Observation
-  observationInit(observation: ObservationInitInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  observationEnd(observation: ObservationEndInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
-  # Misc
-  fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
-  imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
-  @auth(roles: [ADMIN, CASHIER, GUARD, COLLECTOR, COLLECTOR_AUX])
+    # ProductionTurn
+    productionTurnInit: ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    productionTurnEnd(productionTurn: ProductionTurnEndInput!): ProductionTurn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Lap
+    lapInit(lap: LapInitInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    lapEnd(lap: LapEndInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    lapCancel(lap: LapCancelInput!): Lap! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Observation
+    observationInit(observation: ObservationInitInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    observationEnd(observation: ObservationEndInput!): Observation! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # BoreHole
+    boreHole(boreHole: BoreHoleInput!): BoreHole! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    boreHoleEdit(boreHole: BoreHoleEditInput!): BoreHole! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    boreHoleDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Supply
+    supply(supply: SupplyInput!): Supply! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyEdit(supply: SupplyEditInput!): Supply! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Supply
+    supplyTransactionIn(supplyTransactionIn: SupplyTransactionInInput!): SupplyTransactionIn! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionInDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionOut(supplyTransactionOut: SupplyTransactionOutInput!): SupplyTransactionOut! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    supplyTransactionOutDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, DRIVER])
+    # Misc
+    fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
+    imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
+    @auth(roles: [ADMIN, CASHIER, GUARD, COLLECTOR, COLLECTOR_AUX])
 }
 
 type Subscription {

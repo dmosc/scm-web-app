@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Typography } from 'antd';
-import TitleContainer from './elements';
+import { TitleContainer, ActionsContainer } from './elements';
 
 const { Title } = Typography;
 
@@ -11,17 +11,19 @@ const TableTitle = ({ toggleNewBlastModal, toggleNewBlastProductModal }) => {
       <Title style={{ margin: 'auto 10px' }} level={3}>
         Listado de voladuras
       </Title>
-      <Button
-        style={{ margin: 'auto 10px auto auto' }}
-        type="primary"
-        icon="plus"
-        onClick={() => toggleNewBlastModal(true)}
-      >
-        Voladura
-      </Button>
-      <Button type="primary" icon="plus" onClick={() => toggleNewBlastProductModal(true)}>
-        Producto
-      </Button>
+      <ActionsContainer>
+        <Button
+          style={{ margin: 'auto 10px auto auto' }}
+          type="primary"
+          icon="plus"
+          onClick={() => toggleNewBlastModal(true)}
+        >
+          Voladura
+        </Button>
+        <Button type="primary" icon="plus" onClick={() => toggleNewBlastProductModal(true)}>
+          Producto
+        </Button>
+      </ActionsContainer>
     </TitleContainer>
   );
 };

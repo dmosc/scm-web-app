@@ -10,6 +10,18 @@ const Blasts = Loadable({
   loading: TopBarProgress
 });
 
+/* webpackChunkName: "BoreHoles" */
+const BoreHoles = Loadable({
+  loader: () => import('./components/boreholes'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "Supplies" */
+const Supplies = Loadable({
+  loader: () => import('./components/supplies'),
+  loading: TopBarProgress
+});
+
 /* webpackChunkName: "Trips" */
 const Trips = Loadable({
   loader: () => import('./components/trips'),
@@ -23,6 +35,14 @@ const Production = () => {
       <Route
         path="/produccion/voladuras"
         render={() => <Blasts/>}
+      />
+      <Route
+        path="/produccion/barrenaciones"
+        render={() => <BoreHoles/>}
+      />
+      <Route
+        path="/produccion/suministros"
+        render={() => <Supplies/>}
       />
       <Route
         path="/produccion/viajes"

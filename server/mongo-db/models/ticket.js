@@ -19,7 +19,10 @@ const Ticket = new Schema({
   load: { type: Date, required: false },
   out: { type: Date, required: false },
   inTruckImage: { type: String, required: false },
+  inTruckImageLeft: { type: String, required: false },
+  inTruckImageRight: { type: String, required: false },
   outTruckImage: { type: String, required: false },
+  outTruckImageBack: { type: String, required: false },
   bill: { type: Boolean, required: true, default: false },
   isBilled: { type: Boolean, required: true, default: false },
   usersInvolved: {

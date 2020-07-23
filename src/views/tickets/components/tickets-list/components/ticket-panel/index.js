@@ -172,25 +172,58 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
             </Col>
             <Col span={12}>
               <Paragraph style={{ marginBottom: 3 }} type="secondary">
-                Imágenes
+                Imágenes entrada
               </Paragraph>
               <Button
                 icon="login"
                 style={{ marginRight: 10 }}
                 size="small"
                 type="primary"
-                onClick={() => window.open(ticket.inTruckImage, '_blank')}
+                onClick={() => window.open(ticket.inTruckImageLeft, '_blank')}
+                disabled={!ticket.inTruckImageLeft}
               >
-                Entrada
+                Izquierda
+              </Button>
+              <Button
+                icon="login"
+                style={{ marginRight: 10 }}
+                size="small"
+                type="primary"
+                onClick={() => window.open(ticket.inTruckImage, '_blank')}
+                disabled={!ticket.inTruckImage}
+              >
+                Arriba
+              </Button>
+              <Button
+                icon="login"
+                style={{ marginRight: 10 }}
+                size="small"
+                type="primary"
+                onClick={() => window.open(ticket.inTruckImageRight, '_blank')}
+                disabled={!ticket.inTruckImageRight}
+              >
+                Derecha
+              </Button>
+              <Paragraph style={{ marginBottom: 3 }} type="secondary">
+                Imágenes salida
+              </Paragraph>
+              <Button
+                size="small"
+                icon="logout"
+                type="primary"
+                onClick={() => window.open(ticket.outTruckImage, '_blank')}
+                disabled={!ticket.outTruckImage}
+              >
+                Frente
               </Button>
               <Button
                 size="small"
                 icon="logout"
                 type="primary"
-                onClick={() => window.open(ticket.inTruckImage, '_blank')}
-                disabled={!ticket.outTruckImage}
+                onClick={() => window.open(ticket.outTruckImageBack, '_blank')}
+                disabled={!ticket.outTruckImageBack}
               >
-                Salida
+                Atrás
               </Button>
             </Col>
           </Row>

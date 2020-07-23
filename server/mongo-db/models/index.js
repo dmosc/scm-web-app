@@ -28,3 +28,7 @@ export { default as BlastProduct } from './blast-product';
 export { default as ProductionTurn } from './production-turn';
 export { default as Lap } from './lap';
 export { default as Observation } from './observation';
+export { default as BoreHole } from './bore-hole';
+export { default as Supply } from './supply';
+export { default as SupplyTrainsactionIn } from './supply-transaction-in';
+export { default as SupplyTrainsactionOut } from './supply-transaction-out';
