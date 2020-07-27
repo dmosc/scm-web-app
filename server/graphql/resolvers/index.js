@@ -96,6 +96,12 @@ import observationQueries from './observation/queries';
 // BoreHole
 import boreHoleMutations from './bore-hole/mutations';
 import boreHoleQueries from './bore-hole/queries';
+// Supply
+import supplyMutations from './supply/mutations';
+import supplyQueries from './supply/queries';
+// SupplyTransaction
+import supplyTransactionQueries from './supply-transaction/queries';
+import supplyTransactionMutations from './supply-transaction/mutations';
 // AWS Stuff
 import uploaders from './aws/uploaders';
 
@@ -131,7 +137,9 @@ const resolvers = {
     ...productionTurnQueries,
     ...lapQueries,
     ...observationQueries,
-    ...boreHoleQueries
+    ...boreHoleQueries,
+    ...supplyQueries,
+    ...supplyTransactionQueries
   },
   Mutation: {
     ...userMutations,
@@ -165,6 +173,8 @@ const resolvers = {
     ...lapMutations,
     ...observationMutations,
     ...boreHoleMutations,
+    ...supplyMutations,
+    ...supplyTransactionMutations,
     ...uploaders // AWS
   },
   Subscription: {
