@@ -8,7 +8,7 @@ const Auth = () => {
   const UserLoginForm = Form.create({ name: 'login' })(Login);
   return (
     <LoginContainer>
-      <Container width="40vh" opacity={0.9}>
+      <Container width="40vw" opacity={0.9}>
         <UserLoginForm />
       </Container>
     </LoginContainer>
