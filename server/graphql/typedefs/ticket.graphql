@@ -26,6 +26,7 @@ type Ticket {
   disabledAt: Date
   time: Int # This only works in ticketTimesSummary
   excludeFromTimeMetrics: Boolean
+  withScale: Boolean
 }
 
 type BillSummary {
@@ -121,6 +122,7 @@ input TicketSubmitInput {
   weight: Float!
   credit: Boolean!
   bill: Boolean!
+  withScale: Boolean!
   promotion: ID
 }
 
