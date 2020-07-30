@@ -41,7 +41,32 @@ const userMutations = {
   },
   userEdit: authenticated(async (_, args) =>
     User.findOneAndUpdate({ _id: args.user.id }, { ...args.user }, { new: true })
-  )
+  ),
+  userDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const userToDelete = await User.findById(id);
+
+      if (userToDelete.role === 'ADMIN' && userRequesting.role !== 'ADMIN')
+        return false;
+
+      if ((userToDelete.role === 'ADMIN' || userToDelete.role === 'MANAGER') && userRequesting.role === 'SUPPORT')
+        return false;
+
+      await User.deleteById(id, userRequesting.id);
+      return true;
+    } catch (e) {
+      return e;
+    }
+  }),
+  userRestore: authenticated(async (_, { id }) => {
+    try {
+      const userToRestore = await User.findById(id);
+      await userToRestore.restore();
+      return true;
+    } catch (e) {
+      return e;
+    }
+  })
 };
 
 export default userMutations;
