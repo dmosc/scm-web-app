@@ -1,15 +1,6 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import {
-  Client,
-  ClientCreditLimit,
-  ClientPrice,
-  Folio,
-  Promotion,
-  Rock,
-  Ticket,
-  Truck
-} from '../../../mongo-db/models';
+import { Client, ClientCreditLimit, ClientPrice, Folio, Promotion, Rock, Ticket, Truck } from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -281,7 +272,7 @@ const ticketMutations = {
     return true;
   }),
   ticketSubmit: authenticated(async (_, args, { req: { userRequesting }, pubsub }) => {
-    const { id, driver, weight, credit, bill, promotion: promotionId } = args.ticket;
+    const { id, driver, weight, credit, bill, promotion: promotionId, withScale } = args.ticket;
 
     const newTicket = await Ticket.findOneAndUpdate(
       { _id: id },
@@ -290,7 +281,8 @@ const ticketMutations = {
         weight: weight.toFixed(2),
         bill,
         $unset: { promotion: 1 },
-        'usersInvolved.cashier': userRequesting.id
+        'usersInvolved.cashier': userRequesting.id,
+        withScale
       },
       { new: true }
     ).populate('client truck');
