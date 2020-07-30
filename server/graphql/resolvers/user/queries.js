@@ -12,6 +12,7 @@ const userQueries = {
   },
   users: authenticated(async (_, { filters: { limit, search } }) => {
     const users = await User.find({
+      deleted: false,
       kind: {
         $exists: false
       },
@@ -25,6 +26,12 @@ const userQueries = {
     }).limit(limit || Number.MAX_SAFE_INTEGER);
 
     if (!users) throw new ApolloError('¡Ha habido un error cargando los usuarios!');
+    else return users;
+  }),
+  deletedUsers: authenticated(async () => {
+    const users = await User.find({ deleted: true, kind: { $exists: false } });
+
+    if (!users) throw new ApolloError('¡Ha habido un error cargando los usuarios eliminados!');
     else return users;
   })
 };
