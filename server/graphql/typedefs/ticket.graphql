@@ -22,11 +22,19 @@ type Ticket {
   outTruckImage: String
   outTruckImageBack: String
   bill: Boolean!
+  isBilled: Boolean
+  usersInvolved: UsersInvolved
   turn: Turn
   disabledAt: Date
   time: Int # This only works in ticketTimesSummary
   excludeFromTimeMetrics: Boolean
   withScale: Boolean
+}
+
+type UsersInvolved {
+  guard: User
+  loader: User
+  cashier: User
 }
 
 type BillSummary {

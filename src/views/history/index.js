@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
 import moment from 'moment-timezone';
+import { useAuth } from 'components/providers/withAuth';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { format, printPDF } from 'utils/functions';
 import { Button, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
 import Title from './components/title';
+import Audit from './components/audit';
 import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
 
@@ -26,9 +28,11 @@ const History = ({ client }) => {
     productId: '',
     folio: ''
   });
+  const { isAdmin, isManager } = useAuth();
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
   const [results, setResults] = useState(0);
+  const [ticketAuditing, setTicketAuditing] = useState(null);
   const debouncedFolio = useDebounce(filters.folio, 500);
 
   const handleFilterChange = (key, value) => {
@@ -190,6 +194,16 @@ const History = ({ client }) => {
               size="small"
             />
           </Tooltip>
+          {(isAdmin || isManager) && (
+            <Tooltip placement="top" title="Auditoría">
+              <Button
+                style={{ marginLeft: 5 }}
+                onClick={() => setTicketAuditing(row.id)}
+                icon="monitor"
+                size="small"
+              />
+            </Tooltip>
+          )}
         </Row>
       )
     }
@@ -197,6 +211,11 @@ const History = ({ client }) => {
 
   return (
     <HistoryContainer>
+      <Audit
+        ticketAuditing={ticketAuditing}
+        visible={!!ticketAuditing}
+        onClose={() => setTicketAuditing(null)}
+      />
       <TableContainer>
         <Card bordered={false}>
           <Table
