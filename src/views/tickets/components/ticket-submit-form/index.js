@@ -38,7 +38,7 @@ const TicketSubmitForm = ({
   const [isSocket, setIsSocket] = useState(false);
   const [isStable, setIsStable] = useState(true);
   const { setFieldsValue } = form;
-  const isManualInputValid = !isAdmin && !isManager && !isSupport;
+  const isManualInputValid = isAdmin || isManager || isSupport;
 
   const calculateTotal = useCallback(async () => {
     const TAX = 0.16;
@@ -289,9 +289,7 @@ const TicketSubmitForm = ({
       onOk={handleSubmit}
       okText={isStable ? 'Enviar' : 'Inestable'}
       cancelText="Cancelar"
-      okButtonProps={{
-        disabled: !isStable || isManualInputValid || weight <= 0
-      }}
+      okButtonProps={{ disabled: !isStable || weight <= 0 }}
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item>
@@ -347,8 +345,8 @@ const TicketSubmitForm = ({
           )) || (
             <InputNumber
               style={{ width: '100%' }}
-              disabled={isManualInputValid}
-              placeholder={isManualInputValid ? 'Supervisor requerido' : 'Toneladas registradas en báscula'}
+              disabled={!isManualInputValid}
+              placeholder={!isManualInputValid ? 'Supervisor requerido' : 'Toneladas registradas en báscula'}
               min={0}
               step={0.01}
               onChange={value => setWeight(value)}
