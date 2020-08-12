@@ -23,30 +23,21 @@ const GET_HISTORY_TICKETS = gql`
     ) {
       id
       folio
-      driver
+      out
       client {
         id
-        firstName
-        lastName
         businessName
-        rfc
       }
       truck {
         id
         plates
-        weight
       }
-      weight
-      totalWeight
       totalPrice
-      tax
       product {
         id
         name
       }
-      inTruckImage
-      outTruckImage
-      out
+      tax
     }
   }
 `;

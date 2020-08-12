@@ -200,6 +200,7 @@ const TableTitle = ({ client, handleFilterChange, handleDateFilterChange, filter
               ]
             }}
             onChange={dates => handleDateFilterChange(dates)}
+            defaultValue={[moment().subtract(1, 'month'), moment()]}
           />
         </InputContainer>
         <InputContainer>

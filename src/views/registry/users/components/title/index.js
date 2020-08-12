@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Input, Button } from 'antd';
+import { Button, Input, Typography } from 'antd';
 import TitleContainer from './elements';
 
 const { Title } = Typography;
 const { Search } = Input;
 
-const TableTitle = ({ handleFilterChange, toggleNewUserModal }) => {
+const TableTitle = ({ handleFilterChange, toggleNewUserModal, toggleDeletedUsersModal }) => {
   return (
     <TitleContainer>
       <Title style={{ margin: 'auto 10px' }} level={3}>
@@ -21,13 +21,17 @@ const TableTitle = ({ handleFilterChange, toggleNewUserModal }) => {
       <Button type="primary" icon="user-add" onClick={() => toggleNewUserModal(true)}>
         Añadir
       </Button>
+      <Button type="link" icon="user-delete" onClick={() => toggleDeletedUsersModal(true)}>
+        Ver eliminados
+      </Button>
     </TitleContainer>
   );
 };
 
 TableTitle.propTypes = {
   handleFilterChange: PropTypes.func.isRequired,
-  toggleNewUserModal: PropTypes.func.isRequired
+  toggleNewUserModal: PropTypes.func.isRequired,
+  toggleDeletedUsersModal: PropTypes.func.isRequired
 };
 
 export default TableTitle;

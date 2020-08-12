@@ -46,6 +46,7 @@ type Query {
   # User
   user(id: ID!): User @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER, AUDITOR, DRIVER])
   users(filters: UserFilters!): [User!]! @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, SALES])
+  deletedUsers: [User!]! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
   client(id: ID!): Client @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   clients(filters: ClientFilters!): [Client!]! @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
@@ -96,9 +97,9 @@ type Query {
     @auth(roles: [ADMIN, LOADER, MANAGER, MANAGER, SUPPORT])
   loadedTickets(filters: TicketFilters!): [Ticket!]! @auth(roles: [ADMIN, LOADER, MANAGER, SUPPORT])
   ticketsPendingToBill(client: ID!, type: TicketBillType!): [Ticket!]!
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   ticketsToBillSummary(tickets: [ID!]!, turnToBill: Boolean!): BillSummary!
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   archivedTickets(
     range: DateRange
     turnId: ID
@@ -278,6 +279,8 @@ type Mutation {
   user(user: UserRegisterInput!): User!
   login(user: UserLogin!): String!
   userEdit(user: UserEditInput!): User @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  userDelete(id: ID!): Boolean @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  userRestore(id: ID!): Boolean @auth(roles: [ADMIN, MANAGER, SUPPORT])
   # Client
   client(client: ClientInput!): Client @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
   clientAddToBalance(client: ID!, toAdd: Float!): Client
@@ -330,9 +333,9 @@ type Mutation {
   message(message: MessageInput!): Message
   @auth(roles: [ADMIN, CASHIER, LOADER, ACCOUNTANT, MANAGER, SUPPORT])
   # Turn
-  turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, COLLECTOR, COLLECTOR_AUX])
-  turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, COLLECTOR, COLLECTOR_AUX])
-  turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, COLLECTOR, COLLECTOR_AUX])
+  turnInit(turn: TurnInitInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT COLLECTOR, COLLECTOR_AUX])
+  turnEnd(turn: TurnEndInput!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT COLLECTOR, COLLECTOR_AUX])
+  turnAddTicket(turn: TurnAddTicket!): Turn @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # Price Request
   priceRequest(priceRequest: PriceRequestInput!): PriceRequest
   @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, COLLECTOR, COLLECTOR_AUX])
@@ -411,7 +414,7 @@ type Mutation {
     # Misc
     fileUpload(file: Upload!, folderKey: s3FolderKey!, id: ID!): String!
     imageUpload(image: String!, folderKey: s3FolderKey!, id: ID!): String!
-    @auth(roles: [ADMIN, CASHIER, GUARD, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, GUARD, COLLECTOR, COLLECTOR_AUX])
 }
 
 type Subscription {

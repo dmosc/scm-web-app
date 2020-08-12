@@ -31,7 +31,8 @@ const Ticket = new Schema({
     cashier: { type: Schema.Types.ObjectId, ref: 'User', required: false }
   },
   turn: { type: Schema.Types.ObjectId, ref: 'Turn', required: false },
-  excludeFromTimeMetrics: { type: Boolean, default: false }
+  excludeFromTimeMetrics: { type: Boolean, default: false },
+  withScale: { type: Boolean, default: true }
 });
 
 Ticket.plugin(softDelete, { deletedAt: true });

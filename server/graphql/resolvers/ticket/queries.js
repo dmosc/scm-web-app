@@ -18,17 +18,20 @@ import authenticated from '../../middleware/authenticated';
 import { createPDF } from '../../../utils/pdfs';
 
 const ticketQueries = {
-  ticket: authenticated(async (_, { args }) => {
+  ticket: authenticated(async (_, args) => {
     const { id } = args;
-    const ticket = await Ticket.findById(id).populate([
-      {
-        path: 'client truck product turn promotion',
-        populate: {
-          path: 'stores',
-          model: 'Store'
+    const ticket = await Ticket.findById(id)
+      .populate(
+        'client truck product store promotion usersInvolved.guard usersInvolved.loader usersInvolved.cashier'
+      )
+      .populate([
+        {
+          path: 'turn',
+          populate: {
+            path: 'user'
+          }
         }
-      }
-    ]);
+      ]);
 
     if (!ticket) throw new Error('¡No ha sido posible encontrar el ticket!');
 

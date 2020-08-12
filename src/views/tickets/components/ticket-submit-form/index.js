@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
+import { useAuth } from 'components/providers/withAuth';
 import { isUnlimited } from 'utils/constants/credit';
 import { Form, Icon, InputNumber, message, Modal, Radio, Select, Tag, Tooltip, Typography } from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
@@ -20,6 +21,7 @@ const TicketSubmitForm = ({
   setCurrent,
   currentForm
 }) => {
+  const { isAdmin, isManager, isSupport } = useAuth();
   const [productRate, setProductRate] = useState(null);
   const [drivers, setDrivers] = useState([]);
   const [weight, setWeight] = useState(0);
@@ -36,6 +38,7 @@ const TicketSubmitForm = ({
   const [isSocket, setIsSocket] = useState(false);
   const [isStable, setIsStable] = useState(true);
   const { setFieldsValue } = form;
+  const isManualInputValid = !isAdmin && !isManager && !isSupport;
 
   const calculateTotal = useCallback(async () => {
     const TAX = 0.16;
@@ -260,6 +263,7 @@ const TicketSubmitForm = ({
                   weight: weightToSubmit,
                   credit: creditBill,
                   bill: formBill,
+                  withScale: isSocket,
                   promotion
                 }
               }
@@ -284,8 +288,9 @@ const TicketSubmitForm = ({
       onCancel={() => setCurrent()}
       onOk={handleSubmit}
       okText={isStable ? 'Enviar' : 'Inestable'}
+      cancelText="Cancelar"
       okButtonProps={{
-        disabled: !isStable
+        disabled: !isStable || isManualInputValid || weight <= 0
       }}
     >
       <Form onSubmit={handleSubmit}>
@@ -342,7 +347,8 @@ const TicketSubmitForm = ({
           )) || (
             <InputNumber
               style={{ width: '100%' }}
-              placeholder="Toneladas registrados en báscula"
+              disabled={isManualInputValid}
+              placeholder={isManualInputValid ? 'Supervisor requerido' : 'Toneladas registradas en báscula'}
               min={0}
               step={0.01}
               onChange={value => setWeight(value)}
