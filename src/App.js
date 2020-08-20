@@ -165,66 +165,76 @@ const App = ({
       {!token && <Redirect from={`${pathname}`} to="/auth" />}
       <Layout user={user} collapsed={collapsed} onCollapse={setCollapsed}>
         <Switch>
-          {!isAuditor && <Route exact path="/dashboard" component={Dashboard}/>}
+          {!isAuditor && <Route exact path="/dashboard" component={Dashboard} />}
           {(isAdmin || isCashier || isSupport || isManager || isCollector || isCollectorAux) && (
-            <Route exact path="/boletas" component={Tickets}/>
+            <Route exact path="/boletas" component={Tickets} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux) && (
-            <Route exact path="/registros/clientes" component={Clients}/>
+            <Route exact path="/registros/clientes" component={Clients} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux) && (
-            <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests}/>
+            <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests} />
           )}
           {(isAdmin || isSupport || isManager) && (
-            <Route exact path="/registros/grupos" component={ClientsGroup}/>
+            <Route exact path="/registros/grupos" component={ClientsGroup} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux) && (
-            <Route exact path="/registros/camiones" component={Trucks}/>
+            <Route exact path="/registros/camiones" component={Trucks} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
-            <Route exact path="/registros/productos" component={Products}/>
+            <Route exact path="/registros/productos" component={Products} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
-            <Route exact path="/registros/peticiones-productos" component={ProductPriceRequests}/>
+            <Route exact path="/registros/peticiones-productos" component={ProductPriceRequests} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isSales) && (
-            <Route exact path="/registros/promociones" component={Promotions}/>
+            <Route exact path="/registros/promociones" component={Promotions} />
           )}
           {(isAdmin || isSupport || isManager) && (
-            <Route exact path="/registros/maquinas" component={Machines}/>
+            <Route exact path="/registros/maquinas" component={Machines} />
           )}
           {(isAdmin || isSupport || isManager) && (
-            <Route exact path="/registros/diesel" component={DieselRegistry}/>
+            <Route exact path="/registros/diesel" component={DieselRegistry} />
           )}
           {(isAdmin || isAccountant || isSupport || isManager) && (
-            <Route exact path="/registros/usuarios" component={Users}/>
+            <Route exact path="/registros/usuarios" component={Users} />
           )}
-          {(isAdmin || isManager || isSales) &&
-          <Route path="/ventas" component={Sales}/>}
-          {(!isGuard) && (
-            <Route path="/reportes" component={Reports}/>
-          )}
+          {(isAdmin || isManager || isSales) && <Route path="/ventas" component={Sales} />}
+          {!isGuard && <Route path="/reportes" component={Reports} />}
           {(isAdmin || isSupport || isManager || isDriver) && (
-            <Route path="/produccion" component={Production}/>
+            <Route path="/produccion" component={Production} />
           )}
-          {(isAdmin || isAccountant || isSupport || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
-            <Route exact path="/historial" component={History}/>
-          )}
-          {(isAdmin || isAccountant || isManager || isCashier || isCollector || isCollectorAux || isTreasurer) && (
-            <Route path="/facturas" component={Bills}/>
-          )}
+          {(isAdmin ||
+            isAccountant ||
+            isSupport ||
+            isManager ||
+            isCashier ||
+            isCollector ||
+            isCollectorAux ||
+            isTreasurer) && <Route exact path="/historial" component={History} />}
+          {(isAdmin ||
+            isAccountant ||
+            isManager ||
+            isCashier ||
+            isCollector ||
+            isCollectorAux ||
+            isTreasurer) && <Route path="/facturas" component={Bills} />}
           {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
-            <Route exact path="/mensajes" component={Messages}/>
+            <Route exact path="/mensajes" component={Messages} />
           )}
-          {(isAdmin || isGuard || isSupport || isManager || isCashier || isCollector || isCollectorAux) && (
-            <Route exact path="/accesos" component={Access}/>
-          )}
+          {(isAdmin ||
+            isGuard ||
+            isSupport ||
+            isManager ||
+            isCashier ||
+            isCollector ||
+            isCollectorAux) && <Route exact path="/accesos" component={Access} />}
           {(isAdmin || isLoader || isSupport || isManager) && (
-            <Route exact path="/cargas" component={Load}/>
+            <Route exact path="/cargas" component={Load} />
           )}
-          {isGuard && <Redirect to="/accesos"/>}
-          {isDriver && <Redirect to="/produccion"/>}
-          {isLoader && <Redirect to="/cargas"/>}
+          {isGuard && <Redirect to="/accesos" />}
+          {isDriver && <Redirect to="/produccion" />}
+          {isLoader && <Redirect to="/cargas" />}
           {!isGuard && <Redirect to="/dashboard" />}
         </Switch>
       </Layout>

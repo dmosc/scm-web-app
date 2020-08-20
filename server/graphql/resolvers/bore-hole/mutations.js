@@ -31,10 +31,11 @@ const boreHoleMutations = {
     return BoreHole.findById(boreHole.id).populate('createdBy machine');
   }),
   boreHoleEdit: authenticated(async (_, args) => {
-    return BoreHole.findByIdAndUpdate(args.boreHole.id,
+    return BoreHole.findByIdAndUpdate(
+      args.boreHole.id,
       { ...args.boreHole },
-      { new: true })
-      .populate('createdBy machine');
+      { new: true }
+    ).populate('createdBy machine');
   }),
   boreHoleDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
     try {

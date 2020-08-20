@@ -34,13 +34,14 @@ const DeletedUsers = ({ client, users, visible, toggleDeletedUsersModal, setUser
   const restoreUser = userToRestore => {
     confirm({
       title: `¿Estás seguro de que deseas recuperar a ${userToRestore.username}?`,
-      content:
-        'Una vez recuperado, será considerado como un usuario activo en el sistema.',
+      content: 'Una vez recuperado, será considerado como un usuario activo en el sistema.',
       okType: 'danger',
       okText: 'Eliminar',
       cancelText: 'Cancelar',
       onOk: async () => {
-        const { data: { userRestore } } = await client.mutate({
+        const {
+          data: { userRestore }
+        } = await client.mutate({
           mutation: RESTORE_USER,
           variables: { id: userToRestore.id }
         });
@@ -54,8 +55,7 @@ const DeletedUsers = ({ client, users, visible, toggleDeletedUsersModal, setUser
           message.error('Ha sucedido un error intentando recuperar al usuario!');
         }
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 

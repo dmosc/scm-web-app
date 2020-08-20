@@ -1,6 +1,15 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import { Client, ClientCreditLimit, ClientPrice, Folio, Promotion, Rock, Ticket, Truck } from '../../../mongo-db/models';
+import {
+  Client,
+  ClientCreditLimit,
+  ClientPrice,
+  Folio,
+  Promotion,
+  Rock,
+  Ticket,
+  Truck
+} from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 

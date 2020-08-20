@@ -71,7 +71,9 @@ const Users = ({ client }) => {
       okText: 'Eliminar',
       cancelText: 'Cancelar',
       onOk: async () => {
-        const { data: { userDelete } } = await client.mutate({
+        const {
+          data: { userDelete }
+        } = await client.mutate({
           mutation: DELETE_USER,
           variables: { id: userToDelete.id }
         });
@@ -83,8 +85,7 @@ const Users = ({ client }) => {
           message.error('Ha sucedido un error intentando eliminar al usuario!');
         }
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
@@ -156,7 +157,6 @@ const Users = ({ client }) => {
             </Tooltip>
           )}
         </Row>
-
       )
     }
   ];

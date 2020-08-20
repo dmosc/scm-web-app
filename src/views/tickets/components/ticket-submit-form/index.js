@@ -4,9 +4,25 @@ import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
 import { useAuth } from 'components/providers/withAuth';
 import { isUnlimited } from 'utils/constants/credit';
-import { Form, Icon, InputNumber, message, Modal, Radio, Select, Tag, Tooltip, Typography } from 'antd';
+import {
+  Form,
+  Icon,
+  InputNumber,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import { GET_CREDIT_LIMIT, GET_PRODUCT_RATE, GET_SPECIAL_PRICE, GET_TRUCK_DRIVERS } from './graphql/queries';
+import {
+  GET_CREDIT_LIMIT,
+  GET_PRODUCT_RATE,
+  GET_SPECIAL_PRICE,
+  GET_TRUCK_DRIVERS
+} from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
@@ -58,20 +74,13 @@ const TicketSubmitForm = ({
     const taxToSet = bill ? netWeight * price * TAX : 0;
     const totalToSet = (netWeight * price + taxToSet).toFixed(2);
 
-    if (!isSocket) { // If weight is entered manually
+    if (!isSocket) {
+      // If weight is entered manually
       setModifiedWeight(currentTicket.truck.weight + parseFloat(netWeight));
     }
 
     setTotal(parseFloat(totalToSet));
-  }, [
-    weight,
-    currentTicket,
-    currentTicketPromotions,
-    promotion,
-    isSocket,
-    bill,
-    specialPrice
-  ]);
+  }, [weight, currentTicket, currentTicketPromotions, promotion, isSocket, bill, specialPrice]);
 
   useEffect(() => {
     let socket;
@@ -346,7 +355,9 @@ const TicketSubmitForm = ({
             <InputNumber
               style={{ width: '100%' }}
               disabled={!isManualInputValid}
-              placeholder={!isManualInputValid ? 'Supervisor requerido' : 'Toneladas registradas en báscula'}
+              placeholder={
+                !isManualInputValid ? 'Supervisor requerido' : 'Toneladas registradas en báscula'
+              }
               min={0}
               step={0.01}
               onChange={value => setWeight(value)}

@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
-import { Checkbox, DatePicker, Divider, Form, Icon, Input, InputNumber, message, Modal, Select } from 'antd';
+import {
+  Checkbox,
+  DatePicker,
+  Divider,
+  Form,
+  Icon,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Select
+} from 'antd';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { NEW_SUPPLY_TRANSACTION_IN } from './graphql/mutations';
 import { GET_SUPPLIES } from './graphql/queries';
@@ -9,14 +20,23 @@ import { GET_SUPPLIES } from './graphql/queries';
 const { Option } = Select;
 const { TextArea } = Input;
 
-const SupplyTransactionInForm = ({ form, supplyTransactionsIn, isTransactionModalOpen, toggleTransactionModal, setSupplyTransactionsIn, updateFather }) => {
+const SupplyTransactionInForm = ({
+  form,
+  supplyTransactionsIn,
+  isTransactionModalOpen,
+  toggleTransactionModal,
+  setSupplyTransactionsIn,
+  updateFather
+}) => {
   const [loading, setLoading] = useState(false);
   const [loadingSupplies, setLoadingSupplies] = useState(false);
   const [supplies, setSupplies] = useState([]);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
   const [newSupplyTransactionMutation] = useMutation(NEW_SUPPLY_TRANSACTION_IN);
-  const suppliesQuery = useQuery(GET_SUPPLIES, { variables: { filters: { search: debouncedSearch } } });
+  const suppliesQuery = useQuery(GET_SUPPLIES, {
+    variables: { filters: { search: debouncedSearch } }
+  });
 
   useEffect(() => {
     const { data } = suppliesQuery;
@@ -37,7 +57,9 @@ const SupplyTransactionInForm = ({ form, supplyTransactionsIn, isTransactionModa
         const {
           errors,
           data: { supplyTransactionIn }
-        } = await newSupplyTransactionMutation({ variables: { supplyTransactionIn: { ...args, supply: args.supply.split(':')[0] } } });
+        } = await newSupplyTransactionMutation({
+          variables: { supplyTransactionIn: { ...args, supply: args.supply.split(':')[0] } }
+        });
 
         if (errors) {
           errorsToSet = { ...errors };
@@ -116,7 +138,7 @@ const SupplyTransactionInForm = ({ form, supplyTransactionsIn, isTransactionModa
               min={0}
               step={0.1}
               placeholder="Ingrese la cantidad inicial de unidades"
-              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />
           )}
         </Form.Item>
@@ -129,7 +151,7 @@ const SupplyTransactionInForm = ({ form, supplyTransactionsIn, isTransactionModa
                 message: 'La fecha de ejecución es requerida!'
               }
             ]
-          })(<DatePicker/>)}
+          })(<DatePicker />)}
         </Form.Item>
         <Form.Item>
           <Divider style={{ marginTop: 0 }} orientation="left">

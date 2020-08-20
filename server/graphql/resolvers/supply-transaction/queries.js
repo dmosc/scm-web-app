@@ -3,8 +3,7 @@ import authenticated from '../../middleware/authenticated';
 
 const supplyTransactionQueries = {
   supplyTransactionsIn: authenticated(async (_, { filters: { limit } }) => {
-    const supplies = await SupplyTrainsactionIn
-      .find({ deleted: false })
+    const supplies = await SupplyTrainsactionIn.find({ deleted: false })
       .populate('supply createdBy')
       .limit(limit);
 
@@ -13,8 +12,7 @@ const supplyTransactionQueries = {
     return supplies;
   }),
   supplyTransactionsOut: authenticated(async (_, { filters: { limit } }) => {
-    const supplies = await SupplyTrainsactionOut
-      .find({ deleted: false })
+    const supplies = await SupplyTrainsactionOut.find({ deleted: false })
       .populate('supply machine createdBy')
       .limit(limit);
 

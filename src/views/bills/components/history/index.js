@@ -145,7 +145,7 @@ const History = ({ client }) => {
           </Tooltip>
           {(isAdmin || isManager || isAccountant || isCollector || isCollectorAux) && (
             <Tooltip placement="top" title="Eliminar">
-              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small"/>
+              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small" />
             </Tooltip>
           )}
         </Row>

@@ -43,8 +43,7 @@ const LapStatus = ({ currentLap, setCurrentLap }) => {
           message.error('Ha habido un error terminando la vuelta!');
         }
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
@@ -71,8 +70,7 @@ const LapStatus = ({ currentLap, setCurrentLap }) => {
           message.error('Ha habido un error cancelando la vuelta!');
         }
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
@@ -82,22 +80,12 @@ const LapStatus = ({ currentLap, setCurrentLap }) => {
   return (
     <Card>
       <TitleContainer>
-        <Title level={3}>
-          Bitácora de vuelta
-        </Title>
+        <Title level={3}>Bitácora de vuelta</Title>
         <ButtonContainer>
-          <Button
-            type="danger"
-            icon="delete"
-            onClick={lapCancel}
-          >
+          <Button type="danger" icon="delete" onClick={lapCancel}>
             Cancelar
           </Button>
-          <Button
-            type="primary"
-            icon="pull-request"
-            onClick={lapEnd}
-          >
+          <Button type="primary" icon="pull-request" onClick={lapEnd}>
             Terminar
           </Button>
         </ButtonContainer>
@@ -112,7 +100,9 @@ const LapStatus = ({ currentLap, setCurrentLap }) => {
       </LineContainer>
       <LineContainer>
         <Text strong>Duración del viaje: </Text>
-        <Tag style={{ marginLeft: 10 }} color="blue">{`${differenceInMinutes.toFixed(2)} minutos`}</Tag>
+        <Tag style={{ marginLeft: 10 }} color="blue">{`${differenceInMinutes.toFixed(
+          2
+        )} minutos`}</Tag>
       </LineContainer>
     </Card>
   );

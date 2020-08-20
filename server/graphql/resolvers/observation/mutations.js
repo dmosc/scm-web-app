@@ -3,7 +3,10 @@ import { Lap, Observation } from '../../../mongo-db/models';
 
 const observationMutations = {
   observationInit: authenticated(async (_, args) => {
-    const isObservationActive = await Observation.findOne({ end: { $exists: false }, lap: args.observation.lap });
+    const isObservationActive = await Observation.findOne({
+      end: { $exists: false },
+      lap: args.observation.lap
+    });
 
     if (isObservationActive) throw new Error('Ya hay una observación de esta vuelta activa!');
 
@@ -23,10 +26,14 @@ const observationMutations = {
   observationEnd: authenticated(async (_, args) => {
     const { id, description } = args.observation;
 
-    return Observation.findByIdAndUpdate(id, {
-      end: new Date(),
-      description
-    }, { new: true }).populate('lap');
+    return Observation.findByIdAndUpdate(
+      id,
+      {
+        end: new Date(),
+        description
+      },
+      { new: true }
+    ).populate('lap');
   })
 };
 

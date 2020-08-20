@@ -8,7 +8,11 @@ import { Card, TableContainer } from './elements';
 import SupplyForm from './components/supply-form';
 import SupplyTransactionInForm from './components/supply-transaction-in-form';
 import SupplyTransactionOutForm from './components/supply-transaction-out-form';
-import { GET_SUPPLIES, GET_SUPPLY_TRANSACTIONS_IN, GET_SUPPLY_TRANSACTIONS_OUT } from './graphql/queries';
+import {
+  GET_SUPPLIES,
+  GET_SUPPLY_TRANSACTIONS_IN,
+  GET_SUPPLY_TRANSACTIONS_OUT
+} from './graphql/queries';
 import { DELETE_SUPPLY_TRANSACTION_IN, DELETE_SUPPLY_TRANSACTION_OUT } from './graphql/mutations';
 
 const { TabPane } = Tabs;
@@ -23,27 +27,28 @@ const Supplies = () => {
   const [isSupplyFormModalOpen, toggleSupplyFormModal] = useState(false);
   const [isTransactionModalOpen, toggleTransactionModal] = useState(false);
   const suppliesQuery = useQuery(GET_SUPPLIES, { variables: { filters: {} } });
-  const supplyTransactionsInQuery = useQuery(GET_SUPPLY_TRANSACTIONS_IN, { variables: { filters: {} } });
-  const supplyTransactionsOutQuery = useQuery(GET_SUPPLY_TRANSACTIONS_OUT, { variables: { filters: {} } });
+  const supplyTransactionsInQuery = useQuery(GET_SUPPLY_TRANSACTIONS_IN, {
+    variables: { filters: {} }
+  });
+  const supplyTransactionsOutQuery = useQuery(GET_SUPPLY_TRANSACTIONS_OUT, {
+    variables: { filters: {} }
+  });
   const [supplyTransactionOutDeleteMutation] = useMutation(DELETE_SUPPLY_TRANSACTION_OUT);
   const [supplyTransactionInDeleteMutation] = useMutation(DELETE_SUPPLY_TRANSACTION_IN);
 
   useEffect(() => {
     const { data } = suppliesQuery;
-    if (data?.supplies)
-      setSupplies(data?.supplies);
+    if (data?.supplies) setSupplies(data?.supplies);
   }, [suppliesQuery]);
 
   useEffect(() => {
     const { data } = supplyTransactionsInQuery;
-    if (data?.supplyTransactionsIn)
-      setSupplyTransactionsIn(data?.supplyTransactionsIn);
+    if (data?.supplyTransactionsIn) setSupplyTransactionsIn(data?.supplyTransactionsIn);
   }, [supplyTransactionsInQuery]);
 
   useEffect(() => {
     const { data } = supplyTransactionsOutQuery;
-    if (data?.supplyTransactionsOut)
-      setSupplyTransactionsOut(data?.supplyTransactionsOut);
+    if (data?.supplyTransactionsOut) setSupplyTransactionsOut(data?.supplyTransactionsOut);
   }, [supplyTransactionsOutQuery]);
 
   const deleteSupplyTransaction = transaction => {
@@ -61,14 +66,17 @@ const Supplies = () => {
 
         message.success('El registro ha sido removido exitosamente!');
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
   const SupplyFormRegister = Form.create({ name: 'supply-form' })(SupplyForm);
-  const SupplyTransactionInFormRegister = Form.create({ name: 'supply-transaction-in-form' })(SupplyTransactionInForm);
-  const SupplyTransactionOutFormRegister = Form.create({ name: 'supply-transaction-out-form' })(SupplyTransactionOutForm);
+  const SupplyTransactionInFormRegister = Form.create({ name: 'supply-transaction-in-form' })(
+    SupplyTransactionInForm
+  );
+  const SupplyTransactionOutFormRegister = Form.create({ name: 'supply-transaction-out-form' })(
+    SupplyTransactionOutForm
+  );
 
   const columns = [
     {
@@ -94,12 +102,7 @@ const Supplies = () => {
       render: row => (
         <Row>
           <Tooltip placement="top" title="Editar">
-            <Button
-              type="primary"
-              icon="edit"
-              size="small"
-              onClick={() => setCurrentSupply(row)}
-            />
+            <Button type="primary" icon="edit" size="small" onClick={() => setCurrentSupply(row)} />
           </Tooltip>
         </Row>
       )
@@ -177,7 +180,8 @@ const Supplies = () => {
       title: 'Reajuste',
       dataIndex: 'isAdjustment',
       key: 'isAdjustment',
-      render: isAdjustment => isAdjustment ? <Icon type="check-square" theme="twoTone"/> : undefined
+      render: isAdjustment =>
+        isAdjustment ? <Icon type="check-square" theme="twoTone" /> : undefined
     },
     {
       title: 'Creado por',
@@ -220,14 +224,17 @@ const Supplies = () => {
             />
           }
         >
-          <TabPane tab="Salidas" key="OUTS"/>
-          <TabPane tab="Entradas" key="INS"/>
+          <TabPane tab="Salidas" key="OUTS" />
+          <TabPane tab="Entradas" key="INS" />
         </Tabs>
         <Table
           size="small"
           columns={tab === 'OUTS' ? columnsOuts : columnsIns}
           pagination={{ defaultPageSize: 20 }}
-          dataSource={(tab === 'OUTS' ? supplyTransactionsOut : supplyTransactionsIn).map(supply => ({ ...supply, key: shortid.generate() }))}
+          dataSource={(tab === 'OUTS'
+            ? supplyTransactionsOut
+            : supplyTransactionsIn
+          ).map(supply => ({ ...supply, key: shortid.generate() }))}
         />
       </Card>
       <Card style={{ width: '80%', marginLeft: 20 }}>
@@ -235,11 +242,7 @@ const Supplies = () => {
           size="small"
           columns={columns}
           pagination={{ defaultPageSize: 20 }}
-          title={() => (
-            <Title
-              toggleSupplyFormModal={toggleSupplyFormModal}
-            />
-          )}
+          title={() => <Title toggleSupplyFormModal={toggleSupplyFormModal} />}
           dataSource={supplies.map(supply => ({ ...supply, key: shortid.generate() }))}
         />
       </Card>
@@ -253,7 +256,7 @@ const Supplies = () => {
           setCurrentSupply={setCurrentSupply}
         />
       )}
-      {(isTransactionModalOpen && tab === 'INS') && (
+      {isTransactionModalOpen && tab === 'INS' && (
         <SupplyTransactionInFormRegister
           supplyTransactionsIn={supplyTransactionsIn}
           isTransactionModalOpen={isTransactionModalOpen}
@@ -262,7 +265,7 @@ const Supplies = () => {
           updateFather={suppliesQuery.refetch}
         />
       )}
-      {(isTransactionModalOpen && tab === 'OUTS') && (
+      {isTransactionModalOpen && tab === 'OUTS' && (
         <SupplyTransactionOutFormRegister
           supplyTransactionsOut={supplyTransactionsOut}
           isTransactionModalOpen={isTransactionModalOpen}

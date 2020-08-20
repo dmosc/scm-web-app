@@ -150,7 +150,7 @@ const TicketInit = ({ client, user }) => {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    toggleCapturer(false)
+    toggleCapturer(false);
 
     if (!inTruckImages.top) {
       message.error('Es necesaria almenos la imagen superior del camión');

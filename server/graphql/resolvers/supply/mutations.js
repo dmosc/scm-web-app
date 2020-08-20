@@ -14,9 +14,7 @@ const supplyMutations = {
     return Supply.findById(supply.id);
   }),
   supplyEdit: authenticated(async (_, args) => {
-    return Supply.findByIdAndUpdate(args.supply.id,
-      { ...args.supply },
-      { new: true });
+    return Supply.findByIdAndUpdate(args.supply.id, { ...args.supply }, { new: true });
   }),
   supplyDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
     try {

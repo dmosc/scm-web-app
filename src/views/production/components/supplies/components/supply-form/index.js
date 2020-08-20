@@ -8,7 +8,15 @@ import { EDIT_SUPPLY, NEW_SUPPLY } from './graphql/mutations';
 
 const { Option } = Select;
 
-const SupplyForm = ({ form, supplies, currentSupply, isSupplyFormModalOpen, toggleSupplyFormModal, setSupplies, setCurrentSupply }) => {
+const SupplyForm = ({
+  form,
+  supplies,
+  currentSupply,
+  isSupplyFormModalOpen,
+  toggleSupplyFormModal,
+  setSupplies,
+  setCurrentSupply
+}) => {
   const [loading, setLoading] = useState(false);
   const [newSupplyMutation] = useMutation(NEW_SUPPLY);
   const [supplyEditMutation] = useMutation(EDIT_SUPPLY);
@@ -24,14 +32,17 @@ const SupplyForm = ({ form, supplies, currentSupply, isSupplyFormModalOpen, togg
           const {
             errors,
             data: { supplyEdit }
-          } = await supplyEditMutation({ variables: { supply: { id: currentSupply.id, ...args } } });
+          } = await supplyEditMutation({
+            variables: { supply: { id: currentSupply.id, ...args } }
+          });
 
           if (errors) {
             errorsToSet = { ...errors };
           } else {
             supplyToSet = { ...supplyEdit };
-            const suppliesToSet = supplies
-              .map(supply => supply.id === currentSupply.id ? supplyToSet : supply);
+            const suppliesToSet = supplies.map(supply =>
+              supply.id === currentSupply.id ? supplyToSet : supply
+            );
             setSupplies(suppliesToSet);
           }
         } else {
@@ -94,7 +105,7 @@ const SupplyForm = ({ form, supplies, currentSupply, isSupplyFormModalOpen, togg
             ]
           })(
             <Input
-              prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="info" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Nombre de referencia"
             />
           )}
@@ -169,7 +180,7 @@ const SupplyForm = ({ form, supplies, currentSupply, isSupplyFormModalOpen, togg
               min={0}
               step={0.1}
               placeholder="Ingrese la cantidad inicial de unidades"
-              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />
           )}
         </Form.Item>

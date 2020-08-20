@@ -72,7 +72,7 @@ const EditForm = ({ form, currentMachine, onMachineEdit, setCurrentMachine, clie
             ]
           })(
             <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Nombre de referencia"
             />
           )}

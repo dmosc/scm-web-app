@@ -32,24 +32,12 @@ const Production = () => {
   const { isDriver } = useAuth();
   return (
     <Switch>
-      <Route
-        path="/produccion/voladuras"
-        render={() => <Blasts/>}
-      />
-      <Route
-        path="/produccion/barrenaciones"
-        render={() => <BoreHoles/>}
-      />
-      <Route
-        path="/produccion/suministros"
-        render={() => <Supplies/>}
-      />
-      <Route
-        path="/produccion/viajes"
-        render={() => <Trips/>}
-      />
-      {isDriver && <Redirect to="/produccion/viajes"/>}
-      <Redirect to="/produccion/voladuras"/>
+      <Route path="/produccion/voladuras" render={() => <Blasts />} />
+      <Route path="/produccion/barrenaciones" render={() => <BoreHoles />} />
+      <Route path="/produccion/suministros" render={() => <Supplies />} />
+      <Route path="/produccion/viajes" render={() => <Trips />} />
+      {isDriver && <Redirect to="/produccion/viajes" />}
+      <Redirect to="/produccion/voladuras" />
     </Switch>
   );
 };

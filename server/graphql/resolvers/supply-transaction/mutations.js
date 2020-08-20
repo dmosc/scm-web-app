@@ -19,7 +19,10 @@ const supplyTransactionMutations = {
     const supplyTransaction = new SupplyTrainsactionOut({ ...args.supplyTransactionOut });
     const supply = await Supply.findById(supplyTransaction.supply);
 
-    if (supply.quantity < supplyTransaction.quantity) throw new Error('No hay suministro disponible para la cantidad requerida. Realice un ajuste si es necesario!');
+    if (supply.quantity < supplyTransaction.quantity)
+      throw new Error(
+        'No hay suministro disponible para la cantidad requerida. Realice un ajuste si es necesario!'
+      );
 
     supplyTransaction.createdBy = userRequesting.id;
     supplyTransaction.createdAt = new Date();
@@ -28,7 +31,9 @@ const supplyTransactionMutations = {
     await supplyTransaction.save();
     await supply.save();
 
-    return SupplyTrainsactionOut.findById(supplyTransaction.id).populate('supply machine createdBy');
+    return SupplyTrainsactionOut.findById(supplyTransaction.id).populate(
+      'supply machine createdBy'
+    );
   }),
   supplyTransactionInDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
     try {

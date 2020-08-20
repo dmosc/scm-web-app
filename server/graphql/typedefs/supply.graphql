@@ -1,36 +1,36 @@
 # Types
 type Supply {
-    id: ID!
-    name: String!
-    type: SupplyType!
-    unit: Unit!
-    quantity: Float!
+  id: ID!
+  name: String!
+  type: SupplyType!
+  unit: Unit!
+  quantity: Float!
 }
 
 # Inputs
 input SupplyInput {
-    name: String!
-    type: SupplyType!
-    unit: Unit!
-    quantity: Float!
+  name: String!
+  type: SupplyType!
+  unit: Unit!
+  quantity: Float!
 }
 
 input SupplyEditInput {
-    id: ID!
-    name: String!
-    type: SupplyType!
-    unit: Unit!
-    quantity: Float!
+  id: ID!
+  name: String!
+  type: SupplyType!
+  unit: Unit!
+  quantity: Float!
 }
 
 input SupplyFilters {
-    limit: Int
-    search: String
+  limit: Int
+  search: String
 }
 
 # Enums
 enum SupplyType {
-    OIL
-    GREASE
-    LUBRICANT
+  OIL
+  GREASE
+  LUBRICANT
 }

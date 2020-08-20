@@ -33,26 +33,26 @@ const ObservationsHistory = ({ currentLap, setCurrentLap }) => {
       />
       <Card>
         <Timeline mode="right" style={{ overflow: 'scroll', padding: 5 }}>
-          {currentLap.observations.length === 0 &&
-          <Timeline.Item color="green">
-            Aquí aparecerán las observaciones
-          </Timeline.Item>}
-          {currentLap.observations.length > 0 && currentLap.observations.map(observation => {
-            if (!observation.end) return undefined;
-            const observationStart = new Date(observation.start);
-            const observationEnd = new Date(observation.end);
-            const differenceInMinutes = ((observationEnd - observationStart) / 60000).toFixed(2);
+          {currentLap.observations.length === 0 && (
+            <Timeline.Item color="green">Aquí aparecerán las observaciones</Timeline.Item>
+          )}
+          {currentLap.observations.length > 0 &&
+            currentLap.observations.map(observation => {
+              if (!observation.end) return undefined;
+              const observationStart = new Date(observation.start);
+              const observationEnd = new Date(observation.end);
+              const differenceInMinutes = ((observationEnd - observationStart) / 60000).toFixed(2);
 
-            return (
-              <Timeline.Item dot={<Icon type="clock-circle-o"/>} key={observation.id}>
-                <Tooltip placement="top" title={observation.description}>
-                  <Text strong>
-                    {`De ${observationStart.toLocaleTimeString()} a ${observationEnd.toLocaleTimeString()} - ${differenceInMinutes} minutos`}
-                  </Text>
-                </Tooltip>
-              </Timeline.Item>
-            );
-          })}
+              return (
+                <Timeline.Item dot={<Icon type="clock-circle-o" />} key={observation.id}>
+                  <Tooltip placement="top" title={observation.description}>
+                    <Text strong>
+                      {`De ${observationStart.toLocaleTimeString()} a ${observationEnd.toLocaleTimeString()} - ${differenceInMinutes} minutos`}
+                    </Text>
+                  </Tooltip>
+                </Timeline.Item>
+              );
+            })}
         </Timeline>
       </Card>
     </ObservationsHistoryContainer>

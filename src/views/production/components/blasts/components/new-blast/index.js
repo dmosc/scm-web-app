@@ -2,7 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import { useAuth } from 'components/providers/withAuth';
-import { Button, DatePicker, Divider, Form, Icon, InputNumber, List, message, Modal, Select, Tag, Tooltip, Typography, Upload } from 'antd';
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Icon,
+  InputNumber,
+  List,
+  message,
+  Modal,
+  Select,
+  Tag,
+  Tooltip,
+  Typography,
+  Upload
+} from 'antd';
 import { NewBlastProductForm } from './elements';
 import { FILE_UPLOAD, REGISTER_BLAST } from './graphql/mutations';
 import { GET_BLAST_PRODUCTS } from './graphql/queries';

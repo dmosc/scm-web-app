@@ -8,7 +8,15 @@ import { GET_MACHINES } from './graphql/queries';
 
 const { Option } = Select;
 
-const NewBoreHole = ({ form, boreHoles, currentBoreHole, isNewBoreHoleModalOpen, toggleNewBoreHoleModal, setBoreHoles, setCurrentBoreHole }) => {
+const NewBoreHole = ({
+  form,
+  boreHoles,
+  currentBoreHole,
+  isNewBoreHoleModalOpen,
+  toggleNewBoreHoleModal,
+  setBoreHoles,
+  setCurrentBoreHole
+}) => {
   const [loading, setLoading] = useState(false);
   const machinesQuery = useQuery(GET_MACHINES, { variables: { filters: {} } });
   const [newBoreHoleMutation] = useMutation(NEW_BORE_HOLE);
@@ -25,14 +33,17 @@ const NewBoreHole = ({ form, boreHoles, currentBoreHole, isNewBoreHoleModalOpen,
           const {
             errors,
             data: { boreHoleEdit }
-          } = await boreHoleEditMutation({ variables: { boreHole: { id: currentBoreHole.id, ...args } } });
+          } = await boreHoleEditMutation({
+            variables: { boreHole: { id: currentBoreHole.id, ...args } }
+          });
 
           if (errors) {
             errorsToSet = { ...errors };
           } else {
             boreHoleToSet = { ...boreHoleEdit };
-            const boreHolesToSet = boreHoles
-              .map(boreHole => boreHole.id === currentBoreHole.id ? boreHoleToSet : boreHole);
+            const boreHolesToSet = boreHoles.map(boreHole =>
+              boreHole.id === currentBoreHole.id ? boreHoleToSet : boreHole
+            );
             setBoreHoles(boreHolesToSet);
           }
         } else {
@@ -99,7 +110,7 @@ const NewBoreHole = ({ form, boreHoles, currentBoreHole, isNewBoreHoleModalOpen,
               min={0}
               step={0.1}
               placeholder="Ingrese metros de cobertura"
-              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />
           )}
         </Form.Item>
@@ -113,7 +124,7 @@ const NewBoreHole = ({ form, boreHoles, currentBoreHole, isNewBoreHoleModalOpen,
                 message: 'La fecha de ejecución es requerida!'
               }
             ]
-          })(<DatePicker/>)}
+          })(<DatePicker />)}
         </Form.Item>
         <Form.Item>
           <Divider orientation="left">Máquina de operación</Divider>
@@ -126,10 +137,7 @@ const NewBoreHole = ({ form, boreHoles, currentBoreHole, isNewBoreHoleModalOpen,
               }
             ]
           })(
-            <Select
-              placeholder="Seleccione una máquina"
-              allowClear
-            >
+            <Select placeholder="Seleccione una máquina" allowClear>
               {machinesQuery.data?.machines.map(machine => (
                 <Option key={machine.id} value={machine.id}>
                   {machine.name}

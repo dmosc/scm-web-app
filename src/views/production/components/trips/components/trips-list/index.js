@@ -51,36 +51,32 @@ const TripsList = ({ productionTurn }) => {
             Iniciar vuelta
           </Button>
         </TitleContainer>
-        {activeLaps.length > 0 && <Collapse
-          accordion
-          style={{ overflowY: 'scroll' }}
-        >
-          {activeLaps.map(lap => {
-            const lapStart = new Date(lap.start);
-            return (
-              <Panel
-                key={lap.id}
-                header={`Desde: ${lapStart.toLocaleTimeString()}`}
-                extra={<Tag color="orange">{`${lap.tons} tons`}</Tag>}
-              >
-                <LineContainer>
-                  <Text>{`Conductor: ${lap.driver.firstName} ${lap.driver.lastName}`}</Text>
-                </LineContainer>
-                <LineContainer>
-                  <Text>{`Máquina: ${lap.machine.name}`}</Text>
-                </LineContainer>
-                <LineContainer>
-                  <Text>{`Tipo: ${lap.machine.type}`}</Text>
-                </LineContainer>
-              </Panel>
-            );
-          })}
-        </Collapse>}
+        {activeLaps.length > 0 && (
+          <Collapse accordion style={{ overflowY: 'scroll' }}>
+            {activeLaps.map(lap => {
+              const lapStart = new Date(lap.start);
+              return (
+                <Panel
+                  key={lap.id}
+                  header={`Desde: ${lapStart.toLocaleTimeString()}`}
+                  extra={<Tag color="orange">{`${lap.tons} tons`}</Tag>}
+                >
+                  <LineContainer>
+                    <Text>{`Conductor: ${lap.driver.firstName} ${lap.driver.lastName}`}</Text>
+                  </LineContainer>
+                  <LineContainer>
+                    <Text>{`Máquina: ${lap.machine.name}`}</Text>
+                  </LineContainer>
+                  <LineContainer>
+                    <Text>{`Tipo: ${lap.machine.type}`}</Text>
+                  </LineContainer>
+                </Panel>
+              );
+            })}
+          </Collapse>
+        )}
       </Card>
-      <Observations
-        currentLap={currentLap}
-        setCurrentLap={setCurrentLap}
-      />
+      <Observations currentLap={currentLap} setCurrentLap={setCurrentLap} />
       <LapFormInit
         showNewTripModal={showNewTripModal}
         setShowNewTripModal={setShowNewTripModal}

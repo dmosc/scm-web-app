@@ -9,7 +9,14 @@ import { GET_MACHINES, GET_SUPPLIES } from './graphql/queries';
 const { Option } = Select;
 const { TextArea } = Input;
 
-const SupplyTransactionOutForm = ({ form, supplyTransactionsOut, isTransactionModalOpen, toggleTransactionModal, setSupplyTransactionsOut, updateFather }) => {
+const SupplyTransactionOutForm = ({
+  form,
+  supplyTransactionsOut,
+  isTransactionModalOpen,
+  toggleTransactionModal,
+  setSupplyTransactionsOut,
+  updateFather
+}) => {
   const [loading, setLoading] = useState(false);
   const [machineSearch, setMachineSearch] = useState('');
   const [supplySearch, setSupplySearch] = useState('');
@@ -18,8 +25,12 @@ const SupplyTransactionOutForm = ({ form, supplyTransactionsOut, isTransactionMo
   const debouncedMachineSearch = useDebounce(machineSearch, 400);
   const debouncedSupplySearch = useDebounce(supplySearch, 400);
   const [newSupplyTransactionMutation] = useMutation(NEW_SUPPLY_TRANSACTION_IN);
-  const machinesQuery = useQuery(GET_MACHINES, { variables: { filters: { search: debouncedMachineSearch } } });
-  const suppliesQuery = useQuery(GET_SUPPLIES, { variables: { filters: { search: debouncedSupplySearch } } });
+  const machinesQuery = useQuery(GET_MACHINES, {
+    variables: { filters: { search: debouncedMachineSearch } }
+  });
+  const suppliesQuery = useQuery(GET_SUPPLIES, {
+    variables: { filters: { search: debouncedSupplySearch } }
+  });
 
   useEffect(() => {
     const { data } = machinesQuery;
@@ -40,13 +51,12 @@ const SupplyTransactionOutForm = ({ form, supplyTransactionsOut, isTransactionMo
     e.preventDefault();
     form.validateFields(async (err, args) => {
       if (!err) {
-        const {
-          errors,
-          data
-        } = await newSupplyTransactionMutation({
+        const { errors, data } = await newSupplyTransactionMutation({
           variables: {
             supplyTransactionOut: {
-              ...args, supply: args.supply.split(':')[0], machine: args.machine.split(':')[0]
+              ...args,
+              supply: args.supply.split(':')[0],
+              machine: args.machine.split(':')[0]
             }
           }
         });
@@ -143,7 +153,7 @@ const SupplyTransactionOutForm = ({ form, supplyTransactionsOut, isTransactionMo
               min={0}
               step={0.1}
               placeholder="Ingrese la cantidad inicial de unidades"
-              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />
           )}
         </Form.Item>
@@ -156,7 +166,7 @@ const SupplyTransactionOutForm = ({ form, supplyTransactionsOut, isTransactionMo
                 message: 'La fecha de ejecución es requerida!'
               }
             ]
-          })(<DatePicker/>)}
+          })(<DatePicker />)}
         </Form.Item>
         <Form.Item>
           <Divider style={{ marginTop: 0 }} orientation="left">

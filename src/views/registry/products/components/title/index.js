@@ -21,14 +21,16 @@ const TableTitle = ({ handleFilterChange, toggleNewProductForm }) => {
         placeholder="Buscar productos"
         onChange={({ target: { value } }) => handleFilterChange('search', value)}
       />
-      {isAdmin && <Button
-        style={{ margin: 'auto 10px' }}
-        type="primary"
-        icon="block"
-        onClick={() => toggleNewProductForm(true)}
-      >
-        Añadir
-      </Button>}
+      {isAdmin && (
+        <Button
+          style={{ margin: 'auto 10px' }}
+          type="primary"
+          icon="block"
+          onClick={() => toggleNewProductForm(true)}
+        >
+          Añadir
+        </Button>
+      )}
     </TitleContainer>
   );
 };
