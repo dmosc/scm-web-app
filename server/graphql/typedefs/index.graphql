@@ -141,6 +141,7 @@ type Query {
     truckId: ID
     productId: ID
     folio: String
+    sortBy: TicketSort
   ): [Ticket!]!
   archivedTicketsAurora(filters: ArchivedTicketFilters!): [ArchiveTicket!]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])

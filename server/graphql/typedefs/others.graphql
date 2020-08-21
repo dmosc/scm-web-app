@@ -10,7 +10,7 @@ enum s3FolderKey {
   posts
 }
 
-enum order {
+enum Order {
   asc
   desc
 }

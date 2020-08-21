@@ -176,6 +176,16 @@ type TicketsInRangeSummary {
   total: Float
 }
 
+input TicketSort {
+  field: TicketSortField!
+  order: Order!
+}
+
+# Enums
+enum TicketSortField {
+  folio
+}
+
 enum TicketBillType {
   BILL
   REMISSION

@@ -21,6 +21,7 @@ const Client = User.discriminator(
       type: Number,
       required: true,
       unique: true,
+      index: true,
       validate: {
         validator: function validator(id) {
           return id >= 1000000;

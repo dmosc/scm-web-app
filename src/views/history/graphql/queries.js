@@ -10,6 +10,7 @@ const GET_HISTORY_TICKETS = gql`
     $truckId: ID
     $productId: ID
     $folio: String
+    $sortBy: TicketSort
   ) {
     archivedTickets(
       range: $range
@@ -20,6 +21,7 @@ const GET_HISTORY_TICKETS = gql`
       truckId: $truckId
       productId: $productId
       folio: $folio
+      sortBy: $sortBy
     ) {
       id
       folio

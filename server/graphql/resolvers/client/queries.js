@@ -17,8 +17,8 @@ const clientQueries = {
 
     return client;
   }),
-  clients: authenticated(async (_, { filters: { limit, search } }) => {
-    const clients = await Client.find({
+  clients: authenticated(async (_, { filters: { limit, search, sortBy } }) => {
+    const clientsPromise = Client.find({
       deleted: false,
       $or: [
         { firstName: { $in: [new RegExp(search, 'i')] } },
@@ -30,6 +30,13 @@ const clientQueries = {
     })
       .populate('trucks stores depositHistory.depositedBy')
       .limit(limit || Number.MAX_SAFE_INTEGER);
+
+    if (sortBy) {
+      const { field, order } = sortBy;
+      clientsPromise.sort({ [field]: order });
+    }
+
+    const clients = await clientsPromise;
 
     if (!clients) throw new Error('¡No ha sido posible cargar los clientes!');
 

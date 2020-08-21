@@ -400,13 +400,20 @@ const billQueries = {
 
     return createPDF(pdfOptions);
   },
-  bills: authenticated(async (_, { filters: { limit, search } }) => {
-    const bills = await Bill.find({
+  bills: authenticated(async (_, { filters: { limit, search, sortBy } }) => {
+    const billPromise = Bill.find({
       deleted: false,
       $or: [{ folio: { $in: [new RegExp(search, 'i')] } }]
     })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client store');
+
+    if (sortBy) {
+      const { field, order } = sortBy;
+      billPromise.sort({ [field]: order });
+    }
+
+    const bills = await billPromise;
 
     if (!bills) throw new Error('¡No ha sido posible cargar las facturas!');
 

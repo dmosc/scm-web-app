@@ -26,4 +26,15 @@ input BillInput {
 input BillFilters {
   limit: Int
   search: String
+  sortBy: BillSort
+}
+
+input BillSort {
+  field: BillSortField!
+  order: Order!
+}
+
+# Enums
+enum BillSortField {
+  folio
 }

@@ -22,7 +22,13 @@ const Clients = ({ client }) => {
   const { isAdmin, isAccountant, isManager } = useAuth();
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({
+    search: '',
+    sortBy: {
+      field: 'uniqueId',
+      order: 'desc'
+    }
+  });
   const [currentClient, setCurrentClient] = useState(null);
   const [currentClientSubscription, setCurrentClientSubscription] = useState();
   const [currentClientPrices, setCurrentClientPrices] = useState();
@@ -95,12 +101,16 @@ const Clients = ({ client }) => {
     {
       title: 'ID',
       dataIndex: 'uniqueId',
-      key: 'uniqueId'
+      key: 'uniqueId',
+      fixed: 'left',
+      width: 200
     },
     {
       title: 'Negocio',
       dataIndex: 'businessName',
-      key: 'businessName'
+      key: 'businessName',
+      fixed: 'left',
+      width: 200
     },
     {
       title: 'Nombre',
@@ -132,6 +142,8 @@ const Clients = ({ client }) => {
       title: 'Acciones',
       key: 'action',
       align: 'right',
+      fixed: 'right',
+      width: 200,
       render: row => (
         <Row>
           <Tooltip placement="top" title="Editar">
@@ -200,6 +212,7 @@ const Clients = ({ client }) => {
         <Table
           loading={loading}
           columns={columns}
+          scroll={{ x: 1500, y: 600 }}
           title={() => (
             <Title
               handleFilterChange={handleFilterChange}

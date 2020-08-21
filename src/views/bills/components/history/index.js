@@ -17,7 +17,13 @@ const { confirm } = Modal;
 const History = ({ client }) => {
   const [loading, setLoading] = useState(true);
   const [bills, setBills] = useState([]);
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({
+    search: '',
+    sortBy: {
+      field: 'folio',
+      order: 'desc'
+    }
+  });
   const debouncedFilters = useDebounce(filters, 1000);
 
   const { isAdmin, isManager, isAccountant, isCollector, isCollectorAux } = useAuth();

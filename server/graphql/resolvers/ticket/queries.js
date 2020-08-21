@@ -368,7 +368,7 @@ const ticketQueries = {
   archivedTickets: authenticated(
     async (
       _,
-      { range = {}, turnId, billType, paymentType, productId, clientIds, truckId, folio }
+      { range = {}, turnId, billType, paymentType, productId, clientIds, truckId, folio, sortBy }
     ) => {
       const query = {
         out: {
@@ -393,7 +393,14 @@ const ticketQueries = {
         if (paymentType === 'CREDIT') query.credit = true;
       }
 
-      return Ticket.find(query).populate('client product truck');
+      const ticketsPromise = Ticket.find(query).populate('client product truck');
+
+      if (sortBy) {
+        const { field, order } = sortBy;
+        ticketsPromise.sort({ [field]: order });
+      }
+
+      return ticketsPromise;
     }
   ),
   archivedTicketsAurora: authenticated(

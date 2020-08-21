@@ -26,7 +26,11 @@ const History = ({ client }) => {
     clientIds: [],
     truckId: '',
     productId: '',
-    folio: ''
+    folio: '',
+    sortBy: {
+      field: 'folio',
+      order: 'desc'
+    }
   });
   const { isAdmin, isManager } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -86,7 +90,8 @@ const History = ({ client }) => {
             truckId: filters.truckId,
             productId: filters.productId,
             folio: debouncedFolio,
-            client: filters.client
+            client: filters.client,
+            sortBy: filters.sortBy
           }
         });
 
@@ -117,6 +122,7 @@ const History = ({ client }) => {
     filters.clientIds,
     filters.truckId,
     filters.productId,
+    filters.sortBy,
     debouncedFolio,
     filters.client,
     client
