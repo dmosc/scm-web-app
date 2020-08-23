@@ -253,7 +253,7 @@ const rockQueries = {
       return { monthSummary };
     }
   ),
-  rockSalesReportCleanAndDirty: authenticated(async (_, { filters: { range }, dirty = [] }) => {
+  rockSalesReportCleanAndDirty: async (_, { filters: { range }, dirty = [] }) => {
     const start = new Date(range.start);
     const end = new Date(range.end);
 
@@ -321,7 +321,7 @@ const rockQueries = {
     }
 
     return { clean: cleanResults, dirty: dirtyResults };
-  })
+  }
 };
 
 export default rockQueries;
