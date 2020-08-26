@@ -19,7 +19,7 @@ import ClientSubscription from './components/client-subscription';
 const { confirm } = Modal;
 
 const Clients = ({ client }) => {
-  const { isAdmin, isAccountant, isManager } = useAuth();
+  const { isAdmin, isAccountant, isManager, isSupport, isSales } = useAuth();
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
   const [filters, setFilters] = useState({
@@ -178,7 +178,7 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          <Tooltip placement="top" title="Crédito y balance">
+          {!isSales && <Tooltip placement="top" title="Crédito y balance">
             <Button
               onClick={() => setCurrentClientCredit(row)}
               style={{ marginRight: 5 }}
@@ -186,7 +186,7 @@ const Clients = ({ client }) => {
               icon="credit-card"
               size="small"
             />
-          </Tooltip>
+          </Tooltip>}
           <Tooltip placement="top" title="Sucursales">
             <Button
               onClick={() => setCurrentClientStores(row)}
@@ -196,9 +196,9 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          {(isAdmin || isAccountant || isManager) && (
+          {(isAdmin || isAccountant || isManager || isSupport) && (
             <Tooltip placement="top" title="Eliminar">
-              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
+              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small"/>
             </Tooltip>
           )}
         </Row>

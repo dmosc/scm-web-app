@@ -3,18 +3,7 @@ import PropTypes from 'prop-types';
 import { printPDF } from 'utils/functions';
 import { withApollo } from 'react-apollo';
 import { useAuth } from 'components/providers/withAuth';
-import {
-  Button,
-  Col,
-  Divider,
-  message,
-  Modal,
-  Row,
-  Select,
-  Statistic,
-  Tabs,
-  Typography
-} from 'antd';
+import { Button, Col, Divider, message, Modal, Row, Select, Statistic, Tabs, Typography } from 'antd';
 import { Actions } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET, SET_STORE_TO_TICKET } from './graphql/mutations';
 import { GET_PDF } from './graphql/queries';
@@ -28,7 +17,7 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
   const [tab, setTab] = useState('client');
   const [downloadingPDF, setDownloadingPDF] = useState(false);
 
-  const { isAdmin, isManager, isSupport } = useAuth();
+  const { isAdmin, isManager, isSupport, isCollectorAux } = useAuth();
 
   const addTicketToTurn = async ticketToAdd => {
     const { id } = turn;
@@ -306,7 +295,7 @@ const TicketPanel = ({ turn, refetchTickets, refetchTurn, client, ticket, setCur
         >
           Agregar a turno
         </Button>
-        {(isAdmin || isManager || isSupport) && (
+        {(isAdmin || isManager || isSupport || isCollectorAux) && (
           <Button
             style={{ marginLeft: 'auto' }}
             size="small"
