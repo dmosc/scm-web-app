@@ -1,15 +1,6 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import {
-  Client,
-  ClientCreditLimit,
-  ClientPrice,
-  Folio,
-  Promotion,
-  Rock,
-  Ticket,
-  Truck
-} from '../../../mongo-db/models';
+import { Client, ClientCreditLimit, ClientPrice, Folio, Promotion, Rock, Ticket, Truck, Turn } from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -45,6 +36,7 @@ const ticketMutations = {
         }
       ]);
       const activeTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false }
       }).populate([
@@ -57,6 +49,7 @@ const ticketMutations = {
         }
       ]);
       const loadedTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
@@ -226,6 +219,7 @@ const ticketMutations = {
       ]);
 
       const loadedTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
@@ -240,6 +234,7 @@ const ticketMutations = {
       ]);
 
       const notLoadedActiveTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: false }
@@ -414,6 +409,20 @@ const ticketMutations = {
       return e;
     }
   },
+  ticketDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id);
+
+      if (!ticket) return new Error('No ha sido posible econtrar la boleta!');
+
+      await Turn.findByIdAndUpdate(ticket.turn, { $pull: { folios: ticket.folio } });
+      await Ticket.deleteById(id, userRequesting.id);
+
+      return true;
+    } catch (e) {
+      return e;
+    }
+  }),
   ticketExcludeFromTimeMetrics: async (_, { tickets, exclude }) => {
     await Ticket.updateMany(
       { _id: { $in: tickets } },

@@ -146,6 +146,7 @@ const turnMutations = {
       await turn.save();
 
       const activeTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false }
       }).populate([
@@ -158,6 +159,7 @@ const turnMutations = {
         }
       ]);
       const loadedTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }

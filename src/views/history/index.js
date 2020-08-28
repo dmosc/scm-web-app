@@ -6,13 +6,15 @@ import { useAuth } from 'components/providers/withAuth';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { format, printPDF } from 'utils/functions';
-import { Button, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
+import { Button, message, Modal, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
 import Title from './components/title';
 import Audit from './components/audit';
 import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
+import { DELETE_TICKET } from './graphql/mutations';
 
 const { Text } = Typography;
+const { confirm } = Modal;
 
 const History = ({ client }) => {
   const [filters, setFilters] = useState({
@@ -71,6 +73,34 @@ const History = ({ client }) => {
     });
 
     await printPDF(ticketPDF);
+  };
+
+  const deleteTicket = ticketToDelete => {
+    confirm({
+      title: `¿Estás seguro de que deseas eliminar la boleta ${ticketToDelete.folio}?`,
+      content:
+        'Una vez eliminada, ya no será considerada en el sistema ni será posible recuperarla.',
+      okType: 'danger',
+      okText: 'Eliminar',
+      cancelText: 'Cancelar',
+      onOk: async () => {
+        const {
+          data: { ticketDelete }
+        } = await client.mutate({
+          mutation: DELETE_TICKET,
+          variables: { id: ticketToDelete.id }
+        });
+
+        if (ticketDelete) {
+          setTickets(tickets.filter(({ id }) => id !== ticketToDelete.id));
+          message.success(`La boleta ${ticketToDelete.folio} ha sido removida!`);
+        } else {
+          message.error('Ha sucedido un error intentando eliminar la boleta!');
+        }
+      },
+      onCancel: () => {
+      }
+    });
   };
 
   useEffect(() => {
@@ -206,6 +236,17 @@ const History = ({ client }) => {
                 style={{ marginLeft: 5 }}
                 onClick={() => setTicketAuditing(row.id)}
                 icon="monitor"
+                size="small"
+              />
+            </Tooltip>
+          )}
+          {(isAdmin || isManager) && (
+            <Tooltip placement="top" title="Eliminar">
+              <Button
+                style={{ marginLeft: 5 }}
+                onClick={() => deleteTicket(row)}
+                type="danger"
+                icon="delete"
                 size="small"
               />
             </Tooltip>
