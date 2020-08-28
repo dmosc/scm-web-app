@@ -645,6 +645,8 @@ type Mutation {
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR_AUX])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR_AUX])
   ticketDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER])
+  ticketToBill(id: ID!): Ticket! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  ticketToNoBill(id: ID!): Ticket! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   ticketExcludeFromTimeMetrics(tickets: [ID!]!, exclude: Boolean!): Boolean!
   # Bill
   bill(bill: BillInput!): Bill

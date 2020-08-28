@@ -35,6 +35,8 @@ type UsersInvolved {
   guard: User
   loader: User
   cashier: User
+  modifiedPrice: User
+  modifiedSeries: User
 }
 
 type BillSummary {

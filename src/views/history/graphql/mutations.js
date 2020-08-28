@@ -6,4 +6,54 @@ const DELETE_TICKET = gql`
     }
 `;
 
-export { DELETE_TICKET };
+const TICKET_TO_BILL = gql`
+    mutation ticketToBill($id: ID!) {
+        ticketToBill(id: $id) {
+            id
+            folio
+            bill
+            out
+            client {
+                id
+                businessName
+            }
+            truck {
+                id
+                plates
+            }
+            totalPrice
+            product {
+                id
+                name
+            }
+            tax
+        }
+    }
+`;
+
+const TICKET_TO_NO_BILL = gql`
+    mutation ticketToNoBill($id: ID!) {
+        ticketToNoBill(id: $id) {
+            id
+            folio
+            bill
+            out
+            client {
+                id
+                businessName
+            }
+            truck {
+                id
+                plates
+            }
+            totalPrice
+            product {
+                id
+                name
+            }
+            tax
+        }
+    }
+`;
+
+export { DELETE_TICKET, TICKET_TO_BILL, TICKET_TO_NO_BILL };
