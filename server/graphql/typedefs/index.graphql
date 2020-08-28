@@ -647,6 +647,7 @@ type Mutation {
   ticketDelete(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER])
   ticketToBill(id: ID!): Ticket! @auth(roles: [ADMIN, MANAGER, SUPPORT])
   ticketToNoBill(id: ID!): Ticket! @auth(roles: [ADMIN, MANAGER, SUPPORT])
+  ticketUpdatePrice(id: ID!, price: Float!): Ticket! @auth(roles: [ADMIN, MANAGER])
   ticketExcludeFromTimeMetrics(tickets: [ID!]!, exclude: Boolean!): Boolean!
   # Bill
   bill(bill: BillInput!): Bill

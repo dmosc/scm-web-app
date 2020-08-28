@@ -413,7 +413,7 @@ const ticketMutations = {
     try {
       const ticket = await Ticket.findById(id);
 
-      if (!ticket) return new Error('No ha sido posible econtrar la boleta!');
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
 
       await Turn.findByIdAndUpdate(ticket.turn, { $pull: { folios: ticket.folio } });
       await Ticket.deleteById(id, userRequesting.id);
@@ -427,7 +427,7 @@ const ticketMutations = {
     try {
       const ticket = await Ticket.findById(id);
 
-      if (!ticket) return new Error('No ha sido posible econtrar la boleta!');
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
       if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
 
       ticket.bill = true;
@@ -464,7 +464,7 @@ const ticketMutations = {
     try {
       const ticket = await Ticket.findById(id);
 
-      if (!ticket) return new Error('No ha sido posible econtrar la boleta!');
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
       if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
 
       ticket.bill = false;
@@ -493,6 +493,29 @@ const ticketMutations = {
           model: 'Store'
         }
       }]);
+    } catch (e) {
+      return e;
+    }
+  }),
+  ticketUpdatePrice: authenticated(async (_, { id, price }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id).populate([{
+        path: 'client truck product turn promotion',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }]);
+
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
+
+      ticket.totalPrice = price;
+      ticket.tax = ticket.bill ? price * TAX : 0;
+      ticket.usersInvolved.modifiedPrice = userRequesting.id;
+
+      await ticket.save();
+
+      return ticket;
     } catch (e) {
       return e;
     }

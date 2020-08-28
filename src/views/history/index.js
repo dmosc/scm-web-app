@@ -6,12 +6,12 @@ import { useAuth } from 'components/providers/withAuth';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { format, printPDF } from 'utils/functions';
-import { Button, message, Modal, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
+import { Button, Form, InputNumber, message, Modal, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
 import Title from './components/title';
 import Audit from './components/audit';
 import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
-import { DELETE_TICKET, TICKET_TO_BILL, TICKET_TO_NO_BILL } from './graphql/mutations';
+import { DELETE_TICKET, TICKET_TO_BILL, TICKET_TO_NO_BILL, TICKET_UPDATE_PRICE } from './graphql/mutations';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -39,7 +39,35 @@ const History = ({ client }) => {
   const [tickets, setTickets] = useState([]);
   const [results, setResults] = useState(0);
   const [ticketAuditing, setTicketAuditing] = useState(null);
+  const [currentTicket, setCurrentTicket] = useState(undefined);
+  const [shouldSubmitPriceUpdate, setShouldSubmitPriceUpdate] = useState(false);
   const debouncedFolio = useDebounce(filters.folio, 500);
+
+  useEffect(() => {
+    if (shouldSubmitPriceUpdate) {
+      (async () => {
+        const { data: { ticketUpdatePrice: ticket } } = await client.mutate({
+          mutation: TICKET_UPDATE_PRICE,
+          variables: { id: currentTicket.id, price: currentTicket.totalPrice }
+        });
+
+        ticket.subtotal = ticket.totalPrice - ticket.tax;
+        ticket.businessName = ticket.client.businessName;
+        ticket.plates = ticket.truck.plates;
+        ticket.product = ticket.product.name;
+
+        if (ticket) {
+          const ticketsToSet = tickets.map(ticketInList => ticketInList.id === ticket.id ? ticket : ticketInList);
+          setTickets(ticketsToSet);
+          message.success('La boleta ha sido actualizada exitosamente!');
+        } else {
+          message.error('Ha sucedido un error intentando actualizar la boleta!');
+        }
+      })();
+
+      setShouldSubmitPriceUpdate(false);
+    }
+  }, [client, tickets, currentTicket, shouldSubmitPriceUpdate]);
 
   const handleFilterChange = (key, value) => {
     // eslint-disable-next-line no-param-reassign
@@ -104,6 +132,32 @@ const History = ({ client }) => {
           message.error('Ha sucedido un error intentando actualizar la boleta!');
         }
       },
+      onCancel: () => {
+      }
+    });
+  };
+
+  const ticketUpdatePrice = ticketToUpdate => {
+    confirm({
+      title: `Una vez modificando el precio de ${ticketToUpdate.folio}, cualquier efecto secundario o inconsistencias son responsabilidad del que está modificando.`,
+      content:
+        <Form>
+          <Form.Item required label="Precio de la boleta">
+            <InputNumber
+              style={{ width: '70%' }}
+              defaultValue={ticketToUpdate.totalPrice}
+              onChange={price => setCurrentTicket({ ...ticketToUpdate, totalPrice: price })}
+              placeholder="Precio de la boleta"
+              min={0}
+              step={0.01}
+              formatter={price => `$${price}`}
+            />
+          </Form.Item>
+        </Form>,
+      okType: 'danger',
+      okText: 'Modificar',
+      cancelText: 'Cancelar',
+      onOk: async () => setShouldSubmitPriceUpdate(true),
       onCancel: () => {
       }
     });
@@ -281,6 +335,20 @@ const History = ({ client }) => {
                 onClick={() => ticketUpdateSeries(row)}
                 type="default"
                 icon="sync"
+                size="small"
+              />
+            </Tooltip>
+          )}
+          {(isAdmin || isManager) && (
+            <Tooltip placement="top" title="Modificar precio">
+              <Button
+                style={{ marginLeft: 5 }}
+                onClick={() => {
+                  setCurrentTicket(row);
+                  ticketUpdatePrice(row);
+                }}
+                type="default"
+                icon="dollar"
                 size="small"
               />
             </Tooltip>
