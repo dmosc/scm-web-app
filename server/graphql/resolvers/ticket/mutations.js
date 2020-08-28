@@ -423,6 +423,80 @@ const ticketMutations = {
       return e;
     }
   }),
+  ticketToBill: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id);
+
+      if (!ticket) return new Error('No ha sido posible econtrar la boleta!');
+      if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
+
+      ticket.bill = true;
+      ticket.tax = ticket.totalPrice * TAX;
+      ticket.totalPrice += ticket.tax;
+      ticket.usersInvolved.modifiedSeries = userRequesting.id;
+
+      const folio = await Folio.findOneAndUpdate(
+        { name: ticket.bill ? 'A' : 'B' },
+        { $inc: { count: 1 } },
+        { new: false }
+      ).select('name count');
+
+      const oldFolio = ticket.folio;
+      ticket.folio = folio.name.toString() + folio.count.toString();
+
+      await ticket.save();
+      await Turn.findByIdAndUpdate(ticket.turn, {
+        $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
+      }, { arrayFilters: [{ 'folio': oldFolio }] });
+
+      return Ticket.findById(id).populate([{
+        path: 'client truck product turn promotion',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }]);
+    } catch (e) {
+      return e;
+    }
+  }),
+  ticketToNoBill: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id);
+
+      if (!ticket) return new Error('No ha sido posible econtrar la boleta!');
+      if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
+
+      ticket.bill = false;
+      ticket.totalPrice -= ticket.tax;
+      ticket.tax = 0;
+      ticket.usersInvolved.modifiedSeries = userRequesting.id;
+
+      const folio = await Folio.findOneAndUpdate(
+        { name: ticket.bill ? 'A' : 'B' },
+        { $inc: { count: 1 } },
+        { new: false }
+      ).select('name count');
+
+      const oldFolio = ticket.folio;
+      ticket.folio = folio.name.toString() + folio.count.toString();
+
+      await ticket.save();
+      await Turn.findByIdAndUpdate(ticket.turn, {
+        $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
+      }, { arrayFilters: [{ 'folio': oldFolio }] });
+
+      return Ticket.findById(id).populate([{
+        path: 'client truck product turn promotion',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }]);
+    } catch (e) {
+      return e;
+    }
+  }),
   ticketExcludeFromTimeMetrics: async (_, { tickets, exclude }) => {
     await Ticket.updateMany(
       { _id: { $in: tickets } },

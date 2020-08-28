@@ -11,7 +11,7 @@ import Title from './components/title';
 import Audit from './components/audit';
 import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
-import { DELETE_TICKET } from './graphql/mutations';
+import { DELETE_TICKET, TICKET_TO_BILL, TICKET_TO_NO_BILL } from './graphql/mutations';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -34,7 +34,7 @@ const History = ({ client }) => {
       order: 'desc'
     }
   });
-  const { isAdmin, isManager } = useAuth();
+  const { isAdmin, isManager, isSupport } = useAuth();
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
   const [results, setResults] = useState(0);
@@ -73,6 +73,40 @@ const History = ({ client }) => {
     });
 
     await printPDF(ticketPDF);
+  };
+
+  const ticketUpdateSeries = ticketToUpdate => {
+    confirm({
+      title: `¿Estás seguro de que deseas cambiar la serie de la boleta ${ticketToUpdate.folio}?`,
+      content:
+        'Una vez modificada, se realizarán los ajustes necesarios a lo largo del sistema.',
+      okType: 'danger',
+      okText: 'Modificar',
+      cancelText: 'Cancelar',
+      onOk: async () => {
+        const { data } = await client.mutate({
+          mutation: ticketToUpdate.bill ? TICKET_TO_NO_BILL : TICKET_TO_BILL,
+          variables: { id: ticketToUpdate.id }
+        });
+
+        const ticket = data.ticketToBill ?? data.ticketToNoBill;
+
+        ticket.subtotal = ticket.totalPrice - ticket.tax;
+        ticket.businessName = ticket.client.businessName;
+        ticket.plates = ticket.truck.plates;
+        ticket.product = ticket.product.name;
+
+        if (ticket) {
+          const ticketsToSet = [ticket, ...tickets.filter(({ id }) => id !== ticket.id)];
+          setTickets(ticketsToSet);
+          message.success(`La boleta ha sido actualizada a ${ticket.folio}!`);
+        } else {
+          message.error('Ha sucedido un error intentando actualizar la boleta!');
+        }
+      },
+      onCancel: () => {
+      }
+    });
   };
 
   const deleteTicket = ticketToDelete => {
@@ -236,6 +270,17 @@ const History = ({ client }) => {
                 style={{ marginLeft: 5 }}
                 onClick={() => setTicketAuditing(row.id)}
                 icon="monitor"
+                size="small"
+              />
+            </Tooltip>
+          )}
+          {(isAdmin || isManager || isSupport) && (
+            <Tooltip placement="top" title={`Convertir a ${row.bill ? 'REMISIÓN' : 'FACTURA'}`}>
+              <Button
+                style={{ marginLeft: 5 }}
+                onClick={() => ticketUpdateSeries(row)}
+                type="default"
+                icon="sync"
                 size="small"
               />
             </Tooltip>

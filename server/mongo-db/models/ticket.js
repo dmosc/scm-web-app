@@ -28,7 +28,9 @@ const Ticket = new Schema({
   usersInvolved: {
     guard: { type: Schema.Types.ObjectId, ref: 'User', required: false },
     loader: { type: Schema.Types.ObjectId, ref: 'User', required: false },
-    cashier: { type: Schema.Types.ObjectId, ref: 'User', required: false }
+    cashier: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+    modifiedPrice: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+    modifiedSeries: { type: Schema.Types.ObjectId, ref: 'User', required: false }
   },
   turn: { type: Schema.Types.ObjectId, ref: 'Turn', required: false },
   excludeFromTimeMetrics: { type: Boolean, default: false },
