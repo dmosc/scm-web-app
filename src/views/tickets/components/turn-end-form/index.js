@@ -4,7 +4,14 @@ import { withApollo } from 'react-apollo';
 import { Button, Collapse, Drawer, Form, Icon, notification, Row, Tag, Typography } from 'antd';
 import periods from 'utils/enums/periods';
 import { sizes } from 'theme';
-import { CollapseContainer, Column, ColumnTitle, Time, TimesContainer, TitleTime } from './elements';
+import {
+  CollapseContainer,
+  Column,
+  ColumnTitle,
+  Time,
+  TimesContainer,
+  TitleTime
+} from './elements';
 import { END_TURN } from './graphql/mutations';
 import { GET_REPORT, GET_TURN_SUMMARY } from './graphql/queries';
 
@@ -90,7 +97,7 @@ class TurnEndForm extends Component {
       data: { turnSummaryXLS }
     } = await client.query({ query: GET_REPORT, variables: { uniqueId: turnActive.uniqueId } });
 
-    const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
+    const start = new Date(turnActive.start);
 
     const link = document.createElement('a');
     link.href = encodeURI(turnSummaryXLS);
@@ -113,14 +120,12 @@ class TurnEndForm extends Component {
     const { turnActive } = this.props;
     const { loading, downloading, showSummary, summary, ticketCount, date, isLg } = this.state;
 
-    const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
-
     return (
       <>
         <TimesContainer>
           <Time>
             <span>Turno empezó: </span>
-            <TitleTime>{start.toLocaleTimeString()}</TitleTime>
+            <TitleTime>{new Date(turnActive.start).toLocaleTimeString()}</TitleTime>
           </Time>
           <Time>
             <span>Turno termina: </span>

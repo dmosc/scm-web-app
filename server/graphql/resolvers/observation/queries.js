@@ -6,9 +6,7 @@ const observationQueries = {
     return Observation.find({ lap }).populate('lap');
   }),
   observationActive: authenticated(async (_, { lap }) => {
-    return Observation
-      .findOne({ end: { $exists: false }, lap })
-      .populate('lap');
+    return Observation.findOne({ end: { $exists: false }, lap }).populate('lap');
   })
 };
 

@@ -23,7 +23,8 @@ const productionTurnQueries = {
         .limit(limit || Number.MAX_SAFE_INTEGER)
         .populate('laps');
 
-      if (!productionTurns) throw new Error('¡Ha habido un error cargando los turno de producción!');
+      if (!productionTurns)
+        throw new Error('¡Ha habido un error cargando los turno de producción!');
 
       return productionTurns;
     }
@@ -42,7 +43,14 @@ const productionTurnQueries = {
       {
         $match
       },
-      { $lookup: { from: 'observations', localField: 'observations', foreignField: '_id', as: 'observations' } },
+      {
+        $lookup: {
+          from: 'observations',
+          localField: 'observations',
+          foreignField: '_id',
+          as: 'observations'
+        }
+      },
       { $unwind: '$observations' },
       {
         $group: {
@@ -58,7 +66,14 @@ const productionTurnQueries = {
       },
       { $lookup: { from: 'users', localField: 'driver', foreignField: '_id', as: 'driver' } },
       { $lookup: { from: 'machines', localField: 'machine', foreignField: '_id', as: 'machine' } },
-      { $lookup: { from: 'observations', localField: 'observations', foreignField: '_id', as: 'observations' } },
+      {
+        $lookup: {
+          from: 'observations',
+          localField: 'observations',
+          foreignField: '_id',
+          as: 'observations'
+        }
+      },
       {
         $group: {
           _id: null,

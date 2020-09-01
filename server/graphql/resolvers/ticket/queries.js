@@ -5,13 +5,7 @@ import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format, list } from '../../../../src/utils/functions';
-import {
-  columnToLetter,
-  createWorkbook,
-  createWorksheet,
-  headerRows,
-  solidFill
-} from '../../../utils/reports';
+import { columnToLetter, createWorkbook, createWorksheet, headerRows, solidFill } from '../../../utils/reports';
 import { Rock, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -38,7 +32,7 @@ const ticketQueries = {
     return ticket;
   }),
   tickets: authenticated(async (_, { filters: { limit } }) => {
-    const tickets = await Ticket.find({})
+    const tickets = await Ticket.find({ deleted: false, disabled: false })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
@@ -54,7 +48,7 @@ const ticketQueries = {
     else return tickets;
   }),
   ticketPDF: async (_, { idOrFolio }) => {
-    const query = {};
+    const query = { deleted: false, disabled: false };
 
     if (Types.ObjectId.isValid(idOrFolio)) {
       query._id = idOrFolio;
@@ -202,7 +196,7 @@ const ticketQueries = {
     return createPDF(pdfOptions);
   },
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
-    const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
+    const activeTickets = await Ticket.find({ deleted: false, disabled: false, turn: { $exists: false } })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
@@ -223,6 +217,7 @@ const ticketQueries = {
       { filters: { limit, start = '1970-01-01T00:00:00.000Z', end = '2100-12-31T00:00:00.000Z' } }
     ) => {
       const query = {
+        deleted: false,
         disabled: true,
         disabledAt: { $gte: new Date(start), $lte: new Date(end) }
       };
@@ -245,6 +240,7 @@ const ticketQueries = {
   ),
   notLoadedActiveTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({
+      deleted: false,
       disabled: false,
       turn: { $exists: false },
       load: { $exists: false }
@@ -265,6 +261,7 @@ const ticketQueries = {
   }),
   loadedTickets: authenticated(async (_, { filters: { limit } }) => {
     const loadedTickets = await Ticket.find({
+      deleted: false,
       disabled: false,
       turn: { $exists: false },
       load: { $exists: true }
@@ -289,6 +286,7 @@ const ticketQueries = {
       turn: { $exists: true },
       bill: type === 'BILL',
       isBilled: false,
+      deleted: false,
       disabled: false
     }).populate([
       {
@@ -311,6 +309,7 @@ const ticketQueries = {
           _id: { $in: [...ticketIds.map(ticket => Types.ObjectId(ticket))] },
           turn: { $exists: true },
           isBilled: false,
+          deleted: false,
           disabled: false
         }
       },
@@ -368,9 +367,11 @@ const ticketQueries = {
   archivedTickets: authenticated(
     async (
       _,
-      { range = {}, turnId, billType, paymentType, productId, clientIds, truckId, folio }
+      { range = {}, turnId, billType, paymentType, productId, clientIds, truckId, folio, sortBy }
     ) => {
       const query = {
+        deleted: false,
+        disabled: false,
         out: {
           $gte: new Date(range.start || '1970-01-01T00:00:00.000Z'),
           $lte: new Date(range.end || '2100-12-31T00:00:00.000Z')
@@ -393,7 +394,14 @@ const ticketQueries = {
         if (paymentType === 'CREDIT') query.credit = true;
       }
 
-      return Ticket.find(query).populate('client product truck');
+      const ticketsPromise = Ticket.find(query).populate('client product truck');
+
+      if (sortBy) {
+        const { field, order } = sortBy;
+        ticketsPromise.sort({ [field]: order });
+      }
+
+      return ticketsPromise;
     }
   ),
   archivedTicketsAurora: authenticated(
@@ -591,113 +599,110 @@ const ticketQueries = {
       )}`;
     }
   ),
-  ticketsSummary: authenticated(
-    async (
-      _,
+  ticketsSummary: async (_, {
+    range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
+    turnId,
+    billType,
+    paymentType
+  }) => {
+    const $match = {
+      deleted: false,
+      disabled: false,
+      out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true }
+    };
+
+    if (turnId) {
+      $match.turn = Types.ObjectId(turnId);
+    }
+
+    if (billType) {
+      if (billType === 'BILL') $match.tax = { $gt: 0 };
+      if (billType === 'REMISSION') $match.tax = { $eq: 0 };
+    }
+
+    if (paymentType) {
+      if (paymentType === 'CASH') $match.credit = false;
+      if (paymentType === 'CREDIT') $match.credit = true;
+    }
+
+    const clients = await Ticket.aggregate([
       {
-        range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
-        turnId,
-        billType,
-        paymentType
-      }
-    ) => {
-      const $match = {
-        out: { $gte: new Date(range.start), $lte: new Date(range.end) },
-        totalPrice: { $exists: true },
-        outTruckImage: { $exists: true }
-      };
-
-      if (turnId) {
-        $match.turn = Types.ObjectId(turnId);
-      }
-
-      if (billType) {
-        if (billType === 'BILL') $match.tax = { $gt: 0 };
-        if (billType === 'REMISSION') $match.tax = { $eq: 0 };
-      }
-
-      if (paymentType) {
-        if (paymentType === 'CASH') $match.credit = false;
-        if (paymentType === 'CREDIT') $match.credit = true;
-      }
-
-      const clients = await Ticket.aggregate([
-        {
-          $match
-        },
-        { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
-        { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
-        { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
-        {
-          $group: {
-            _id: '$client',
-            count: { $sum: 1 },
-            tickets: {
-              $push: {
-                id: '$_id',
-                folio: '$folio',
-                driver: '$driver',
-                truck: '$truck',
-                product: '$product',
-                tax: '$tax',
-                weight: '$weight',
-                totalWeight: '$totalWeight',
-                totalPrice: '$totalPrice',
-                credit: '$credit',
-                inTruckImage: '$inTruckImage',
-                outTruckImage: '$outTruckImage'
-              }
+        $match
+      },
+      { $lookup: { from: 'users', localField: 'client', foreignField: '_id', as: 'client' } },
+      { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
+      { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
+      {
+        $group: {
+          _id: '$client',
+          count: { $sum: 1 },
+          tickets: {
+            $push: {
+              id: '$_id',
+              folio: '$folio',
+              driver: '$driver',
+              truck: '$truck',
+              product: '$product',
+              tax: '$tax',
+              weight: '$weight',
+              totalWeight: '$totalWeight',
+              totalPrice: '$totalPrice',
+              credit: '$credit',
+              inTruckImage: '$inTruckImage',
+              outTruckImage: '$outTruckImage'
             }
           }
-        },
-        { $project: { _id: 0, info: '$_id', count: '$count', tickets: '$tickets' } }
-      ]);
-
-      if (clients.length === 0)
-        return { clients, upfront: 0, credit: 0, total: 0, upfrontWeight: 0, creditWeight: 0 };
-
-      let upfront = 0;
-      let credit = 0;
-      let total = 0;
-      let upfrontWeight = 0;
-      let creditWeight = 0;
-      for (const client of clients) {
-        const { tickets } = client;
-        for (const ticket of tickets) {
-          if (ticket.credit) {
-            credit += ticket.totalPrice - ticket.tax;
-            creditWeight += ticket.totalWeight;
-          } else {
-            upfront += ticket.totalPrice - ticket.tax;
-            upfrontWeight += ticket.totalWeight;
-          }
-
-          total += ticket.totalPrice - ticket.tax;
         }
-      }
+      },
+      { $project: { _id: 0, info: '$_id', count: '$count', tickets: '$tickets' } }
+    ]);
 
-      for (let i = 0; i < clients.length; i++) {
-        // Parse data and remove generated arrays from $lookups
-        clients[i].info = { ...clients[i].info[0] };
-        clients[i].info.id = clients[i].info._id;
-        delete clients[i].info._id;
+    if (clients.length === 0)
+      return { clients, upfront: 0, credit: 0, total: 0, upfrontWeight: 0, creditWeight: 0 };
 
-        const { tickets } = clients[i];
-        for (const ticket of tickets) {
-          ticket.product = { ...ticket.product[0] };
-          ticket.truck = { ...ticket.truck[0] };
-
-          ticket.product.id = ticket.product._id;
-          ticket.truck.id = ticket.truck._id;
-
-          delete ticket.product._id;
-          delete ticket.truck._id;
+    let upfront = 0;
+    let credit = 0;
+    let total = 0;
+    let upfrontWeight = 0;
+    let creditWeight = 0;
+    for (const client of clients) {
+      const { tickets } = client;
+      for (const ticket of tickets) {
+        if (ticket.credit) {
+          credit += ticket.totalPrice - ticket.tax;
+          creditWeight += ticket.totalWeight;
+        } else {
+          upfront += ticket.totalPrice - ticket.tax;
+          upfrontWeight += ticket.totalWeight;
         }
-      }
 
-      return { clients, upfront, credit, total, upfrontWeight, creditWeight };
+        total += ticket.totalPrice - ticket.tax;
+      }
     }
-  ),
+
+    for (let i = 0; i < clients.length; i++) {
+      // Parse data and remove generated arrays from $lookups
+      clients[i].info = { ...clients[i].info[0] };
+      clients[i].info.id = clients[i].info._id;
+      delete clients[i].info._id;
+
+      const { tickets } = clients[i];
+      for (const ticket of tickets) {
+        ticket.product = { ...ticket.product[0] };
+        ticket.truck = { ...ticket.truck[0] };
+
+        ticket.product.id = ticket.product._id;
+        ticket.truck.id = ticket.truck._id;
+
+        delete ticket.product._id;
+        delete ticket.truck._id;
+      }
+    }
+
+    return { clients, upfront, credit, total, upfrontWeight, creditWeight };
+  },
   ticketsSummaryByClientXLS: authenticated(
     async (
       _,
@@ -709,6 +714,8 @@ const ticketQueries = {
       }
     ) => {
       const $match = {
+        deleted: false,
+        disabled: false,
         out: { $gte: new Date(range.start), $lte: new Date(range.end) },
         totalPrice: { $exists: true },
         outTruckImage: { $exists: true }
@@ -960,6 +967,8 @@ const ticketQueries = {
       }
     ) => {
       const query = {
+        deleted: false,
+        disabled: false,
         out: { $gte: new Date(range.start), $lte: new Date(range.end) },
         totalPrice: { $exists: true },
         outTruckImage: { $exists: true }
@@ -1118,6 +1127,8 @@ const ticketQueries = {
     { month = moment(), workingDays, workingDaysPassed, excluded = [] }
   ) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(moment(month)?.startOf('month')),
         $lte: new Date(moment(month).endOf('month'))
@@ -1728,6 +1739,8 @@ const ticketQueries = {
   },
   ticketTimesSummary: authenticated(async (_, { date = {}, turnId, rocks, folioSearch }) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
@@ -1778,6 +1791,8 @@ const ticketQueries = {
   }),
   ticketTimes: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
@@ -1813,6 +1828,8 @@ const ticketQueries = {
   }),
   ticketTimesXLS: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')

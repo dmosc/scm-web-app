@@ -19,7 +19,9 @@ const BoreHoles = () => {
   const [currentBoreHole, setCurrentBoreHole] = useState(undefined);
   const [boreHoles, setBoreHoles] = useState([]);
   const debouncedSearch = useDebounce(search, 500);
-  const boreHolesQuery = useQuery(GET_BORE_HOLES, { variables: { filters: { search: debouncedSearch } } });
+  const boreHolesQuery = useQuery(GET_BORE_HOLES, {
+    variables: { filters: { search: debouncedSearch } }
+  });
   const [boreHoleDeleteMutation] = useMutation(DELETE_BORE_HOLE);
 
   useEffect(() => {
@@ -43,8 +45,7 @@ const BoreHoles = () => {
 
         message.success(`La barrenación ${boreHoleToDelete.folio} ha sido removida`);
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
@@ -110,12 +111,7 @@ const BoreHoles = () => {
             />
           </Tooltip>
           <Tooltip placement="top" title="Eliminar">
-            <Button
-              type="danger"
-              icon="delete"
-              size="small"
-              onClick={() => deleteBoreHole(row)}
-            />
+            <Button type="danger" icon="delete" size="small" onClick={() => deleteBoreHole(row)} />
           </Tooltip>
         </Row>
       )
@@ -129,10 +125,7 @@ const BoreHoles = () => {
           loading={loading}
           columns={columns}
           title={() => (
-            <Title
-              toggleNewBoreHoleModal={toggleNewBoreHoleModal}
-              setSearch={setSearch}
-            />
+            <Title toggleNewBoreHoleModal={toggleNewBoreHoleModal} setSearch={setSearch} />
           )}
           size="small"
           pagination={{ defaultPageSize: 20 }}

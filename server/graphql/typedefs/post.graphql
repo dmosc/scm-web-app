@@ -22,5 +22,5 @@ input PostFilters {
   page: Int
   pageSize: Int
   author: ID
-  createdOrder: order
+  createdOrder: Order
 }

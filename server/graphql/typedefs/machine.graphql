@@ -2,8 +2,8 @@
 type Machine {
   id: ID!
   name: String!
-    type: MachineType!
-    plates: String!
+  type: MachineType!
+  plates: String!
   brand: String!
   model: String!
   averageHorometer: Float!
@@ -12,9 +12,9 @@ type Machine {
 
 # Inputs
 input MachineInput {
-    name: String!
-    type: MachineType!
-    plates: String!
+  name: String!
+  type: MachineType!
+  plates: String!
   brand: String!
   model: String!
   averageHorometer: Float!
@@ -23,25 +23,25 @@ input MachineInput {
 
 input MachineEditInput {
   id: ID!
-    name: String
-    type: MachineType
-    plates: String
+  name: String
+  type: MachineType
+  plates: String
   brand: String
-    model: String
-    averageHorometer: Float
-    standardHorometerDeviation: Float
+  model: String
+  averageHorometer: Float
+  standardHorometerDeviation: Float
 }
 
 input MachineFilters {
-    limit: Int
-    search: String
+  limit: Int
+  search: String
 }
 
 # Enums
 enum MachineType {
-    HYDROTRACK
-    JUCKLE
-    BACKHOE
-    PIPE
-    AUTOMOBILE
+  HYDROTRACK
+  JUCKLE
+  BACKHOE
+  PIPE
+  AUTOMOBILE
 }

@@ -176,13 +176,13 @@ const NewTruckForm = ({ form, visible, toggleNewTruckModal, client, trucks, setT
             rules: [
               {
                 required: true,
-                message: 'El peso del camión en KG es requerido!'
+                message: 'El peso del camión en tons es requerido!'
               }
             ]
           })(
             <InputNumber
               style={{ width: '100%' }}
-              placeholder="Peso neto en KG"
+              placeholder="Peso neto en tons"
               min={0}
               step={0.1}
             />

@@ -154,14 +154,14 @@ class Tickets extends Component {
               currentForm={currentForm}
             />
           )) ||
-          (currentForm === 'submit' && (
-            <TicketSubmitRegisterForm
-              setCurrent={this.setCurrent}
-              currentTicket={currentTicket}
-              currentTicketPromotions={currentTicketPromotions}
-              currentForm={currentForm}
-            />
-          ))}
+            (currentForm === 'submit' && (
+              <TicketSubmitRegisterForm
+                setCurrent={this.setCurrent}
+                currentTicket={currentTicket}
+                currentTicketPromotions={currentTicketPromotions}
+                currentForm={currentForm}
+              />
+            ))}
         </Card>
       </TicketsContainer>
     );

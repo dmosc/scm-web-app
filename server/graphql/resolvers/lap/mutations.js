@@ -20,9 +20,9 @@ const lapMutations = {
     try {
       await lap.save();
 
-      const activeLaps = await Lap
-        .find({ end: { $exists: false } })
-        .populate('driver machine turn observations');
+      const activeLaps = await Lap.find({ end: { $exists: false } }).populate(
+        'driver machine turn observations'
+      );
 
       pubsub.publish('ACTIVE_LAPS', { activeLaps });
       pubsub.publish('LAP_UPDATE', { lapUpdate: lap });
@@ -48,9 +48,9 @@ const lapMutations = {
       await lap.save();
       await activeTurn.save();
 
-      const activeLaps = await Lap
-        .find({ end: { $exists: false } })
-        .populate('driver machine turn observations');
+      const activeLaps = await Lap.find({ end: { $exists: false } }).populate(
+        'driver machine turn observations'
+      );
 
       pubsub.publish('ACTIVE_LAPS', { activeLaps });
       pubsub.publish('LAP_UPDATE', { lapUpdate: lap });
@@ -75,9 +75,9 @@ const lapMutations = {
     try {
       await lapToCancel.save();
 
-      const activeLaps = await Lap
-        .find({ end: { $exists: false } })
-        .populate('driver machine turn observations');
+      const activeLaps = await Lap.find({ end: { $exists: false } }).populate(
+        'driver machine turn observations'
+      );
 
       pubsub.publish('ACTIVE_LAPS', { activeLaps });
       pubsub.publish('LAP_UPDATE', { lapUpdate: lapToCancel });

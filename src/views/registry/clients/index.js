@@ -19,10 +19,16 @@ import ClientSubscription from './components/client-subscription';
 const { confirm } = Modal;
 
 const Clients = ({ client }) => {
-  const { isAdmin, isAccountant, isManager } = useAuth();
+  const { isAdmin, isAccountant, isManager, isSupport, isSales } = useAuth();
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({
+    search: '',
+    sortBy: {
+      field: 'uniqueId',
+      order: 'desc'
+    }
+  });
   const [currentClient, setCurrentClient] = useState(null);
   const [currentClientSubscription, setCurrentClientSubscription] = useState();
   const [currentClientPrices, setCurrentClientPrices] = useState();
@@ -95,12 +101,16 @@ const Clients = ({ client }) => {
     {
       title: 'ID',
       dataIndex: 'uniqueId',
-      key: 'uniqueId'
+      key: 'uniqueId',
+      fixed: 'left',
+      width: 200
     },
     {
       title: 'Negocio',
       dataIndex: 'businessName',
-      key: 'businessName'
+      key: 'businessName',
+      fixed: 'left',
+      width: 200
     },
     {
       title: 'Nombre',
@@ -132,6 +142,8 @@ const Clients = ({ client }) => {
       title: 'Acciones',
       key: 'action',
       align: 'right',
+      fixed: 'right',
+      width: 200,
       render: row => (
         <Row>
           <Tooltip placement="top" title="Editar">
@@ -166,7 +178,7 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          <Tooltip placement="top" title="Crédito y balance">
+          {!isSales && <Tooltip placement="top" title="Crédito y balance">
             <Button
               onClick={() => setCurrentClientCredit(row)}
               style={{ marginRight: 5 }}
@@ -174,7 +186,7 @@ const Clients = ({ client }) => {
               icon="credit-card"
               size="small"
             />
-          </Tooltip>
+          </Tooltip>}
           <Tooltip placement="top" title="Sucursales">
             <Button
               onClick={() => setCurrentClientStores(row)}
@@ -184,9 +196,9 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          {(isAdmin || isAccountant || isManager) && (
+          {(isAdmin || isAccountant || isManager || isSupport) && (
             <Tooltip placement="top" title="Eliminar">
-              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
+              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small"/>
             </Tooltip>
           )}
         </Row>
@@ -200,6 +212,7 @@ const Clients = ({ client }) => {
         <Table
           loading={loading}
           columns={columns}
+          scroll={{ x: 1500, y: 600 }}
           title={() => (
             <Title
               handleFilterChange={handleFilterChange}

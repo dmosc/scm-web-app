@@ -19,7 +19,11 @@ const Quotations = ({ client }) => {
   const [filters, setFilters] = useState({
     name: '',
     createdRange: { start: undefined, end: undefined },
-    validRange: { start: undefined, end: undefined }
+    validRange: { start: undefined, end: undefined },
+    sortBy: {
+      field: 'folio',
+      order: 'desc'
+    }
   });
   const [loading, setLoading] = useState(true);
   const debouncedFilters = useDebounce(filters, 1000);

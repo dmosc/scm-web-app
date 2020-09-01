@@ -16,18 +16,7 @@ import {
 } from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
-import {
-  Button,
-  Card,
-  Collapse,
-  Icon,
-  Row,
-  Select,
-  Spin,
-  Statistic,
-  Tag,
-  Typography
-} from 'antd';
+import { Button, Card, Collapse, Icon, Row, Select, Spin, Statistic, Tag, Typography } from 'antd';
 import {
   GET_MOST_RECENTLY_ENDED_TURN,
   GET_REPORT,
@@ -132,7 +121,7 @@ const Turns = ({ client, globalFilters }) => {
       variables: { uniqueId: turn.uniqueId, ticketType }
     });
 
-    const start = new Date(turn.start.substring(0, turn.start.indexOf('Z') - 1));
+    const start = new Date(turn.start);
 
     const link = document.createElement('a');
     link.href = encodeURI(turnSummaryXLS);

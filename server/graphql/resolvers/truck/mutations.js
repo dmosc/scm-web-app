@@ -8,7 +8,7 @@ const truckMutations = {
     truck.plates = truck.plates.toUpperCase();
     truck.brand = truck.brand.toUpperCase();
     truck.model = truck.model.toUpperCase();
-    truck.weight = truck.weight.toFixed(2) / 1000;
+    truck.weight = truck.weight.toFixed(2);
     truck.drivers = truck.drivers.map(driver => driver.toUpperCase());
 
     const clientWithTruckExists = await Truck.findOne({

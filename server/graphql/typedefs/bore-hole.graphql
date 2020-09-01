@@ -1,29 +1,29 @@
 # Types
 type BoreHole {
-    id: ID!
-    folio: String!
-    date: Date!
-    meters: Float!
-    createdAt: Date!
-    machine: Machine!
-    createdBy: User!
+  id: ID!
+  folio: String!
+  date: Date!
+  meters: Float!
+  createdAt: Date!
+  machine: Machine!
+  createdBy: User!
 }
 
 # Inputs
 input BoreHoleInput {
-    date: Date!
-    meters: Float!
-    machine: ID!
+  date: Date!
+  meters: Float!
+  machine: ID!
 }
 
 input BoreHoleEditInput {
-    id: ID!
-    date: Date!
-    meters: Float!
-    machine: ID!
+  id: ID!
+  date: Date!
+  meters: Float!
+  machine: ID!
 }
 
 input BoreHoleFilters {
-    limit: Int
-    search: String
+  limit: Int
+  search: String
 }

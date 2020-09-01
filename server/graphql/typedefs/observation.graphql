@@ -1,18 +1,18 @@
 # Types
 type Observation {
-    id: ID!
-    start: Date!
-    end: Date
-    description: String!
-    lap: Lap!
+  id: ID!
+  start: Date!
+  end: Date
+  description: String!
+  lap: Lap!
 }
 
 # Inputs
 input ObservationInitInput {
-    lap: ID!
+  lap: ID!
 }
 
 input ObservationEndInput {
-    id: ID!
-    description: String!
+  id: ID!
+  description: String!
 }

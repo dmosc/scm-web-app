@@ -32,8 +32,8 @@ const Trips = () => {
 
   return (
     <TripsContainer>
-      <Turn productionTurn={productionTurn} setProductionTurn={setProductionTurn}/>
-      <TripsList productionTurn={productionTurn}/>
+      <Turn productionTurn={productionTurn} setProductionTurn={setProductionTurn} />
+      <TripsList productionTurn={productionTurn} />
     </TripsContainer>
   );
 };

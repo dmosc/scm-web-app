@@ -10,29 +10,32 @@ const GET_HISTORY_TICKETS = gql`
     $truckId: ID
     $productId: ID
     $folio: String
+    $sortBy: TicketSort
   ) {
     archivedTickets(
       range: $range
       turnId: $turnId
-      billType: $billType
-      paymentType: $paymentType
-      clientIds: $clientIds
-      truckId: $truckId
-      productId: $productId
-      folio: $folio
+        billType: $billType
+        paymentType: $paymentType
+        clientIds: $clientIds
+        truckId: $truckId
+        productId: $productId
+        folio: $folio
+        sortBy: $sortBy
     ) {
-      id
-      folio
-      out
-      client {
         id
-        businessName
-      }
-      truck {
-        id
-        plates
-      }
-      totalPrice
+        folio
+        bill
+        out
+        client {
+            id
+            businessName
+        }
+        truck {
+            id
+            plates
+        }
+        totalPrice
       product {
         id
         name

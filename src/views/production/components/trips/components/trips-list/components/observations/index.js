@@ -12,15 +12,18 @@ const Observations = ({ currentLap, setCurrentLap }) => {
 
   return (
     <>
-      {currentLap &&
-      <Card>
-        <Tabs animated={false} onChange={tabPane => setTab(tabPane)} defaultActiveKey="status">
-          <TabPane tab="Estátus" key="status"/>
-          <TabPane tab="Observaciones" key="observations"/>
-        </Tabs>
-        {tab === 'status' && <LapStatus currentLap={currentLap} setCurrentLap={setCurrentLap}/>}
-        {tab === 'observations' && <ObservationsHistory currentLap={currentLap} setCurrentLap={setCurrentLap}/>}
-      </Card>}
+      {currentLap && (
+        <Card>
+          <Tabs animated={false} onChange={tabPane => setTab(tabPane)} defaultActiveKey="status">
+            <TabPane tab="Estátus" key="status" />
+            <TabPane tab="Observaciones" key="observations" />
+          </Tabs>
+          {tab === 'status' && <LapStatus currentLap={currentLap} setCurrentLap={setCurrentLap} />}
+          {tab === 'observations' && (
+            <ObservationsHistory currentLap={currentLap} setCurrentLap={setCurrentLap} />
+          )}
+        </Card>
+      )}
     </>
   );
 };

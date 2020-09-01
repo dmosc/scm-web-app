@@ -106,6 +106,7 @@ input ClientFilters {
   limit: Int
   search: String
   range: DateRange
+  sortBy: ClientSort
 }
 
 input ClientsCreatedInRangeFilters {
@@ -113,7 +114,16 @@ input ClientsCreatedInRangeFilters {
   range: DateRange!
 }
 
+input ClientSort {
+  field: ClientSortField!
+  order: Order!
+}
+
 # Enums
+enum ClientSortField {
+  uniqueId
+}
+
 enum CFDIuse {
   G01
   G03

@@ -24,7 +24,8 @@ const machineMutations = {
     if (machine.plates) machine.plates = args.machine.plates.toUpperCase();
     if (machine.brand) machine.brand = args.machine.brand.toUpperCase();
     if (machine.model) machine.model = args.machine.model.toUpperCase();
-    if (machine.averageHorometer) machine.averageHorometer = args.machine.averageHorometer.toFixed(2);
+    if (machine.averageHorometer)
+      machine.averageHorometer = args.machine.averageHorometer.toFixed(2);
     if (machine.standardHorometerDeviation)
       machine.standardHorometerDeviation = args.machine.standardHorometerDeviation.toFixed(2);
     machine.type = args.machine.type;

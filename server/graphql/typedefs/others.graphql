@@ -10,7 +10,7 @@ enum s3FolderKey {
   posts
 }
 
-enum order {
+enum Order {
   asc
   desc
 }
@@ -20,18 +20,18 @@ enum Month {
   FEBRUARY
   MARCH
   APRIL
-    MAY
-    JUNE
-    JULY
-    AUGUST
-    SEPTEMBER
-    OCTOBER
-    NOVEMBER
-    DECEMBER
+  MAY
+  JUNE
+  JULY
+  AUGUST
+  SEPTEMBER
+  OCTOBER
+  NOVEMBER
+  DECEMBER
 }
 
 enum Unit {
-    LTS
-    MTS
-    GRS
+  LTS
+  MTS
+  GRS
 }

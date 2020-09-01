@@ -7,12 +7,10 @@ import { Card } from './elements';
 const Turn = ({ productionTurn, setProductionTurn }) => {
   return (
     <Card>
-      {!productionTurn && <TurnInitForm/>}
-      {productionTurn &&
-      <TurnEndForm
-        productionTurn={productionTurn}
-        setProductionTurn={setProductionTurn}
-      />}
+      {!productionTurn && <TurnInitForm />}
+      {productionTurn && (
+        <TurnEndForm productionTurn={productionTurn} setProductionTurn={setProductionTurn} />
+      )}
     </Card>
   );
 };

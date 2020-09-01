@@ -9,7 +9,6 @@ const { Option } = Select;
 
 const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, setClients }) => {
   const [loading, setLoading] = useState(false);
-  const [address, setAddress] = useState({});
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -19,7 +18,25 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
     form.validateFields(
       async (
         err,
-        { firstName, lastName, email, businessName, rfc, CFDIuse, cellphone, defaultCreditDays }
+        {
+          firstName,
+          lastName,
+          email,
+          businessName,
+          rfc,
+          CFDIuse,
+          cellphone,
+          defaultCreditDays,
+          country,
+          state,
+          municipality,
+          city,
+          suburb,
+          street,
+          intNumber,
+          extNumber,
+          zipCode
+        }
       ) => {
         if (!err) {
           const {
@@ -37,7 +54,17 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
                 CFDIuse,
                 cellphone,
                 defaultCreditDays,
-                address: Object.keys(address).length > 0 ? address : null
+                address: {
+                  country,
+                  state,
+                  municipality,
+                  city,
+                  suburb,
+                  street,
+                  intNumber,
+                  extNumber,
+                  zipCode
+                }
               }
             }
           });
@@ -51,7 +78,6 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           const clientsToSet = [cli, ...oldClients];
           setLoading(false);
           setClients(clientsToSet);
-          setAddress({});
 
           message.success(`Cliente ${cli.businessName} ha sido registrado exitosamente!`);
 
@@ -146,7 +172,15 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item>
-          {form.getFieldDecorator('cellphone')(
+          {form.getFieldDecorator('cellphone', {
+            rules: [
+              {
+                required: true,
+                message: 'Se requiere almenos un número de contacto',
+                validator: (_, value) => !!value.length
+              }
+            ]
+          })(
             <Select
               placeholder="Números de contacto"
               mode="tags"
@@ -156,67 +190,104 @@ const NewClientForm = ({ form, visible, toggleNewClientModal, client, clients, s
           )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="País"
-            onChange={({ target: { value } }) => setAddress({ ...address, country: value })}
-          />
+          {form.getFieldDecorator('country')(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="País"
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Estado"
-            onChange={({ target: { value } }) => setAddress({ ...address, state: value })}
-          />
+          {form.getFieldDecorator('state', {
+            rules: [
+              {
+                required: true,
+                message: 'Se requiere almenos un número de contacto'
+              }
+            ]
+          })(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Estado"
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Municipio"
-            onChange={({ target: { value } }) => setAddress({ ...address, municipality: value })}
-          />
+          {form.getFieldDecorator('municipality')(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Municipio"
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Ciudad"
-            onChange={({ target: { value } }) => setAddress({ ...address, city: value })}
-          />
+          {form.getFieldDecorator('city', {
+            rules: [
+              {
+                required: true,
+                message: 'Se requiere la ciudad'
+              }
+            ]
+          })(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Ciudad"
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Colonia"
-            onChange={({ target: { value } }) => setAddress({ ...address, suburb: value })}
-          />
+          {form.getFieldDecorator('suburb', {
+            rules: [
+              {
+                required: true,
+                message: 'Se requiere la colonia'
+              }
+            ]
+          })(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Colonia"
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Calle"
-            onChange={({ target: { value } }) => setAddress({ ...address, street: value })}
-          />
+          {form.getFieldDecorator('street')(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Calle"
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Número ext."
-            onChange={({ target: { value } }) => setAddress({ ...address, intNumber: value })}
-          />
+          {form.getFieldDecorator('extNumber', {
+            rules: [
+              {
+                required: true,
+                message: 'Se requiere el número exterior'
+              }
+            ]
+          })(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Número ext."
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Número int."
-            onChange={({ target: { value } }) => setAddress({ ...address, extNumber: value })}
-          />
+          {form.getFieldDecorator('intNumber')(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Número int."
+            />
+          )}
         </Form.Item>
         <Form.Item>
-          <Input
-            prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Código Postal"
-            onChange={({ target: { value } }) => setAddress({ ...address, zipcode: value })}
-          />
+          {form.getFieldDecorator('zipcode')(
+            <Input
+              prefix={<Icon type="home" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Código Postal"
+            />
+          )}
         </Form.Item>
         <Form.Item label="Días de crédito default">
           {form.getFieldDecorator('defaultCreditDays', {

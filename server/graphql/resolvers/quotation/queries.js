@@ -7,7 +7,7 @@ import { createPDF } from '../../../utils/pdfs';
 const quotationQueries = {
   quotation: async (_, { id }) => Quotation.findOne({ _id: id }),
   quotations: async (_, { filters }) => {
-    const { businessName, name, validRange = {}, createdRange = {} } = filters;
+    const { businessName, name, validRange = {}, createdRange = {}, sortBy } = filters;
 
     const query = {
       deleted: false,
@@ -22,9 +22,16 @@ const quotationQueries = {
       $or: [{ businessName: new RegExp(businessName, 'i') }, { name: new RegExp(name, 'i') }]
     };
 
-    return Quotation.find(query)
+    const quotationsPromise = Quotation.find(query)
       .populate('products.rock')
       .populate('createdBy');
+
+    if (sortBy) {
+      const { field, order } = sortBy;
+      quotationsPromise.sort({ [field]: order });
+    }
+
+    return quotationsPromise;
   },
   quotationPDF: async (_, { id }) => {
     const quotation = await Quotation.findOne({ _id: id })

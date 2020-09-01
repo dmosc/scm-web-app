@@ -17,7 +17,13 @@ const { confirm } = Modal;
 const History = ({ client }) => {
   const [loading, setLoading] = useState(true);
   const [bills, setBills] = useState([]);
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({
+    search: '',
+    sortBy: {
+      field: 'folio',
+      order: 'desc'
+    }
+  });
   const debouncedFilters = useDebounce(filters, 1000);
 
   const { isAdmin, isManager, isAccountant, isCollector, isCollectorAux } = useAuth();
@@ -145,7 +151,7 @@ const History = ({ client }) => {
           </Tooltip>
           {(isAdmin || isManager || isAccountant || isCollector || isCollectorAux) && (
             <Tooltip placement="top" title="Eliminar">
-              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small"/>
+              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small" />
             </Tooltip>
           )}
         </Row>

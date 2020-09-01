@@ -46,10 +46,12 @@ const userMutations = {
     try {
       const userToDelete = await User.findById(id);
 
-      if (userToDelete.role === 'ADMIN' && userRequesting.role !== 'ADMIN')
-        return false;
+      if (userToDelete.role === 'ADMIN' && userRequesting.role !== 'ADMIN') return false;
 
-      if ((userToDelete.role === 'ADMIN' || userToDelete.role === 'MANAGER') && userRequesting.role === 'SUPPORT')
+      if (
+        (userToDelete.role === 'ADMIN' || userToDelete.role === 'MANAGER') &&
+        userRequesting.role === 'SUPPORT'
+      )
         return false;
 
       await User.deleteById(id, userRequesting.id);

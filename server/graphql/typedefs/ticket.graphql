@@ -35,6 +35,8 @@ type UsersInvolved {
   guard: User
   loader: User
   cashier: User
+  modifiedPrice: User
+  modifiedSeries: User
 }
 
 type BillSummary {
@@ -174,6 +176,16 @@ type TicketsInRangeSummary {
   upfront: Float
   credit: Float
   total: Float
+}
+
+input TicketSort {
+  field: TicketSortField!
+  order: Order!
+}
+
+# Enums
+enum TicketSortField {
+  folio
 }
 
 enum TicketBillType {
