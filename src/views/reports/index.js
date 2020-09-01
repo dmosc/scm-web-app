@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { withAuth } from 'components/providers/withAuth';
 import { useDebounce } from 'use-lodash-debounce';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import TopBarProgress from 'react-topbar-progress-indicator';
 import Loadable from 'react-loadable';
+import moment from 'moment';
 import { ReportsContainer } from './elements';
 import TitleSection from './components/title-section';
-
-/* webpackChunkName: "Global" */
-const Global = Loadable({
-  loader: () => import('./components/global'),
-  loading: TopBarProgress
-});
+import Sales from './components/sales';
 
 /* webpackChunkName: "Products" */
 const Products = Loadable({
@@ -31,33 +28,33 @@ const Clients = Loadable({
   loading: TopBarProgress
 });
 
-/* webpackChunkName: "Trucks" */
-const Trucks = Loadable({
-  loader: () => import('./components/trucks'),
-  loading: TopBarProgress
-});
-
 /* webpackChunkName: "Turns" */
 const Turns = Loadable({
   loader: () => import('./components/turns'),
   loading: TopBarProgress
 });
 
-const Reports = () => {
+/* webpackChunkName: "Times" */
+const Times = Loadable({
+  loader: () => import('./components/times'),
+  loading: TopBarProgress
+});
+
+const Reports = ({ location }) => {
   const [globalFilters, setGlobalFilters] = useState({
-    start: null,
-    end: null
+    start: moment().subtract(1, 'month'),
+    end: moment()
   });
   const debouncedGlobalFilters = useDebounce(globalFilters, 1000);
 
   return (
     <ReportsContainer>
-      <TitleSection setGlobalFilters={setGlobalFilters} globalFilters={globalFilters} />
+      <TitleSection
+        hideDateFilter={location.pathname.includes('ventas')}
+        setGlobalFilters={setGlobalFilters}
+        globalFilters={globalFilters}
+      />
       <Switch>
-        <Route
-          path="/reportes/global"
-          render={() => <Global globalFilters={debouncedGlobalFilters} />}
-        />
         <Route
           path="/reportes/productos"
           render={() => <Products globalFilters={debouncedGlobalFilters} />}
@@ -71,12 +68,13 @@ const Reports = () => {
           render={() => <Clients globalFilters={debouncedGlobalFilters} />}
         />
         <Route
-          path="/reportes/camiones"
-          render={() => <Trucks globalFilters={debouncedGlobalFilters} />}
-        />
-        <Route
           path="/reportes/turnos"
           render={() => <Turns globalFilters={debouncedGlobalFilters} />}
+        />
+        <Route path="/reportes/ventas" render={() => <Sales />} />
+        <Route
+          path="/reportes/tiempos"
+          render={() => <Times globalFilters={debouncedGlobalFilters} />}
         />
         <Redirect to="/reportes/global" />
       </Switch>
@@ -84,4 +82,8 @@ const Reports = () => {
   );
 };
 
-export default withAuth(Reports);
+Reports.propTypes = {
+  location: PropTypes.object.isRequired
+};
+
+export default withRouter(withAuth(Reports));

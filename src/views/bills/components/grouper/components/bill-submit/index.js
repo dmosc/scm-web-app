@@ -2,7 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
-import { Button, Form, Icon, InputNumber, List, message, Select, Tag, Typography } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Form,
+  Icon,
+  InputNumber,
+  List,
+  message,
+  Select,
+  Tag,
+  Typography
+} from 'antd';
 import ListContainer from 'components/common/list';
 import { GET_BILL_SUMMARY, GET_CLIENT } from './graphql/queries';
 import { REGISTER_BILL } from './graphql/mutations';
@@ -21,6 +32,7 @@ const BillSubmit = ({
   setClients
 }) => {
   const [loading, setLoading] = useState(false);
+  const [turnToBill, setTurnToBill] = useState(false);
   const [billSummary, setBillSummary] = useState({
     products: [],
     subtotal: 0,
@@ -36,7 +48,7 @@ const BillSubmit = ({
           data: { ticketsToBillSummary }
         } = await client.query({
           query: GET_BILL_SUMMARY,
-          variables: { tickets: targetTickets, client: currentClient }
+          variables: { tickets: targetTickets, turnToBill }
         });
 
         setBillSummary(ticketsToBillSummary);
@@ -59,7 +71,7 @@ const BillSubmit = ({
       setBillSummary({ products: [], subtotal: 0, tax: 0, total: 0 });
       setClientData(null);
     }
-  }, [client, currentClient, targetTickets, setBillSummary]);
+  }, [client, currentClient, targetTickets, setBillSummary, turnToBill]);
 
   const handleSubmit = e => {
     setLoading(true);
@@ -78,7 +90,8 @@ const BillSubmit = ({
                 store,
                 tickets: targetTickets,
                 creditDays,
-                bill: type === 'BILL'
+                bill: type === 'BILL',
+                turnToBill
               }
             }
           });
@@ -149,7 +162,7 @@ const BillSubmit = ({
         />
       </ListContainer>
       <Form onSubmit={handleSubmit}>
-        <Form.Item>
+        <Form.Item style={{ marginBottom: 0 }}>
           {form.getFieldDecorator('store')(
             <Select
               id="skip"
@@ -166,7 +179,7 @@ const BillSubmit = ({
             </Select>
           )}
         </Form.Item>
-        <Form.Item label="Días de crédito">
+        <Form.Item label="Días de crédito" style={{ marginBottom: 0 }}>
           {form.getFieldDecorator('creditDays', {
             initialValue: clientData?.defaultCreditDays || 0,
             rules: [
@@ -181,6 +194,15 @@ const BillSubmit = ({
               prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />
           )}
+        </Form.Item>
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Checkbox
+            defaultChecked={false}
+            disabled={type === 'BILL'}
+            onChange={({ target: { checked } }) => setTurnToBill(checked)}
+          >
+            Aplicar I.V.A.
+          </Checkbox>
         </Form.Item>
         <Form.Item>
           <Button

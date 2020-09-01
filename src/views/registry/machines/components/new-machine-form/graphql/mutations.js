@@ -5,10 +5,10 @@ const REGISTER_MACHINE = gql`
     machine(machine: $machine) {
       id
       name
+      type
       plates
       brand
       model
-      drivers
       averageHorometer
       standardHorometerDeviation
     }

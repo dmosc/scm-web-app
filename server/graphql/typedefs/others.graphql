@@ -6,9 +6,11 @@ input DateRange {
 # AWS
 enum s3FolderKey {
   trucks
+  blast_files
+  posts
 }
 
-enum order {
+enum Order {
   asc
   desc
 }
@@ -26,4 +28,10 @@ enum Month {
   OCTOBER
   NOVEMBER
   DECEMBER
+}
+
+enum Unit {
+  LTS
+  MTS
+  GRS
 }

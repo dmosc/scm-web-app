@@ -47,18 +47,20 @@ const GET_SUMMARY = gql`
       upfront
       credit
       total
+      upfrontWeight
+      creditWeight
     }
   }
 `;
 
-const GET_SUMMARY_XLS = gql`
-  query ticketsSummaryXLS(
+const GET_SUMMARY_BY_CLIENT_XLS = gql`
+  query ticketsSummaryByClientXLS(
     $range: DateRange
     $turnId: ID
     $billType: TicketBillType
     $paymentType: TicketPaymentType
   ) {
-    ticketsSummaryXLS(
+    ticketsSummaryByClientXLS(
       range: $range
       turnId: $turnId
       billType: $billType
@@ -67,4 +69,20 @@ const GET_SUMMARY_XLS = gql`
   }
 `;
 
-export { GET_TURNS, GET_SUMMARY, GET_SUMMARY_XLS };
+const GET_SUMMARY_BY_DATE_XLS = gql`
+  query ticketsSummaryByDateXLS(
+    $range: DateRange
+    $turnId: ID
+    $billType: TicketBillType
+    $paymentType: TicketPaymentType
+  ) {
+    ticketsSummaryByDateXLS(
+      range: $range
+      turnId: $turnId
+      billType: $billType
+      paymentType: $paymentType
+    )
+  }
+`;
+
+export { GET_TURNS, GET_SUMMARY, GET_SUMMARY_BY_CLIENT_XLS, GET_SUMMARY_BY_DATE_XLS };

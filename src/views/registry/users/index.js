@@ -4,20 +4,25 @@ import { useDebounce } from 'use-lodash-debounce';
 import { useAuth } from 'components/providers/withAuth';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { Table, Button, Form } from 'antd';
-import { TableContainer, Card } from './elements';
+import { Button, Form, message, Modal, Row, Table, Tooltip } from 'antd';
+import { Card, TableContainer } from './elements';
 import Title from './components/title';
 import EditForm from './components/user-edit-form';
 import NewForm from './components/new-user-form';
 import { GET_USERS } from './graphql/queries';
+import { DELETE_USER } from './graphql/mutations';
+import DeletedUsers from './components/deleted-users';
+
+const { confirm } = Modal;
 
 const Users = ({ client }) => {
-  const { isSupport, isManager, isCashier } = useAuth();
+  const { isAdmin, isSupport, isManager, isCashier } = useAuth();
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isNewUserModalOpen, toggleNewUserModal] = useState(false);
+  const [isDeletedUsersModalOpen, toggleDeletedUsersModal] = useState(false);
   const debouncedFilters = useDebounce(filters, 1000);
 
   const NewUserForm = Form.create({ name: 'user' })(NewForm);
@@ -57,6 +62,33 @@ const Users = ({ client }) => {
     setUsers(usersToSet);
   };
 
+  const deleteUser = userToDelete => {
+    confirm({
+      title: `¿Estás seguro de que deseas eliminar a ${userToDelete.username}?`,
+      content:
+        'Una vez eliminado ya no será considerado dentro del sistema hasta que sea reintegrado por un supervisor.',
+      okType: 'danger',
+      okText: 'Eliminar',
+      cancelText: 'Cancelar',
+      onOk: async () => {
+        const {
+          data: { userDelete }
+        } = await client.mutate({
+          mutation: DELETE_USER,
+          variables: { id: userToDelete.id }
+        });
+
+        if (userDelete) {
+          setUsers(users.filter(({ id }) => id !== userToDelete.id));
+          message.success(`El usuario ${userToDelete.username} ha sido removido`);
+        } else {
+          message.error('Ha sucedido un error intentando eliminar al usuario!');
+        }
+      },
+      onCancel: () => {}
+    });
+  };
+
   const columns = [
     {
       title: 'Nombre de usuario',
@@ -88,19 +120,43 @@ const Users = ({ client }) => {
       key: 'action',
       align: 'right',
       render: row => (
-        <Button
-          onClick={() => setCurrentUser(row)}
-          disabled={
-            isCashier
-              ? row.role === 'ADMIN' || row.role === 'MANAGER' || row.role === 'SUPPORT'
-              : isSupport
-              ? row.role === 'ADMIN' || row.role === 'MANAGER'
-              : (isManager && row.role === 'ADMIN') || (isManager && row.role === 'MANAGER')
-          }
-          type="default"
-          icon="edit"
-          size="small"
-        />
+        <Row>
+          {(isAdmin || isManager || isSupport) && (
+            <Tooltip placement="top" title="Editar">
+              <Button
+                onClick={() => setCurrentUser(row)}
+                disabled={
+                  isCashier
+                    ? row.role === 'ADMIN' || row.role === 'MANAGER' || row.role === 'SUPPORT'
+                    : isSupport
+                    ? row.role === 'ADMIN' || row.role === 'MANAGER'
+                    : (isManager && row.role === 'ADMIN') || (isManager && row.role === 'MANAGER')
+                }
+                type="default"
+                icon="edit"
+                size="small"
+                style={{ marginRight: 5 }}
+              />
+            </Tooltip>
+          )}
+          {(isAdmin || isManager || isSupport) && (
+            <Tooltip placement="top" title="Eliminar">
+              <Button
+                onClick={() => deleteUser(row)}
+                disabled={
+                  isCashier
+                    ? row.role === 'ADMIN' || row.role === 'MANAGER' || row.role === 'SUPPORT'
+                    : isSupport
+                    ? row.role === 'ADMIN' || row.role === 'MANAGER'
+                    : (isManager && row.role === 'ADMIN') || (isManager && row.role === 'MANAGER')
+                }
+                type="danger"
+                icon="delete"
+                size="small"
+              />
+            </Tooltip>
+          )}
+        </Row>
       )
     }
   ];
@@ -115,10 +171,10 @@ const Users = ({ client }) => {
             <Title
               handleFilterChange={handleFilterChange}
               toggleNewUserModal={toggleNewUserModal}
+              toggleDeletedUsersModal={toggleDeletedUsersModal}
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={users.map(userMapped => ({ ...userMapped, key: shortid.generate() }))}
         />
@@ -135,6 +191,14 @@ const Users = ({ client }) => {
           users={users}
           visible={isNewUserModalOpen}
           toggleNewUserModal={toggleNewUserModal}
+          setUsers={setUsers}
+        />
+      )}
+      {isDeletedUsersModalOpen && (
+        <DeletedUsers
+          users={users}
+          visible={isDeletedUsersModalOpen}
+          toggleDeletedUsersModal={toggleDeletedUsersModal}
           setUsers={setUsers}
         />
       )}

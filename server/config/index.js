@@ -20,9 +20,22 @@ const AWS_CONFIG = {
 
 const { API_PORT } = process.env;
 const { MONGO_DB_URI } = process.env;
-const { S3_BUCKET } = process.env;
-const { S3_REGION } = process.env;
 const { JWT_SECRET } = process.env;
+const { GCLOUD_BUCKET } = process.env;
 const { AES_SECRET } = process.env;
+const { ACCOUNT_SID } = process.env;
+const { TWILIO_AUTH_TOKEN } = process.env;
+const { TWILIO_PHONE_NUMBER } = process.env;
 
-export { ENV, AWS_CONFIG, API_PORT, MONGO_DB_URI, S3_BUCKET, S3_REGION, JWT_SECRET, AES_SECRET };
+export {
+  ENV,
+  AWS_CONFIG,
+  API_PORT,
+  MONGO_DB_URI,
+  JWT_SECRET,
+  AES_SECRET,
+  ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN,
+  TWILIO_PHONE_NUMBER,
+  GCLOUD_BUCKET
+};

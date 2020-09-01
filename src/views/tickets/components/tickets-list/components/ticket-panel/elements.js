@@ -5,6 +5,13 @@ const Actions = styled.div`
   padding-top: 10px;
   border-top: 1px solid #ecedef;
 
+  ${props => props.theme.media.md`
+    flex-direction: column;
+    button {
+      margin: 5px 0;
+    }
+  `}
+
   button {
     margin-right: 5px;
   }

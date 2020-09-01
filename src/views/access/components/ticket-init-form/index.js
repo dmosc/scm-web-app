@@ -1,41 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
-import Webcam from 'react-webcam';
-import {
-  Form,
-  Row,
-  Col,
-  Modal,
-  Button,
-  Input,
-  Icon,
-  notification,
-  Select,
-  List,
-  message
-} from 'antd';
+import { Button, Form, Icon, Input, List, message, Modal, notification } from 'antd';
 import {
   FormContainer,
-  ImageContainer,
-  PreviewImageContainer,
+  HiddenForm,
   ProductContainer,
   ProductList,
-  HiddenForm
+  TruckContainer,
+  TruckList
 } from './elements';
 import { REGISTER_TICKET_INIT } from './graphql/mutations';
-import { GET_ROCKS, GET_SIMILAR_TRUCKS, DECIPHER_PLATES } from './graphql/queries';
+import { DECIPHER_PLATES, GET_ROCKS, GET_SIMILAR_TRUCKS } from './graphql/queries';
+import InPhotoCapturer from './components/in-photo-capturer';
 
-const { Option } = Select;
+const defaultImages = {
+  left: '',
+  top: '',
+  right: ''
+};
 
 const TicketInit = ({ client, user }) => {
-  const camRef = React.createRef();
   const [loading, setLoading] = useState(false);
+  const [showCapturer, toggleCapturer] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [trucks, setTrucks] = useState([]);
   const [ticketClient, setTicketClient] = useState(null);
   const [plates, setPlates] = useState(null);
-  const [inTruckImage, setInTruckImage] = useState(null);
+  const [inTruckImages, setInTruckImages] = useState(defaultImages);
   const [products, setProducts] = useState([]);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [F10Counter, setF10Counter] = useState(0);
@@ -74,7 +66,11 @@ const TicketInit = ({ client, user }) => {
         variables: { filters: {} }
       });
       setProducts(productsToSet);
-      setInTruckImage('/static/images/truck_image.png');
+      setInTruckImages({
+        right: '',
+        top: '/static/images/truck_image.png',
+        left: ''
+      });
     };
 
     getProducts();
@@ -98,14 +94,6 @@ const TicketInit = ({ client, user }) => {
     setPlates(decipheredPlates);
   };
 
-  const captureImage = () => {
-    const inTruckImageToSet = camRef.current.getScreenshot();
-
-    setInTruckImage(inTruckImageToSet);
-  };
-
-  const removeImage = () => setInTruckImage('/static/images/truck_image.png');
-
   const handleSetCurrentProduct = currentProductToSet => {
     const oldProduct = currentProduct ? { ...currentProduct } : null;
 
@@ -126,7 +114,9 @@ const TicketInit = ({ client, user }) => {
           client: ticketClient ? ticketClient : clientId,
           plates,
           product: currentProduct?.id,
-          inTruckImage,
+          inTruckImageRight: inTruckImages.right,
+          inTruckImage: inTruckImages.top,
+          inTruckImageLeft: inTruckImages.left,
           folderKey: 'trucks',
           id: user.id
         }
@@ -144,7 +134,7 @@ const TicketInit = ({ client, user }) => {
     setLoading(false);
     setShowModal(false);
     setPlates(null);
-    setInTruckImage('/static/images/truck_image.png');
+    setInTruckImages(defaultImages);
     setCurrentProduct(null);
 
     notification.open({
@@ -160,8 +150,10 @@ const TicketInit = ({ client, user }) => {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!inTruckImage) {
-      message.error('Es necesaria la imagen del camión');
+    toggleCapturer(false);
+
+    if (!inTruckImages.top) {
+      message.error('Es necesaria almenos la imagen superior del camión');
       return;
     }
 
@@ -170,7 +162,7 @@ const TicketInit = ({ client, user }) => {
       return;
     }
 
-    if (plates && inTruckImage && currentProduct) {
+    if (plates && inTruckImages.top && currentProduct) {
       setLoading(true);
       const {
         data: { similarTrucks }
@@ -200,92 +192,54 @@ const TicketInit = ({ client, user }) => {
 
   return (
     <FormContainer>
-      <Form onSubmit={handleSubmit}>
+      <Form>
         <Form.Item>
-          <>
-            <Row display="flex" justify="start">
-              <Col span={14}>
-                <Row>
-                  <Col span={24}>
-                    <Webcam
-                      style={{
-                        height: '15vw',
-                        width: '20vw',
-                        margin: 0,
-                        padding: 0,
-                        borderRadius: 5
-                      }}
-                      ref={camRef}
-                      screenshotQuality={1}
-                      audio={false}
-                      imageSmoothing={true}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    {!inTruckImage ? (
-                      <PreviewImageContainer>
-                        <Icon style={{ fontSize: 30 }} type="file-image" />
-                      </PreviewImageContainer>
-                    ) : (
-                      <ImageContainer alt="Preview" src={inTruckImage} />
-                    )}
-                    <Button style={{ marginRight: 5 }} type="default" onClick={captureImage}>
-                      Capturar
-                    </Button>
-                    <Button
-                      style={{ marginRight: 5 }}
-                      type="danger"
-                      disabled={!inTruckImage}
-                      onClick={removeImage}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button
-                      style={{ marginRight: 5 }}
-                      type="primary"
-                      disabled={!inTruckImage}
-                      onClick={handleSubmit}
-                      loading={loading}
-                    >
-                      {(loading && 'Espere..') || 'OK'}
-                    </Button>
-                  </Col>
-                </Row>
-              </Col>
-              <Col span={10}>
-                <Form.Item label="Placas">
-                  <Input
-                    prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    value={plates || ''}
-                    placeholder="Placas"
-                    onChange={({ target: { value } }) => handleSetPlates(value)}
-                  />
-                </Form.Item>
-                <Form.Item label="Producto">
-                  <ProductList
-                    size="small"
-                    dataSource={products}
-                    renderItem={product => (
-                      <List.Item>
-                        <ProductContainer
-                          color={
-                            product.id === currentProduct?.id || !currentProduct
-                              ? product.color
-                              : '#D9D9D9'
-                          }
-                          onClick={() => handleSetCurrentProduct(product)}
-                        >
-                          {product.name}
-                        </ProductContainer>
-                      </List.Item>
-                    )}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </>
+          <Form.Item label="Placas">
+            <Input
+              prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              value={plates || ''}
+              placeholder="Placas"
+              onChange={({ target: { value } }) => handleSetPlates(value)}
+            />
+          </Form.Item>
+          <Form.Item label="Producto">
+            <ProductList
+              size="small"
+              dataSource={products}
+              renderItem={product => (
+                <List.Item>
+                  <ProductContainer
+                    color={
+                      product.id === currentProduct?.id || !currentProduct
+                        ? product.color
+                        : '#D9D9D9'
+                    }
+                    onClick={() => handleSetCurrentProduct(product)}
+                  >
+                    {product.name}
+                  </ProductContainer>
+                </List.Item>
+              )}
+            />
+          </Form.Item>
+          <Button
+            style={{ width: '100%' }}
+            type="primary"
+            disabled={!plates || !currentProduct}
+            onClick={() => toggleCapturer(true)}
+            loading={loading}
+          >
+            Entrar
+          </Button>
         </Form.Item>
       </Form>
+      <InPhotoCapturer
+        inTruckImages={inTruckImages}
+        setInTruckImages={setInTruckImages}
+        visible={showCapturer}
+        onCancel={() => toggleCapturer(false)}
+        handleSubmit={handleSubmit}
+      />
       <HiddenForm onSubmit={submitHiddenInput}>
         <input id="hidden-input" />
       </HiddenForm>
@@ -295,18 +249,20 @@ const TicketInit = ({ client, user }) => {
         onOk={initializeTicket}
         onCancel={cancelTicket}
       >
-        <Select
-          showSearch
-          defaultValue={trucks[0]?.client.id}
-          onChange={ticketClientToSet => setTicketClient(ticketClientToSet)}
-          style={{ width: '100%' }}
-        >
-          {trucks?.map(truck => (
-            <Option key={truck.client.id} value={truck.client.id}>
-              {truck.client.businessName}
-            </Option>
-          ))}
-        </Select>
+        <TruckList
+          size="small"
+          dataSource={trucks}
+          renderItem={truck => (
+            <List.Item style={{ border: 'none' }}>
+              <TruckContainer
+                color={truck.client.id === ticketClient ? '#1890FF' : undefined}
+                onClick={() => setTicketClient(truck.client.id)}
+              >
+                {truck.client.businessName}
+              </TruckContainer>
+            </List.Item>
+          )}
+        />
       </Modal>
     </FormContainer>
   );

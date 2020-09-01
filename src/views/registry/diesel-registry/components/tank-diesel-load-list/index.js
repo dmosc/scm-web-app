@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Form, Table } from 'antd';
 import TankDieselLoadForm from './components/tank-diesel-load-form';
 import { GET_TANK_DIESEL_LOADS } from './graphql/queries';
@@ -72,7 +72,6 @@ const TankDieselLoadList = ({ tab, isModalOpen, setIsModalOpen, client }) => {
         loading={loading}
         columns={columns}
         size="small"
-        scroll={{ x: true, y: true }}
         pagination={{ defaultPageSize: 20 }}
         dataSource={tankDieselLoads.map(tankDieselLoad => ({
           ...tankDieselLoad,

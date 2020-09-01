@@ -1,33 +1,74 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { useAuth } from 'components/providers/withAuth';
+import { sizes } from 'theme';
 import { Menu, Sider } from './elements';
 
 const { Item, SubMenu, ItemGroup } = Menu;
 
 const Sidebar = ({ history, location, collapsed, onCollapse }) => {
-  const { isAdmin, isGuard, isLoader, isCashier, isAccountant, isManager, isSupport } = useAuth();
+  const {
+    isAdmin,
+    isGuard,
+    isLoader,
+    isCashier,
+    isAccountant,
+    isManager,
+    isSupport,
+    isCollector,
+    isCollectorAux,
+    isSales,
+    isTreasurer,
+    isAuditor,
+    isDriver
+  } = useAuth();
+  const [isLg, toggleLg] = useState(window.innerWidth > sizes.lg);
+
+  const updateWidth = () => {
+    toggleLg(window.innerWidth > sizes.lg);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWidth);
+
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   return (
-    <Sider theme="light" collapsible collapsed={collapsed} onCollapse={onCollapse}>
+    <Sider
+      breakpoint="lg"
+      collapsedWidth={isLg ? '80' : '0'}
+      theme="light"
+      collapsed={collapsed}
+      collapsible
+      onCollapse={onCollapse}
+    >
       <Menu
         theme="light"
         defaultSelectedKeys={history.location.pathname.toLowerCase()}
         selectedKeys={history.location.pathname.toLowerCase()}
         mode="inline"
       >
-        <Item key="dashboard">
-          <Link to="/dashboard">
-            <Icon type="dashboard" />
-            <span>Dashboard</span>
-          </Link>
-        </Item>
-        {(isAdmin || isGuard || isSupport || isManager) && (
+        {!isAuditor && (
+          <Item key="dashboard">
+            <Link to="/dashboard">
+              <Icon type="dashboard"/>
+              <span>Dashboard</span>
+            </Link>
+          </Item>
+        )}
+        {(isAdmin ||
+          isGuard ||
+          isSupport ||
+          isManager ||
+          isCashier ||
+          isCollector ||
+          isCollectorAux) && (
           <Item key="accesos">
             <Link to="/accesos">
-              <Icon type="key" />
+              <Icon type="key"/>
               <span>Accesos</span>
             </Link>
           </Item>
@@ -35,51 +76,74 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
         {(isAdmin || isLoader || isSupport || isManager) && (
           <Item key="cargas">
             <Link to="/cargas">
-              <Icon type="funnel-plot" />
+              <Icon type="funnel-plot"/>
               <span>Cargas</span>
             </Link>
           </Item>
         )}
-        {(isAdmin || isCashier || isSupport || isManager) && (
+        {(isAdmin || isCashier || isSupport || isManager || isCollector || isCollectorAux) && (
           <Item key={location.pathname === '/boletas' ? 'boletas' : undefined}>
             <Link to="/boletas">
-              <Icon type="unordered-list" />
+              <Icon type="unordered-list"/>
               <span>Boletas</span>
             </Link>
           </Item>
         )}
-        {(isAdmin || isAccountant || isSupport || isManager) && (
+        {(isAdmin || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="cloud-upload" />
+                <Icon type="cloud-upload"/>
                 <span>Registros</span>
               </span>
             }
           >
             <ItemGroup title="Clientes">
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin ||
+                isAccountant ||
+                isSupport ||
+                isManager ||
+                isCollector ||
+                isCollectorAux || isSales) && (
                 <Item key="registros/clientes">
                   <Link to="/registros/clientes">
-                    <Icon type="usergroup-add" />
+                    <Icon type="user"/>
                     Clientes
                   </Link>
                 </Item>
               )}
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin ||
+                isAccountant ||
+                isSupport ||
+                isManager ||
+                isCollector ||
+                isCollectorAux) && (
                 <Item key="registros/peticiones-clientes">
                   <Link to="/registros/peticiones-clientes">
-                    <Icon type="form" />
+                    <Icon type="form"/>
                     Peticiones
                   </Link>
                 </Item>
               )}
+              {(isAdmin || isSupport || isManager) && (
+                <Item key="registros/grupos">
+                  <Link to="/registros/grupos">
+                    <Icon type="team"/>
+                    Grupos
+                  </Link>
+                </Item>
+              )}
             </ItemGroup>
-            {(isAdmin || isAccountant || isSupport || isManager) && (
+            {(isAdmin ||
+              isAccountant ||
+              isSupport ||
+              isManager ||
+              isCollector ||
+              isCollectorAux) && (
               <ItemGroup title="Camiones">
                 <Item key="registros/camiones">
                   <Link to="/registros/camiones">
-                    <Icon type="car" />
+                    <Icon type="car"/>
                     Camiones
                   </Link>
                 </Item>
@@ -89,35 +153,47 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               <ItemGroup title="Usuarios">
                 <Item key="registros/usuarios">
                   <Link to="/registros/usuarios">
-                    <Icon type="user-add" />
+                    <Icon type="user"/>
                     Usuarios
                   </Link>
                 </Item>
               </ItemGroup>
             )}
             <ItemGroup title="Productos">
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin ||
+                isAccountant ||
+                isSupport ||
+                isManager ||
+                isCollector ||
+                isCollectorAux ||
+                isSales) && (
                 <Item key="registros/productos">
                   <Link to="/registros/productos">
-                    <Icon type="block" />
+                    <Icon type="block"/>
                     Productos
                   </Link>
                 </Item>
               )}
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin ||
+                isAccountant ||
+                isSupport ||
+                isManager ||
+                isCollector ||
+                isCollectorAux ||
+                isSales) && (
                 <Item key="registros/peticiones-productos">
                   <Link to="/registros/peticiones-productos">
-                    <Icon type="form" />
+                    <Icon type="form"/>
                     Peticiones
                   </Link>
                 </Item>
               )}
             </ItemGroup>
             <ItemGroup title="Promociones">
-              {(isAdmin || isAccountant || isSupport || isManager) && (
+              {(isAdmin || isAccountant || isSupport || isManager || isCollector || isSales) && (
                 <Item key="registros/promociones">
                   <Link to="/registros/promociones">
-                    <Icon type="scissor" />
+                    <Icon type="scissor"/>
                     Promociones
                   </Link>
                 </Item>
@@ -127,7 +203,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/maquinas">
                   <Link to="/registros/maquinas">
-                    <Icon type="robot" />
+                    <Icon type="robot"/>
                     Máquinas
                   </Link>
                 </Item>
@@ -135,7 +211,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/diesel">
                   <Link to="/registros/diesel">
-                    <Icon type="share-alt" />
+                    <Icon type="share-alt"/>
                     Diésel
                   </Link>
                 </Item>
@@ -143,7 +219,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
               {(isAdmin || isAccountant || isSupport || isManager) && (
                 <Item key="registros/aceite">
                   <Link to="/registros/aceite">
-                    <Icon type="deployment-unit" />
+                    <Icon type="deployment-unit"/>
                     Aceite
                   </Link>
                 </Item>
@@ -151,97 +227,207 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
             </ItemGroup>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant || isSupport || isManager) && (
+        {(isAdmin ||
+          isAccountant ||
+          isSupport ||
+          isManager ||
+          isCashier ||
+          isCollector ||
+          isCollectorAux ||
+          isSales ||
+          isTreasurer ||
+          isAuditor) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="line-chart" />
+                <Icon type="line-chart"/>
                 <span>Reportes</span>
               </span>
             }
           >
-            <Item key="reportes/global">
-              <Link to="/reportes/global">
-                <Icon type="area-chart" />
-                Global
-              </Link>
-            </Item>
-            <Item key="reportes/productos">
-              <Link to="/reportes/productos">
-                <Icon type="block" />
-                Productos
-              </Link>
-            </Item>
-            <Item key="reportes/boletas">
-              <Link to="/reportes/boletas">
-                <Icon type="unordered-list" />
-                Boletas
-              </Link>
-            </Item>
-            <Item key="reportes/clientes">
-              <Link to="/reportes/clientes">
-                <Icon type="usergroup-add" />
-                Clientes
-              </Link>
-            </Item>
-            <Item key="reportes/camiones">
-              <Link to="/reportes/camiones">
-                <Icon type="car" />
-                Camiones
-              </Link>
-            </Item>
-            <Item key="reportes/turnos">
-              <Link to="/reportes/turnos">
-                <Icon type="file-done" />
-                Turnos
-              </Link>
-            </Item>
+            {(isAdmin ||
+              isManager ||
+              isSupport ||
+              isCollector ||
+              isCollectorAux ||
+              isSales ||
+              isAccountant ||
+              isTreasurer) && (
+              <Item key="reportes/productos">
+                <Link to="/reportes/productos">
+                  <Icon type="block"/>
+                  Productos
+                </Link>
+              </Item>
+            )}
+            {(isAdmin ||
+              isManager ||
+              isSupport ||
+              isCollector ||
+              isCollectorAux ||
+              isSales ||
+              isAccountant ||
+              isTreasurer ||
+              isAuditor) && (
+              <Item key="reportes/boletas">
+                <Link to="/reportes/boletas">
+                  <Icon type="unordered-list"/>
+                  Boletas
+                </Link>
+              </Item>
+            )}
+            {(isAdmin ||
+              isManager ||
+              isSupport ||
+              isCollector ||
+              isCollectorAux ||
+              isSales ||
+              isAccountant ||
+              isTreasurer) && (
+              <Item key="reportes/clientes">
+                <Link to="/reportes/clientes">
+                  <Icon type="usergroup-add"/>
+                  Clientes
+                </Link>
+              </Item>
+            )}
+            {(isAdmin ||
+              isManager ||
+              isSupport ||
+              isCashier ||
+              isCollector ||
+              isCollectorAux ||
+              isAccountant ||
+              isTreasurer) && (
+              <Item key="reportes/turnos">
+                <Link to="/reportes/turnos">
+                  <Icon type="file-done"/>
+                  Turnos
+                </Link>
+              </Item>
+            )}
+            {(isAdmin || isManager || isSupport || isSales || isAccountant || isTreasurer) && (
+              <Item key="reportes/ventas">
+                <Link to="/reportes/ventas">
+                  <Icon type="dollar"/>
+                  Ventas
+                </Link>
+              </Item>
+            )}
+            {(isAdmin || isManager || isSupport || isSales || isAccountant || isTreasurer) && (
+              <Item key="reportes/tiempos">
+                <Link to="/reportes/tiempos">
+                  <Icon type="clock-circle"/>
+                  Tiempos
+                </Link>
+              </Item>
+            )}
           </SubMenu>
         )}
-        {(isAdmin || isAccountant) && (
+        {(isAdmin || isManager || isSales) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="dollar" />
+                <Icon type="dollar"/>
                 <span>Ventas</span>
               </span>
             }
           >
             <Item key="ventas/cotizaciones">
               <Link to="/ventas/cotizaciones">
-                <Icon type="file-protect" />
+                <Icon type="file-protect"/>
                 <span>Cotizaciones</span>
+              </Link>
+            </Item>
+            <Item key="ventas/seguimiento">
+              <Link to="/ventas/seguimiento">
+                <Icon type="eye"/>
+                <span>Seguimiento</span>
               </Link>
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant || isManager) && (
+        {(isAdmin ||
+          isAccountant ||
+          isManager ||
+          isCashier ||
+          isCollector ||
+          isCollectorAux ||
+          isTreasurer) && (
           <SubMenu
             title={
               <span className="submenu-title-wrapper">
-                <Icon type="file-text" />
+                <Icon type="file-text"/>
                 <span>Facturas</span>
               </span>
             }
           >
             <Item key="facturas/agrupador">
               <Link to="/facturas/agrupador">
-                <Icon type="shrink" />
+                <Icon type="shrink"/>
                 <span>Agrupador</span>
               </Link>
             </Item>
             <Item key="facturas/registros">
               <Link to="/facturas/registros">
-                <Icon type="read" />
+                <Icon type="read"/>
                 Registros
               </Link>
             </Item>
           </SubMenu>
         )}
-        {(isAdmin || isAccountant || isSupport || isManager) && (
+        {(isAdmin || isManager || isSupport || isDriver) && (
+          <SubMenu
+            title={
+              <span className="submenu-title-wrapper">
+                <Icon type="experiment"/>
+                <span>Producción</span>
+              </span>
+            }
+          >
+            {!isDriver && (
+              <Item key="produccion/voladuras">
+                <Link to="/produccion/voladuras">
+                  <Icon type="fire"/>
+                  Voladuras
+                </Link>
+              </Item>
+            )}
+            {!isDriver && (
+              <Item key="produccion/barrenaciones">
+                <Link to="/produccion/barrenaciones">
+                  <Icon type="rocket"/>
+                  Barrenaciones
+                </Link>
+              </Item>
+            )}
+            {!isDriver && (
+              <Item key="produccion/suministros">
+                <Link to="/produccion/suministros">
+                  <Icon type="bg-colors"/>
+                  Suministros
+                </Link>
+              </Item>
+            )}
+            <Item key="produccion/viajes">
+              <Link to="/produccion/viajes">
+                <Icon type="pull-request"/>
+                Viajes
+              </Link>
+            </Item>
+          </SubMenu>
+        )}
+        {(isAdmin ||
+          isAccountant ||
+          isSupport ||
+          isManager ||
+          isCashier ||
+          isCollector ||
+          isCollectorAux ||
+          isTreasurer) && (
           <Item key="historial">
             <Link to="/historial">
-              <Icon type="history" />
+              <Icon type="history"/>
               <span>Historial</span>
             </Link>
           </Item>
@@ -249,7 +435,7 @@ const Sidebar = ({ history, location, collapsed, onCollapse }) => {
         {(isAdmin || isAccountant || isSupport || isManager || isLoader || isCashier) && (
           <Item key="mensajes">
             <Link to="/mensajes">
-              <Icon type="message" />
+              <Icon type="message"/>
               <span>Mensajes</span>
             </Link>
           </Item>

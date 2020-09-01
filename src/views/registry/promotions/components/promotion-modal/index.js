@@ -15,9 +15,9 @@ import {
 import { useDebounce } from 'use-lodash-debounce';
 import { withApollo } from 'react-apollo';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ProductSelectContainer } from './elements';
-import { GET_CLIENTS, GET_ROCKS } from './graphql/queries';
+import { GET_CLIENTS, GET_GROUPS, GET_ROCKS } from './graphql/queries';
 import { EDIT_PROMOTION, REGISTER_PROMOTION } from './graphql/mutations';
 
 const { RangePicker } = DatePicker;
@@ -34,9 +34,11 @@ const PromotionModal = ({
   updateFather
 }) => {
   const [loadingClients, setLoadingClients] = useState(false);
+  const [loadingClientsGroups, setLoadingClientsGroups] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [clients, setClients] = useState([]);
+  const [clientsGroups, setClientsGroups] = useState([]);
   const [rocks, setRocks] = useState([]);
   const debouncedSearch = useDebounce(search, 400);
 
@@ -79,6 +81,30 @@ const PromotionModal = ({
     getClients();
   }, [client, debouncedSearch]);
 
+  useEffect(() => {
+    const getGroups = async () => {
+      if (!debouncedSearch) {
+        setClientsGroups([]);
+        setLoadingClientsGroups(false);
+        return;
+      }
+
+      const {
+        data: { clientsGroups: clientsGroupsToSet }
+      } = await client.query({
+        query: GET_GROUPS,
+        variables: {
+          filters: { limit: 10, search: debouncedSearch }
+        }
+      });
+
+      setLoadingClientsGroups(false);
+      setClientsGroups(clientsGroupsToSet);
+    };
+
+    getGroups();
+  }, [client, debouncedSearch]);
+
   const onSearch = searchToSet => {
     setLoadingClients(!!searchToSet);
     setSearch(searchToSet);
@@ -89,6 +115,7 @@ const PromotionModal = ({
     e.preventDefault();
     form.validateFields(async (err, args) => {
       const promotionToSet = { ...args };
+
       if (!err) {
         for (const [key, value] of Object.entries(promotionToSet)) {
           if (value === null || value === undefined) delete promotionToSet[key];
@@ -111,8 +138,8 @@ const PromotionModal = ({
         if (promotionToSet.dates) {
           const [start, end] = promotionToSet.dates;
 
-          promotionToSet.start = start;
-          promotionToSet.end = end;
+          promotionToSet.start = start?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+          promotionToSet.end = end?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
           delete promotionToSet.dates;
         }
@@ -120,7 +147,9 @@ const PromotionModal = ({
         if (promotionToSet.credit) promotionToSet.credit = promotionToSet.credit === 'CREDIT';
         if (promotionToSet.bill) promotionToSet.bill = promotionToSet.bill === 'BILL';
         if (promotionToSet.clients)
-          promotionToSet.clients = promotionToSet.clients.map(clientId => clientId.split(':')[0]);
+          promotionToSet.clients = promotionToSet.clients.map(({ key }) => key.split(':')[0]);
+        if (promotionToSet.groups)
+          promotionToSet.groups = promotionToSet.groups.map(({ key }) => key.split(':')[0]);
 
         const { data } = await client.mutate({
           mutation: currentPromotion ? EDIT_PROMOTION : REGISTER_PROMOTION,
@@ -129,7 +158,11 @@ const PromotionModal = ({
 
         const promotion = data.promotion ? data.promotion : data.promotionEdit;
 
-        message.success(`Promoción ${promotion.name} ha sido registrada exitosamente!`);
+        message.success(
+          `Promoción ${promotion.name} ha sido ${
+            data.promotion ? 'registrada' : 'editada'
+          } exitosamente!`
+        );
 
         form.resetFields();
         togglePromotionModal(false);
@@ -144,6 +177,8 @@ const PromotionModal = ({
   return (
     <Modal
       title={currentPromotion ? `Editando promoción: ${currentPromotion.name}` : 'Crear promoción'}
+      okText="Guardar"
+      cancelText="Cancelar"
       visible={visible}
       confirmLoading={loading}
       onOk={handleSubmit}
@@ -189,10 +224,10 @@ const PromotionModal = ({
                 placeholder="Piedras disponibles"
               >
                 {rocks.map(({ id, name, price, floorPrice }) => (
-                  <Option style={{ display: 'flex' }} key={id} value={id}>
-                    <Text style={{ marginRight: 'auto' }}>{name}</Text>
-                    <Tag color="green">${price}MXN</Tag>
-                    <Tag color="orange">Piso: ${floorPrice}MXN</Tag>
+                  <Option key={id} value={id}>
+                    <Text style={{ marginRight: 20 }}>{name}</Text>
+                    <Tag color="blue" style={{ marginRight: 20 }}>{`B: ${price}MXN`}</Tag>
+                    <Tag color="orange">{`P: ${floorPrice}MXN`}</Tag>
                   </Option>
                 ))}
               </Select>
@@ -229,10 +264,30 @@ const PromotionModal = ({
             <RangePicker
               style={{ width: '58%', marginRight: 15 }}
               ranges={{
-                'Una semana': [moment(), moment().add(1, 'week')],
-                'Dos semanas': [moment(), moment().add(2, 'week')],
-                'Un mes': [moment(), moment().add(1, 'month')],
-                'Tres meses': [moment(), moment().add(3, 'month')]
+                'Una semana': [
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(1, 'week')
+                ],
+                'Dos semanas': [
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(2, 'week')
+                ],
+                'Un mes': [
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(1, 'month')
+                ],
+                'Tres meses': [
+                  moment()?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                  moment()
+                    ?.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+                    .add(3, 'month')
+                ]
               }}
               // onChange={dates => handleDateFilterChange(dates)}
             />
@@ -254,7 +309,7 @@ const PromotionModal = ({
           </Divider>
           {form.getFieldDecorator('bill', {
             initialValue:
-              currentPromotion?.bill === null
+              !currentPromotion || currentPromotion?.bill === null
                 ? undefined
                 : currentPromotion?.bill
                 ? 'BILL'
@@ -271,7 +326,7 @@ const PromotionModal = ({
           )}
           {form.getFieldDecorator('credit', {
             initialValue:
-              currentPromotion?.credit === null
+              !currentPromotion || currentPromotion?.credit === null
                 ? undefined
                 : currentPromotion?.credit
                 ? 'CREDIT'
@@ -285,16 +340,47 @@ const PromotionModal = ({
         </Form.Item>
         <Form.Item>
           <Divider style={{ marginTop: 0 }} orientation="left">
-            Seleccione los clientes participantes
+            Seleccione los grupos participantes
           </Divider>
-          {form.getFieldDecorator('clients', {
+          {form.getFieldDecorator('groups', {
             initialValue: currentPromotion
-              ? currentPromotion.clients.map(({ id }) => id)
+              ? currentPromotion.groups.map(({ id, name }) => ({ key: id, label: name }))
               : undefined
           })(
             <Select
               showSearch
               allowClear
+              labelInValue
+              mode="multiple"
+              style={{ width: '100%', overflowY: 'scroll' }}
+              placeholder="Seleccionar un grupo de clientes"
+              onSearch={onSearch}
+              loading={loadingClientsGroups}
+            >
+              {clientsGroups.map(({ id, name }) => (
+                <Option key={id} value={`${id}:${name}`}>
+                  {name}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </Form.Item>
+        <Form.Item>
+          <Divider style={{ marginTop: 0 }} orientation="left">
+            Seleccione los clientes participantes
+          </Divider>
+          {form.getFieldDecorator('clients', {
+            initialValue: currentPromotion
+              ? currentPromotion.clients.map(({ id, businessName }) => ({
+                  key: id,
+                  label: businessName
+                }))
+              : undefined
+          })(
+            <Select
+              showSearch
+              allowClear
+              labelInValue
               mode="multiple"
               style={{ width: '100%', overflowY: 'scroll' }}
               placeholder="Todos por defecto"

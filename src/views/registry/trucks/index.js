@@ -15,7 +15,7 @@ import NewForm from './components/new-truck-form';
 const { confirm } = Modal;
 
 const Trucks = ({ client }) => {
-  const { isAdmin, isAccountant, isManager } = useAuth();
+  const { isAdmin, isAccountant, isManager, isSupport } = useAuth();
   const [loading, setLoading] = useState(true);
   const [trucks, setTrucks] = useState([]);
   const [filters, setFilters] = useState({ search: '' });
@@ -123,7 +123,7 @@ const Trucks = ({ client }) => {
       render: ({ businessName }) => businessName
     },
     {
-      title: 'Weight',
+      title: 'Peso (tons)',
       dataIndex: 'weight',
       key: 'weight',
       align: 'center'
@@ -159,8 +159,8 @@ const Trucks = ({ client }) => {
             icon="qrcode"
             size="small"
           />
-          {(isAdmin || isAccountant || isManager) && (
-            <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small" />
+          {(isAdmin || isAccountant || isManager || isSupport) && (
+            <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small"/>
           )}
         </Row>
       )
@@ -181,7 +181,6 @@ const Trucks = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={trucks.map(truckMapped => ({ ...truckMapped, key: shortid.generate() }))}
         />

@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from '@apollo/react-hoc';
-import { Button, Collapse, Dropdown, Icon, Menu, Typography } from 'antd';
+import { graphql, withApollo } from '@apollo/react-hoc';
+import { useAuth } from 'components/providers/withAuth';
+import debounce from 'debounce';
+import { Button, Collapse, Dropdown, Icon, InputNumber, Menu, message, Typography } from 'antd';
 import TicketPanel from './components/ticket-panel';
 import TicketsCanceled from './components/tickets-canceled';
 import { LoadingBar, LoadingBarContainer, TitleContainer } from './elements';
-import { GET_TICKETS } from './graphql/queries';
+import { GET_PRODUCT_RATE, GET_TICKETS } from './graphql/queries';
 import { ACTIVE_TICKETS, TICKET_UPDATE } from './graphql/subscriptions';
+import { SET_PRODUCT_RATE } from './graphql/mutations';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-const TicketList = ({ turnActive, setCurrent, loading, error, data, refetchTurn }) => {
+const TicketList = ({ client, turnActive, setCurrent, loading, error, data, refetchTurn }) => {
+  const { isAdmin, isManager, isSupport } = useAuth();
+  const [loadingProductRate, setLoadingProductRate] = useState(false);
+  const [productRate, setProductRate] = useState(null);
   const [isCancelDrawerOpen, toggleCancelDrawer] = useState(false);
 
   useEffect(() => {
@@ -53,6 +59,46 @@ const TicketList = ({ turnActive, setCurrent, loading, error, data, refetchTurn 
     };
   }, [data]);
 
+  useEffect(() => {
+    const getProductRate = async () => {
+      setLoadingProductRate(true);
+      const {
+        data: { productRate: productRateToSet }
+      } = await client.query({ query: GET_PRODUCT_RATE });
+
+      setProductRate(productRateToSet);
+      setLoadingProductRate(false);
+    };
+
+    getProductRate();
+  }, [client, productRate]);
+
+  const onProductRateChange = async newProductRate => {
+    if (
+      !Number.isNaN(newProductRate) &&
+      newProductRate !== productRate?.rate &&
+      newProductRate <= 10
+    ) {
+      setLoadingProductRate(true);
+      try {
+        const {
+          data: { productRate: productRateToSet }
+        } = await client.mutate({
+          mutation: SET_PRODUCT_RATE,
+          variables: { rate: newProductRate }
+        });
+
+        setProductRate(productRateToSet);
+
+        message.success('La tarifa dinámica ha sido actualizada correctamente!');
+      } catch (e) {
+        message.error('No ha sido posible modificar la tarifa dinámica!');
+      }
+
+      setLoadingProductRate(false);
+    }
+  };
+
   if (loading) return <Title level={4}>Cargando boletas...</Title>;
   if (error) return <Title level={4}>¡No se han podido cargar las boletas!</Title>;
 
@@ -66,17 +112,40 @@ const TicketList = ({ turnActive, setCurrent, loading, error, data, refetchTurn 
         ) : (
           <Title level={4}>Lista de boletas</Title>
         )}
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item onClick={() => toggleCancelDrawer(true)}>Ver cancelados</Menu.Item>
-            </Menu>
-          }
-        >
-          <Button type="link">
-            Opciones <Icon type="down" />
-          </Button>
-        </Dropdown>
+        <div>
+          {isAdmin && (
+            <>
+              <Icon
+                type="loading"
+                style={{ marginRight: 10, display: loadingProductRate ? null : 'none' }}
+              />
+              <InputNumber
+                disabled={loadingProductRate}
+                defaultValue={productRate?.rate || 0}
+                value={productRate?.rate || 0}
+                min={0}
+                max={10}
+                step={0.1}
+                formatter={value => `${value}%`}
+                parser={value => value.replace('%', '')}
+                onChange={debounce(onProductRateChange, 1000)}
+              />
+            </>
+          )}
+          {(isAdmin || isManager || isSupport) && (
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item onClick={() => toggleCancelDrawer(true)}>Ver cancelados</Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type="link">
+                Opciones <Icon type="down" />
+              </Button>
+            </Dropdown>
+          )}
+        </div>
       </TitleContainer>
       {activeTickets?.length !== 0 && (
         <Collapse accordion style={{ overflowY: 'scroll' }}>
@@ -124,6 +193,7 @@ TicketList.defaultProps = {
 };
 
 TicketList.propTypes = {
+  client: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   refetchTurn: PropTypes.func.isRequired,
   turnActive: PropTypes.object,
@@ -133,5 +203,5 @@ TicketList.propTypes = {
 };
 
 export default graphql(GET_TICKETS, { options: () => ({ variables: { filters: {} } }) })(
-  TicketList
+  withApollo(TicketList)
 );

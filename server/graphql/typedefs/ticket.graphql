@@ -17,10 +17,26 @@ type Ticket {
   out: Date
   load: Date
   inTruckImage: String
+  inTruckImageLeft: String
+  inTruckImageRight: String
   outTruckImage: String
+  outTruckImageBack: String
   bill: Boolean!
+  isBilled: Boolean
+  usersInvolved: UsersInvolved
   turn: Turn
   disabledAt: Date
+  time: Int # This only works in ticketTimesSummary
+  excludeFromTimeMetrics: Boolean
+  withScale: Boolean
+}
+
+type UsersInvolved {
+  guard: User
+  loader: User
+  cashier: User
+  modifiedPrice: User
+  modifiedSeries: User
 }
 
 type BillSummary {
@@ -59,6 +75,12 @@ type ArchiveTicket {
   updatedAt: Date!
 }
 
+type TicketTimes {
+  min: Int!
+  max: Int!
+  avg: Int!
+}
+
 # Inputs
 input TicketInput {
   plates: String!
@@ -92,6 +114,8 @@ input TicketInitInput {
   client: ID!
   product: ID!
   inTruckImage: String!
+  inTruckImageLeft: String
+  inTruckImageRight: String
   folderKey: s3FolderKey!
   id: ID!
 }
@@ -99,6 +123,7 @@ input TicketInitInput {
 input TicketProductLoadInput {
   id: ID!
   outTruckImage: String!
+  outTruckImageBack: String
 }
 
 input TicketSubmitInput {
@@ -107,6 +132,7 @@ input TicketSubmitInput {
   weight: Float!
   credit: Boolean!
   bill: Boolean!
+  withScale: Boolean!
   promotion: ID
 }
 
@@ -141,6 +167,25 @@ type TicketsSummary {
   upfront: Float
   credit: Float
   total: Float
+  upfrontWeight: Float
+  creditWeight: Float
+}
+
+type TicketsInRangeSummary {
+  clients: [ClientTurnSummary!]
+  upfront: Float
+  credit: Float
+  total: Float
+}
+
+input TicketSort {
+  field: TicketSortField!
+  order: Order!
+}
+
+# Enums
+enum TicketSortField {
+  folio
 }
 
 enum TicketBillType {

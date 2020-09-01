@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import { format } from 'utils/functions';
 import { withApollo } from 'react-apollo';
-import { Form, Drawer, Collapse, Button, Tag, Typography, Row, Icon, notification } from 'antd';
+import { Button, Collapse, Drawer, Form, Icon, notification, Row, Tag, Typography } from 'antd';
 import periods from 'utils/enums/periods';
-import { CollapseContainer, Column, ColumnTitle } from './elements';
+import { sizes } from 'theme';
+import {
+  CollapseContainer,
+  Column,
+  ColumnTitle,
+  Time,
+  TimesContainer,
+  TitleTime
+} from './elements';
 import { END_TURN } from './graphql/mutations';
 import { GET_REPORT, GET_TURN_SUMMARY } from './graphql/queries';
 
@@ -17,15 +25,22 @@ class TurnEndForm extends Component {
     showSummary: false,
     summary: null,
     ticketCount: 0,
-    date: new Date()
+    date: new Date(),
+    isLg: window.innerWidth > sizes.lg
+  };
+
+  updateWidth = () => {
+    this.setState({ isLg: window.innerWidth > sizes.lg });
   };
 
   componentDidMount = async () => {
     this.clockID = setInterval(() => this.tick(), 1000);
+    window.addEventListener('resize', this.updateWidth);
   };
 
   componentWillUnmount = () => {
     clearInterval(this.clockID);
+    window.removeEventListener('resize', this.updateWidth);
   };
 
   getSummary = async () => {
@@ -82,7 +97,7 @@ class TurnEndForm extends Component {
       data: { turnSummaryXLS }
     } = await client.query({ query: GET_REPORT, variables: { uniqueId: turnActive.uniqueId } });
 
-    const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
+    const start = new Date(turnActive.start);
 
     const link = document.createElement('a');
     link.href = encodeURI(turnSummaryXLS);
@@ -103,18 +118,20 @@ class TurnEndForm extends Component {
 
   render() {
     const { turnActive } = this.props;
-    const { loading, downloading, showSummary, summary, ticketCount, date } = this.state;
-
-    const start = new Date(turnActive.start.substring(0, turnActive.start.indexOf('Z') - 1));
+    const { loading, downloading, showSummary, summary, ticketCount, date, isLg } = this.state;
 
     return (
       <>
-        <Form.Item>
-          <span>Turno empezó: </span>
-          <Title>{start.toLocaleTimeString()}</Title>
-          <span>Turno termina: </span>
-          <Title>{date.toLocaleTimeString()}</Title>
-        </Form.Item>
+        <TimesContainer>
+          <Time>
+            <span>Turno empezó: </span>
+            <TitleTime>{new Date(turnActive.start).toLocaleTimeString()}</TitleTime>
+          </Time>
+          <Time>
+            <span>Turno termina: </span>
+            <TitleTime>{date.toLocaleTimeString()}</TitleTime>
+          </Time>
+        </TimesContainer>
         <Form.Item>
           <Tag color="#faad14">{periods[turnActive.period]}</Tag>
           <Button block icon="pie-chart" onClick={this.getSummary}>
@@ -124,12 +141,11 @@ class TurnEndForm extends Component {
         {summary && (
           <Drawer
             title="CORTE DE CAJA"
-            width="50%"
+            width={isLg ? '50%' : '100%'}
             visible={showSummary}
             onClose={this.toggleSummary}
           >
             <Row
-              style={{ margin: 10, padding: 20 }}
               type="flex"
               justify="space-around"
               align="middle"
@@ -214,16 +230,18 @@ class TurnEndForm extends Component {
               >
                 {(loading && 'Espere..') || 'Resumen'}
               </Button>
-              <Button
-                type="danger"
-                htmlType="submit"
-                icon="stop"
-                style={{ margin: '0px 5px' }}
-                loading={loading}
-                onClick={this.handleSubmit}
-              >
-                {(loading && 'Espere..') || 'Terminar turno'}
-              </Button>
+              {isLg && (
+                <Button
+                  type="danger"
+                  htmlType="submit"
+                  icon="stop"
+                  style={{ margin: '0px 5px' }}
+                  loading={loading}
+                  onClick={this.handleSubmit}
+                >
+                  {(loading && 'Espere..') || 'Terminar turno'}
+                </Button>
+              )}
             </Row>
           </Drawer>
         )}

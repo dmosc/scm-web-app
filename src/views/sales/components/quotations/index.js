@@ -4,7 +4,7 @@ import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
 import { printPDF } from 'utils/functions';
 import shortid from 'shortid';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Table, Tag, Typography, Row, Tooltip, Button } from 'antd';
 import { TableContainer, Card } from './elements';
 import Title from './components/title';
@@ -19,7 +19,11 @@ const Quotations = ({ client }) => {
   const [filters, setFilters] = useState({
     name: '',
     createdRange: { start: undefined, end: undefined },
-    validRange: { start: undefined, end: undefined }
+    validRange: { start: undefined, end: undefined },
+    sortBy: {
+      field: 'folio',
+      order: 'desc'
+    }
   });
   const [loading, setLoading] = useState(true);
   const debouncedFilters = useDebounce(filters, 1000);
@@ -139,7 +143,6 @@ const Quotations = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={quotations.map(userMapped => ({ ...userMapped, key: shortid.generate() }))}
         />

@@ -2,24 +2,58 @@ import React, { useEffect, useState } from 'react';
 import { withApollo } from 'react-apollo';
 import { useDebounce } from 'use-lodash-debounce';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-import { printPDF, format } from 'utils/functions';
+import moment from 'moment-timezone';
+import { useAuth } from 'components/providers/withAuth';
+import { format, printPDF } from 'utils/functions';
 import shortid from 'shortid';
-import { notification, Table, Tag, Row, Tooltip, Button } from 'antd';
+import { Button, Modal, notification, Row, Table, Tag, Tooltip } from 'antd';
 import Title from './components/title';
 import { Card, TableContainer } from './elements';
 import { GET_BILLS, GET_PDF } from './graphql/queries';
+import { DELETE_BILL } from './graphql/mutations';
+
+const { confirm } = Modal;
 
 const History = ({ client }) => {
   const [loading, setLoading] = useState(true);
   const [bills, setBills] = useState([]);
-  const [filters, setFilters] = useState({ search: '' });
+  const [filters, setFilters] = useState({
+    search: '',
+    sortBy: {
+      field: 'folio',
+      order: 'desc'
+    }
+  });
   const debouncedFilters = useDebounce(filters, 1000);
+
+  const { isAdmin, isManager, isAccountant, isCollector, isCollectorAux } = useAuth();
 
   const handleFilterChange = (key, value) => {
     const filtersToSet = { ...filters, [key]: value };
 
     setFilters(filtersToSet);
+  };
+
+  const deleteBill = billToDelete => {
+    confirm({
+      title: '¿Estás seguro de que deseas eliminar esta factura?',
+      content:
+        'Una vez eliminada ya no sera posible recuperarla, y sus boletas asociadas regresarán a estar disponibles para agrupar.',
+      okType: 'danger',
+      onOk: async () => {
+        await client.mutate({
+          mutation: DELETE_BILL,
+          variables: { id: billToDelete.id }
+        });
+
+        setBills(bills.filter(({ id }) => id !== billToDelete.id));
+
+        notification.open({
+          message: `La factura ${billToDelete.folio} ha sido removida`
+        });
+      },
+      onCancel: () => {}
+    });
   };
 
   useEffect(() => {
@@ -107,8 +141,19 @@ const History = ({ client }) => {
       render: row => (
         <Row>
           <Tooltip placement="top" title="Imprimir">
-            <Button onClick={() => downloadPDF(row)} type="primary" icon="printer" size="small" />
+            <Button
+              style={{ marginRight: 5 }}
+              onClick={() => downloadPDF(row)}
+              type="primary"
+              icon="printer"
+              size="small"
+            />
           </Tooltip>
+          {(isAdmin || isManager || isAccountant || isCollector || isCollectorAux) && (
+            <Tooltip placement="top" title="Eliminar">
+              <Button onClick={() => deleteBill(row)} type="danger" icon="delete" size="small" />
+            </Tooltip>
+          )}
         </Row>
       )
     }
@@ -122,7 +167,6 @@ const History = ({ client }) => {
           columns={columns}
           title={() => <Title handleFilterChange={handleFilterChange} />}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={bills.map(billMapped => ({ ...billMapped, key: shortid.generate() }))}
         />

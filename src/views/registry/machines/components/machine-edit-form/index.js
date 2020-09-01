@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
+import PropTypes from 'prop-types';
+import machineTypes from 'utils/enums/machines';
 import { Button, Drawer, Form, Icon, Input, InputNumber, notification, Select } from 'antd';
 import { EDIT_MACHINE } from './graphql/mutations';
+
+const { Option } = Select;
 
 const EditForm = ({ form, currentMachine, onMachineEdit, setCurrentMachine, client }) => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +18,7 @@ const EditForm = ({ form, currentMachine, onMachineEdit, setCurrentMachine, clie
     form.validateFields(
       async (
         err,
-        { name, plates, brand, model, drivers, averageHorometer, standardHorometerDeviation }
+        { name, type, plates, brand, model, averageHorometer, standardHorometerDeviation }
       ) => {
         if (!err) {
           const {
@@ -26,10 +29,10 @@ const EditForm = ({ form, currentMachine, onMachineEdit, setCurrentMachine, clie
               machine: {
                 id,
                 name,
+                type,
                 plates,
                 brand,
                 model,
-                drivers,
                 averageHorometer,
                 standardHorometerDeviation
               }
@@ -72,6 +75,25 @@ const EditForm = ({ form, currentMachine, onMachineEdit, setCurrentMachine, clie
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Nombre de referencia"
             />
+          )}
+        </Form.Item>
+        <Form.Item>
+          {form.getFieldDecorator('type', {
+            initialValue: currentMachine.type,
+            rules: [
+              {
+                required: true,
+                message: 'Un tipo de máquina es requerido!'
+              }
+            ]
+          })(
+            <Select placeholder="Tipo de máquina">
+              {machineTypes.map(option => (
+                <Option key={option} value={option}>
+                  {`${option}`}
+                </Option>
+              ))}
+            </Select>
           )}
         </Form.Item>
         <Form.Item>
@@ -119,24 +141,6 @@ const EditForm = ({ form, currentMachine, onMachineEdit, setCurrentMachine, clie
             <Input
               prefix={<Icon type="unordered-list" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Modelo"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {form.getFieldDecorator('drivers', {
-            initialValue: currentMachine.drivers,
-            rules: [
-              {
-                required: true,
-                message: 'Ingrese 1 o más nombres de conductores'
-              }
-            ]
-          })(
-            <Select
-              placeholder="Conductor(es) del camión"
-              mode="tags"
-              maxTagCount={1}
-              tokenSeparators={[',']}
             />
           )}
         </Form.Item>
@@ -192,10 +196,10 @@ EditForm.propTypes = {
   currentMachine: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
     plates: PropTypes.string.isRequired,
     brand: PropTypes.string.isRequired,
     model: PropTypes.string.isRequired,
-    drivers: PropTypes.arrayOf(PropTypes.string).isRequired,
     averageHorometer: PropTypes.number.isRequired,
     standardHorometerDeviation: PropTypes.number.isRequired
   }).isRequired,

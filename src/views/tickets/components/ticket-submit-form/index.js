@@ -1,16 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { format } from 'utils/functions';
 import ioClient from 'socket.io-client';
 import { withApollo } from 'react-apollo';
+import { useAuth } from 'components/providers/withAuth';
 import { isUnlimited } from 'utils/constants/credit';
-import { Form, InputNumber, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd';
+import {
+  Form,
+  Icon,
+  InputNumber,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd';
 import { TICKET_SUBMIT } from './graphql/mutations';
-import { GET_CREDIT_LIMIT, GET_SPECIAL_PRICE, GET_TRUCK_DRIVERS } from './graphql/queries';
+import {
+  GET_CREDIT_LIMIT,
+  GET_PRODUCT_RATE,
+  GET_SPECIAL_PRICE,
+  GET_TRUCK_DRIVERS
+} from './graphql/queries';
 
 const { Option } = Select;
 const { Group } = Radio;
-const { Title, Text } = Typography;
+const { Text, Paragraph } = Typography;
+const { confirm } = Modal;
 
 const TicketSubmitForm = ({
   currentTicket,
@@ -20,9 +37,11 @@ const TicketSubmitForm = ({
   setCurrent,
   currentForm
 }) => {
+  const { isAdmin, isManager, isSupport } = useAuth();
+  const [productRate, setProductRate] = useState(null);
   const [drivers, setDrivers] = useState([]);
-  const [loadedInitialData, setLoadedInitialData] = useState(false);
   const [weight, setWeight] = useState(0);
+  const [modifiedWeight, setModifiedWeight] = useState(undefined);
   const [total, setTotal] = useState(0);
   const [filteredPromotions, setFilteredPromotions] = useState([]);
   const [promotion, setPromotion] = useState(currentTicket?.promotion?.id);
@@ -30,28 +49,55 @@ const TicketSubmitForm = ({
   const [creditEnough, setCreditEnough] = useState(0);
   const [creditAvailable, setCreditAvailable] = useState(0);
   const [creditLimit, setCreditLimit] = useState();
-  const [tax, setTax] = useState(0);
   const [bill, setBill] = useState(false);
   const [credit, setCredit] = useState(false);
-  const [isSocket, setIsSocket] = useState();
+  const [isSocket, setIsSocket] = useState(false);
   const [isStable, setIsStable] = useState(true);
   const { setFieldsValue } = form;
+  const isManualInputValid = isAdmin || isManager || isSupport;
+
+  const calculateTotal = useCallback(async () => {
+    const TAX = 0.16;
+
+    const currentPromotion = currentTicket.promotion
+      ? [currentTicket.promotion]
+      : currentTicketPromotions.filter(({ id }) => promotion === id);
+
+    const price =
+      currentPromotion.length > 0
+        ? currentPromotion[0].product.price
+        : specialPrice
+        ? specialPrice.price
+        : currentTicket.product.price;
+
+    const netWeight = (weight - currentTicket.truck.weight).toFixed(2);
+    const taxToSet = bill ? netWeight * price * TAX : 0;
+    const totalToSet = (netWeight * price + taxToSet).toFixed(2);
+
+    if (!isSocket) {
+      // If weight is entered manually
+      setModifiedWeight(currentTicket.truck.weight + parseFloat(netWeight));
+    }
+
+    setTotal(parseFloat(totalToSet));
+  }, [weight, currentTicket, currentTicketPromotions, promotion, isSocket, bill, specialPrice]);
 
   useEffect(() => {
     let socket;
     const connect = async () => {
       try {
         const healthCheck = await fetch('http://localhost:5632');
+        const percentageProductRate = productRate?.rate ? 1 + productRate?.rate / 100 : 1;
         if (healthCheck.status === 200) {
           socket = ioClient('http://localhost:5632');
           setIsSocket(true);
           socket.on('weight', data => {
             setIsStable(data[data.length - 1] === 'S');
-            const weightToSet = Number(data.substring(0, data.length - 1)) / 1000;
-            setFieldsValue({
-              weight: weightToSet
-            });
-            setWeight(weightToSet);
+            const weightToSet =
+              (Number(data.substring(0, data.length - 1)) / 1000 - currentTicket.truck.weight) *
+              percentageProductRate;
+            setWeight(weightToSet + currentTicket.truck.weight);
+            setModifiedWeight(undefined);
           });
         }
       } catch (err) {
@@ -66,7 +112,25 @@ const TicketSubmitForm = ({
         socket.close();
       }
     };
-  }, [setFieldsValue]);
+  }, [setFieldsValue, productRate, currentTicket, calculateTotal]);
+
+  useEffect(() => {
+    if (isStable) {
+      calculateTotal();
+    }
+  }, [isStable, calculateTotal]);
+
+  useEffect(() => {
+    const getProductRate = async () => {
+      const {
+        data: { productRate: productRateToSet }
+      } = await client.query({ query: GET_PRODUCT_RATE });
+
+      setProductRate(productRateToSet);
+    };
+
+    getProductRate();
+  }, [client]);
 
   useEffect(() => {
     const {
@@ -87,7 +151,6 @@ const TicketSubmitForm = ({
 
       setDrivers(driversToSet);
       setBill(currentTicketBill);
-      setLoadedInitialData(true);
     };
 
     const getSpecialPrice = async () => {
@@ -126,52 +189,6 @@ const TicketSubmitForm = ({
   }, [total, currentTicket, creditLimit]);
 
   useEffect(() => {
-    if (loadedInitialData) {
-      const calculateTotal = async () => {
-        const TAX = 0.16;
-
-        const currentPromotion = currentTicket.promotion
-          ? [currentTicket.promotion]
-          : currentTicketPromotions.filter(({ id }) => promotion === id);
-
-        const price =
-          currentPromotion.length > 0
-            ? currentPromotion[0].product.price
-            : specialPrice
-            ? specialPrice.price
-            : currentTicket.product.price;
-
-        const totalWeight =
-          currentTicket.totalWeight && weight === 0
-            ? currentTicket.totalWeight
-            : (weight - currentTicket.truck.weight).toFixed(2);
-        const taxToSet = bill ? totalWeight * price * TAX : 0;
-
-        const totalToSet = (totalWeight * price + taxToSet).toFixed(2);
-
-        if (totalToSet > 0) {
-          setTotal(totalToSet);
-          setTax(taxToSet.toFixed(2));
-        } else {
-          setTotal(0);
-          setTax(0);
-        }
-      };
-
-      calculateTotal();
-    }
-  }, [
-    specialPrice,
-    loadedInitialData,
-    bill,
-    currentTicket,
-    tax,
-    weight,
-    promotion,
-    currentTicketPromotions
-  ]);
-
-  useEffect(() => {
     const filteredPromotionsToSet = currentTicketPromotions.filter(availablePromotion => {
       let isPromotionValid = true;
 
@@ -190,45 +207,87 @@ const TicketSubmitForm = ({
     e.preventDefault();
     const { id } = currentTicket;
 
-    form.validateFields(
-      async (err, { driver, weight: formWeight, credit: creditBill, bill: formBill }) => {
-        if (err) {
-          return;
-        }
-
-        if (typeof creditBill !== 'boolean') {
-          message.warning('Es necesario seleccionar contado o crédito');
-          return;
-        }
-
-        if (creditBill === true && !creditEnough) {
-          message.warning('El total excede el crédito disponible del cliente, selecciona contado');
-          return;
-        }
-
-        try {
-          await client.mutate({
-            mutation: TICKET_SUBMIT,
-            variables: {
-              ticket: {
-                id,
-                driver: driver[0],
-                weight: formWeight,
-                credit: creditBill,
-                bill: formBill,
-                promotion
-              }
-            }
-          });
-
-          form.resetFields();
-          setCurrent();
-          message.success('¡La información ha sido actualizada correctamente!');
-        } catch (error) {
-          message.error('¡Ha habido un error modificando la información!');
-        }
+    form.validateFields(async (err, { driver, credit: creditBill, bill: formBill }) => {
+      if (err) {
+        return;
       }
-    );
+
+      if (typeof creditBill !== 'boolean') {
+        message.warning('Es necesario seleccionar contado o crédito');
+        return;
+      }
+
+      if (creditBill === true && !creditEnough) {
+        message.warning('El total excede el crédito disponible del cliente, selecciona contado');
+        return;
+      }
+
+      const weightToSubmit = modifiedWeight ? modifiedWeight : weight;
+
+      confirm({
+        title: '¿Continuar?',
+        content: (
+          <div>
+            <Paragraph>Se han seleccionado las siguientes opciones en la boleta:</Paragraph>
+            <Paragraph>
+              <Text style={{ marginRight: 5 }} strong>
+                Tipo de boleta:
+              </Text>
+              <Tag>{bill ? 'FACTURA' : 'REMISION'}</Tag>
+            </Paragraph>
+            <Paragraph>
+              <Text style={{ marginRight: 5 }} strong>
+                Tipo de pago:
+              </Text>
+              <Tag>{credit ? 'CRÉDITO' : 'CONTADO'}</Tag>
+            </Paragraph>
+            <Paragraph>
+              <Text style={{ marginRight: 5 }} strong>
+                Peso neto:
+              </Text>
+              <Tag>{`${(weightToSubmit - currentTicket.truck.weight).toFixed(2)} tons`}</Tag>
+            </Paragraph>
+            <Paragraph>
+              <Text style={{ marginRight: 5 }} strong>
+                Total:
+              </Text>
+              <Tag color="green">{`$${total}`}</Tag>
+            </Paragraph>
+            <Paragraph>
+              Al continuar, aceptas que no podrás cambiar los datos de la boleta
+            </Paragraph>
+          </div>
+        ),
+        okText: 'Continuar',
+        cancelText: 'Cancelar',
+        okType: 'primary',
+        onOk: async () => {
+          try {
+            await client.mutate({
+              mutation: TICKET_SUBMIT,
+              variables: {
+                ticket: {
+                  id,
+                  driver: driver[0],
+                  weight: weightToSubmit,
+                  credit: creditBill,
+                  bill: formBill,
+                  withScale: isSocket,
+                  promotion
+                }
+              }
+            });
+
+            form.resetFields();
+            setCurrent();
+            message.success('¡La información ha sido actualizada correctamente!');
+          } catch (error) {
+            message.error('¡Ha habido un error modificando la información!');
+          }
+        },
+        onCancel: () => {}
+      });
+    });
   };
 
   return (
@@ -238,9 +297,8 @@ const TicketSubmitForm = ({
       onCancel={() => setCurrent()}
       onOk={handleSubmit}
       okText={isStable ? 'Enviar' : 'Inestable'}
-      okButtonProps={{
-        disabled: !isStable
-      }}
+      cancelText="Cancelar"
+      okButtonProps={{ disabled: !isStable || weight <= 0 }}
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item>
@@ -285,29 +343,22 @@ const TicketSubmitForm = ({
                 </Select>
               )}
         </Form.Item>
-        <Form.Item
-          extra={isSocket ? 'Pesa conectada' : 'No se ha encontrado ninguna pesa. Ingresar manual'}
-        >
-          {form.getFieldDecorator('weight', {
-            initialValue: currentTicket.weight || currentTicket.truck.weight,
-            rules: [
-              {
-                type: 'number',
-                required: true,
-                message: '¡Toneladas en báscula son requeridas!'
-              },
-              {
-                type: 'number',
-                min: Number(currentTicket.truck.weight),
-                message: 'El peso registrado es menor al peso original del camión'
-              }
-            ]
-          })(
+        <Form.Item extra={!isSocket && 'No se ha encontrado ninguna pesa. Ingresar manual'}>
+          {(isSocket && (
+            <>
+              <Text disabled style={{ marginRight: 10 }}>
+                Báscula conectada
+              </Text>
+              <Icon type="check-square" theme="twoTone" />
+            </>
+          )) || (
             <InputNumber
               style={{ width: '100%' }}
-              placeholder="Toneladas registrados en báscula"
+              disabled={!isManualInputValid}
+              placeholder={
+                !isManualInputValid ? 'Supervisor requerido' : 'Toneladas registradas en báscula'
+              }
               min={0}
-              readOnly={isSocket}
               step={0.01}
               onChange={value => setWeight(value)}
             />
@@ -381,15 +432,6 @@ const TicketSubmitForm = ({
             )}
           </Select>
         </Form.Item>
-        <Row>
-          <Text disabled>{total >= 0 ? `Subtotal: ${format.currency(total - tax)} MXN` : '-'}</Text>
-        </Row>
-        <Row>
-          <Text disabled>{total >= 0 ? `Tax: ${format.currency(tax)} MXN` : '-'}</Text>
-        </Row>
-        <Row>
-          <Title level={4}>{`Total: ${format.currency(total)} MXN`}</Title>
-        </Row>
       </Form>
     </Modal>
   );

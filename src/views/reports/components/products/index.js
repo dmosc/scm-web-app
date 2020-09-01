@@ -4,7 +4,7 @@ import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import { useDebounce } from 'use-lodash-debounce';
 import periods from 'utils/enums/periods';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   CartesianGrid,
   Cell,
@@ -236,7 +236,7 @@ const ProductSales = ({ client, globalFilters }) => {
           <Text type="secondary">Turno</Text>
           <Select
             allowClear
-            style={{ minWidth: 600 }}
+            className="turnFilter"
             placeholder="Turno"
             onChange={value => setTurnId(value)}
             notFoundContent={null}
@@ -262,7 +262,7 @@ const ProductSales = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de boletas</Text>
           <Select
             onChange={value => handleFilterChange('type', value)}
-            style={{ width: 120 }}
+            className="limitedSelect"
             value={filters.type || ''}
           >
             <Option value="">Todos</Option>
@@ -274,7 +274,7 @@ const ProductSales = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de pago</Text>
           <Select
             onChange={value => handleFilterChange('paymentType', value)}
-            style={{ width: 120 }}
+            className="limitedSelect"
             value={filters.paymentType || ''}
           >
             <Option value="">Todos</Option>
@@ -300,8 +300,9 @@ const ProductSales = ({ client, globalFilters }) => {
           </Select>
         </InputContainer>
       </FiltersContainer>
+      <Text disabled>* Valores no incluyen IVA</Text>
       <Card>
-        <Col span={12}>
+        <Col lg={12} span={24}>
           <Statistic
             valueStyle={{ color: '#3f8600' }}
             title="Ventas"
@@ -309,8 +310,9 @@ const ProductSales = ({ client, globalFilters }) => {
             suffix="MXN"
             prefix={<Icon type="rise" />}
           />
+          <Text disabled>{`${(productSalesReport?.totalWeight || 0).toFixed(2)} tons`}</Text>
         </Col>
-        <Col span={12}>
+        <Col lg={12} span={24}>
           <Statistic
             valueStyle={{ color: '#1890ff' }}
             title="Boletas"

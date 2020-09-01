@@ -10,6 +10,7 @@ const TICKET_OUT_IMAGE_SUBMIT = gql`
   mutation ticketProductLoad($ticket: TicketProductLoadInput!) {
     ticketProductLoad(ticket: $ticket) {
       outTruckImage
+      outTruckImageBack
     }
   }
 `;

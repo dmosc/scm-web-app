@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Timeline, Typography, Empty, Spin } from 'antd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
+import { format } from 'utils/functions';
 import { GET_DEPOSIT_HISTORY } from './graphql/queries';
 
 const { Item } = Timeline;
@@ -50,8 +51,8 @@ const HistoryBalance = ({ client, currentClient }) => {
               </Text>
               <Text type="warning">depositó</Text> a favor del balance de{' '}
               {currentClient.businessName}, la cantidad de
-              <Text code>${amount}MXN</Text>, el balance resultante es:{' '}
-              <Text code>${newBalance}MXN</Text>
+              <Text code>{format.currency(amount)}MXN</Text>, el balance resultante es:{' '}
+              <Text code>{format.currency(newBalance)}MXN</Text>
             </Item>
           ))}
         </Timeline>

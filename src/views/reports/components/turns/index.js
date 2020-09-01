@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { format } from 'utils/functions';
 import PropTypes from 'prop-types';
 import {
@@ -16,19 +16,7 @@ import {
 } from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
-import {
-  Button,
-  Card,
-  Col,
-  Collapse,
-  Icon,
-  Row,
-  Select,
-  Spin,
-  Statistic,
-  Tag,
-  Typography
-} from 'antd';
+import { Button, Card, Collapse, Icon, Row, Select, Spin, Statistic, Tag, Typography } from 'antd';
 import {
   GET_MOST_RECENTLY_ENDED_TURN,
   GET_REPORT,
@@ -36,7 +24,7 @@ import {
   GET_TURNS,
   TURN_BY_UNIQUE_ID
 } from './graphql/queries';
-import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
+import { ChartsContainer, FiltersContainer, InputContainer, Col } from './elements';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -133,7 +121,7 @@ const Turns = ({ client, globalFilters }) => {
       variables: { uniqueId: turn.uniqueId, ticketType }
     });
 
-    const start = new Date(turn.start.substring(0, turn.start.indexOf('Z') - 1));
+    const start = new Date(turn.start);
 
     const link = document.createElement('a');
     link.href = encodeURI(turnSummaryXLS);
@@ -156,7 +144,7 @@ const Turns = ({ client, globalFilters }) => {
           <Text type="secondary">ID Seleccionado</Text>
           <Select
             allowClear
-            style={{ minWidth: 650 }}
+            className="turnFilter"
             placeholder="ID del turno"
             onChange={value => setTurnUniqueId(value)}
             notFoundContent={null}
@@ -188,7 +176,7 @@ const Turns = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de boleta</Text>
           <Select
             allowClear
-            style={{ minWidth: 200 }}
+            className="limitedSelect"
             placeholder="Selecciona el tipo"
             onChange={value => setTicketType(value)}
             value={ticketType}
@@ -199,7 +187,7 @@ const Turns = ({ client, globalFilters }) => {
         </InputContainer>
         {turn && (
           <Button
-            style={{ marginLeft: 'auto', marginTop: 20 }}
+            style={{ marginTop: 20 }}
             loading={loadingReport}
             type="primary"
             icon="file-excel"
@@ -215,9 +203,10 @@ const Turns = ({ client, globalFilters }) => {
         </div>
       ) : (
         <>
+          <Text disabled>* Valores no incluyen IVA</Text>
           <Card>
             <Title level={4}>Turno: {turn.uniqueId}</Title>
-            <Col span={12}>
+            <Col span={24} xl={12}>
               <Paragraph style={{ margin: 0 }} type="secondary">
                 Operador:
               </Paragraph>
@@ -231,7 +220,7 @@ const Turns = ({ client, globalFilters }) => {
                 <Tag color="blue">{periods[turn.period]}</Tag>
               </Paragraph>
             </Col>
-            <Col span={12}>
+            <Col span={24} xl={12}>
               <Paragraph style={{ margin: 0 }} type="secondary">
                 Inicio:
               </Paragraph>
@@ -251,7 +240,7 @@ const Turns = ({ client, globalFilters }) => {
             </Col>
           </Card>
           <Card>
-            <Col span={6}>
+            <Col span={24} xl={6}>
               <Statistic
                 valueStyle={{ color: '#3f8600' }}
                 title="Ventas"
@@ -259,24 +248,29 @@ const Turns = ({ client, globalFilters }) => {
                 suffix="MXN"
                 prefix={<Icon type="rise" />}
               />
+              <Text disabled>{`${(summary?.upfrontWeight + summary?.creditWeight || 0).toFixed(
+                2
+              )} tons`}</Text>
             </Col>
-            <Col span={6}>
+            <Col span={24} xl={6}>
               <Statistic
                 valueStyle={{ color: '#30CEE7' }}
                 title="Contado"
                 value={format.currency(summary?.upfront)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(summary?.upfrontWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
-            <Col span={6}>
+            <Col span={24} xl={6}>
               <Statistic
                 valueStyle={{ color: '#FFAB00' }}
                 title="Crédito"
                 value={format.currency(summary?.credit)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(summary?.creditWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
-            <Col span={6}>
+            <Col span={24} xl={6}>
               <Statistic
                 valueStyle={{ color: '#1890ff' }}
                 title="Boletas"
@@ -359,7 +353,7 @@ const Turns = ({ client, globalFilters }) => {
                     {tickets.map(ticket => (
                       <Panel key={ticket.id} header={ticket.folio} extra={`$${ticket.totalPrice}`}>
                         <Row style={{ margin: 5, padding: 10 }} gutter={{ xs: 8, sm: 16, md: 24 }}>
-                          <Col span={6}>
+                          <Col span={24} xl={6}>
                             <Statistic
                               valueStyle={{ color: '#FF4F64' }}
                               title="Peso neto"
@@ -368,7 +362,7 @@ const Turns = ({ client, globalFilters }) => {
                               prefix={<Icon type="car" />}
                             />
                           </Col>
-                          <Col span={6}>
+                          <Col span={24} xl={6}>
                             <Statistic
                               valueStyle={{ color: '#1890ff' }}
                               title="Subtotal"
@@ -377,7 +371,7 @@ const Turns = ({ client, globalFilters }) => {
                               prefix={<Icon type="check-circle" />}
                             />
                           </Col>
-                          <Col span={6}>
+                          <Col span={24} xl={6}>
                             <Statistic
                               valueStyle={{ color: '#FFAB00' }}
                               title="Impuesto"
@@ -386,7 +380,7 @@ const Turns = ({ client, globalFilters }) => {
                               prefix={<Icon type="minus-circle" />}
                             />
                           </Col>
-                          <Col span={6}>
+                          <Col span={24} xl={6}>
                             <Statistic
                               valueStyle={{ color: '#3f8600' }}
                               title="Total"

@@ -20,9 +20,21 @@ input BillInput {
   tickets: [ID!]!
   creditDays: Int!
   bill: Boolean!
+  turnToBill: Boolean!
 }
 
 input BillFilters {
   limit: Int
   search: String
+  sortBy: BillSort
+}
+
+input BillSort {
+  field: BillSortField!
+  order: Order!
+}
+
+# Enums
+enum BillSortField {
+  folio
 }

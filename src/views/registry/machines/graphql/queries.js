@@ -5,10 +5,10 @@ const GET_MACHINES = gql`
     machines(filters: $filters) {
       id
       name
+      type
       plates
       brand
       model
-      drivers
       averageHorometer
       standardHorometerDeviation
     }

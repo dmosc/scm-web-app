@@ -1,0 +1,30 @@
+type ClientSubscriptionWarning {
+  id: ID!
+  tons: Float!
+  start: Date!
+  end: Date!
+  reason: WarningReason
+  comments: String
+  subscription: ClientSubscription!
+  resolvedBy: Client
+}
+
+input ClientSubscriptionWarningInit {
+  tons: Float!
+  start: Date!
+  end: Date!
+  subscription: ID!
+}
+
+input ClientSubscriptionWarningResolve {
+  id: ID!
+  reason: WarningReason!
+  comments: String!
+}
+
+# Enums
+enum WarningReason {
+  SLOW_SALE
+  FULL_STOCK
+  COVID_19
+}

@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const createWorkbook = () => {
   const workbook = new ExcelJS.Workbook();
@@ -12,6 +12,10 @@ const createWorkbook = () => {
   return workbook;
 };
 
+// Used when operating based on header height.
+// IF HEADER CONSTRUCT IS CHANGED, PLEASE UPDATE THIS
+const headerRows = 6;
+
 const createWorksheet = (workbook, { name, columns, title, date = Date.now() }, options = {}) => {
   const worksheet = workbook.addWorksheet(name, options);
 
@@ -19,7 +23,7 @@ const createWorksheet = (workbook, { name, columns, title, date = Date.now() }, 
     worksheet.columns = columns;
 
     columns.forEach(({ header, key }) => {
-      const titleCell = worksheet.getRow(6).getCell(key);
+      const titleCell = worksheet.getRow(headerRows).getCell(key);
       const firstRow = worksheet.getRow(1).getCell(key);
       titleCell.value = header;
       firstRow.value = '';
@@ -58,11 +62,32 @@ const createWorksheet = (workbook, { name, columns, title, date = Date.now() }, 
     {
       state: 'frozen',
       xSplit: 0,
-      ySplit: columns ? 6 : 5
+      ySplit: columns ? headerRows : headerRows - 1
     }
   ];
 
   return worksheet;
 };
 
-export { createWorkbook, createWorksheet };
+const columnToLetter = column => {
+  let temp;
+  let letter = '';
+
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    // eslint-disable-next-line no-param-reassign
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+};
+
+const solidFill = hexColor => ({
+  type: 'pattern',
+  pattern: 'solid',
+  fgColor: {
+    argb: hexColor
+  }
+});
+
+export { createWorkbook, createWorksheet, columnToLetter, headerRows, solidFill };

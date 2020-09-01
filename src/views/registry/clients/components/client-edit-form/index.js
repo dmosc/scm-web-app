@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
+import { withAuth } from 'components/providers/withAuth';
 import { Button, Drawer, Form, Icon, Input, InputNumber, message, Select } from 'antd';
 import CFDIuseComponent from 'utils/enums/CFDIuse';
 import { EDIT_CLIENT } from './graphql/mutations';
@@ -102,7 +103,7 @@ class EditForm extends Component {
   };
 
   render() {
-    const { form, currentClient } = this.props;
+    const { form, currentClient, auth: { isSales } } = this.props;
     const { loading } = this.state;
 
     return (
@@ -288,7 +289,8 @@ class EditForm extends Component {
             })(
               <InputNumber
                 min={0}
-                prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                disabled={isSales}
               />
             )}
           </Form.Item>
@@ -307,8 +309,9 @@ EditForm.propTypes = {
   client: PropTypes.object.isRequired,
   form: PropTypes.object.isRequired,
   currentClient: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
   onClientEdit: PropTypes.func.isRequired,
   setCurrentClient: PropTypes.func.isRequired
 };
 
-export default withApollo(EditForm);
+export default withApollo(withAuth(EditForm));

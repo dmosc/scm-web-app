@@ -4,11 +4,10 @@ import { format } from 'utils/functions';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   Button,
   Card,
-  Col,
   Collapse,
   Empty,
   Icon,
@@ -19,8 +18,13 @@ import {
   Tag,
   Typography
 } from 'antd';
-import { ChartsContainer, FiltersContainer, InputContainer } from './elements';
-import { GET_SUMMARY, GET_SUMMARY_XLS, GET_TURNS } from './graphql/queries';
+import { ChartsContainer, FiltersContainer, InputContainer, Col } from './elements';
+import {
+  GET_SUMMARY,
+  GET_SUMMARY_BY_CLIENT_XLS,
+  GET_SUMMARY_BY_DATE_XLS,
+  GET_TURNS
+} from './graphql/queries';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -28,7 +32,8 @@ const { Panel } = Collapse;
 
 const Tickets = ({ client, globalFilters }) => {
   const [loading, setLoading] = useState(true);
-  const [loadingReport, setLoadingReport] = useState(false);
+  const [loadingReportByClients, setLoadingReportByClients] = useState(false);
+  const [loadingReportByDates, setLoadingReportByDates] = useState(false);
   const [loadingTurns, setLoadingTurns] = useState(false);
   const [turns, setTurns] = useState([]);
   const [turnId, setTurnId] = useState();
@@ -113,8 +118,8 @@ const Tickets = ({ client, globalFilters }) => {
     getTurns();
   }, [client, globalFilters]);
 
-  const downloadReport = async () => {
-    setLoadingReport(true);
+  const downloadReportByDates = async () => {
+    setLoadingReportByDates(true);
 
     const range =
       globalFilters.end && globalFilters.start
@@ -125,9 +130,9 @@ const Tickets = ({ client, globalFilters }) => {
         : undefined;
 
     const {
-      data: { ticketsSummaryXLS }
+      data: { ticketsSummaryByDateXLS }
     } = await client.query({
-      query: GET_SUMMARY_XLS,
+      query: GET_SUMMARY_BY_DATE_XLS,
       variables: {
         turnId,
         range,
@@ -137,15 +142,50 @@ const Tickets = ({ client, globalFilters }) => {
     });
 
     const link = document.createElement('a');
-    link.href = encodeURI(ticketsSummaryXLS);
-    link.download = `BOLETAS-${new Date().toISOString()}.xlsx`;
+    link.href = encodeURI(ticketsSummaryByDateXLS);
+    link.download = `BOLETAS-FECHA-${new Date().toISOString()}.xlsx`;
     link.target = '_blank';
     document.body.appendChild(link);
 
     link.click();
 
     document.body.removeChild(link);
-    setLoadingReport(false);
+    setLoadingReportByDates(false);
+  };
+
+  const downloadReportByClients = async () => {
+    setLoadingReportByClients(true);
+
+    const range =
+      globalFilters.end && globalFilters.start
+        ? {
+            start: globalFilters.start,
+            end: globalFilters.end
+          }
+        : undefined;
+
+    const {
+      data: { ticketsSummaryByClientXLS }
+    } = await client.query({
+      query: GET_SUMMARY_BY_CLIENT_XLS,
+      variables: {
+        turnId,
+        range,
+        billType: billType || undefined,
+        paymentType: paymentType || undefined
+      }
+    });
+
+    const link = document.createElement('a');
+    link.href = encodeURI(ticketsSummaryByClientXLS);
+    link.download = `BOLETAS-CLIENTE-${new Date().toISOString()}.xlsx`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    setLoadingReportByClients(false);
   };
 
   return (
@@ -155,7 +195,7 @@ const Tickets = ({ client, globalFilters }) => {
           <Text type="secondary">Turno seleccionado</Text>
           <Select
             allowClear
-            style={{ minWidth: 600 }}
+            className="turnFilter"
             placeholder="Turno"
             onChange={value => setTurnId(value)}
             notFoundContent={null}
@@ -181,7 +221,7 @@ const Tickets = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de boletas</Text>
           <Select
             allowClear
-            style={{ minWidth: 300 }}
+            className="limitedSelect"
             placeholder="Tipo de boletas"
             onChange={value => setBillType(value)}
             value={billType}
@@ -195,7 +235,7 @@ const Tickets = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de pago</Text>
           <Select
             allowClear
-            style={{ minWidth: 300 }}
+            className="limitedSelect"
             placeholder="Tipo de pago"
             onChange={value => setPaymentType(value)}
             value={paymentType}
@@ -206,13 +246,22 @@ const Tickets = ({ client, globalFilters }) => {
           </Select>
         </InputContainer>
         <Button
-          style={{ marginLeft: 'auto', marginTop: 20 }}
-          loading={loadingReport}
+          style={{ marginLeft: 5, marginTop: 20 }}
+          loading={loadingReportByClients}
           type="primary"
           icon="file-excel"
-          onClick={downloadReport}
+          onClick={downloadReportByClients}
         >
-          {(loadingReport && 'Generando...') || 'Descargar reporte'}
+          {(loadingReportByClients && 'Generando...') || 'Reporte por cliente'}
+        </Button>
+        <Button
+          style={{ marginLeft: 5, marginTop: 20 }}
+          loading={loadingReportByDates}
+          type="primary"
+          icon="file-excel"
+          onClick={downloadReportByDates}
+        >
+          {(loadingReportByDates && 'Generando...') || 'Reporte por fecha'}
         </Button>
       </FiltersContainer>
       {loading ? (
@@ -221,9 +270,10 @@ const Tickets = ({ client, globalFilters }) => {
         </div>
       ) : (
         <>
+          <Text disabled>* Valores no incluyen IVA</Text>
           <Card>
             <Row>
-              <Col span={8}>
+              <Col xl={8} span={24}>
                 <Statistic
                   valueStyle={{ color: '#3f8600' }}
                   title="Ventas"
@@ -231,26 +281,31 @@ const Tickets = ({ client, globalFilters }) => {
                   suffix="MXN"
                   prefix={<Icon type="rise" />}
                 />
+                <Text disabled>{`${(
+                  ticketsSummary?.upfrontWeight + ticketsSummary?.creditWeight || 0
+                ).toFixed(2)} tons`}</Text>
               </Col>
-              <Col span={8}>
+              <Col xl={8} span={24}>
                 <Statistic
                   valueStyle={{ color: '#30CEE7' }}
                   title="Contado"
                   value={format.currency(ticketsSummary?.upfront || 0)}
                   suffix="MXN"
                 />
+                <Text disabled>{`${(ticketsSummary?.upfrontWeight || 0).toFixed(2)} tons`}</Text>
               </Col>
-              <Col span={8}>
+              <Col xl={8} span={24}>
                 <Statistic
                   valueStyle={{ color: '#FFAB00' }}
                   title="Crédito"
                   value={format.currency(ticketsSummary?.credit || 0)}
                   suffix="MXN"
                 />
+                <Text disabled>{`${(ticketsSummary?.creditWeight || 0).toFixed(2)} tons`}</Text>
               </Col>
             </Row>
             <Row style={{ marginTop: 20 }}>
-              <Col span={4}>
+              <Col span={24} xl={4}>
                 <Statistic
                   valueStyle={{ color: '#1890ff' }}
                   title="Boletas"
@@ -258,7 +313,7 @@ const Tickets = ({ client, globalFilters }) => {
                   prefix={<Icon type="file-done" />}
                 />
               </Col>
-              <Col span={5}>
+              <Col span={24} xl={5}>
                 <Statistic
                   valueStyle={{ color: '#30CEE7' }}
                   title="Facturadas"
@@ -266,7 +321,7 @@ const Tickets = ({ client, globalFilters }) => {
                   prefix={<Icon type="file-done" />}
                 />
               </Col>
-              <Col span={5}>
+              <Col span={24} xl={5}>
                 <Statistic
                   valueStyle={{ color: '#30CEE7' }}
                   title="Remisionadas"
@@ -274,7 +329,7 @@ const Tickets = ({ client, globalFilters }) => {
                   prefix={<Icon type="file-done" />}
                 />
               </Col>
-              <Col span={5}>
+              <Col span={24} xl={5}>
                 <Statistic
                   valueStyle={{ color: '#FFAB00' }}
                   title="A crédito"
@@ -282,7 +337,7 @@ const Tickets = ({ client, globalFilters }) => {
                   prefix={<Icon type="file-done" />}
                 />
               </Col>
-              <Col span={5}>
+              <Col span={24} xl={5}>
                 <Statistic
                   valueStyle={{ color: '#FFAB00' }}
                   title="De contado"
@@ -353,8 +408,7 @@ const Tickets = ({ client, globalFilters }) => {
             </Card>
           </ChartsContainer>
           <Card
-            title={`${ticketsSummary?.clients?.length ||
-              0} tienen boletas con los filtros seleccionados`}
+            title={`${ticketsSummary?.clients?.length || 0} boletas con los filtros seleccionados`}
           >
             {ticketsSummary?.clients?.length > 0 ? (
               <Collapse
@@ -380,7 +434,7 @@ const Tickets = ({ client, globalFilters }) => {
                             style={{ margin: 5, padding: 10 }}
                             gutter={{ xs: 8, sm: 16, md: 24 }}
                           >
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#FF4F64' }}
                                 title="Peso neto"
@@ -389,7 +443,7 @@ const Tickets = ({ client, globalFilters }) => {
                                 prefix={<Icon type="car" />}
                               />
                             </Col>
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#1890ff' }}
                                 title="Subtotal"
@@ -398,7 +452,7 @@ const Tickets = ({ client, globalFilters }) => {
                                 prefix={<Icon type="check-circle" />}
                               />
                             </Col>
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#FFAB00' }}
                                 title="Impuesto"
@@ -407,7 +461,7 @@ const Tickets = ({ client, globalFilters }) => {
                                 prefix={<Icon type="minus-circle" />}
                               />
                             </Col>
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#3f8600' }}
                                 title="Total"

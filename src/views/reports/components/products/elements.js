@@ -11,6 +11,30 @@ const FiltersContainer = styled.div`
   display: flex;
   width: 100%;
   margin-bottom: 20px;
+
+  .turnFilter {
+    min-width: 600px;
+  }
+
+  .limitedSelect {
+    width: 120px;
+  }
+
+  ${props => props.theme.media.lg`
+    flex-direction: column;
+
+    .turnFilter {
+      min-width: initial
+    }
+
+    .limitedSelect {
+      width: initial;
+    }
+
+    .ant-select {
+      margin-bottom: 10px;
+    }
+  `}
 `;
 
 const InputContainer = styled.div`

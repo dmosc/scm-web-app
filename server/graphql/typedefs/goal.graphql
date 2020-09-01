@@ -1,0 +1,31 @@
+# Types
+type Goal {
+  id: ID!
+  name: String!
+  rocks: [Rock!]!
+  period: PeriodType
+  tons: Float!
+  start: Date!
+  end: Date!
+}
+
+type GoalSummary {
+  goal: Goal!
+  tons: Float!
+  total: Float!
+}
+
+# Inputs
+input GoalInput {
+  name: String!
+  rocks: [ID!]!
+  period: PeriodType!
+  tons: Float!
+}
+
+# Enums
+enum PeriodType {
+  DAY
+  WEEK
+  MONTH
+}

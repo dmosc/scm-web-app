@@ -1,0 +1,44 @@
+# Types
+type SupplyTransactionIn {
+  id: ID!
+  date: Date!
+  supply: Supply!
+  quantity: Float!
+  comment: String!
+  isAdjustment: Boolean!
+  createdBy: User!
+  createdAt: Date!
+}
+
+type SupplyTransactionOut {
+  id: ID!
+  date: Date!
+  supply: Supply!
+  quantity: Float!
+  comment: String!
+  machine: Machine!
+  createdBy: User!
+  createdAt: Date!
+}
+
+# Inputs
+input SupplyTransactionInInput {
+  date: Date!
+  supply: ID!
+  quantity: Float!
+  comment: String!
+  isAdjustment: Boolean!
+}
+
+input SupplyTransactionOutInput {
+  date: Date!
+  supply: ID!
+  quantity: Float!
+  comment: String!
+  machine: ID!
+}
+
+input SupplyTransactionFilters {
+  limit: Int
+  search: String
+}

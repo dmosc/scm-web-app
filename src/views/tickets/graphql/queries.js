@@ -27,4 +27,10 @@ const GET_TICKET_PROMOTIONS = gql`
   }
 `;
 
-export { TURN_ACTIVE, GET_TICKET_PROMOTIONS };
+const GET_PDF = gql`
+  query ticketPDF($idOrFolio: String!) {
+    ticketPDF(idOrFolio: $idOrFolio)
+  }
+`;
+
+export { TURN_ACTIVE, GET_TICKET_PROMOTIONS, GET_PDF };

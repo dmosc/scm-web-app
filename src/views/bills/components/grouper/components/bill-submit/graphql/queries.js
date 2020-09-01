@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost';
 
 const GET_BILL_SUMMARY = gql`
-  query ticketsToBillSummary($tickets: [ID!]!, $client: ID!) {
-    ticketsToBillSummary(tickets: $tickets, client: $client) {
+  query ticketsToBillSummary($tickets: [ID!]!, $turnToBill: Boolean!) {
+    ticketsToBillSummary(tickets: $tickets, turnToBill: $turnToBill) {
       products {
         product {
           name

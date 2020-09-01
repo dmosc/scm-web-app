@@ -1,0 +1,39 @@
+type ClientSubscription {
+  id: ID!
+  client: Client!
+  days: Int!
+  tons: Float!
+  margin: Float!
+  start: Date!
+  end: Date!
+  requestedBy: User!
+  isWarningActive: Boolean!
+}
+
+input ClientSubscriptionInput {
+  client: ID!
+  days: Int!
+  tons: Float!
+  margin: Float!
+  start: Date
+}
+
+input ClientSubscriptionEditInput {
+  id: ID!
+  client: ID
+  days: Int
+  tons: Float
+  margin: Float
+  start: Date
+}
+
+input ClientSubscriptionFilters {
+  limit: Int
+  status: ClientSubscriptionStatus!
+}
+
+enum ClientSubscriptionStatus {
+  ALL
+  WITH_WARNING
+  WITH_NO_WARNING
+}

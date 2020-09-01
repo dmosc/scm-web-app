@@ -5,10 +5,10 @@ const EDIT_MACHINE = gql`
     machineEdit(machine: $machine) {
       id
       name
+      type
       plates
       brand
       model
-      drivers
       averageHorometer
       standardHorometerDeviation
     }

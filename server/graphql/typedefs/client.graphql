@@ -16,6 +16,8 @@ type Client {
   balance: Float!
   depositHistory: [Deposit!]!
   defaultCreditDays: Int!
+  hasSubscription: Boolean!
+  createdAt: Date
 }
 
 type ClientPendingBill {
@@ -28,6 +30,8 @@ type ClientsSummary {
   upfront: Float
   credit: Float
   total: Float
+  upfrontWeight: Float
+  creditWeight: Float
 }
 
 type ClientTurnSummary {
@@ -101,9 +105,25 @@ input AddressInput {
 input ClientFilters {
   limit: Int
   search: String
+  range: DateRange
+  sortBy: ClientSort
+}
+
+input ClientsCreatedInRangeFilters {
+  limit: Int
+  range: DateRange!
+}
+
+input ClientSort {
+  field: ClientSortField!
+  order: Order!
 }
 
 # Enums
+enum ClientSortField {
+  uniqueId
+}
+
 enum CFDIuse {
   G01
   G03

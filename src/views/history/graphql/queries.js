@@ -1,28 +1,54 @@
 import { gql } from 'apollo-boost';
 
 const GET_HISTORY_TICKETS = gql`
-  query archivedTickets($filters: ArchivedTicketFilters!) {
-    archivedTickets(filters: $filters) {
-      id
-      folio
-      driver
-      client
-      businessName
-      rfc
-      plates
-      truckWeight
-      totalWeight
-      tons
-      product
-      price
+  query archivedTickets(
+    $range: DateRange
+    $turnId: ID
+    $billType: TicketBillType
+    $paymentType: TicketPaymentType
+    $clientIds: [ID]
+    $truckId: ID
+    $productId: ID
+    $folio: String
+    $sortBy: TicketSort
+  ) {
+    archivedTickets(
+      range: $range
+      turnId: $turnId
+        billType: $billType
+        paymentType: $paymentType
+        clientIds: $clientIds
+        truckId: $truckId
+        productId: $productId
+        folio: $folio
+        sortBy: $sortBy
+    ) {
+        id
+        folio
+        bill
+        out
+        client {
+            id
+            businessName
+        }
+        truck {
+            id
+            plates
+        }
+        totalPrice
+      product {
+        id
+        name
+      }
       tax
-      total
-      inTruckImage
-      outTruckImage
-      createdAt
-      updatedAt
     }
   }
 `;
 
-export { GET_HISTORY_TICKETS };
+const GET_PDF = gql`
+  query ticketPDF($idOrFolio: String!) {
+    ticketPDF(idOrFolio: $idOrFolio)
+  }
+`;
+
+export { GET_HISTORY_TICKETS, GET_PDF };

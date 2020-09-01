@@ -62,6 +62,12 @@ const Machines = ({ client }) => {
       key: 'name'
     },
     {
+      title: 'Tipo',
+      dataIndex: 'type',
+      key: 'type',
+      render: type => <Tag>{type}</Tag>
+    },
+    {
       title: 'Placas',
       dataIndex: 'plates',
       key: 'plates'
@@ -75,17 +81,6 @@ const Machines = ({ client }) => {
       title: 'Modelo',
       dataIndex: 'model',
       key: 'model'
-    },
-    {
-      title: 'Conductores',
-      dataIndex: 'drivers',
-      key: 'drivers',
-      render: drivers =>
-        drivers.map(tag => (
-          <Tag color="blue" key={tag}>
-            {tag.toUpperCase()}
-          </Tag>
-        ))
     },
     {
       title: 'Horómetro promedio',
@@ -128,7 +123,6 @@ const Machines = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={machines.map(machineMapped => ({
             ...machineMapped,

@@ -10,11 +10,23 @@ type Rock {
 type RockSalesReport {
   rocks: [RockSalesSummary!]!
   total: Float!
+  totalWeight: Float!
+}
+
+type CleanOrDirtyRockSalesReport {
+  total: Float!
+  totalWeight: Float!
+}
+
+type RockSalesReportCleanAndDirty {
+  clean: CleanOrDirtyRockSalesReport!
+  dirty: CleanOrDirtyRockSalesReport!
 }
 
 type RockSalesSummary {
   rock: Rock!
   tickets: [Ticket!]!
+  totalWeight: Float!
   total: Float!
 }
 
@@ -63,4 +75,12 @@ input RockSalesReportFilters {
   type: Boolean
   paymentType: TicketPaymentType
   turn: ID
+}
+
+input RockSalesReportInRangeFilters {
+  range: DateRange!
+}
+
+input RockSalesReportCleanAndDirtyFilters {
+  range: DateRange!
 }

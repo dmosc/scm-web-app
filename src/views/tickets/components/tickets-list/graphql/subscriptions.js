@@ -62,7 +62,10 @@ const ACTIVE_TICKETS = gql`
       totalWeight
       totalPrice
       inTruckImage
+      inTruckImageLeft
+      inTruckImageRight
       outTruckImage
+      outTruckImageBack
     }
   }
 `;
@@ -129,7 +132,10 @@ const TICKET_UPDATE = gql`
       totalWeight
       totalPrice
       inTruckImage
+      inTruckImageLeft
+      inTruckImageRight
       outTruckImage
+      outTruckImageBack
     }
   }
 `;

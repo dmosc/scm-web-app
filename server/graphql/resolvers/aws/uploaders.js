@@ -1,36 +1,43 @@
 import path from 'path';
-import S3 from '../../../clients/aws/s3';
-import { S3_BUCKET } from '../../../config';
+import { Storage } from '@google-cloud/storage';
+import moment from 'moment-timezone';
+import { GCLOUD_BUCKET } from '../../../config';
 
-export const S3Upload = params =>
-  new Promise((resolve, reject) =>
-    S3.upload(params, (err, data) => {
-      if (err) reject(err);
-      if (data) resolve(data);
-    })
-  );
+const storage = new Storage();
+
+const uploadStream = (createReadStream, gcloudFile) =>
+  new Promise((resolve, reject) => {
+    createReadStream()
+      .pipe(
+        gcloudFile.createWriteStream({
+          public: true,
+          gzip: true,
+          metadata: {
+            cacheControl: 'public, max-age=31536000'
+          }
+        })
+      )
+      .on('end', reject)
+      .on('finish', resolve);
+  });
 
 const uploaders = {
-  fileUpload: async (_, { file: { originFileObj }, folderKey, id }) => {
+  fileUpload: async (_, { file, folderKey, id }) => {
     try {
-      const { createReadStream, filename } = await originFileObj;
+      const { createReadStream, filename } = await file;
 
-      const stream = createReadStream();
-      const indexOfExtension = filename.lastIndexOf('.');
-      const newFilename = Date.now() + filename.substring(indexOfExtension);
+      const extensionIndex = filename.lastIndexOf('.');
+      const newFilename = `${filename.substring(0, extensionIndex)}_${moment().format(
+        'DD-MM-YY'
+      )}${filename.substring(extensionIndex)}`;
 
-      const S3Path = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
+      const filePath = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
 
-      const params = {
-        Bucket: S3_BUCKET,
-        Body: stream,
-        Key: S3Path,
-        ACL: 'public-read'
-      };
+      const gcloudFile = storage.bucket(GCLOUD_BUCKET).file(filePath);
 
-      const { Location } = await S3Upload(params);
+      await uploadStream(createReadStream, gcloudFile);
 
-      return Location;
+      return `https://storage.cloud.google.com/${GCLOUD_BUCKET}/${filePath}`;
     } catch (err) {
       throw new Error(err);
     }
@@ -42,22 +49,23 @@ const uploaders = {
     try {
       const type = image.split(';')[0].split('/')[1];
       const newFilename = Date.now() + id + type;
-      const S3Path = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
 
       const Body = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
 
-      const params = {
-        Bucket: S3_BUCKET,
-        Body,
-        Key: S3Path,
-        ACL: 'public-read',
-        ContentEncoding: 'base64',
-        ContentType: `image/${type}`
-      };
+      const filePath = path.join(folderKey, id, newFilename).replace(/\\/g, '/');
 
-      const { Location } = await S3Upload(params);
+      await storage
+        .bucket(GCLOUD_BUCKET)
+        .file(filePath)
+        .save(Body, {
+          public: true,
+          gzip: true,
+          metadata: {
+            cacheControl: 'public, max-age=31536000'
+          }
+        });
 
-      return Location;
+      return `https://storage.cloud.google.com/${GCLOUD_BUCKET}/${filePath}`;
     } catch (err) {
       throw new Error(err);
     }

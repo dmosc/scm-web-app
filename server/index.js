@@ -1,10 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
 import events from 'events';
+import cron from 'node-cron';
 import 'moment/locale/es';
 import sequelize from './sequelize-db';
 import server from './graphql';
-import { mongoDB, auroraDB, api } from './config/loggers';
-import { API_PORT, MONGO_DB_URI, AWS_CONFIG } from './config';
+import { api, auroraDB, cronjobs, mongoDB } from './config/loggers';
+import { API_PORT, AWS_CONFIG, MONGO_DB_URI } from './config';
+import { dailyTasks, tasks } from './utils/cronjobs';
 
 const { AURORA_DB_NAME } = AWS_CONFIG;
 
@@ -27,6 +29,38 @@ const { AURORA_DB_NAME } = AWS_CONFIG;
     Schema.Types.String.checkRequired(v => v !== null);
     mongoDB.success(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
     auroraDB.success(`📀 Successfully connected to database: ${AURORA_DB_NAME}`);
+
+    cron.schedule(
+      '0 8 * * *',
+      () => {
+        cronjobs.await('Executing cronjobs');
+        Object.keys(dailyTasks).forEach(async task => {
+          const result = await tasks[task]();
+          if (result) {
+            cronjobs.success(`✅  Completed task ${task}`);
+          } else {
+            cronjobs.error(`❌  Failed task ${task}`);
+          }
+        });
+      },
+      { scheduled: true, timezone: 'America/Monterrey' }
+    );
+
+    cron.schedule(
+      '* * * * *',
+      () => {
+        cronjobs.await('Executing cronjobs');
+        Object.keys(tasks).forEach(async task => {
+          const result = await tasks[task]();
+          if (result) {
+            cronjobs.success(`✅  Completed task ${task}`);
+          } else {
+            cronjobs.error(`❌  Failed task ${task}`);
+          }
+        });
+      },
+      { scheduled: true, timezone: 'America/Monterrey' }
+    );
 
     const { url, subscriptionsUrl } = await server.listen(API_PORT);
     api.success(`🚀  Server ready at ${url}`);

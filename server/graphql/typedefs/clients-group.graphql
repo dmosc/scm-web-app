@@ -1,0 +1,23 @@
+# Types
+type ClientsGroup {
+  id: ID!
+  name: String!
+  clients: [Client!]!
+}
+
+# Inputs
+input ClientsGroupInput {
+  name: String!
+  clients: [ID!]!
+}
+
+input ClientsGroupFilters {
+  limit: Int
+  search: String
+}
+
+input ClientsGroupEditInput {
+  id: ID!
+  name: String
+  clients: [ID!]
+}

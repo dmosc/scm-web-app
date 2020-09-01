@@ -1,12 +1,13 @@
 import { model, Schema } from 'mongoose';
 import softDelete from 'mongoose-delete';
+import machines from '../../utils/enums/machines';
 
 const Machine = new Schema({
   name: { type: String, required: true },
+  type: { type: String, enum: [...machines], required: true },
   plates: { type: String, required: true, unique: true },
   brand: { type: String, required: true },
   model: { type: String, required: true },
-  drivers: [{ type: String, required: true, default: [] }],
   averageHorometer: {
     type: Number,
     required: true,

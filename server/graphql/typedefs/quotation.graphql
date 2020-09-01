@@ -35,4 +35,15 @@ input QuotationFilters {
   businessName: String
   validRange: DateRange
   createdRange: DateRange
+  sortBy: QuotationSort
+}
+
+input QuotationSort {
+  field: QuotationSortField!
+  order: Order!
+}
+
+# Enums
+enum QuotationSortField {
+  folio
 }

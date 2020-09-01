@@ -9,6 +9,18 @@ const GET_CLIENTS = gql`
   }
 `;
 
+const GET_GROUPS = gql`
+  query clientsGroups($filters: ClientsGroupFilters!) {
+    clientsGroups(filters: $filters) {
+      id
+      name
+      clients {
+        id
+      }
+    }
+  }
+`;
+
 const GET_ROCKS = gql`
   query rocks($filters: RockFilters!) {
     rocks(filters: $filters) {
@@ -21,4 +33,4 @@ const GET_ROCKS = gql`
   }
 `;
 
-export { GET_CLIENTS, GET_ROCKS };
+export { GET_CLIENTS, GET_GROUPS, GET_ROCKS };

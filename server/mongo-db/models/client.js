@@ -21,6 +21,7 @@ const Client = User.discriminator(
       type: Number,
       required: true,
       unique: true,
+      index: true,
       validate: {
         validator: function validator(id) {
           return id >= 1000000;
@@ -34,7 +35,15 @@ const Client = User.discriminator(
     businessName: { type: String, required: true },
     rfc: { type: String, required: true, default: 'XAXX010101000' },
     CFDIuse: { type: String, enum: [...CFDIuse], default: 'NE' },
-    cellphone: [{ type: String, required: true, default: [] }],
+    cellphone: {
+      type: [String],
+      required: true,
+      default: [],
+      validate: {
+        validator: cellphones => cellphones.length >= 1,
+        message: 'Se requiere almenos un número de contacto'
+      }
+    },
     address: {
       country: { type: String, required: true, default: '' },
       state: { type: String, required: true, default: '' },
@@ -42,13 +51,15 @@ const Client = User.discriminator(
       city: { type: String, required: true, default: '' },
       suburb: { type: String, required: true, default: '' },
       street: { type: String, required: true, default: '' },
-      extNumber: { type: String, required: false, default: '' },
+      extNumber: { type: String, required: true, default: '' },
       intNumber: { type: String, required: true, default: '' },
       zipcode: { type: String, required: true, default: '' }
     },
     balance: { type: Number, required: true, default: 0 },
     depositHistory: { type: [Deposit], default: [] },
-    defaultCreditDays: { type: Number, required: true, default: 0 }
+    defaultCreditDays: { type: Number, required: true, default: 0 },
+    hasSubscription: { type: Boolean, required: true, default: false },
+    createdAt: { type: Date, required: true, default: Date.now }
   })
 );
 

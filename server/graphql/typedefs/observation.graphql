@@ -1,0 +1,18 @@
+# Types
+type Observation {
+  id: ID!
+  start: Date!
+  end: Date
+  description: String!
+  lap: Lap!
+}
+
+# Inputs
+input ObservationInitInput {
+  lap: ID!
+}
+
+input ObservationEndInput {
+  id: ID!
+  description: String!
+}

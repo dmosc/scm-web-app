@@ -1,5 +1,4 @@
-import { ClientPrice, Ticket, Turn } from '../../../mongo-db/models';
-import { Ticket as NewTicket } from '../../../sequelize-db/models';
+import { Ticket, Turn } from '../../../mongo-db/models';
 import authenticated from '../../middleware/authenticated';
 
 const turnMutations = {
@@ -15,10 +14,8 @@ const turnMutations = {
 
     const turn = new Turn({ ...args.turn });
     turn.uniqueId = (uniqueId || 1000) + 1;
-    const start = new Date();
-    const offset = start.getTimezoneOffset() / 60;
 
-    turn.start = start.setHours(start.getHours() - offset);
+    turn.start = new Date();
 
     try {
       await turn.save();
@@ -35,86 +32,19 @@ const turnMutations = {
       const {
         turn: { id }
       } = args;
-      const end = new Date();
-      const offset = end.getTimezoneOffset() / 60;
 
       const turn = await Turn.findOneAndUpdate(
         { _id: id },
-        { end: end.setHours(end.getHours() - offset) },
+        { end: new Date() },
         { new: true }
       ).populate('user');
 
+      // Save who ends turn
+      turn.user = userRequesting.id;
+
+      await turn.save();
+
       if (!turn) return new Error('¡No ha sido posible encontrar el turno!');
-
-      const tickets = await Ticket.find({ folio: { $in: [...turn.folios] } }).populate([
-        {
-          path: 'client truck product turn store promotion',
-          populate: {
-            path: 'stores',
-            model: 'Store'
-          }
-        }
-      ]);
-
-      const ticketsToCreate = [];
-      const ticketsToDelete = [];
-      const ticketsToDestroy = [];
-
-      for (let i = 0; i < tickets.length; i++) {
-        const { product } = tickets[i];
-
-        let price;
-        // eslint-disable-next-line no-await-in-loop
-        const specialPrice = await ClientPrice.find({
-          client: tickets[i].client,
-          rock: tickets[i].product
-        }).sort({
-          addedAt: 'descending'
-        });
-
-        if (!specialPrice[0] || specialPrice[0].noSpecialPrice) price = product.price;
-        else price = specialPrice[0].price;
-
-        const ticket = NewTicket.create({
-          folio: tickets[i].folio,
-          driver: tickets[i].driver,
-          client: `${tickets[i].client.firstName} ${tickets[i].client.lastName}`,
-          businessName: tickets[i].client.businessName,
-          address: Object.values(tickets[i].client.address)
-            .filter(value => typeof value === 'string')
-            .map(value => value.toUpperCase().trim())
-            .join(', '),
-          rfc: tickets[i].client.rfc,
-          plates: tickets[i].truck.plates,
-          truckWeight: tickets[i].truck.weight,
-          totalWeight: tickets[i].weight,
-          tons: tickets[i].totalWeight,
-          product: product.name,
-          price,
-          tax: tickets[i].tax,
-          total: tickets[i].totalPrice,
-          inTruckImage: tickets[i].inTruckImage,
-          outTruckImage: tickets[i].outTruckImage
-        });
-
-        ticketsToCreate.push(ticket);
-
-        if (!ticket) return new Error('¡Ha habido un error durante la migración de los tickets!');
-
-        const oldTicket = Ticket.deleteById(tickets[i].id, userRequesting.id);
-
-        ticketsToDelete.push(oldTicket);
-      }
-
-      const [ticketsCreated, ticketsDeleted] = await Promise.all([
-        Promise.all(ticketsToCreate),
-        Promise.all(ticketsToDelete)
-      ]);
-
-      for (let i = 0; i < ticketsDeleted.length; i++)
-        if (!ticketsDeleted[i]) ticketsToDestroy.push(ticketsCreated[i].destroy());
-
-      await Promise.all(ticketsToDestroy);
 
       pubsub.publish('TURN_UPDATE', { turnUpdate: turn });
 
@@ -145,6 +75,7 @@ const turnMutations = {
       await turn.save();
 
       const activeTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false }
       }).populate([
@@ -157,6 +88,7 @@ const turnMutations = {
         }
       ]);
       const loadedTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }

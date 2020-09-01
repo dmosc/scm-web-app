@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Select, Tag, Transfer } from 'antd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const { Option } = Select;
 
@@ -44,12 +44,13 @@ const TicketsSelect = ({
         onSelectChange={(selectedTicketsToSet, targetTicketsToSet) =>
           setSelectedTickets([...selectedTicketsToSet, ...targetTicketsToSet])
         }
-        render={({ folio, totalPrice, out, product: { name } }) => (
+        render={({ folio, totalPrice, out, product: { name }, turn: { uniqueId } }) => (
           <>
             <Tag>{moment(out).format('YYYY/MM/DD')}</Tag>
             <Tag>{folio}</Tag>
             <Tag>{name}</Tag>
             <Tag>{totalPrice}</Tag>
+            <Tag>{`T${uniqueId}`}</Tag>
           </>
         )}
       />

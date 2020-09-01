@@ -50,7 +50,37 @@ const format = {
 
     return formatted;
   },
-  currency: num => `$${format.number(num)}`
+  currency: num => `$${format.number(num)}`,
+  time: milliseconds => {
+    let h;
+    let m;
+    let s;
+
+    h = Math.floor(milliseconds / 1000 / 60 / 60);
+    m = Math.floor((milliseconds / 1000 / 60 / 60 - h) * 60);
+    s = Math.floor(((milliseconds / 1000 / 60 / 60 - h) * 60 - m) * 60);
+
+    s < 10 ? (s = `0${s}`) : (s = `${s}`);
+    m < 10 ? (m = `0${m}`) : (m = `${m}`);
+    h < 10 ? (h = `0${h}`) : (h = `${h}`);
+
+    return `${h}:${m}:${s}`;
+  }
 };
 
-export { printPDF, format };
+const list = toList => {
+  let str = '';
+  toList.forEach((value, index) => {
+    if (index === toList.length - 2) {
+      str += `${value} y `;
+    } else if (index === toList.length - 1) {
+      str += value;
+    } else {
+      str += `${value}, `;
+    }
+  });
+
+  return str;
+};
+
+export { printPDF, format, list };

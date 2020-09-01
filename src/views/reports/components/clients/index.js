@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { format } from 'utils/functions';
 import { useDebounce } from 'use-lodash-debounce';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
+  Bar,
+  BarChart,
   Cell,
   Legend,
   Pie,
@@ -11,28 +13,25 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
-  BarChart,
-  Bar
+  YAxis
 } from 'recharts';
 import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import {
-  Statistic,
-  Icon,
-  Card,
-  Col,
-  Select,
-  Typography,
-  Tag,
-  Spin,
-  Empty,
   Button,
+  Card,
   Collapse,
-  Row
+  Empty,
+  Icon,
+  Row,
+  Select,
+  Spin,
+  Statistic,
+  Tag,
+  Typography
 } from 'antd';
-import { GET_TURNS, GET_CLIENTS, GET_SUMMARY, GET_SUMMARY_XLS } from './graphql/queries';
-import { FiltersContainer, ChartsContainer, InputContainer } from './elements';
+import { GET_CLIENTS, GET_SUMMARY, GET_SUMMARY_XLS, GET_TURNS } from './graphql/queries';
+import { ChartsContainer, FiltersContainer, InputContainer, Col } from './elements';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -215,7 +214,7 @@ const Turns = ({ client, globalFilters }) => {
           <Text type="secondary">Turno</Text>
           <Select
             allowClear
-            style={{ minWidth: 600 }}
+            className="turnFilter"
             placeholder="Turno"
             onChange={value => setTurnId(value)}
             notFoundContent={null}
@@ -241,7 +240,7 @@ const Turns = ({ client, globalFilters }) => {
           <Text type="secondary">Tipo de boletas</Text>
           <Select
             allowClear
-            style={{ minWidth: 300 }}
+            className="ticketFilter"
             placeholder="Tipo de boletas"
             onChange={value => setBillType(value)}
             notFoundContent={null}
@@ -254,7 +253,7 @@ const Turns = ({ client, globalFilters }) => {
         </InputContainer>
         {clients.length > 0 && (
           <Button
-            style={{ marginLeft: 'auto', marginTop: 20 }}
+            style={{ marginLeft: 5, marginTop: 20 }}
             loading={loadingReport}
             type="primary"
             icon="file-excel"
@@ -276,8 +275,9 @@ const Turns = ({ client, globalFilters }) => {
         />
       ) : (
         <>
+          <Text disabled>* Valores no incluyen IVA</Text>
           <Card>
-            <Col span={5}>
+            <Col span={24} xl={5}>
               <Statistic
                 valueStyle={{ color: '#3f8600' }}
                 title="Ventas"
@@ -285,24 +285,29 @@ const Turns = ({ client, globalFilters }) => {
                 suffix="MXN"
                 prefix={<Icon type="rise" />}
               />
+              <Text disabled>{`${(
+                clientsSummary?.upfrontWeight + clientsSummary?.creditWeight || 0
+              ).toFixed(2)} tons`}</Text>
             </Col>
-            <Col span={5}>
+            <Col span={24} xl={5}>
               <Statistic
                 valueStyle={{ color: '#30CEE7' }}
                 title="Contado"
                 value={format.currency(clientsSummary?.upfront || 0)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(clientsSummary?.upfrontWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
-            <Col span={5}>
+            <Col span={24} xl={5}>
               <Statistic
                 valueStyle={{ color: '#FFAB00' }}
                 title="Crédito"
                 value={format.currency(clientsSummary?.credit || 0)}
                 suffix="MXN"
               />
+              <Text disabled>{`${(clientsSummary?.creditWeight || 0).toFixed(2)} tons`}</Text>
             </Col>
-            <Col span={3}>
+            <Col span={24} xl={3}>
               <Statistic
                 valueStyle={{ color: '#1890ff' }}
                 title="Boletas"
@@ -310,7 +315,7 @@ const Turns = ({ client, globalFilters }) => {
                 prefix={<Icon type="file-done" />}
               />
             </Col>
-            <Col span={3}>
+            <Col span={24} xl={3}>
               <Statistic
                 valueStyle={{ color: '#1890ff' }}
                 title="Facturadas"
@@ -318,7 +323,7 @@ const Turns = ({ client, globalFilters }) => {
                 prefix={<Icon type="file-done" />}
               />
             </Col>
-            <Col span={3}>
+            <Col span={24} xl={3}>
               <Statistic
                 valueStyle={{ color: '#1890ff' }}
                 title="Remisionadas"
@@ -453,7 +458,7 @@ const Turns = ({ client, globalFilters }) => {
                             style={{ margin: 5, padding: 10 }}
                             gutter={{ xs: 8, sm: 16, md: 24 }}
                           >
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#FF4F64' }}
                                 title="Peso neto"
@@ -462,7 +467,7 @@ const Turns = ({ client, globalFilters }) => {
                                 prefix={<Icon type="car" />}
                               />
                             </Col>
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#1890ff' }}
                                 title="Subtotal"
@@ -471,7 +476,7 @@ const Turns = ({ client, globalFilters }) => {
                                 prefix={<Icon type="check-circle" />}
                               />
                             </Col>
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#FFAB00' }}
                                 title="Impuesto"
@@ -480,7 +485,7 @@ const Turns = ({ client, globalFilters }) => {
                                 prefix={<Icon type="minus-circle" />}
                               />
                             </Col>
-                            <Col span={6}>
+                            <Col span={24} xl={6}>
                               <Statistic
                                 valueStyle={{ color: '#3f8600' }}
                                 title="Total"

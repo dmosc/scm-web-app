@@ -150,7 +150,6 @@ const Products = ({ client }) => {
             />
           )}
           size="small"
-          scroll={{ x: true, y: true }}
           pagination={{ defaultPageSize: 20 }}
           dataSource={products.map(productMapped => ({
             ...productMapped,
