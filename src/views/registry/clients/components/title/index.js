@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { withApollo } from '@apollo/react-hoc';
 import PropTypes from 'prop-types';
+import { useAuth } from 'components/providers/withAuth';
 import { Button, Input, Typography } from 'antd';
 import TitleContainer from './elements';
 import { GET_REPORT } from './graphql/queries';
@@ -10,6 +11,8 @@ const { Search } = Input;
 
 const TableTitle = ({ client, handleFilterChange, toggleNewClientModal, filters }) => {
   const [loading, setLoading] = useState(false);
+  const { isSales } = useAuth();
+  const canAdd = !isSales;
 
   const downloadReport = async () => {
     setLoading(true);
@@ -43,14 +46,14 @@ const TableTitle = ({ client, handleFilterChange, toggleNewClientModal, filters 
         placeholder="Buscar clientes"
         onChange={({ target: { value } }) => handleFilterChange('search', value)}
       />
-      <Button
+      {canAdd && <Button
         style={{ margin: 'auto 10px' }}
         type="primary"
         icon="user-add"
         onClick={() => toggleNewClientModal(true)}
       >
         Añadir
-      </Button>
+      </Button>}
       <Button
         style={{ margin: 'auto 10px' }}
         loading={loading}

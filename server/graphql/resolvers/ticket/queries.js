@@ -38,7 +38,7 @@ const ticketQueries = {
     return ticket;
   }),
   tickets: authenticated(async (_, { filters: { limit } }) => {
-    const tickets = await Ticket.find({})
+    const tickets = await Ticket.find({ deleted: false, disabled: false })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
@@ -54,7 +54,7 @@ const ticketQueries = {
     else return tickets;
   }),
   ticketPDF: async (_, { idOrFolio }) => {
-    const query = {};
+    const query = { deleted: false, disabled: false };
 
     if (Types.ObjectId.isValid(idOrFolio)) {
       query._id = idOrFolio;
@@ -202,7 +202,7 @@ const ticketQueries = {
     return createPDF(pdfOptions);
   },
   activeTickets: authenticated(async (_, { filters: { limit } }) => {
-    const activeTickets = await Ticket.find({ disabled: false, turn: { $exists: false } })
+    const activeTickets = await Ticket.find({ deleted: false, disabled: false, turn: { $exists: false } })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate([
         {
@@ -223,6 +223,7 @@ const ticketQueries = {
       { filters: { limit, start = '1970-01-01T00:00:00.000Z', end = '2100-12-31T00:00:00.000Z' } }
     ) => {
       const query = {
+        deleted: false,
         disabled: true,
         disabledAt: { $gte: new Date(start), $lte: new Date(end) }
       };
@@ -245,6 +246,7 @@ const ticketQueries = {
   ),
   notLoadedActiveTickets: authenticated(async (_, { filters: { limit } }) => {
     const activeTickets = await Ticket.find({
+      deleted: false,
       disabled: false,
       turn: { $exists: false },
       load: { $exists: false }
@@ -265,6 +267,7 @@ const ticketQueries = {
   }),
   loadedTickets: authenticated(async (_, { filters: { limit } }) => {
     const loadedTickets = await Ticket.find({
+      deleted: false,
       disabled: false,
       turn: { $exists: false },
       load: { $exists: true }
@@ -289,6 +292,7 @@ const ticketQueries = {
       turn: { $exists: true },
       bill: type === 'BILL',
       isBilled: false,
+      deleted: false,
       disabled: false
     }).populate([
       {
@@ -311,6 +315,7 @@ const ticketQueries = {
           _id: { $in: [...ticketIds.map(ticket => Types.ObjectId(ticket))] },
           turn: { $exists: true },
           isBilled: false,
+          deleted: false,
           disabled: false
         }
       },
@@ -371,6 +376,8 @@ const ticketQueries = {
       { range = {}, turnId, billType, paymentType, productId, clientIds, truckId, folio, sortBy }
     ) => {
       const query = {
+        deleted: false,
+        disabled: false,
         out: {
           $gte: new Date(range.start || '1970-01-01T00:00:00.000Z'),
           $lte: new Date(range.end || '2100-12-31T00:00:00.000Z')
@@ -608,6 +615,8 @@ const ticketQueries = {
     }
   ) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: { $gte: new Date(range.start), $lte: new Date(range.end) },
       totalPrice: { $exists: true },
       outTruckImage: { $exists: true }
@@ -714,6 +723,8 @@ const ticketQueries = {
       }
     ) => {
       const $match = {
+        deleted: false,
+        disabled: false,
         out: { $gte: new Date(range.start), $lte: new Date(range.end) },
         totalPrice: { $exists: true },
         outTruckImage: { $exists: true }
@@ -965,6 +976,8 @@ const ticketQueries = {
       }
     ) => {
       const query = {
+        deleted: false,
+        disabled: false,
         out: { $gte: new Date(range.start), $lte: new Date(range.end) },
         totalPrice: { $exists: true },
         outTruckImage: { $exists: true }
@@ -1123,6 +1136,8 @@ const ticketQueries = {
     { month = moment(), workingDays, workingDaysPassed, excluded = [] }
   ) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(moment(month)?.startOf('month')),
         $lte: new Date(moment(month).endOf('month'))
@@ -1733,6 +1748,8 @@ const ticketQueries = {
   },
   ticketTimesSummary: authenticated(async (_, { date = {}, turnId, rocks, folioSearch }) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
@@ -1783,6 +1800,8 @@ const ticketQueries = {
   }),
   ticketTimes: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')
@@ -1818,6 +1837,8 @@ const ticketQueries = {
   }),
   ticketTimesXLS: authenticated(async (_, { date = {}, turnId, rocks }) => {
     const $match = {
+      deleted: false,
+      disabled: false,
       out: {
         $gte: new Date(date.start || '1970-01-01T00:00:00.000Z'),
         $lte: new Date(date.end || '2100-12-31T00:00:00.000Z')

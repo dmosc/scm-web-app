@@ -1,15 +1,6 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import {
-  Client,
-  ClientCreditLimit,
-  ClientPrice,
-  Folio,
-  Promotion,
-  Rock,
-  Ticket,
-  Truck
-} from '../../../mongo-db/models';
+import { Client, ClientCreditLimit, ClientPrice, Folio, Promotion, Rock, Ticket, Truck, Turn } from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -45,6 +36,7 @@ const ticketMutations = {
         }
       ]);
       const activeTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false }
       }).populate([
@@ -57,6 +49,7 @@ const ticketMutations = {
         }
       ]);
       const loadedTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
@@ -226,6 +219,7 @@ const ticketMutations = {
       ]);
 
       const loadedTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: true }
@@ -240,6 +234,7 @@ const ticketMutations = {
       ]);
 
       const notLoadedActiveTickets = await Ticket.find({
+        deleted: false,
         disabled: false,
         turn: { $exists: false },
         load: { $exists: false }
@@ -414,6 +409,117 @@ const ticketMutations = {
       return e;
     }
   },
+  ticketDelete: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id);
+
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
+
+      await Turn.findByIdAndUpdate(ticket.turn, { $pull: { folios: ticket.folio } });
+      await Ticket.deleteById(id, userRequesting.id);
+
+      return true;
+    } catch (e) {
+      return e;
+    }
+  }),
+  ticketToBill: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id);
+
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
+      if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
+
+      ticket.bill = true;
+      ticket.tax = ticket.totalPrice * TAX;
+      ticket.totalPrice += ticket.tax;
+      ticket.usersInvolved.modifiedSeries = userRequesting.id;
+
+      const folio = await Folio.findOneAndUpdate(
+        { name: ticket.bill ? 'A' : 'B' },
+        { $inc: { count: 1 } },
+        { new: false }
+      ).select('name count');
+
+      const oldFolio = ticket.folio;
+      ticket.folio = folio.name.toString() + folio.count.toString();
+
+      await ticket.save();
+      await Turn.findByIdAndUpdate(ticket.turn, {
+        $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
+      }, { arrayFilters: [{ 'folio': oldFolio }] });
+
+      return Ticket.findById(id).populate([{
+        path: 'client truck product turn promotion',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }]);
+    } catch (e) {
+      return e;
+    }
+  }),
+  ticketToNoBill: authenticated(async (_, { id }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id);
+
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
+      if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
+
+      ticket.bill = false;
+      ticket.totalPrice -= ticket.tax;
+      ticket.tax = 0;
+      ticket.usersInvolved.modifiedSeries = userRequesting.id;
+
+      const folio = await Folio.findOneAndUpdate(
+        { name: ticket.bill ? 'A' : 'B' },
+        { $inc: { count: 1 } },
+        { new: false }
+      ).select('name count');
+
+      const oldFolio = ticket.folio;
+      ticket.folio = folio.name.toString() + folio.count.toString();
+
+      await ticket.save();
+      await Turn.findByIdAndUpdate(ticket.turn, {
+        $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
+      }, { arrayFilters: [{ 'folio': oldFolio }] });
+
+      return Ticket.findById(id).populate([{
+        path: 'client truck product turn promotion',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }]);
+    } catch (e) {
+      return e;
+    }
+  }),
+  ticketUpdatePrice: authenticated(async (_, { id, price }, { req: { userRequesting } }) => {
+    try {
+      const ticket = await Ticket.findById(id).populate([{
+        path: 'client truck product turn promotion',
+        populate: {
+          path: 'stores',
+          model: 'Store'
+        }
+      }]);
+
+      if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
+
+      ticket.totalPrice = price;
+      ticket.tax = ticket.bill ? price * TAX : 0;
+      ticket.usersInvolved.modifiedPrice = userRequesting.id;
+
+      await ticket.save();
+
+      return ticket;
+    } catch (e) {
+      return e;
+    }
+  }),
   ticketExcludeFromTimeMetrics: async (_, { tickets, exclude }) => {
     await Ticket.updateMany(
       { _id: { $in: tickets } },
