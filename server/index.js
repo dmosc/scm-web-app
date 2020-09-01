@@ -30,17 +30,21 @@ const { AURORA_DB_NAME } = AWS_CONFIG;
     mongoDB.success(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
     auroraDB.success(`📀 Successfully connected to database: ${AURORA_DB_NAME}`);
 
-    cron.schedule('0 8 * * *', () => {
-      cronjobs.await('Executing cronjobs');
-      Object.keys(dailyTasks).forEach(async task => {
-        const result = await tasks[task]();
-        if (result) {
-          cronjobs.success(`✅  Completed task ${task}`);
-        } else {
-          cronjobs.error(`❌  Failed task ${task}`);
-        }
-      });
-    }, { scheduled: true, timezone: 'America/Monterrey' });
+    cron.schedule(
+      '0 8 * * *',
+      () => {
+        cronjobs.await('Executing cronjobs');
+        Object.keys(dailyTasks).forEach(async task => {
+          const result = await tasks[task]();
+          if (result) {
+            cronjobs.success(`✅  Completed task ${task}`);
+          } else {
+            cronjobs.error(`❌  Failed task ${task}`);
+          }
+        });
+      },
+      { scheduled: true, timezone: 'America/Monterrey' }
+    );
 
     cron.schedule(
       '* * * * *',
