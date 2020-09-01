@@ -37,7 +37,7 @@ const Ticket = new Schema({
   withScale: { type: Boolean, default: true }
 });
 
-Ticket.plugin(softDelete, { deletedAt: true });
+Ticket.plugin(softDelete, { deletedAt: true, deletedBy: true });
 Ticket.plugin(disable, { disabledAt: true });
 
 export default model('Ticket', Ticket);

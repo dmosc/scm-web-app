@@ -353,7 +353,7 @@ const History = ({ client }) => {
               />
             </Tooltip>
           )}
-          {(isAdmin || isManager) && (
+          {(isAdmin) && (
             <Tooltip placement="top" title="Eliminar">
               <Button
                 style={{ marginLeft: 5 }}
