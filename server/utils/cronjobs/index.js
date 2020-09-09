@@ -106,8 +106,19 @@ const tasks = {
 const dailyTasks = {
   messageUpdate: async () => {
     const client = new Twilio(ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-    const range = { start: moment().startOf('day').subtract(1, 'day'), end: moment().endOf('day').subtract(1, 'day') };
-    const dirty = ['5e22071b1c9d440000de6933', '5e742b26cf78df7ac5da4129', '5e0042963bf0ef408d2b330c'];
+    const range = {
+      start: moment()
+        .startOf('day')
+        .subtract(1, 'day'),
+      end: moment()
+        .endOf('day')
+        .subtract(1, 'day')
+    };
+    const dirty = [
+      '5e22071b1c9d440000de6933',
+      '5e742b26cf78df7ac5da4129',
+      '5e0042963bf0ef408d2b330c'
+    ];
 
     try {
       const cleanAndDirty = await rockQueries.rockSalesReportCleanAndDirty(undefined, {
@@ -115,9 +126,18 @@ const dailyTasks = {
         dirty
       });
       const ticketsSummary = await ticketQueries.ticketsSummary(undefined, { range });
-      const body = `LIMPIAS: \n${cleanAndDirty.clean.totalWeight} tons - ${cleanAndDirty.clean.total}MXN \n\nSUCIAS: \n${cleanAndDirty.dirty.totalWeight} tons - ${cleanAndDirty.dirty.total}MXN \n\nVENTAS DE AYER: \n${ticketsSummary.upfrontWeight + ticketsSummary.creditWeight} tons \nCONTADO: ${ticketsSummary.upfront}MXN \nCREDITO: ${ticketsSummary.credit}MXN`;
+      const body = `LIMPIAS: \n${cleanAndDirty.clean.totalWeight} tons - ${
+        cleanAndDirty.clean.total
+      }MXN \n\nSUCIAS: \n${cleanAndDirty.dirty.totalWeight} tons - ${
+        cleanAndDirty.dirty.total
+      }MXN \n\nVENTAS DE AYER: \n${ticketsSummary.upfrontWeight +
+        ticketsSummary.creditWeight} tons \nCONTADO: ${ticketsSummary.upfront}MXN \nCREDITO: ${
+        ticketsSummary.credit
+      }MXN`;
 
-      const messages = phones.map(phone => client.messages.create({ from: TWILIO_PHONE_NUMBER, to: phone, body }));
+      const messages = phones.map(phone =>
+        client.messages.create({ from: TWILIO_PHONE_NUMBER, to: phone, body })
+      );
 
       await Promise.all(messages);
     } catch (e) {

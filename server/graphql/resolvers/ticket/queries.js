@@ -5,7 +5,13 @@ import { Op } from 'sequelize';
 import { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { format, list } from '../../../../src/utils/functions';
-import { columnToLetter, createWorkbook, createWorksheet, headerRows, solidFill } from '../../../utils/reports';
+import {
+  columnToLetter,
+  createWorkbook,
+  createWorksheet,
+  headerRows,
+  solidFill
+} from '../../../utils/reports';
 import { Rock, Ticket } from '../../../mongo-db/models';
 import { Ticket as ArchiveTicket } from '../../../sequelize-db/models';
 import authenticated from '../../middleware/authenticated';
@@ -599,12 +605,15 @@ const ticketQueries = {
       )}`;
     }
   ),
-  ticketsSummary: async (_, {
-    range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
-    turnId,
-    billType,
-    paymentType
-  }) => {
+  ticketsSummary: async (
+    _,
+    {
+      range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' },
+      turnId,
+      billType,
+      paymentType
+    }
+  ) => {
     const $match = {
       deleted: false,
       disabled: false,
