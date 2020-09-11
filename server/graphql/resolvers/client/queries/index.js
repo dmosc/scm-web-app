@@ -337,6 +337,52 @@ const clientQueries = {
 
     return clients;
   },
+  clientTracingDaily: async (
+    _,
+    { clientId, range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' } }
+  ) => {
+    const $match = {
+      out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+      totalPrice: { $exists: true },
+      outTruckImage: { $exists: true },
+      client: Types.ObjectId(clientId)
+    };
+
+    const aggregation = [
+      {
+        $match
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: { date: '$out', timezone: 'America/Monterrey' } },
+            day: { $dayOfMonth: { date: '$out', timezone: 'America/Monterrey' } },
+            year: { $year: { date: '$out', timezone: 'America/Monterrey' } }
+          },
+          ticketsQty: { $sum: 1 },
+          totalWeight: { $sum: '$totalWeight' },
+          subtotal: { $sum: { $subtract: ['$totalPrice', '$tax'] } },
+          totalTaxes: { $sum: '$tax' },
+          total: { $sum: '$totalPrice' }
+        }
+      },
+      {
+        $addFields: {
+          date: {
+            $dateFromParts: {
+              year: '$_id.year',
+              month: '$_id.month',
+              day: '$_id.day',
+              timezone: 'America/Monterrey'
+            }
+          }
+        }
+      },
+      { $sort: { date: -1 } }
+    ];
+
+    return Ticket.aggregate(aggregation);
+  },
   ...clientReports
 };
 

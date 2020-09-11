@@ -45,6 +45,18 @@ const ticketQueries = {
     if (!tickets) throw new ApolloError('¡Ha habido un error cargando los tickets!');
     else return tickets;
   }),
+  ticketsByClient: authenticated(
+    async (
+      _,
+      { clientId, range = { start: '1970-01-01T00:00:00.000Z', end: '2100-12-31T00:00:00.000Z' } }
+    ) =>
+      Ticket.find({
+        out: { $gte: new Date(range.start), $lte: new Date(range.end) },
+        totalPrice: { $exists: true },
+        outTruckImage: { $exists: true },
+        client: clientId
+      }).populate('product')
+  ),
   ticketPDF: async (_, { idOrFolio }) => {
     const query = { deleted: false, disabled: false };
 

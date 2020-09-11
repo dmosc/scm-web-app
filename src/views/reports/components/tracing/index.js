@@ -4,6 +4,7 @@ import { withApollo } from '@apollo/react-hoc';
 import { Table, Card, Tag, Button, Row, Tooltip } from 'antd';
 import { format } from 'utils/functions';
 import TableTitle from './components/title';
+import TracingDetailModal from './components/tracing-detail-modal';
 import { GET_TRACING } from './graphql/queries';
 
 const Tracing = ({ client, globalFilters }) => {
@@ -13,7 +14,7 @@ const Tracing = ({ client, globalFilters }) => {
     field: 'total',
     order: 'desc'
   });
-  const [clientTracingModal, setClientTracingModal] = useState(null);
+  const [clientToTrace, setClientToTrace] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -110,7 +111,7 @@ const Tracing = ({ client, globalFilters }) => {
         <Row>
           <Tooltip placement="top" title="Detalle">
             <Button
-              onClick={() => setClientTracingModal(row.client.id)}
+              onClick={() => setClientToTrace(row.client)}
               type="primary"
               icon="eye"
               size="small"
@@ -122,17 +123,28 @@ const Tracing = ({ client, globalFilters }) => {
   ];
 
   return (
-    <Card bordered={false}>
-      <Table
-        loading={loading}
-        title={() => <TableTitle sortBy={sortBy} setSortBy={setSortBy} />}
-        pagination={{ defaultPageSize: 20 }}
-        columns={columns}
-        dataSource={clientsTracing}
-        size="small"
-        rowKey={({ client: { id } }) => id}
+    <>
+      <Card bordered={false}>
+        <Table
+          loading={loading}
+          title={() => <TableTitle sortBy={sortBy} setSortBy={setSortBy} />}
+          pagination={{ defaultPageSize: 20 }}
+          columns={columns}
+          dataSource={clientsTracing}
+          size="small"
+          rowKey={({ client: { id } }) => id}
+        />
+      </Card>
+      <TracingDetailModal
+        clientToTrace={clientToTrace}
+        visible={!!clientToTrace}
+        date={{
+          start: globalFilters.start,
+          end: globalFilters.end
+        }}
+        onClose={() => setClientToTrace(null)}
       />
-    </Card>
+    </>
   );
 };
 

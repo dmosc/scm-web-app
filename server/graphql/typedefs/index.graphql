@@ -106,6 +106,8 @@ type Query {
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   clientsTracing(range: DateRange, sortBy: ClientTracingSort): [ClientTracing]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
+  clientTracingDaily(clientId: ID!, range: DateRange): [ClientTracingDaily]!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   # ClientsGroup
   clientsGroup(id: ID!): ClientsGroup
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, SALES])
@@ -117,6 +119,8 @@ type Query {
       roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX]
     )
   tickets(filters: TicketFilters!): [Ticket!]!
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+  ticketsByClient(clientId: ID!, range: DateRange): [Ticket!]!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketPDF(idOrFolio: String!): String!
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
