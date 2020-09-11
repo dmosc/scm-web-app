@@ -6,12 +6,29 @@ import { useAuth } from 'components/providers/withAuth';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { format, printPDF } from 'utils/functions';
-import { Button, Form, InputNumber, message, Modal, notification, Row, Table, Tag, Tooltip, Typography } from 'antd';
+import {
+  Button,
+  Form,
+  InputNumber,
+  message,
+  Modal,
+  notification,
+  Row,
+  Table,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd';
 import Title from './components/title';
 import Audit from './components/audit';
 import { Card, HistoryContainer, TableContainer } from './elements';
 import { GET_HISTORY_TICKETS, GET_PDF } from './graphql/queries';
-import { DELETE_TICKET, TICKET_TO_BILL, TICKET_TO_NO_BILL, TICKET_UPDATE_PRICE } from './graphql/mutations';
+import {
+  DELETE_TICKET,
+  TICKET_TO_BILL,
+  TICKET_TO_NO_BILL,
+  TICKET_UPDATE_PRICE
+} from './graphql/mutations';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -46,7 +63,9 @@ const History = ({ client }) => {
   useEffect(() => {
     if (shouldSubmitPriceUpdate) {
       (async () => {
-        const { data: { ticketUpdatePrice: ticket } } = await client.mutate({
+        const {
+          data: { ticketUpdatePrice: ticket }
+        } = await client.mutate({
           mutation: TICKET_UPDATE_PRICE,
           variables: { id: currentTicket.id, price: currentTicket.totalPrice }
         });
@@ -57,7 +76,9 @@ const History = ({ client }) => {
         ticket.product = ticket.product.name;
 
         if (ticket) {
-          const ticketsToSet = tickets.map(ticketInList => ticketInList.id === ticket.id ? ticket : ticketInList);
+          const ticketsToSet = tickets.map(ticketInList =>
+            ticketInList.id === ticket.id ? ticket : ticketInList
+          );
           setTickets(ticketsToSet);
           message.success('La boleta ha sido actualizada exitosamente!');
         } else {
@@ -106,8 +127,7 @@ const History = ({ client }) => {
   const ticketUpdateSeries = ticketToUpdate => {
     confirm({
       title: `¿Estás seguro de que deseas cambiar la serie de la boleta ${ticketToUpdate.folio}?`,
-      content:
-        'Una vez modificada, se realizarán los ajustes necesarios a lo largo del sistema.',
+      content: 'Una vez modificada, se realizarán los ajustes necesarios a lo largo del sistema.',
       okType: 'danger',
       okText: 'Modificar',
       cancelText: 'Cancelar',
@@ -132,15 +152,14 @@ const History = ({ client }) => {
           message.error('Ha sucedido un error intentando actualizar la boleta!');
         }
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
   const ticketUpdatePrice = ticketToUpdate => {
     confirm({
       title: `Una vez modificando el precio de ${ticketToUpdate.folio}, cualquier efecto secundario o inconsistencias son responsabilidad del que está modificando.`,
-      content:
+      content: (
         <Form>
           <Form.Item required label="Precio de la boleta">
             <InputNumber
@@ -153,13 +172,13 @@ const History = ({ client }) => {
               formatter={price => `$${price}`}
             />
           </Form.Item>
-        </Form>,
+        </Form>
+      ),
       okType: 'danger',
       okText: 'Modificar',
       cancelText: 'Cancelar',
       onOk: async () => setShouldSubmitPriceUpdate(true),
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
@@ -186,8 +205,7 @@ const History = ({ client }) => {
           message.error('Ha sucedido un error intentando eliminar la boleta!');
         }
       },
-      onCancel: () => {
-      }
+      onCancel: () => {}
     });
   };
 
@@ -353,7 +371,7 @@ const History = ({ client }) => {
               />
             </Tooltip>
           )}
-          {(isAdmin) && (
+          {isAdmin && (
             <Tooltip placement="top" title="Eliminar">
               <Button
                 style={{ marginLeft: 5 }}

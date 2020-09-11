@@ -178,15 +178,17 @@ const Clients = ({ client }) => {
               size="small"
             />
           </Tooltip>
-          {!isSales && <Tooltip placement="top" title="Crédito y balance">
-            <Button
-              onClick={() => setCurrentClientCredit(row)}
-              style={{ marginRight: 5 }}
-              type="primary"
-              icon="credit-card"
-              size="small"
-            />
-          </Tooltip>}
+          {!isSales && (
+            <Tooltip placement="top" title="Crédito y balance">
+              <Button
+                onClick={() => setCurrentClientCredit(row)}
+                style={{ marginRight: 5 }}
+                type="primary"
+                icon="credit-card"
+                size="small"
+              />
+            </Tooltip>
+          )}
           <Tooltip placement="top" title="Sucursales">
             <Button
               onClick={() => setCurrentClientStores(row)}
@@ -198,7 +200,7 @@ const Clients = ({ client }) => {
           </Tooltip>
           {(isAdmin || isAccountant || isManager || isSupport) && (
             <Tooltip placement="top" title="Eliminar">
-              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small"/>
+              <Button onClick={() => deleteClient(row)} type="danger" icon="delete" size="small" />
             </Tooltip>
           )}
         </Row>

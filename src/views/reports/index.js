@@ -8,7 +8,6 @@ import Loadable from 'react-loadable';
 import moment from 'moment';
 import { ReportsContainer } from './elements';
 import TitleSection from './components/title-section';
-import Sales from './components/sales';
 
 /* webpackChunkName: "Products" */
 const Products = Loadable({
@@ -37,6 +36,18 @@ const Turns = Loadable({
 /* webpackChunkName: "Times" */
 const Times = Loadable({
   loader: () => import('./components/times'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "Sales" */
+const Sales = Loadable({
+  loader: () => import('./components/sales'),
+  loading: TopBarProgress
+});
+
+/* webpackChunkName: "Tracing" */
+const Tracing = Loadable({
+  loader: () => import('./components/tracing'),
   loading: TopBarProgress
 });
 
@@ -75,6 +86,10 @@ const Reports = ({ location }) => {
         <Route
           path="/reportes/tiempos"
           render={() => <Times globalFilters={debouncedGlobalFilters} />}
+        />
+        <Route
+          path="/reportes/seguimiento"
+          render={() => <Tracing globalFilters={debouncedGlobalFilters} />}
         />
         <Redirect to="/reportes/global" />
       </Switch>

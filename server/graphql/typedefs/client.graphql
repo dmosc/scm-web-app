@@ -40,6 +40,15 @@ type ClientTurnSummary {
   tickets: [Ticket!]!
 }
 
+type ClientTracing {
+  ticketsQty: Int!
+  totalWeight: Float!
+  totalTaxes: Float!
+  subtotal: Float!
+  total: Float!
+  client: Client!
+}
+
 type Address {
   country: String!
   state: String!
@@ -119,7 +128,20 @@ input ClientSort {
   order: Order!
 }
 
+input ClientTracingSort {
+  field: ClientTracingSortField!
+  order: Order!
+}
+
 # Enums
+enum ClientTracingSortField {
+  ticketsQty
+  totalWeight
+  totalTaxes
+  subtotal
+  total
+}
+
 enum ClientSortField {
   uniqueId
 }

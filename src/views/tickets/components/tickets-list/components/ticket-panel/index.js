@@ -3,7 +3,18 @@ import PropTypes from 'prop-types';
 import { printPDF } from 'utils/functions';
 import { withApollo } from 'react-apollo';
 import { useAuth } from 'components/providers/withAuth';
-import { Button, Col, Divider, message, Modal, Row, Select, Statistic, Tabs, Typography } from 'antd';
+import {
+  Button,
+  Col,
+  Divider,
+  message,
+  Modal,
+  Row,
+  Select,
+  Statistic,
+  Tabs,
+  Typography
+} from 'antd';
 import { Actions } from './elements';
 import { ADD_TICKET_TO_TURN, DISABLE_TICKET, SET_STORE_TO_TICKET } from './graphql/mutations';
 import { GET_PDF } from './graphql/queries';

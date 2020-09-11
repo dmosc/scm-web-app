@@ -1,6 +1,16 @@
 import { ApolloError } from 'apollo-client';
 import Transaction from 'mongoose-transactions';
-import { Client, ClientCreditLimit, ClientPrice, Folio, Promotion, Rock, Ticket, Truck, Turn } from '../../../mongo-db/models';
+import {
+  Client,
+  ClientCreditLimit,
+  ClientPrice,
+  Folio,
+  Promotion,
+  Rock,
+  Ticket,
+  Truck,
+  Turn
+} from '../../../mongo-db/models';
 import uploaders from '../aws/uploaders';
 import authenticated from '../../middleware/authenticated';
 
@@ -428,7 +438,8 @@ const ticketMutations = {
       const ticket = await Ticket.findById(id);
 
       if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
-      if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
+      if (ticket.isBilled)
+        return new Error('No se peuden modificar boletas que han sido agrupadas!');
 
       ticket.bill = true;
       ticket.tax = ticket.totalPrice * TAX;
@@ -445,17 +456,23 @@ const ticketMutations = {
       ticket.folio = folio.name.toString() + folio.count.toString();
 
       await ticket.save();
-      await Turn.findByIdAndUpdate(ticket.turn, {
-        $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
-      }, { arrayFilters: [{ 'folio': oldFolio }] });
+      await Turn.findByIdAndUpdate(
+        ticket.turn,
+        {
+          $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
+        },
+        { arrayFilters: [{ folio: oldFolio }] }
+      );
 
-      return Ticket.findById(id).populate([{
-        path: 'client truck product turn promotion',
-        populate: {
-          path: 'stores',
-          model: 'Store'
+      return Ticket.findById(id).populate([
+        {
+          path: 'client truck product turn promotion',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
         }
-      }]);
+      ]);
     } catch (e) {
       return e;
     }
@@ -465,7 +482,8 @@ const ticketMutations = {
       const ticket = await Ticket.findById(id);
 
       if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
-      if (ticket.isBilled) return new Error('No se peuden modificar boletas que han sido agrupadas!');
+      if (ticket.isBilled)
+        return new Error('No se peuden modificar boletas que han sido agrupadas!');
 
       ticket.bill = false;
       ticket.totalPrice -= ticket.tax;
@@ -482,30 +500,38 @@ const ticketMutations = {
       ticket.folio = folio.name.toString() + folio.count.toString();
 
       await ticket.save();
-      await Turn.findByIdAndUpdate(ticket.turn, {
-        $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
-      }, { arrayFilters: [{ 'folio': oldFolio }] });
+      await Turn.findByIdAndUpdate(
+        ticket.turn,
+        {
+          $set: { 'folios.$[folio]': ticket.folio } // Remove old folio
+        },
+        { arrayFilters: [{ folio: oldFolio }] }
+      );
 
-      return Ticket.findById(id).populate([{
-        path: 'client truck product turn promotion',
-        populate: {
-          path: 'stores',
-          model: 'Store'
+      return Ticket.findById(id).populate([
+        {
+          path: 'client truck product turn promotion',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
         }
-      }]);
+      ]);
     } catch (e) {
       return e;
     }
   }),
   ticketUpdatePrice: authenticated(async (_, { id, price }, { req: { userRequesting } }) => {
     try {
-      const ticket = await Ticket.findById(id).populate([{
-        path: 'client truck product turn promotion',
-        populate: {
-          path: 'stores',
-          model: 'Store'
+      const ticket = await Ticket.findById(id).populate([
+        {
+          path: 'client truck product turn promotion',
+          populate: {
+            path: 'stores',
+            model: 'Store'
+          }
         }
-      }]);
+      ]);
 
       if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
 

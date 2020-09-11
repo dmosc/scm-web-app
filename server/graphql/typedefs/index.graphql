@@ -80,11 +80,11 @@ type Query {
     )
   # Client Price
   clientPricesByClient(client: ID!): [ClientPrice!]!
-  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   clientPriceByClient(client: ID!, rock: ID!): ClientPrice
     @auth(roles: [ADMIN, ACCOUNTANT, CASHIER, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
   clientPriceHistoryByClient(client: ID!, rock: ID): [ClientPrice!]!
-  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   # Client Credit Limit
   clientCreditLimit(client: ID!): ClientCreditLimit
     @auth(roles: [ADMIN, ACCOUNTANT, CASHIER, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX])
@@ -103,6 +103,8 @@ type Query {
     turnId: ID
     billType: TicketBillType
   ): String!
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
+  clientsTracing(range: DateRange, sortBy: ClientTracingSort): [ClientTracing]!
     @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES, TREASURER])
   # ClientsGroup
   clientsGroup(id: ID!): ClientsGroup
@@ -486,9 +488,9 @@ type Query {
     )
   # Store
   store(id: ID!): Store
-  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   stores(client: ID!): [Store!]!
-  @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER, COLLECTOR, COLLECTOR_AUX, SALES])
   # Machine
   machine(id: ID!): Machine
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, ACCOUNTANT, MANAGER, SUPPORT, DRIVER])
@@ -613,12 +615,12 @@ type Mutation {
   clientAddToBalance(client: ID!, toAdd: Float!): Client
     @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
   clientEdit(client: ClientEditInput!): Client
-  @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX, SALES])
   clientDelete(id: ID!): Boolean!
     @auth(roles: [ADMIN, MANAGER, SUPPORT, CASHIER, COLLECTOR, COLLECTOR_AUX])
   # Client Price
   clientPrice(clientPrice: ClientPriceInput!): ClientPrice!
-  @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   # Client Credit Limit
   clientCreditLimit(clientCreditLimit: ClientCreditLimitInput): ClientCreditLimit
     @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
@@ -633,15 +635,15 @@ type Mutation {
   ticketEdit(ticket: TicketEditInput!): Ticket
     @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketInit(ticket: TicketInitInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, CASHIER, GUARD, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketProductLoad(ticket: TicketProductLoadInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketProductLoadSetDate(ticket: TicketEditInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, CASHIER, LOADER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketSetStore(ticket: ID!, store: ID): Boolean!
-  @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketSubmit(ticket: TicketSubmitInput!): Ticket!
-  @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, CASHIER, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   ticketDisable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR_AUX])
   ticketEnable(id: ID!): Boolean! @auth(roles: [ADMIN, MANAGER, SUPPORT, COLLECTOR_AUX])
   ticketDelete(id: ID!): Boolean! @auth(roles: [ADMIN])
@@ -651,13 +653,13 @@ type Mutation {
   ticketExcludeFromTimeMetrics(tickets: [ID!]!, exclude: Boolean!): Boolean!
   # Bill
   bill(bill: BillInput!): Bill
-  @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+    @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   billDelete(id: ID!): Boolean!
-  @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
+    @auth(roles: [ADMIN, MANAGER, ACCOUNTANT, CASHIER, COLLECTOR, COLLECTOR_AUX, TREASURER])
   # Truck
   truck(truck: TruckInput!): Truck @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   truckEdit(truck: TruckEditInput!): Truck
-  @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
+    @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   truckDelete(id: ID!): Boolean! @auth(roles: [ADMIN, CASHIER, SUPPORT, COLLECTOR, COLLECTOR_AUX])
   # Rock
   rock(rock: RockInput!): Rock @auth(roles: [ADMIN])
@@ -696,11 +698,11 @@ type Mutation {
   promotionEnable(id: ID!): Boolean! @auth(roles: [ADMIN, COLLECTOR, SALES])
   # Store
   store(store: StoreInput!): Store
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   storeEdit(store: StoreEditInput!): Store
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   storeDelete(id: ID!): Boolean!
-  @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
+    @auth(roles: [ADMIN, ACCOUNTANT, MANAGER, SUPPORT, COLLECTOR, COLLECTOR_AUX, SALES])
   # Machine
   machine(machine: MachineInput!): Machine @auth(roles: [ADMIN, ACCOUNTANT, SUPPORT, MANAGER])
   machineEdit(machine: MachineEditInput!): Machine

@@ -167,13 +167,13 @@ const App = ({
         <Switch>
           {!isAuditor && <Route exact path="/dashboard" component={Dashboard} />}
           {(isAdmin || isCashier || isSupport || isManager || isCollector || isCollectorAux) && (
-            <Route exact path="/boletas" component={Tickets}/>
+            <Route exact path="/boletas" component={Tickets} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux || isSales) && (
-            <Route exact path="/registros/clientes" component={Clients}/>
+            <Route exact path="/registros/clientes" component={Clients} />
           )}
           {(isAdmin || isSupport || isManager || isCollector || isCollectorAux) && (
-            <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests}/>
+            <Route exact path="/registros/peticiones-clientes" component={ClientPriceRequests} />
           )}
           {(isAdmin || isSupport || isManager) && (
             <Route exact path="/registros/grupos" component={ClientsGroup} />
