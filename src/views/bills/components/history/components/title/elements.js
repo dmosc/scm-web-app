@@ -6,4 +6,10 @@ const TitleContainer = styled.div`
   padding: 10px;
 `;
 
-export default TitleContainer;
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 10px;
+`;
+
+export { TitleContainer, InputContainer };
