@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import { useAuth } from 'components/providers/withAuth';
 import { format, printPDF } from 'utils/functions';
-import shortid from 'shortid';
 import { Button, Modal, notification, Row, Table, Tag, Tooltip } from 'antd';
 import Title from './components/title';
 import { Card, TableContainer } from './elements';
@@ -20,8 +19,12 @@ const History = ({ client }) => {
   const [filters, setFilters] = useState({
     search: '',
     sortBy: {
-      field: 'folio',
+      field: 'date',
       order: 'desc'
+    },
+    range: {
+      start: moment().subtract(1, 'month'),
+      end: moment()
     }
   });
   const debouncedFilters = useDebounce(filters, 1000);
@@ -168,7 +171,8 @@ const History = ({ client }) => {
           title={() => <Title handleFilterChange={handleFilterChange} />}
           size="small"
           pagination={{ defaultPageSize: 20 }}
-          dataSource={bills.map(billMapped => ({ ...billMapped, key: shortid.generate() }))}
+          dataSource={bills}
+          rowKey="id"
         />
       </Card>
     </TableContainer>

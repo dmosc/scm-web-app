@@ -160,7 +160,7 @@ const Trucks = ({ client }) => {
             size="small"
           />
           {(isAdmin || isAccountant || isManager || isSupport) && (
-            <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small"/>
+            <Button onClick={() => deleteTruck(row)} type="danger" icon="delete" size="small" />
           )}
         </Row>
       )

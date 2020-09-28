@@ -400,10 +400,14 @@ const billQueries = {
 
     return createPDF(pdfOptions);
   },
-  bills: authenticated(async (_, { filters: { limit, search, sortBy } }) => {
+  bills: authenticated(async (_, { filters: { limit, search, sortBy, range = {} } }) => {
     const billPromise = Bill.find({
       deleted: false,
-      $or: [{ folio: { $in: [new RegExp(search, 'i')] } }]
+      $or: [{ folio: { $in: [new RegExp(search, 'i')] } }],
+      date: {
+        $gte: new Date(range.start || '1970-01-01T00:00:00.000Z'),
+        $lte: new Date(range.end || '2100-12-31T00:00:00.000Z')
+      }
     })
       .limit(limit || Number.MAX_SAFE_INTEGER)
       .populate('client store');

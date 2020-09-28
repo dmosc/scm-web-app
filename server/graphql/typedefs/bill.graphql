@@ -27,6 +27,7 @@ input BillFilters {
   limit: Int
   search: String
   sortBy: BillSort
+  range: DateRange
 }
 
 input BillSort {
@@ -37,4 +38,5 @@ input BillSort {
 # Enums
 enum BillSortField {
   folio
+  date
 }
