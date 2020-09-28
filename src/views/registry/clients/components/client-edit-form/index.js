@@ -103,7 +103,11 @@ class EditForm extends Component {
   };
 
   render() {
-    const { form, currentClient, auth: { isSales } } = this.props;
+    const {
+      form,
+      currentClient,
+      auth: { isSales }
+    } = this.props;
     const { loading } = this.state;
 
     return (
@@ -289,7 +293,7 @@ class EditForm extends Component {
             })(
               <InputNumber
                 min={0}
-                prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }}/>}
+                prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 disabled={isSales}
               />
             )}

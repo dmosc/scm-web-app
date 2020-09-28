@@ -46,14 +46,16 @@ const TableTitle = ({ client, handleFilterChange, toggleNewClientModal, filters 
         placeholder="Buscar clientes"
         onChange={({ target: { value } }) => handleFilterChange('search', value)}
       />
-      {canAdd && <Button
-        style={{ margin: 'auto 10px' }}
-        type="primary"
-        icon="user-add"
-        onClick={() => toggleNewClientModal(true)}
-      >
-        Añadir
-      </Button>}
+      {canAdd && (
+        <Button
+          style={{ margin: 'auto 10px' }}
+          type="primary"
+          icon="user-add"
+          onClick={() => toggleNewClientModal(true)}
+        >
+          Añadir
+        </Button>
+      )}
       <Button
         style={{ margin: 'auto 10px' }}
         loading={loading}
