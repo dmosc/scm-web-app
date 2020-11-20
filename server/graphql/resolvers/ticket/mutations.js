@@ -536,7 +536,7 @@ const ticketMutations = {
       if (!ticket) return new Error('No ha sido posible encontrar la boleta!');
 
       ticket.totalPrice = price;
-      ticket.tax = ticket.bill ? (price - price / (1 + TAX)) : 0;
+      ticket.tax = ticket.bill ? price - price / (1 + TAX) : 0;
       ticket.usersInvolved.modifiedPrice = userRequesting.id;
 
       await ticket.save();
