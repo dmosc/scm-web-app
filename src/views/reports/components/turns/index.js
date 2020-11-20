@@ -18,7 +18,7 @@ import { withApollo } from '@apollo/react-hoc';
 import periods from 'utils/enums/periods';
 import { Button, Card, Collapse, Icon, Row, Select, Spin, Statistic, Tag, Typography } from 'antd';
 import {
-  GET_MOST_RECENTLY_ENDED_TURN,
+  GET_MOST_RECENTLY_OPENED_TURN,
   GET_REPORT,
   GET_TURN_SUMMARY,
   GET_TURNS,
@@ -46,11 +46,11 @@ const Turns = ({ client, globalFilters }) => {
       setLoading(true);
       if (!turnUniqueId) {
         const {
-          data: { turnMostRecentlyEnded }
+          data: { turnMostRecentlyOpened }
         } = await client.query({
-          query: GET_MOST_RECENTLY_ENDED_TURN
+          query: GET_MOST_RECENTLY_OPENED_TURN
         });
-        setTurn(turnMostRecentlyEnded);
+        setTurn(turnMostRecentlyOpened);
       } else {
         const {
           data: { turnByUniqueId }
@@ -151,25 +151,22 @@ const Turns = ({ client, globalFilters }) => {
             value={turnUniqueId || turn.uniqueId}
             loading={loadingTurns}
           >
-            {turns.map(
-              ({ id, uniqueId, end, user, period }) =>
-                end && (
-                  <Option key={id} value={uniqueId}>
-                    {!turnUniqueId && turn.uniqueId === uniqueId ? (
-                      'Último turno terminado'
-                    ) : (
-                      <>
-                        <Tag color="blue">{periods[period]}</Tag>
-                        {user.firstName} {user.lastName} ({uniqueId}) (Terminado el{' '}
-                        {moment(end)
-                          .locale('es')
-                          .format('lll')}
-                        )
-                      </>
-                    )}
-                  </Option>
-                )
-            )}
+            {turns.map(({ id, uniqueId, end, user, period }) => (
+              <Option key={id} value={uniqueId}>
+                {!turnUniqueId && turn.uniqueId === uniqueId ? (
+                  'Último turno terminado'
+                ) : (
+                  <>
+                    <Tag color="blue">{periods[period]}</Tag>
+                    {user.firstName} {user.lastName} ({uniqueId}) (Terminado el{' '}
+                    {moment(end)
+                      .locale('es')
+                      .format('lll')}
+                    )
+                  </>
+                )}
+              </Option>
+            ))}
           </Select>
         </InputContainer>
         <InputContainer>
@@ -233,9 +230,11 @@ const Turns = ({ client, globalFilters }) => {
                 Término:
               </Paragraph>
               <Paragraph style={{ margin: 0 }}>
-                {moment(turn.end)
-                  .locale('es')
-                  .format('LLLL')}
+                {turn.end
+                  ? moment(turn.end)
+                      .locale('es')
+                      .format('LLLL')
+                  : 'Sin terminar...'}
               </Paragraph>
             </Col>
           </Card>

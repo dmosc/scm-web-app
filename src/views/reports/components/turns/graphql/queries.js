@@ -31,9 +31,9 @@ const TURN_BY_UNIQUE_ID = gql`
   }
 `;
 
-const GET_MOST_RECENTLY_ENDED_TURN = gql`
-  query turnMostRecentlyEnded {
-    turnMostRecentlyEnded {
+const GET_MOST_RECENTLY_OPENED_TURN = gql`
+  query turnMostRecentlyOpened {
+    turnMostRecentlyOpened {
       ${turnData}
     }
   }
@@ -76,4 +76,10 @@ const GET_TURN_SUMMARY = gql`
   }
 `;
 
-export { GET_REPORT, GET_TURN_SUMMARY, GET_MOST_RECENTLY_ENDED_TURN, TURN_BY_UNIQUE_ID, GET_TURNS };
+export {
+  GET_REPORT,
+  GET_TURN_SUMMARY,
+  GET_MOST_RECENTLY_OPENED_TURN,
+  TURN_BY_UNIQUE_ID,
+  GET_TURNS
+};

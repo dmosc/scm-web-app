@@ -141,6 +141,14 @@ const turnQueries = {
       { $lookup: { from: 'rocks', localField: 'product', foreignField: '_id', as: 'product' } },
       { $lookup: { from: 'trucks', localField: 'truck', foreignField: '_id', as: 'truck' } },
       {
+        $lookup: {
+          from: 'users',
+          localField: 'usersInvolved.cashier',
+          foreignField: '_id',
+          as: 'cashier'
+        }
+      },
+      {
         $group: {
           _id: '$client',
           tickets: {
@@ -160,7 +168,8 @@ const turnQueries = {
               subtotal: { $subtract: ['$totalPrice', '$tax'] },
               totalPrice: '$totalPrice',
               credit: '$credit',
-              bill: '$bill'
+              bill: '$bill',
+              cashier: '$cashier'
             }
           },
           totalWeight: { $sum: '$totalWeight' },
@@ -256,6 +265,10 @@ const turnQueries = {
       {
         header: 'Tipo de boleta',
         key: 'bill'
+      },
+      {
+        header: 'Cajero',
+        key: 'cashier'
       }
     ];
 
@@ -323,7 +336,8 @@ const turnQueries = {
           tax: format.currency(ticket.tax),
           totalPrice: format.currency(ticket.totalPrice),
           credit: ticket.credit ? 'CRÉDITO' : 'CONTADO',
-          bill: ticket.bill ? 'FACTURA' : 'REMISIÓN'
+          bill: ticket.bill ? 'FACTURA' : 'REMISIÓN',
+          cashier: `${ticket.cashier[0]?.firstName} ${ticket.cashier[0]?.lastName}`
         };
 
         worksheet.addRow(ticketRow);
@@ -442,6 +456,11 @@ const turnQueries = {
       'base64'
     )}`;
   }),
+  turnMostRecentlyOpened: async () => {
+    const turn = await Turn.find({ end: { $exists: false } }).populate('user');
+
+    return turn[0];
+  },
   turnMostRecentlyEnded: async () => {
     const turn = await Turn.find({ end: { $exists: true } })
       .populate('user')
