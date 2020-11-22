@@ -259,13 +259,12 @@ const turnReportsUtils = {
       tickets.forEach(ticket => {
         if (!cashiersMap[ticket.cashier[0]._id])
           cashiersMap[ticket.cashier[0]._id] = {
-            name: `${ticket.cashier[0].firstName} ${ticket.cashier[0].lastName}`
+            name: `${ticket.cashier[0].firstName} ${ticket.cashier[0].lastName}`,
+            cash: [],
+            credit: []
           };
 
         const subkey = ticket.credit ? 'credit' : 'cash';
-
-        if (!cashiersMap[ticket.cashier[0]._id][subkey])
-          cashiersMap[ticket.cashier[0]._id][subkey] = [];
 
         cashiersMap[ticket.cashier[0]._id][subkey].push(ticket);
       });
@@ -279,16 +278,18 @@ const turnReportsUtils = {
           size: 14,
           bold: true
         };
-        turnReportsUtils.turnSummaryXLS.addTickets(
-          worksheet,
-          'CONTADO',
-          cashiersMap[cashierId].cash
-        );
-        turnReportsUtils.turnSummaryXLS.addTickets(
-          worksheet,
-          'CRÉDITO',
-          cashiersMap[cashierId].credit
-        );
+        if (cashiersMap[cashierId].cash.length)
+          turnReportsUtils.turnSummaryXLS.addTickets(
+            worksheet,
+            'CONTADO',
+            cashiersMap[cashierId].cash
+          );
+        if (cashiersMap[cashierId].credit.length)
+          turnReportsUtils.turnSummaryXLS.addTickets(
+            worksheet,
+            'CRÉDITO',
+            cashiersMap[cashierId].credit
+          );
       });
     }
   }
