@@ -2,18 +2,14 @@ import mongoose, { Schema } from 'mongoose';
 import events from 'events';
 import cron from 'node-cron';
 import 'moment/locale/es';
-import sequelize from './sequelize-db';
 import server from './graphql';
-import { api, auroraDB, cronjobs, mongoDB } from './config/loggers';
-import { API_PORT, AWS_CONFIG, MONGO_DB_URI } from './config';
+import { api, cronjobs, mongoDB } from './config/loggers';
+import { API_PORT, MONGO_DB_URI } from './config';
 import { dailyTasks, tasks } from './utils/cronjobs';
-
-const { AURORA_DB_NAME } = AWS_CONFIG;
 
 (async () => {
   try {
     mongoDB.await('Connecting with MongoDB database');
-    auroraDB.await('Connecting with AuroraDB database');
 
     await Promise.all([
       mongoose.connect(MONGO_DB_URI, {
@@ -22,13 +18,10 @@ const { AURORA_DB_NAME } = AWS_CONFIG;
         useCreateIndex: true,
         useFindAndModify: false
       }),
-      sequelize.sync(),
-      sequelize.authenticate()
     ]);
 
     Schema.Types.String.checkRequired(v => v !== null);
     mongoDB.success(`📀 Succesfully connected to database: ${MONGO_DB_URI}`);
-    auroraDB.success(`📀 Successfully connected to database: ${AURORA_DB_NAME}`);
 
     cron.schedule(
       '0 8 * * *',
