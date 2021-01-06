@@ -17,7 +17,7 @@ import { dailyTasks, tasks } from './utils/cronjobs';
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false
-      }),
+      })
     ]);
 
     Schema.Types.String.checkRequired(v => v !== null);
@@ -28,11 +28,13 @@ import { dailyTasks, tasks } from './utils/cronjobs';
       () => {
         cronjobs.await('Executing cronjobs');
         Object.keys(dailyTasks).forEach(async task => {
-          const result = await tasks[task]();
-          if (result) {
-            cronjobs.success(`✅  Completed task ${task}`);
-          } else {
-            cronjobs.error(`❌  Failed task ${task}`);
+          if (task) {
+            const result = await tasks[task]();
+            if (result) {
+              cronjobs.success(`✅  Completed task ${task}`);
+            } else {
+              cronjobs.error(`❌  Failed task ${task}`);
+            }
           }
         });
       },
