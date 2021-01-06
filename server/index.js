@@ -28,7 +28,7 @@ import { dailyTasks, tasks } from './utils/cronjobs';
       () => {
         cronjobs.await('Executing cronjobs');
         Object.keys(dailyTasks).forEach(async task => {
-          if (task) {
+          if (tasks[task]) {
             const result = await tasks[task]();
             if (result) {
               cronjobs.success(`✅  Completed task ${task}`);
@@ -46,11 +46,13 @@ import { dailyTasks, tasks } from './utils/cronjobs';
       () => {
         cronjobs.await('Executing cronjobs');
         Object.keys(tasks).forEach(async task => {
-          const result = await tasks[task]();
-          if (result) {
-            cronjobs.success(`✅  Completed task ${task}`);
-          } else {
-            cronjobs.error(`❌  Failed task ${task}`);
+          if (tasks[task]) {
+            const result = await tasks[task]();
+            if (result) {
+              cronjobs.success(`✅  Completed task ${task}`);
+            } else {
+              cronjobs.error(`❌  Failed task ${task}`);
+            }
           }
         });
       },
