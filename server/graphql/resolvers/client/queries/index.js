@@ -153,21 +153,26 @@ const clientQueries = {
     });
 
     const pricesPerRocks = await Promise.all(
-      clients.map(client => {
-        const pricesPerRockPromise = rocks.map(({ id }) =>
-          ClientPrice.find({ rock: id, client: client.id })
-            .populate('rock')
-            .sort({ addedAt: 'descending' })
+      clients.map(async client => {
+        const pricesPerRockPromise = await Promise.all(
+          rocks.map(({ id }) =>
+            ClientPrice.find({ rock: id, client: client.id })
+              .populate('rock')
+              .sort({ addedAt: 'descending' })
+          )
         );
 
         return pricesPerRockPromise;
       })
     );
 
+    console.log('hello');
+
     for (let i = 0; i < clients.length; i++) {
       const client = clients[i];
 
       const pricesPerRock = pricesPerRocks[i];
+
       const filteredPricesPerRock = pricesPerRock
         .map(rockPrices => rockPrices[0])
         .filter(price => price && !price.noSpecialPrice);
@@ -196,9 +201,13 @@ const clientQueries = {
 
     const buffer = await workbook.xlsx.writeBuffer();
 
-    return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
+    const str = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
       'base64'
     )}`;
+
+    console.log(str);
+
+    return str;
   }),
   clientsSummary: authenticated(
     async (
