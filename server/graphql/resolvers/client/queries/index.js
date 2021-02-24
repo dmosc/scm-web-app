@@ -152,17 +152,22 @@ const clientQueries = {
       column.width = column.header.length < 12 ? 12 : column.header.length;
     });
 
+    const pricesPerRocks = await Promise.all(
+      clients.map(client => {
+        const pricesPerRockPromise = rocks.map(({ id }) =>
+          ClientPrice.find({ rock: id, client: client.id })
+            .populate('rock')
+            .sort({ addedAt: 'descending' })
+        );
+
+        return pricesPerRockPromise;
+      })
+    );
+
     for (let i = 0; i < clients.length; i++) {
       const client = clients[i];
 
-      const pricesPerRockPromise = rocks.map(({ id }) =>
-        ClientPrice.find({ rock: id, client: client.id })
-          .populate('rock')
-          .sort({ addedAt: 'descending' })
-      );
-
-      // eslint-disable-next-line no-await-in-loop
-      const pricesPerRock = await Promise.all(pricesPerRockPromise);
+      const pricesPerRock = pricesPerRocks[i];
       const filteredPricesPerRock = pricesPerRock
         .map(rockPrices => rockPrices[0])
         .filter(price => price && !price.noSpecialPrice);
@@ -190,6 +195,7 @@ const clientQueries = {
     firstRow.height = 20;
 
     const buffer = await workbook.xlsx.writeBuffer();
+
     return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer.toString(
       'base64'
     )}`;
